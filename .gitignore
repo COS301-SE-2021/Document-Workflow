@@ -12,6 +12,7 @@ frontend/app/**/*.js.map
 
 # dependencies
 frontend/node_modules/
+node_modules/
 frontend/bower_components/
 
 # IDEs and editors
