@@ -1,0 +1,7 @@
+frontend/
+logs/
+.cache
+.git
+*Dockerfile*
+*docker-compose*
+node_modules

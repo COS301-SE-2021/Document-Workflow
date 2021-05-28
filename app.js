@@ -25,7 +25,7 @@ app.get('/', (req,res) => {
 });
 
 app.get('/new-book', (req,res) => {
-    res.sendFile('book.html', {root: __dirname})
+    res.sendFile('testing/book.html', {root: __dirname})
 });
 
 app.get('/node_modules/bootstrap/dist/css/bootstrap.css', ((req, res) => {
