@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 app.post('/book', (req,res) => {
     const book = req.body;
     console.log(book);
-    books.push(book);
+    //books.push(book);
     res.send('Book added to database');
 })
 
