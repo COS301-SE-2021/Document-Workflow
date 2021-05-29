@@ -5,34 +5,33 @@
 ### Angular ###
 ## Angular ##
 # compiled output
-frontend/dist/
-frontend/tmp/
-frontend/app/**/*.js
-frontend/app/**/*.js.map
+dist/
+tmp/
+app/**/*.js
+app/**/*.js.map
 
 # dependencies
-frontend/node_modules/
 node_modules/
-frontend/bower_components/
+bower_components/
 
 # IDEs and editors
 .idea/
 
 # misc
-frontend/.sass-cache/
-frontend/connect.lock/
-frontend/coverage/
-frontend/libpeerconnection.log/
-frontend/npm-debug.log
-frontend/testem.log
-frontend/typings/
+.sass-cache/
+connect.lock/
+coverage/
+libpeerconnection.log/
+npm-debug.log
+testem.log
+typings/
 
 # e2e
-frontend/e2e/*.js
-frontend/e2e/*.map
+e2e/*.js
+e2e/*.map
 
 # System Files
-frontend/.DS_Store/
+.DS_Store/
 
 ### Node ###
 # Logs
@@ -157,3 +156,35 @@ storybook-static
 temp/
 
 # End of https://www.toptal.com/developers/gitignore/api/node,angular
+
+##Ionic
+
+# Specifies intentionally untracked files to ignore when using Git
+# http://git-scm.com/docs/gitignore
+
+*~
+*.sw[mnpcod]
+.tmp
+*.tmp
+*.tmp.*
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+UserInterfaceState.xcuserstate
+$RECYCLE.BIN/
+
+log.txt
+
+/.idea
+/.ionic
+/.sass-cache
+/.sourcemaps
+/.versions
+/.vscode
+/coverage
+/dist
+/node_modules
+/platforms
+/plugins
+/www
