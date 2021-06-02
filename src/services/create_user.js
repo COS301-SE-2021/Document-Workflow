@@ -32,6 +32,8 @@ function handle_create_user(req) {
 
     if(checkIfEmailInUse(data["email"]))
         return createErrorResponse("Email address already in use")
+    if(!passwordIsValid(data["password"]))
+        return createErrorResponse("Password invalid")
 
 
     return {status:"success","data":{}, message:"New user created"};
@@ -47,6 +49,23 @@ function checkIfEmailInUse(email)
             return true
     }
     return false
+}
+
+//---------------Functions that check if the necessary requirements for the new UserProfile are met--------------
+
+/*
+    In order for a password to be valid it must:
+    1)contain 1 lowercase character
+    2) contain 1 uppercase character
+    3)contain 1 numeric character
+    4)contain 1 special character
+    5) be at least 9 characters long
+ */
+function passwordIsValid(password)
+{
+    let strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
+
+    return strongRegex.test(password)
 }
 
 
