@@ -4,14 +4,13 @@
   "description": "A web-based solution that facilitate the reviewing, approval and signing of documents.",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "nodemon src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Team Jar-gon",
   "license": "ISC",
   "dependencies": {
     "@angular/cli": "^12.0.2",
-    "@ionic/storage-angular": "^3.0.6",
     "body-parser": "^1.19.0",
     "bootstrap": "^5.0.1",
     "cors": "^2.8.5",

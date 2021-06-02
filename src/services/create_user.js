@@ -1,9 +1,9 @@
 
 
-const http = require('http')
+//const http = require('http')
 const url = require('url')
 const MockDatabase = require('./MockDatabase')
-const Verifier = require("email-verifier")
+//const Verifier = require("email-verifier")
 
 module.exports = {
     handle: handle_create_user
