@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
-import { DocumentService } from './document-service';
+import { Document } from './document';
 
 @Injectable({
   providedIn: 'root',
 })
-export class DocumentServiceService {
+export class DocumentService{
   private _storage: Storage;
   constructor(private storage: Storage) {
     this.init();
@@ -17,11 +17,13 @@ export class DocumentServiceService {
   }
 
   async initUser() {
-    const document: DocumentService[] = [
+    const document: Document[] = [
       {
         id: 1,
         documentName: 'timeSheet01.pdf',
         documentLocation: 'timeSheets',
+        status: false,
+        type: "sent"
       },
     ];
     await this.storage.set('documents', document);
