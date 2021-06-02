@@ -34,6 +34,8 @@ function handle_create_user(req) {
         return createErrorResponse("Email address already in use")
     if(!passwordIsValid(data["password"]))
         return createErrorResponse("Password invalid")
+    if(!emailIsValid(data["email"]))
+        return createErrorResponse("Email address invalid")
 
 
     return {status:"success","data":{}, message:"New user created"};
@@ -66,6 +68,26 @@ function passwordIsValid(password)
     let strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
 
     return strongRegex.test(password)
+}
+
+
+//Validating email addresses using regex isn't the best solution.
+//TODO: chat to Quinton/Daryl about whether they would be willing to pay for an email verification service
+//TODO: swap at the regex here, it isn't best practice
+//(Free version only allows so many requests per month)
+function emailIsValid(email)
+{
+    /* In order to use this code, contact Timothy to get the APIkey and password.
+    let verifier = new Verifier("your_whoisapi_username", "your_whoisapi_password");
+    verifier.verify("r@rdegges.com", {},(err, data) => {
+        if (err) throw err;
+        console.log(data);
+    });
+    return true
+     */
+
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
 }
 
 
