@@ -37,9 +37,18 @@ function handle_create_user(req) {
     if(!emailIsValid(data["email"]))
         return createErrorResponse("Email address invalid")
 
+    data["password"] = hashAndSaltPassword(data["password"])
 
     return {status:"success","data":{}, message:"New user created"};
 }
+
+//TODO: add a salt to our secrets file
+//TODO: implement
+function hashAndSaltPassword(password)
+{
+    return password
+}
+
 
 //------------------Functions that check if unique user fields are actually unique---------------------
 
