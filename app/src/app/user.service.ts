@@ -58,6 +58,20 @@ export class UserService {
     return users;
   }
 
+  async getUser(id: number): Promise<User>{
+    let users:  User[] = await this.readUsers();
+    if (!users) {
+      await this.initUser();
+    }
+
+
+    const index = users.findIndex(x => x.id === id);
+    if(index != -1){
+      return users[index];
+    }
+    return null;
+  }
+
   async addUser(user: User): Promise<void> {
     const users: User[] = await this._storage.get('users');
     const lastID = Math.max(...users.map(x => x.id));

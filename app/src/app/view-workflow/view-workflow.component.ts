@@ -19,7 +19,12 @@ export class ViewWorkflowComponent implements OnInit {
     private docStorage: DocumentService
   ) {}
 
-  ngOnInit() {
-    //get document data and display it
+  @Input() user:User;
+
+  documents: Document[] = [];
+  async ngOnInit() {
+    this.user = await  this.storageService.getUser(1);
+    this.documents = await this.docStorage.getDocuments(this.user.id);
+    console.log(this.documents);
   }
 }

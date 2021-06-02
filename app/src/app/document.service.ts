@@ -20,69 +20,56 @@ export class DocumentService{
     const document: Document[] = [
       {
         id: 1,
+        userID: 1,
         documentName: 'timeSheet01.pdf',
         documentLocation: 'timeSheets',
-        status: false,
-        type: "sent"
+        status: 0.5,
+        type: "pdf",
+        description:"this is the description of the document"
       },
     ];
     await this.storage.set('documents', document);
   }
 
-  // async login(email: string, password: string): Promise<boolean>{
-  //   let users = await this._storage?.get('users');
-  //   if (!users) {
-  //     users =  await this.initUser();
-  //     this.login(email, password);
-  //   }
 
-  //   console.log(users);
-  //   const index = users.findIndex(x => x.email === email && x.password === password);
-  //   console.log(index);
-  //   if(index != -1){
-  //     return true;
-  //   }
-  //   return false;
-  // }
+   async getDocuments(id: number): Promise<Document[]> {
+    const docs = await this._storage?.get('documents');
+    if (!docs) {
+      await this.initUser();
+      return await this._storage?.get('documents');
+    }
 
-  // async readUsers(): Promise<User[]> {
-  //   const users = await this._storage?.get('users');
-  //   if (!users) {
-  //     await this.initUser();
-  //     return await this._storage?.get('users');
-  //   }
+    return docs;
+  }
 
-  //   return users;
-  // }
+  async addDocument(doc: Document): Promise<void> {
+    const docs: Document[] = await this._storage.get('documents');
+    const lastID = Math.max(...docs.map(x => x.id));
+    doc.id = lastID + 1;
+    docs.push(doc);
 
-  // async addUser(user: User): Promise<void> {
-  //   const users: User[] = await this._storage.get('users');
-  //   const lastID = Math.max(...users.map(x => x.id));
-  //   user.id = lastID + 1;
-  //   users.push(user);
+    await this._storage.set('documents', doc);
+  }
 
-  //   await this._storage.set('users', users);
-  // }
+  async updateDocument(doc: Document): Promise<void> {
+    const docs: Document[] = await this.storage.get('documents');
 
-  // async updateUser(user: User): Promise<void> {
-  //   const users: User[] = await this.storage.get('users');
+    const index = docs.findIndex(x => x.id === doc.id);
 
-  //   const index = users.findIndex(x => x.id === user.id);
+    if (index > -1) {
+      docs[index] = doc;
+      await this._storage.set('documents', docs);
+    }
+  }
 
-  //   if (index > -1) {
-  //     users[index] = user;
-  //     await this._storage.set('users', users);
-  //   }
-  // }
+  async deleteDocument(doc: Document): Promise<void> {
+    const docs: Document[] = await this._storage.get('documents');
 
-  // async deleteUser(user: User): Promise<void> {
-  //   const users: User[] = await this._storage.get('users');
+    const index = docs.findIndex(x => x.id === doc.id);
 
-  //   const index = users.findIndex(x => x.id === user.id);
-
-  //   if (index > 1) {
-  //     users.splice(index, 1);
-  //     await this._storage.set('users', users);
-  //   }
-  // }
+    if (index > 1) {
+      docs.splice(index, 1);
+      await this._storage.set('documents', docs);
+    }
+  }
 }

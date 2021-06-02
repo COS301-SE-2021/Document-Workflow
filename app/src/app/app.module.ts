@@ -9,9 +9,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
 import { LoginRegisterComponent } from './login-register/login-register.component';
+import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
 
 @NgModule({
-  declarations: [AppComponent, LoginRegisterComponent],
+  declarations: [
+    AppComponent,
+    LoginRegisterComponent,
+    ViewWorkflowComponent
+  ],
   entryComponents: [],
   imports: [
     BrowserModule,
