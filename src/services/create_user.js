@@ -17,6 +17,7 @@ module.exports = {
  * @param req: the request sent through to the API.
  * @returns {{data: null, message, status: string}|{data: {ID: number}, message: string, status: string}}
  * TODO: rename to register_user?
+ * TODO: add a field for confirming the password was input correctly twice
  */
 function handle_create_user(req) {
 
