@@ -30,9 +30,25 @@ function handle_create_user(req) {
         if(data[names[i]] === undefined)
             return createErrorResponse("Field '" + names[i] + "' not set")
 
+    if(checkIfEmailInUse(data["email"]))
+        return createErrorResponse("Email address already in use")
+
 
     return {status:"success","data":{}, message:"New user created"};
 }
+
+//------------------Functions that check if unique user fields are actually unique---------------------
+
+function checkIfEmailInUse(email)
+{
+    for(let i=0; i<Object.getOwnPropertyNames(MockDatabase.database).length; ++i)
+    {
+        if(MockDatabase.database[i].email === email)
+            return true
+    }
+    return false
+}
+
 
 function createErrorResponse(error_message)
 {
