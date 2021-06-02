@@ -29,11 +29,11 @@ app.get('/', (req,res) => {
 
 //TODO: decide if this will be a get and post request or just a post request
 app.get('/create_user', (req, res)=> {
-
+    res.json(create_user.handle(req))
 });
 
 app.post('/create_user', (req, res)=> {
-
+    res.json(create_user.handle(req))
 });
 
 
