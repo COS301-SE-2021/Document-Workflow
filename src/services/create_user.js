@@ -46,6 +46,7 @@ function handle_create_user(req) {
 
 //TODO: add a salt to our secrets file
 //TODO: implement
+//This function will also be used when logging in a user, maybe put this in a shared folder?
 function hashAndSaltPassword(password)
 {
     return password
