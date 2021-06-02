@@ -1,0 +1,48 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>EPI-USE Document Workflow</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div *ngFor="let doc of documents">
+    <ion-card >
+      <ion-card-header>
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-card-title>{{doc.documentName}}</ion-card-title>
+            </ion-col>
+            <ion-col>
+              <ion-fab horizontal="end">
+                <ion-fab-button><ion-icon name="ellipsis-horizontal-circle-outline"></ion-icon></ion-fab-button>
+                <ion-fab-list>
+                  <ion-fab-button><ion-icon name="construct-outline"></ion-icon></ion-fab-button>
+                  <ion-fab-button><ion-icon name="download-outline"></ion-icon></ion-fab-button>
+                </ion-fab-list>
+              </ion-fab>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        <ion-icon>
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+        </ion-icon>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-text>{{doc.description}} </ion-text>
+        <br>
+        <ion-item>
+          <ion-label>Status of document</ion-label>
+          <ion-progress-bar value="{{doc.status}}"></ion-progress-bar>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <ion-fab vertical="bottom" horizontal="end">
+    <ion-fab-button>
+      <ion-icon name="add-circle-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
+
