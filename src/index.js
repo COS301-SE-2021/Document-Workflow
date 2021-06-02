@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 //const cors = require('cors');
 
 const create_user = require('./services/create_user')
+const login_user = require('./services/login_user')
 
 const app = express();
 const port = 3000;
@@ -27,7 +28,7 @@ app.get('/', (req,res) => {
 
 //----------------------------Create User-----------------------------------------------
 
-//TODO: decide if this will be a get and post request or just a post request
+//TODO: should be a post request only, we dont want to send passwords as plaintext
 app.get('/create_user', (req, res)=> {
     res.json(create_user.handle(req))
 });
@@ -37,7 +38,15 @@ app.post('/create_user', (req, res)=> {
 });
 
 
+//-----------------------------Login User---------------------------------------------------------------
 
+app.get('/login_user', (req, res)=> {
+    res.json(login_user.handle(req))
+});
+
+app.post('/login_user', (req, res)=> {
+    res.json(login_user.handle(req))
+});
 
 
 app.listen(port, () => {
