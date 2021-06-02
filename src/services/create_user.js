@@ -39,7 +39,9 @@ function handle_create_user(req) {
 
     data["password"] = hashAndSaltPassword(data["password"])
 
-    return {status:"success","data":{}, message:"New user created"};
+    let id = createUser(data)
+
+    return {status:"success","data":{"ID":id}, message:"New user created"};
 }
 
 //TODO: add a salt to our secrets file
@@ -105,3 +107,13 @@ function createErrorResponse(error_message)
     return {status:"error",data:null,"message":error_message}
 }
 
+//---------------------------------------------------------------------------------------
+
+function createUser(user_data)
+{
+    let new_user = new MockDatabase.User(user_data["Fname"], user_data["Lname"], user_data["email"],
+        user_data["password"], null, user_data["phone_number"])
+
+    MockDatabase.database[new_user.ID]  = new_user;
+    return new_user.ID
+}
