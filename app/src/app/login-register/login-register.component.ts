@@ -35,11 +35,14 @@ export class LoginRegisterComponent implements OnInit {
     };
     this.registerForm = this.formBuilder.group(
       {
-        firstName: ['', [Validators.required]],
-        lastName: ['', [Validators.required]],
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        Fname: ['', [Validators.required]],
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        Lname: ['', [Validators.required]],
         initials: ['', [Validators.required]],
         email: ['', [Validators.required, Validators.email]],
-        phoneNumber: [
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        phone_number: [
           '',
           [
             Validators.required,
@@ -65,10 +68,20 @@ export class LoginRegisterComponent implements OnInit {
     }
   }
 
-  register(): void {
+  async register(): Promise<void> {
+    console.log('Registering a user');
     let user = this.registerForm.value;
-    console.log(user);
-    this.storageService.addUser(user);
+    console.log(user);//
+    const response = await fetch('http://localhost:3000/create_user?Fname=james', {
+      method: 'GET',
+      //body: 'should error',
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
+    });
+
+    console.log(response);
+
+    //this.storageService.addUser(user);
   }
 
   changeOver(): void {
