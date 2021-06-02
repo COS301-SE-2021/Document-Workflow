@@ -13,6 +13,7 @@ class User{
         this.signature = signature;
         this.phone_number = phone_number
         this.ID = User.next_ID
+        this.validated = false
         User.next_ID ++
     }
 
