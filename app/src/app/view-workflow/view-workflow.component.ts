@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
+import {ModalController} from '@ionic/angular';
+// import {ModalPage}
 
 import { ActivatedRoute } from '@angular/router';
 
