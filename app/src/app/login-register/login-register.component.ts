@@ -7,7 +7,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { SMS } from '@ionic-native/sms/ngx';
 import {User} from './../user';
 import { UserService } from '../user.service';
 import { ActivatedRoute } from '@angular/router';
@@ -24,7 +23,7 @@ export class LoginRegisterComponent implements OnInit {
 
   registerButton: boolean; //for the toggle to change modes
 
-  constructor(private formBuilder: FormBuilder, private sms: SMS, private storageService: UserService, private activatedRoute:ActivatedRoute) {}
+  constructor(private formBuilder: FormBuilder, private storageService: UserService, private activatedRoute:ActivatedRoute) {}
 
   ngOnInit() {
     this.loginForm = this.formBuilder.group({

@@ -9,7 +9,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
 import { LoginRegisterComponent } from './login-register/login-register.component';
-import { SMS } from '@ionic-native/sms/ngx';
+
 
 @NgModule({
   declarations: [AppComponent, LoginRegisterComponent],
@@ -28,7 +28,6 @@ import { SMS } from '@ionic-native/sms/ngx';
       provide: RouteReuseStrategy,
       useClass: IonicRouteStrategy,
     },
-    SMS,
   ],
   bootstrap: [AppComponent],
 })
