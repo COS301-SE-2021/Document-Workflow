@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 //const cors = require('cors');
 
+const create_user = require('./services/create_user')
+
 const app = express();
 const port = 3000;
 
@@ -22,6 +24,21 @@ app.post('/book', (req,res) => {
 app.get('/', (req,res) => {
     res.send('Hello world, from express');
 });
+
+//----------------------------Create User-----------------------------------------------
+
+//TODO: decide if this will be a get and post request or just a post request
+app.get('/create_user', (req, res)=> {
+
+});
+
+app.post('/create_user', (req, res)=> {
+
+});
+
+
+
+
 
 app.listen(port, () => {
     console.log(`Hello world app listening on port ${port}`)
