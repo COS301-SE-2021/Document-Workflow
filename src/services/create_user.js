@@ -6,17 +6,17 @@ const MockDatabase = require('./MockDatabase')
 //const Verifier = require("email-verifier")
 
 module.exports = {
-    handle: handle_create_user
+    handle: handle_create_user,
+    hashAndSaltPassword: hashAndSaltPassword  //TODO: decide if this should be exported or not (security vulnerability)
 };
 
 /**
- * Checks for input parameters based on the following order:
- * id: search by id
- * email: search by email address
- * username: search by username
- * If none of the above are specified, then an error message will be returned
- * @param req
- *
+ * The function that handles a request to create a new user.
+ * In order to use, send in the following parameters:
+ * Fname , Lname, email, password, phone_number
+ * @param req: the request sent through to the API.
+ * @returns {{data: null, message, status: string}|{data: {ID: number}, message: string, status: string}}
+ * TODO: rename to register_user?
  */
 function handle_create_user(req) {
 
@@ -55,6 +55,11 @@ function hashAndSaltPassword(password)
 
 //------------------Functions that check if unique user fields are actually unique---------------------
 
+/**
+ * Checks whether or not any user account with the input email address exists.
+ * @param email:the email address to check
+ * @returns {boolean}
+ */
 function checkIfEmailInUse(email)
 {
     for(let i=0; i<Object.getOwnPropertyNames(MockDatabase.database).length; ++i)
@@ -67,13 +72,16 @@ function checkIfEmailInUse(email)
 
 //---------------Functions that check if the necessary requirements for the new UserProfile are met--------------
 
-/*
-    In order for a password to be valid it must:
-    1)contain 1 lowercase character
-    2) contain 1 uppercase character
-    3)contain 1 numeric character
-    4)contain 1 special character
-    5) be at least 9 characters long
+/**
+ * Determines whether or not the password is strong enough to be used.
+ * In order for a password to be valid it must:
+ * 1)contain 1 lowercase character
+ * 2) contain 1 uppercase character
+ * 3)contain 1 numeric character
+ * 4)contain 1 special character
+ * 5) be at least 9 characters long
+ * @param password: the password to verify
+ * @returns {boolean}: true indicates an acceptable password, false an unacceptable password
  */
 function passwordIsValid(password)
 {
@@ -82,11 +90,14 @@ function passwordIsValid(password)
     return strongRegex.test(password)
 }
 
-
-//Validating email addresses using regex isn't the best solution.
-//TODO: chat to Quinton/Daryl about whether they would be willing to pay for an email verification service
-//TODO: swap at the regex here, it isn't best practice
-//(Free version only allows so many requests per month)
+/**
+ * Determines whether or not the given email address is actually a usable email address. For now, makes use
+ * of regex but in future we can make use of the email verification api.
+ * @param email: the email address to validate
+ * @returns {boolean}: whether or not the input email given is in the valid email address format
+ * TODO: chat to Quinton/Daryl about whether they would be willing to pay for an email verification service
+ * TODO: swap at the regex here, it isn't best practice
+ */
 function emailIsValid(email)
 {
     /* In order to use this code, contact Timothy to get the APIkey and password.
@@ -102,14 +113,24 @@ function emailIsValid(email)
     return re.test(String(email).toLowerCase());
 }
 
-
+/**
+ * A helper function to ensure that all error messages returned follow the same format.
+ * @param error_message: the custom error message to add to the reponse
+ * @returns {{data: null, message, status: string}} : the json object containing the error response
+ */
 function createErrorResponse(error_message)
 {
-    return {status:"error",data:null,"message":error_message}
+    return {"status":"error","data":null,"message":error_message}
 }
 
 //---------------------------------------------------------------------------------------
 
+/**
+ * A helper function that creates a new user in the database.
+ * @param user_data: an array containing the data for the new user.
+ * @returns {number}: an associative array containing the array of the newly created user
+ * TODO: Change this from working through the mockdatabase to the actual database.
+ */
 function createUser(user_data)
 {
     let new_user = new MockDatabase.User(user_data["Fname"], user_data["Lname"], user_data["email"],

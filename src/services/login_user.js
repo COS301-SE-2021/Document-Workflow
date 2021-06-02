@@ -9,10 +9,11 @@ module.exports = {
 };
 
 /**
- * Very important that we send the same response for an incorrect password and an incorrect email address
- * otherwise it could lead to a security vulnerability.
- * @param req
+ * This function handles a request to login a user. On failure, a generic error message is sent to avoid
+ * creating any security vulnerabilities.
+ * @param req: the incoming request object
  * @returns {{data: null, message: string, status: string}|{data: {}, message: string, status: string}}
+ * TODO: Add a check for whether or not a user is verified.
  */
 function handle_login_user(req)
 {
@@ -38,6 +39,13 @@ function handle_login_user(req)
     return {status:"success","data":{"ID": user.ID}, message:"Successful Login"} //TODO: should we return the User's ID? probably not
 }
 
+/**
+ * A function that searches for a user by an email address. Returns null if no user with the specified email address
+ * exists.
+ * @param email: the email address to search for
+ * @returns {null|*}
+ * TODO: change this to work with the actual database as opposed to the Mock Database.
+ */
 function getUserByEmail(email)
 {
     for(let i=0; i<Object.getOwnPropertyNames(MockDatabase.database).length; ++i)
