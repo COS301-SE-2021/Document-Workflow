@@ -1,5 +1,5 @@
 # Document WorkFlow
-<img src="">
+<img src="Images/MyPost.jpg">
 <br>
 <br>
 
@@ -30,11 +30,11 @@
 
 **Team Members**                                                                |                                                                                  **Profiles**                                                                                  |                                     **Profile Description**                                     |
 | :-------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: |
-|<img src="" width="100" height="150"><br/> Delaray Botha <br/> u14011639 |       [GitHub]() <br/> [Profile Page]() <br/> [LinkedIn](https://www.linkedin.com/in/delarey-botha-82886820b/) <br/> |  |
-|<img src="" width="150" height="150" style="border-radius:30%;"> <br/> Brenton Stroberg <br/> u17015741 | [GitHub](https://github.com/u17015741) <br/> [Profile Page](https://u17015741.github.io/u17015741) <br/> [LinkedIn](https://www.linkedin.com/in/brenton-stroberg-a15219172/) <br/> | Full Stack Web Devlopment<br>|
-|<img src= "" width="150" height="150" style="border-radius:30%;"> <br/>Timothy Hill <br/> u17326622 <br/> | [GitHub]([https://github.com/u17112592]) <br/> [Profile Page](https://u17112592.github.io/) <br/> [LinkedIn](https://www.linkedin.com/in/timothy-hill-759a0b20b/) <br/> | |
-|<img src="" width="150" height="150" style="border-radius:30%;"> <br/> Mosa Letswalo <br/> u14168970|       [GitHub](https://github.com/jmshltt) <br/> [Profile Page](https://jmshltt.github.io/) <br/> [LinkedIn](https://www.linkedin.com/in/james-hulett-255748177/) <br/> | |
-|<img src="" width="150" height="150" style="border-radius:30%;"> <br/>Happiness Masombuka<br/> u16324804  |       [GitHub](https://github.com/DeMeiring) <br/> [Profile Page](https://DeMeiring.github.io/) <br/> [LinkedIn](https://www.linkedin.com/in/devilliers-meiring-b3b1661a0/) <br/> | 
+|<img src="Images/delarey.jpg" width="100" height="150"><br/> Delaray Botha <br/> u14011639 |       [GitHub]() <br/> [Profile Page]() <br/> [LinkedIn](https://www.linkedin.com/in/delarey-botha-82886820b/) <br/> |  |
+|<img src="Images/Brent.jpg" width="150" height="150" style="border-radius:30%;"> <br/> Brenton Stroberg <br/> u17015741 | [GitHub](https://github.com/u17015741) <br/> [Profile Page](https://u17015741.github.io/u17015741) <br/> [LinkedIn](https://www.linkedin.com/in/brenton-stroberg-a15219172/) <br/> | Full Stack Web Devlopment<br>|
+|<img src= "Images/Tim.jpg" width="150" height="150" style="border-radius:30%;"> <br/>Timothy Hill <br/> u17326622 <br/> | [GitHub]([https://github.com/u17112592]) <br/> [Profile Page](https://u17112592.github.io/) <br/> [LinkedIn](https://www.linkedin.com/in/timothy-hill-759a0b20b/) <br/> | |
+|<img src="Images/Mosa.jpg" width="150" height="150" style="border-radius:30%;"> <br/> Mosa Letswalo <br/> u14168970|       [GitHub](https://github.com/) <br/> [Profile Page]() <br/> [LinkedIn]() <br/> | |
+|<img src="Images/Happiness" width="150" height="150" style="border-radius:30%;"> <br/>Happiness Masombuka<br/> u16324804  |       [GitHub]() <br/> [Profile Page]() <br/> [LinkedIn]() <br/> | 
 
 
 
