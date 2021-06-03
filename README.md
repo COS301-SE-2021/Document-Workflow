@@ -52,6 +52,18 @@
             * frontend_subsystem  
          
 # Documentation
+## Software Requirements Specification
+### [Software Requirement Specifications](https://www.overleaf.com/read/wdkdstnqdrbq)
+### Previous Versions
+
+## Technology Frameworks
+### Client Side: Ionic and Angular
+### Server Side: NodeJS
+### Database: MongoDB 
+
+## Testing 
+### Jasmine
+### Karma
 
 
 
