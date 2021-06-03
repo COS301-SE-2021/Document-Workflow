@@ -3,8 +3,8 @@ import {  AbstractControlOptions, FormBuilder,} from '@angular/forms';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
-import { User } from './../user';
-import { UserService } from '../user.service';
+import { User } from './../Interfaces/user';
+import { UserService } from '../Services/user.service';
 import { ActivatedRoute } from '@angular/router';
 import { match } from './match.validator';
 
@@ -35,11 +35,11 @@ export class LoginRegisterComponent implements OnInit {
     };
     this.registerForm = this.formBuilder.group(
       {
-        firstName: ['', [Validators.required]],
-        lastName: ['', [Validators.required]],
+        Fname: ['', [Validators.required]],
+        Lname: ['', [Validators.required]],
         initials: ['', [Validators.required]],
         email: ['', [Validators.required, Validators.email]],
-        phoneNumber: [
+        phone_number: [
           '',
           [
             Validators.required,
@@ -60,14 +60,14 @@ export class LoginRegisterComponent implements OnInit {
     let a = await this.storageService.login(loginEmail, loginPassword);
     console.log(a);
     if (a == true) {
-      console.log('here');
-      this.activatedRoute.snapshot.paramMap.get('tabs');
+
     }
   }
 
   register(): void {
     let user = this.registerForm.value;
     console.log(user);
+    delete user.confirmPassword;
     this.storageService.addUser(user);
   }
 

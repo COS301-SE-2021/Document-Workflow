@@ -22,7 +22,11 @@ const routes: Routes = [
     path: '',
     loadChildren: () =>
       import('./tabs/tabs.module').then((m) => m.TabsPageModule),
+  },  {
+    path: 'add-document-modal',
+    loadChildren: () => import('./add-document-modal/add-document-modal.module').then( m => m.AddDocumentModalPageModule)
   },
+
 
 
 ];

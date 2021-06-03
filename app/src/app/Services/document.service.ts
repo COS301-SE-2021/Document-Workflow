@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
-import { Document } from './document';
+import { Document } from './../Interfaces/document';
 
 @Injectable({
   providedIn: 'root',

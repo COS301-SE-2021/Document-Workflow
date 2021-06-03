@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
-import { User } from './user';
+import { User } from './../Interfaces/user';
 import { Component } from '@angular/core';
 
 @Injectable({
@@ -21,11 +21,11 @@ export class UserService {
     const users: User[] = [
       {
         id: 1,
-        firstName: 'Brent',
-        lastName: 'Stroberg',
+        Fname: 'Brent',
+        Lname: 'Stroberg',
         initials: 'BP',
         email: 'u17015741@tuks.co.za',
-        phoneNumber: '0763398714',
+        phone_number: '0763398714',
         password: 'submarine',
       },
     ];
