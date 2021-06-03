@@ -81,6 +81,10 @@ export class LoginRegisterComponent implements OnInit {
     //  create URL element Object
       let URL_blob: string = URL.createObjectURL(blob);
     };
+
+  // error checking
+    reader.onerror = (error) =>{
+    };
   }
 
 
