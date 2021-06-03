@@ -10,13 +10,16 @@ import { AppComponent } from './app.component';
 import { ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
 import { LoginRegisterComponent } from './login-register/login-register.component';
 import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
+
 import { HttpClientModule } from "@angular/common/http";
+import { AddDocumentModalPage } from './Modals/add-document-modal/add-document-modal.page';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginRegisterComponent,
-    ViewWorkflowComponent
+    ViewWorkflowComponent,
   ],
   entryComponents: [],
   imports: [

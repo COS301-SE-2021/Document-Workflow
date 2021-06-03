@@ -18,7 +18,7 @@
                 <ion-fab-button><ion-icon name="ellipsis-horizontal-circle-outline"></ion-icon></ion-fab-button>
                 <ion-fab-list>
                   <ion-fab-button><ion-icon name="construct-outline"></ion-icon></ion-fab-button>
-                  <ion-fab-button><ion-icon name="download-outline"></ion-icon></ion-fab-button>
+                  <ion-fab-button (click)="viewDoc(doc.id)"><ion-icon name="download-outline"></ion-icon></ion-fab-button>
                 </ion-fab-list>
               </ion-fab>
             </ion-col>
@@ -40,7 +40,7 @@
   </div>
 
   <ion-fab vertical="bottom" horizontal="end">
-    <ion-fab-button>
+    <ion-fab-button (click)="addDoc()">
       <ion-icon name="add-circle-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>
