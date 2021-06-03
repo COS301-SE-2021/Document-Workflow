@@ -64,9 +64,9 @@ export class LoginRegisterComponent implements OnInit {
       console.log(data);
       });
 
-    this.storageService.postUserLogin("60b89ade8d0127f52f8fa6cd", "dkfsYgjds%ksdg").subscribe( data => {
-      console.log(data);
-    });
+    /*this.storageService.postUserLogin("60b89ade8d0127f52f8fa6cd", "dkfsYgjds%ksdg").subscribe( data => {
+      console.log("login" + data);
+    });*/
   }
 
   register(): void {

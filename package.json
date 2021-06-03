@@ -24,6 +24,7 @@
     "request": "^2.88.2"
   },
   "devDependencies": {
+    "jest": "^27.0.4",
     "mockingoose": "^2.15.2",
     "nodemon": "^2.0.7",
     "typescript": "^4.3.2"

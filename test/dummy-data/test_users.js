@@ -1,5 +1,6 @@
-const users = [
+const test_users = [
     {
+        _id: "60b89ade8d0127f52f8fa6cd",
         name: "John",
         surname: "Cena",
         initials: "J,C",
@@ -10,6 +11,7 @@ const users = [
         tokenDate: Date.now()
     },
     {
+        _id: "20b89ade8d4129f52f8fa6fd",
         name: "Nhoj",
         surname: "Anec",
         initials: "N,A",
@@ -21,4 +23,4 @@ const users = [
     }
 ]
 
-module.exports = users;
+module.exports = test_users;
