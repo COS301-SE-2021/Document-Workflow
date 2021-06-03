@@ -63,3 +63,4 @@ export class AddDocumentModalPage implements OnInit {
     // error checking
     reader.onerror = (error) => {};
   }
+}
