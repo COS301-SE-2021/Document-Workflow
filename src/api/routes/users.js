@@ -1,6 +1,8 @@
 const express = require("express");
 const User = require("../../models/user");
 const router = express.Router();
+const bcrypt = require("bcryptjs");
+const saltRounds = process.env.SALT_ROUNDS;
 
 // "/api/users"
 
@@ -29,13 +31,21 @@ router.get('/:id', (req,res)=>{
         });
 });
 
+function compare(pass,hashed){
+    bcrypt.compare(pass, hashed, (err,match) => {
+        if(err){
+            throw err;
+        } else return match;
+    });
+    return false;
+}
+
 router.post('/login/:id', (req, res) => {
     //res.json(login_user.handle(req));
     User.findById(req.params.id)
         .then((usr)=>{
             if(usr){
-                //check pass: TODO: password hashing comparison
-                if(req.body.password === usr.hash){
+                if(compare(req.body.password, usr.password)){
                     res.status(200).json({
                         message: "Success!",
                         token: "generated token"
@@ -66,7 +76,7 @@ router.post('', (req, res) => {
         name: req.body.name,
         surname: req.body.surname,
         email: req.body.email,
-        hash: req.body.hash,
+        password: req.body.password,
         phone: req.body.phone
     });
     console.log(user);
