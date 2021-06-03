@@ -40,10 +40,11 @@ export class AddDocumentModalPage implements OnInit {
   }
 
   async addDocument() {
-    let formCopy = this.docForm.value;
-    console.log(formCopy);
-    formCopy.userID = this.user.id;
-    await this.docService.addDocument(formCopy);
+    console.log(await this.docService.getDocuments(1));
+    // let formCopy = this.docForm.value;
+    // console.log(formCopy);
+    // formCopy.userID = this.user.id;
+    // await this.docService.addDocument(formCopy);
   }
 
   async loadDocument(event) {
