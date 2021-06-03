@@ -1,31 +1,8 @@
 const express = require("express");
 const User = require("../../models/user");
 const router = express.Router();
-//const create_user = require('../../services/create_user');
-//const login_user = require('../../services/login_user');
 
 // "/api/users"
-
-// userName: { type: String, required: true },
-// name: { type: String, required: true },
-// surname: { type: String, required: true },
-// email: {
-//     type: String,
-//         required: [ true, "Email is required" ],
-//         trim: true,
-//         lowercase: true,
-//         unique: true,
-//         validate: {
-//         validator: value => {
-//             return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value);
-//         }
-//     }
-// },
-// hash: { type: String, required: true },
-// signature: { type: String, required: true },
-// phone: { type: String, required: true },
-// validated: { type: Boolean, default: false },
-// tokenDate: { type: Date, default: Date.now }
 
 router.post('/login/:id', (req, res) => {
     //res.json(login_user.handle(req));
@@ -66,7 +43,6 @@ router.post('', (req, res) => {
         surname: req.body.surname,
         email: req.body.email,
         hash: req.body.hash,
-        signature: req.body.signature,
         phone: req.body.phone
     });
     console.log(user);
