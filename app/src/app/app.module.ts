@@ -15,7 +15,8 @@ import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
   declarations: [
     AppComponent,
     LoginRegisterComponent,
-    ViewWorkflowComponent
+    ViewWorkflowComponent,
+
   ],
   entryComponents: [],
   imports: [

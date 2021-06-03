@@ -1,9 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validator, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
-import { DocumentService } from './../Services/document.service';
-import { User } from './../Interfaces/user';
-import { Document } from './../Interfaces/document';
+import { DocumentService } from './../../Services/document.service';
+import { User } from './../../Interfaces/user';
+import { Document } from './../../Interfaces/document';
 
 @Component({
   selector: 'app-add-document-modal',

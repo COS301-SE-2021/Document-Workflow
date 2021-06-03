@@ -2,9 +2,6 @@ import { Component, OnInit, Input } from '@angular/core';
 import {  AbstractControlOptions, FormBuilder,} from '@angular/forms';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
-import { IonicModule } from '@ionic/angular';
-
-import { User } from './../Interfaces/user';
 import { UserService } from '../Services/user.service';
 
 import { ActivatedRoute } from '@angular/router';

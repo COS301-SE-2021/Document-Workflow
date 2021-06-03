@@ -39,7 +39,6 @@ export class UserService {
       this.login(email, password);
     }
 
-    console.log(users);
     const index = users.findIndex(x => x.email === email && x.password === password);
     console.log(index);
     if(index != -1){
