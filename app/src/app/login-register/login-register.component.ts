@@ -4,7 +4,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { UserService } from '../Services/user.service';
 
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { match } from './match.validator';
 
 @Component({
@@ -21,7 +21,8 @@ export class LoginRegisterComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private storageService: UserService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
   ) {}
 
   ngOnInit() {
@@ -59,7 +60,7 @@ export class LoginRegisterComponent implements OnInit {
     let a = await this.storageService.login(loginEmail, loginPassword);
     console.log(a);
     if (a == true) {
-
+      this.router.navigate(["view"]);
     }
   }
 
