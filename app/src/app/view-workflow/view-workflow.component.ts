@@ -40,7 +40,11 @@ export class ViewWorkflowComponent implements OnInit {
       // componentProps: {
       //   'doc':
       // }
-    })
+    });
+    (await viewModal).onDidDismiss().then(()=>{
+    });
+
+    return (await viewModal).present();
   }
 
   async addDoc(){
