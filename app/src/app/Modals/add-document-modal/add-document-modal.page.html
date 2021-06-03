@@ -26,7 +26,7 @@
       <ion-label position="stacked">Choose doc</ion-label>
       <ion-button expand="full">
         <input type="file" (change)="loadDocument($event)" id="file-input"
-          accept="image/jpeg, image/png, image/jpg">
+          accept="application/pdf">
       </ion-button>
     </ion-item>
     <ion-button expand="block" color="primary" [disabled]="!docForm.valid" type="submit">Add button</ion-button>
