@@ -5,14 +5,26 @@ const router = express.Router();
 
 router.post('', (req, res) => {
 
+    if(!req.files || Object.keys(req.files).length === 0)
+    {
+        res.status(400).json({
+            message: "No files sent"
+        });
+    }
+
+    const file = req.files.file
+
     const document = new Doc({
-        doc_name: req.body.documentName,
-        type: req.body.type,
-        description: req.body.description
+        doc_name: file.name,
+        mimetype: file.mimetype,
+        encoding: file.encoding,
+        size: file.size,
+
     });
-    console.log(document);
+
     document.save()
         .then((doc)=>{
+            console.log(doc);
             res.status(200).json({
                 message: "Document added successfully",
                 docId: doc._id
