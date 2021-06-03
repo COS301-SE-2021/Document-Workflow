@@ -12,6 +12,8 @@ import { Document } from '../Interfaces/document';
 import { UserService } from '../Services/user.service';
 import { DocumentService } from '../Services/document.service';
 
+import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+
 @Component({
   selector: 'app-view-workflow',
   templateUrl: './view-workflow.component.html',
@@ -40,7 +42,11 @@ export class ViewWorkflowComponent implements OnInit {
       // componentProps: {
       //   'doc':
       // }
-    })
+    });
+    (await viewModal).onDidDismiss().then(()=>{
+    });
+
+    return (await viewModal).present();
   }
 
   async addDoc(){
