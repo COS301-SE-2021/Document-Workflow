@@ -26,6 +26,10 @@ const routes: Routes = [
     path: 'add-document-modal',
     loadChildren: () => import('./add-document-modal/add-document-modal.module').then( m => m.AddDocumentModalPageModule)
   },
+  {
+    path: 'view-document-modal',
+    loadChildren: () => import('./Modals/view-document-modal/view-document-modal.module').then( m => m.ViewDocumentModalPageModule)
+  },
 
 
 
