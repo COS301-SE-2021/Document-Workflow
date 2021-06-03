@@ -5,6 +5,8 @@ require('dotenv').config();
 const userRoute = require("./api/routes/users");
 const documentRoute = require("./api/routes/documents");
 
+const fileUpload = require('express-fileupload');
+
 const app = express();
 
 mongoose.connect(process.env.MONGO_PROD_URI, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true})
@@ -17,6 +19,7 @@ mongoose.connect(process.env.MONGO_PROD_URI, { useNewUrlParser: true, useUnified
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+app.use(fileUpload(undefined));
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
