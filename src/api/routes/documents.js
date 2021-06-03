@@ -1,5 +1,5 @@
 const express = require("express");
-const Doc = require("../../models/document");
+const Doc = require("../../schemas/document");
 const mongoose = require('mongoose')
 const router = express.Router();
 

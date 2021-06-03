@@ -1,5 +1,5 @@
 const express = require("express");
-const User = require("../../models/user");
+const User = require("../../schemas/user");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const saltRounds = process.env.SALT_ROUNDS;
