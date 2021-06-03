@@ -12,13 +12,11 @@
 
 
 <div>
-
 - [Document Workflow Team](#Team_-Jargon)
 - [GitHub Management](#GitHub-Management)
 - [Documentation](#Documentation)
 - [Project Management Tools](#project-management-tools)
 - [Demo Video Links](#Demo-Video-Links)
-
 </div>
 
 ---
