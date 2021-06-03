@@ -46,6 +46,16 @@
           <ion-input inputmode="text" formControlName="initials" placeholder="BP"></ion-input>
         </ion-item>
         <ion-item>
+
+        <!-- Upload SIgnature -->
+        
+          <ion-button expand="full">
+            <ion-label slot="end">Choose image</ion-label>
+            <input type="file" (change)="loadSignature($event)" id="file-input" accept="image/jpeg, image/png, image/jpg">
+          </ion-button>
+        </ion-item>
+
+        <ion-item>
           <ion-label position="stacked">Email:</ion-label>
           <ion-input inputmode="text" formControlName="email" placeholder=""></ion-input>
         </ion-item>

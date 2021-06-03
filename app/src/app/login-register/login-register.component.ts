@@ -3,8 +3,10 @@ import {  AbstractControlOptions, FormBuilder,} from '@angular/forms';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
+
 import { User } from './../Interfaces/user';
 import { UserService } from '../Services/user.service';
+
 import { ActivatedRoute } from '@angular/router';
 import { match } from './match.validator';
 
@@ -78,4 +80,26 @@ export class LoginRegisterComponent implements OnInit {
       this.registerButton = true;
     }
   }
+
+  loadSignature(event)
+  {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.readAsArrayBuffer(file);
+
+    reader.onload = () =>
+    {
+      // getting image blob
+      let blob: Blob = new Blob([new Uint8Array((reader.result as ArrayBuffer))]);
+
+    //  create URL element Object
+      let URL_blob: string = URL.createObjectURL(blob);
+    };
+
+  // error checking
+    reader.onerror = (error) =>{
+    };
+  }
+
+
 }
