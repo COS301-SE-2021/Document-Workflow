@@ -1,23 +1,24 @@
 const chai = require("chai");
 const chaiHttp = require("chai-http");
 const mockingoose = require("mockingoose");
-const users = require("../../src/api/routes/users");
-const userModel = require("../../src/schemas/user");
+const documents = require("../../src/api/routes/documents");
+const documentModel = require("../../src/schemas/document");
 const app = require("../../src/index");
-const testUsers = require("../dummy-data/test_users");
+const testDocs = require("../dummy-data/documents");
 
 chai.use(chaiHttp);
 chai.should();
 
-mockingoose(userModel).toReturn(testUsers[0], '')
+mockingoose(documentModel).toReturn(testDocs[0], '');
 
 describe("Documents", () => {
     describe("POST /", () => {
         //Test to get single user:
-        it("should get one document by id", (done) => {
-            const id = "60b89ade8d0127f52f8fa6cd";
+        it("should post one document to the database", (done) => {
             chai.request(app)
-                .post(`/`, {documentName: "Meow", type: "pdf", description: "Meow"})
+                .post(``, ()=>{
+
+                })
                 .end( (err,res) => {
                     console.log(res);
                     res.should.have.status(200);
