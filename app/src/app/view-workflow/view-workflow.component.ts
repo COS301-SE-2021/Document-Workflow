@@ -12,6 +12,8 @@ import { Document } from '../Interfaces/document';
 import { UserService } from '../Services/user.service';
 import { DocumentService } from '../Services/document.service';
 
+import { Browser } from '@capacitor/browser';
+
 import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
@@ -37,16 +39,19 @@ export class ViewWorkflowComponent implements OnInit {
   }
 
   async viewDoc(id: number){
-    const viewModal = await this.modals.create({
-      component: ViewDocumentModalPage
-      // componentProps: {
-      //   'doc':
-      // }
-    });
-    (await viewModal).onDidDismiss().then(()=>{
-    });
+    // const viewModal = await this.modals.create({
+    //   component: ViewDocumentModalPage
+    //   // componentProps: {
+    //   //   'doc':
+    //   // }
+    // });
+    // (await viewModal).onDidDismiss().then(()=>{
+    // });
 
-    return (await viewModal).present();
+    // return (await viewModal).present();
+    // Timesheet-Template
+    Browser.open({url: 'https://github.com/COS301-SE-2021/Document-Workflow/blob/develop_frontend_document_view/app/src/app/Files/Timesheet-Template.pdf'});
+
   }
 
   async addDoc(){

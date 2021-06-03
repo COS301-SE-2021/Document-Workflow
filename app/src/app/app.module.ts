@@ -4,6 +4,7 @@ import { RouteReuseStrategy } from '@angular/router';
 
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { IonicStorageModule } from '@ionic/storage-angular';
+import { Browser } from '@capacitor/browser'
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -13,11 +14,7 @@ import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
 import { AddDocumentModalPage } from './Modals/add-document-modal/add-document-modal.page';
 
 import { DocumentService } from "./services/document.service";
-import { FileOpener } from "@ionic-native/file-opener/ngx";
-import { File } from "@ionic-native/file/ngx";
-import { FileTransfer } from "@ionic-native/file-transfer/ngx";
-import { SplashScreen } from "@ionic-native/splash-screen/ngx";
-import { StatusBar } from "@ionic-native/status-bar/ngx";
+
 
 
 @NgModule({
@@ -35,12 +32,7 @@ import { StatusBar } from "@ionic-native/status-bar/ngx";
     ReactiveFormsModule,
     FormsModule,
     IonicStorageModule.forRoot(),
-    StatusBar,
-    SplashScreen,
-    FileTransfer,
-    FileOpener,
-    File,
-    DocumentService,
+
   ],
   providers: [
     {
