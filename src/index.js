@@ -2,11 +2,13 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-const create_user = require('./services/create_user')
-const login_user = require('./services/login_user')
+const create_user = require('./services/create_user');
+const login_user = require('./services/login_user');
 
 const app = express();
 const port = 3000;
+
+
 
 app.use((req, res, next) => {
     const allowedOrigins = ['http://localhost:8100', 'http://localhost:8020', 'http://127.0.0.1:9000', 'http://localhost:9000'];
