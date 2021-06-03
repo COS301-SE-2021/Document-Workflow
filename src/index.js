@@ -1,31 +1,34 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors');
+//const cors = require('cors');
+const mongoose = require('mongoose');
+require('dotenv').config();
 
 const create_user = require('./services/create_user');
 const login_user = require('./services/login_user');
 
 const app = express();
-const port = 3000;
+//const port = process.env.PORT || 3000;
 
+mongoose.connect(process.env.MONGO_PROD_URI, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true})
+    .then(()=>{
+        console.log('Connected to database!');
+    })
+    .catch((message)=>{
+        console.log('Connection failed!\n' + message + '\n');
+    });
 
-
-app.use((req, res, next) => {
-    const allowedOrigins = ['http://localhost:8100', 'http://localhost:8020', 'http://127.0.0.1:9000', 'http://localhost:9000'];
-    const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-    }
-    //res.header('Access-Control-Allow-Origin', 'http://127.0.0.1:8020');
-    res.header('Access-Control-Allow-Methods', 'GET, OPTIONS, POST');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.header('Access-Control-Allow-Credentials', true);
-    return next();
-});
-
-//configure body-parser: (Middleware)
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+//app.use(cors);
+
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS, POST, DELETE, PUT, PATCH');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Origin, X-Requested-With, Accept');
+    //res.setHeader('Access-Control-Allow-Credentials', 'bearer');
+    next();
+});
 
 //Accepting anything, must validate:
 app.post('/book', (req,res) => {
@@ -61,10 +64,5 @@ app.get('/login_user', (req, res)=> {
 
 app.post('/login_user', (req, res)=> {
     res.json(login_user.handle(req))
-});
-
-
-app.listen(port, () => {
-    console.log(`Hello world app listening on port ${port}`)
 });
 
