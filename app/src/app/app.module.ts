@@ -4,12 +4,19 @@ import { RouteReuseStrategy } from '@angular/router';
 
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { IonicStorageModule } from '@ionic/storage-angular';
+import { Browser } from '@capacitor/browser'
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
 import { LoginRegisterComponent } from './login-register/login-register.component';
 import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
+
+import { AddDocumentModalPage } from './Modals/add-document-modal/add-document-modal.page';
+
+import { DocumentService } from "./services/document.service";
+
+
 
 @NgModule({
   declarations: [
@@ -27,6 +34,7 @@ import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
     ReactiveFormsModule,
     FormsModule,
     IonicStorageModule.forRoot(),
+    develop_frontend_document_view
   ],
   providers: [
     {

@@ -8,6 +8,11 @@ import { ViewDocumentModalPageRoutingModule } from './view-document-modal-routin
 
 import { ViewDocumentModalPage } from './view-document-modal.page';
 
+
+
+import { Injectable } from "@angular/core";
+
+
 @NgModule({
   imports: [
     CommonModule,
@@ -18,3 +23,4 @@ import { ViewDocumentModalPage } from './view-document-modal.page';
   declarations: [ViewDocumentModalPage]
 })
 export class ViewDocumentModalPageModule {}
+
