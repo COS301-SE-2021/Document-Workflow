@@ -1,10 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
-import {ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 
 // import {ModalPage}
 import { ActivatedRoute } from '@angular/router';
-import { ViewDocumentModalPage } from '../Modals/view-document-modal/view-document-modal.page';
+
 import { AddDocumentModalPage } from '../Modals/add-document-modal/add-document-modal.page';
 
 import { User } from './../Interfaces/user';
@@ -14,32 +14,36 @@ import { DocumentService } from '../Services/document.service';
 
 import { Browser } from '@capacitor/browser';
 
-import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
+import { EditDocumentModalPage } from '../Modals/edit-document-modal/edit-document-modal.page';
 
 @Component({
   selector: 'app-view-workflow',
   templateUrl: './view-workflow.component.html',
   styleUrls: ['./view-workflow.component.scss'],
 })
-
 export class ViewWorkflowComponent implements OnInit {
   constructor(
     private storageService: UserService,
     private docStorage: DocumentService,
-    private modals: ModalController,
+    private modals: ModalController
   ) {}
 
-  @Input() user:User;
-
+  @Input() user: User;
   documents: Document[] = [];
+
   async ngOnInit() {
-    this.user = await  this.storageService.getUser(1);
+    this.user = await this.storageService.getUser(1);
     this.documents = await this.docStorage.getDocuments(this.user.id);
     console.log(this.documents);
   }
 
-  async viewDoc(id: number){
-
+  async viewDoc(id: number) {
     // const viewModal = await this.modals.create({
     //   component: ViewDocumentModalPage
     //   // componentProps: {
@@ -50,19 +54,30 @@ export class ViewWorkflowComponent implements OnInit {
     // });
 
     // return (await viewModal).present();
-    // Timesheet-Template
-    Browser.open({url: 'https://github.com/COS301-SE-2021/Document-Workflow/blob/develop_frontend_document_view/app/src/app/Files/Timesheet-Template.pdf'});
-
+    Browser.open({
+      url: 'https://github.com/COS301-SE-2021/Document-Workflow/blob/develop_frontend_document_view/app/src/app/Files/Timesheet-Template.pdf',
+    });
   }
 
-  async addDoc(){
+  async editDoc(id: number) {
+    const editModal = await this.modals.create({
+      component: EditDocumentModalPage,
+      componentProps:{
+        'docID': id,
+      }
+    });
+     (await editModal).onDidDismiss().then(()=>{});
+
+      return (await editModal).present();
+  }
+
+  async addDoc() {
     const addModal = await this.modals.create({
-      component: AddDocumentModalPage
+      component: AddDocumentModalPage,
     });
 
-    (await addModal).onDidDismiss().then(()=>{
-    });
+    (await addModal).onDidDismiss().then(() => {});
 
-    return (await addModal).present()
+    return (await addModal).present();
   }
 }

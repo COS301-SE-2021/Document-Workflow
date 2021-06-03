@@ -34,7 +34,6 @@ import { DocumentService } from "./services/document.service";
     ReactiveFormsModule,
     FormsModule,
     IonicStorageModule.forRoot(),
-    develop_frontend_document_view
   ],
   providers: [
     {
