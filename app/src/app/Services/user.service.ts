@@ -17,6 +17,10 @@ export class UserService {
     return this.http.get<{id: string, name: string, surname: string, email: string}>('http://localhost:3000/api/users/' + id);
   }
 
+  postUserLogin(id: string, password: string){
+    return this.http.post<{id: string, token: string}>('http://localhost:3000/api/users/login/' + id, {password: password});
+  }
+
   async init() {
     const storage = await this.storage.create();
     this._storage = storage;
