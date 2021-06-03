@@ -1,28 +1,23 @@
 const chai = require("chai");
 const chaiHttp = require("chai-http");
-const mockingoose = require("mockingoose");
-const users = require("../../src/api/routes/users");
-const userModel = require("../../src/schemas/user");
 const app = require("../../src/index");
-const testUsers = require("../dummy-data/test_users");
+const mongoose = require("mongoose");
 
 chai.use(chaiHttp);
 chai.should();
 
-mockingoose(userModel).toReturn(testUsers[0], '')
-
 describe("Users", () => {
-    describe("GET /", () => {
+    describe("GET /api/users/:id", () => {
         //Test to get single user:
         it("should get one user by id", (done) => {
             const id = "60b89ade8d0127f52f8fa6cd";
             chai.request(app)
-                .get(`/${id}`)
+                .get("/api/users/" + id)
                 .end( (err,res) => {
-                    console.log(res);
                     res.should.have.status(200);
+                    mongoose.disconnect();
                     done();
-                })
+                });
         })
     });
 });

@@ -2,7 +2,6 @@ const express = require("express");
 const User = require("../../schemas/user");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
-const saltRounds = process.env.SALT_ROUNDS;
 
 // "/api/users"
 
@@ -45,7 +44,8 @@ router.post('/login/:id', (req, res) => {
     User.findById(req.params.id)
         .then((usr)=>{
             if(usr){
-                if(compare(req.body.password, usr.password)){
+                // if(compare(req.body.password, usr.password)){
+                if(req.body.password === usr.password){
                     res.status(200).json({
                         message: "Success!",
                         token: "generated token"

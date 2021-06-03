@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "start": "nodemon server.js",
-    "test": "mocha test/**/*.js"
+    "test:docs": "mocha test/**/documents.test.js --reporter spec --timeout=60000",
+    "test:users": "mocha test/**/users.test.js --reporter spec --timeout=60000"
   },
   "author": "Team Jar-gon",
   "license": "ISC",
@@ -19,14 +20,18 @@
     "debug": "^2.6.9",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "mocha": "^8.4.0",
+    "express-fileupload": "^1.2.1",
     "mongoose": "^5.12.12",
     "request": "^2.88.2"
   },
   "devDependencies": {
+    "@babel/cli": "^7.14.3",
+    "@babel/preset-env": "^7.14.4",
     "jest": "^27.0.4",
-    "mockingoose": "^2.15.2",
+    "mocha": "^8.4.0",
+    "mockgoose": "^8.0.4",
     "nodemon": "^2.0.7",
+    "prettier": "^2.3.0",
     "typescript": "^4.3.2"
   }
 }
