@@ -3,15 +3,15 @@ import {  AbstractControlOptions, FormBuilder,} from '@angular/forms';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
-import { User } from './../user';
-import { UserService } from '../user.service';
+import { User } from './../Interfaces/user';
+import { UserService } from '../Services/user.service';
 import { ActivatedRoute } from '@angular/router';
 import { match } from './match.validator';
 
 @Component({
   selector: 'app-login-register',
   templateUrl: './login-register.component.html',
-  styleUrls: ['./login-register.component.scss']
+  styleUrls: ['./login-register.component.scss'],
 })
 export class LoginRegisterComponent implements OnInit {
   loginForm: FormGroup;
@@ -35,13 +35,10 @@ export class LoginRegisterComponent implements OnInit {
     };
     this.registerForm = this.formBuilder.group(
       {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         Fname: ['', [Validators.required]],
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         Lname: ['', [Validators.required]],
         initials: ['', [Validators.required]],
         email: ['', [Validators.required, Validators.email]],
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         phone_number: [
           '',
           [
@@ -50,8 +47,8 @@ export class LoginRegisterComponent implements OnInit {
             Validators.maxLength(10),
           ],
         ],
-        password: ['', [Validators.required, Validators.minLength(8)]],
-        confirmPassword: ['', [Validators.required, Validators.minLength(8)]],
+        password: ['', [Validators.required, Validators.minLength(9)]],
+        confirmPassword: ['', [Validators.required, Validators.minLength(9)]],
       },
       formOptions
     );
@@ -63,25 +60,15 @@ export class LoginRegisterComponent implements OnInit {
     let a = await this.storageService.login(loginEmail, loginPassword);
     console.log(a);
     if (a == true) {
-      console.log('here');
-      this.activatedRoute.snapshot.paramMap.get('tabs');
+
     }
   }
 
-  async register(): Promise<void> {
-    console.log('Registering a user');
+  register(): void {
     let user = this.registerForm.value;
-    console.log(user);//
-    const response = await fetch('http://localhost:3000/create_user?Fname=james', {
-      method: 'GET',
-      //body: 'should error',
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
-    });
-
-    console.log(response);
-
-    //this.storageService.addUser(user);
+    console.log(user);
+    delete user.confirmPassword;
+    this.storageService.addUser(user);
   }
 
   changeOver(): void {

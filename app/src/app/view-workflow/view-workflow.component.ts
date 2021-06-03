@@ -5,10 +5,10 @@ import {ModalController} from '@ionic/angular';
 
 import { ActivatedRoute } from '@angular/router';
 
-import { User } from './../user';
-import { Document } from '../document';
-import { UserService } from '../user.service';
-import { DocumentService } from '../document.service';
+import { User } from './../Interfaces/user';
+import { Document } from '../Interfaces/document';
+import { UserService } from '../Services/user.service';
+import { DocumentService } from '../Services/document.service';
 
 @Component({
   selector: 'app-view-workflow',
