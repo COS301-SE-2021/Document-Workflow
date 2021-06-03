@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 require('dotenv').config();
 const userRoute = require("./api/routes/users");
+const documentRoute = require("./api/routes/documents");
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use("/api/documents", documentRoute);
 app.use("/api/users", userRoute);
 module.exports = app;
 
