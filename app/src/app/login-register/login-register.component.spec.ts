@@ -21,4 +21,6 @@ describe('LoginRegisterComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+
 });

@@ -62,8 +62,8 @@
           <ion-input inputmode="text" formControlName="confirmPassword" placeholder=""></ion-input>
         </ion-item>
         <ion-item>
+          <ion-label position="stacked">Add your signature</ion-label>
           <ion-button expand="full">
-            <ion-label slot="end">Choose image</ion-label>
             <input type="file" (change)="loadSignature($event)" id="file-input"
               accept="image/jpeg, image/png, image/jpg">
           </ion-button>

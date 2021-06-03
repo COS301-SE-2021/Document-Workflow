@@ -69,6 +69,7 @@ export class LoginRegisterComponent implements OnInit {
     console.log(user);
     delete user.confirmPassword;
     this.storageService.addUser(user);
+    this.router.navigate(["view"]);
   }
 
   changeOver(): void {
