@@ -51,7 +51,7 @@
         </ion-item>
         <ion-item>
           <ion-label position="stacked">Phone number:</ion-label>
-          <ion-input inputmode="text" formControlName="phone_number" placeholder=""></ion-input>
+          <ion-input inputmode="tel" formControlName="phone_number" placeholder=""></ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="stacked">Password</ion-label>
@@ -62,8 +62,8 @@
           <ion-input inputmode="text" formControlName="confirmPassword" placeholder=""></ion-input>
         </ion-item>
         <ion-item>
+          <ion-label position="stacked">Choose image</ion-label>
           <ion-button expand="full">
-            <ion-label slot="end">Choose image</ion-label>
             <input type="file" (change)="loadSignature($event)" id="file-input"
               accept="image/jpeg, image/png, image/jpg">
           </ion-button>

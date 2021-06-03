@@ -1,5 +1,11 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { FormBuilder, FormGroup, Validator, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { DocumentService } from './../../Services/document.service';
 import { User } from './../../Interfaces/user';
@@ -22,10 +28,10 @@ export class AddDocumentModalPage implements OnInit {
 
   ngOnInit() {
     this.docForm = this.formBuilder.group({
-      documentName: ['', [Validators.required]],
+      documentName: ['', []],
       documentDescription: ['', [Validators.required]],
-      status: ['', [Validators.required]],
-      type: ['', [Validators.required]],
+      documentStatus: ['', [Validators.required]],
+      documentType: ['', [Validators.required]],
     });
   }
 
@@ -33,10 +39,27 @@ export class AddDocumentModalPage implements OnInit {
     this.modal.dismiss();
   }
 
-  async addDocument(){
+  async addDocument() {
     let formCopy = this.docForm.value;
     console.log(formCopy);
     formCopy.userID = this.user.id;
-    await this.docService.addDocument(formCopy)
+    await this.docService.addDocument(formCopy);
+  }
+
+  async loadDocument(event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.readAsArrayBuffer(file);
+
+    reader.onload = () => {
+      // getting image blob
+      let blob: Blob = new Blob([new Uint8Array(reader.result as ArrayBuffer)]);
+
+      //  create URL element Object
+      let URL_blob: string = URL.createObjectURL(blob);
+    };
+
+    // error checking
+    reader.onerror = (error) => {};
   }
 }
