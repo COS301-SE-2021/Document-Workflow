@@ -4,6 +4,31 @@ const router = express.Router();
 
 // "/api/users"
 
+router.get('/:id', (req,res)=>{
+    User.findById(req.params.id)
+        .then((usr)=>{
+            if(usr){
+                res.status(200).json({
+                    message: "Success!",
+                    id: usr._id,
+                    name: usr.name,
+                    surname: usr.surname,
+                    email: usr.email
+                });
+            } else{
+                res.status(404).json({
+                    message: "User was not found"
+                });
+            }
+        })
+        .catch((msg)=>{
+            console.log(msg);
+            res.status(500).json({
+                message: msg
+            });
+        });
+});
+
 router.post('/login/:id', (req, res) => {
     //res.json(login_user.handle(req));
     User.findById(req.params.id)
@@ -38,7 +63,6 @@ router.post('', (req, res) => {
     //res.json(create_user.handle(req));
     //TODO: Convert password to hash with bcryptjs
     const user = new User({
-        userName: req.body.userName,
         name: req.body.name,
         surname: req.body.surname,
         email: req.body.email,

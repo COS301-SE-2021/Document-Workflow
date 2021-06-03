@@ -59,9 +59,10 @@ export class LoginRegisterComponent implements OnInit {
     console.log(loginEmail + ' ' + loginPassword);
     let a = await this.storageService.login(loginEmail, loginPassword);
     console.log(a);
-    if (a == true) {
-
-    }
+    if (a == true) {}
+    this.storageService.getUserFromServer("60b89ade8d0127f52f8fa6cd").subscribe( data => {
+      console.log(data);
+      });
   }
 
   register(): void {

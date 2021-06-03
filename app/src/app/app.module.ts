@@ -10,6 +10,7 @@ import { AppComponent } from './app.component';
 import { ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
 import { LoginRegisterComponent } from './login-register/login-register.component';
 import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
+import { HttpClientModule } from "@angular/common/http";
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
     ReactiveFormsModule,
     FormsModule,
     IonicStorageModule.forRoot(),
+    HttpClientModule
   ],
   providers: [
     {

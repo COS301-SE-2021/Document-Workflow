@@ -2,14 +2,19 @@ import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
 import { User } from './../Interfaces/user';
 import { Component } from '@angular/core';
+import { HttpClient } from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
   private _storage: Storage;
-  constructor(private storage: Storage) {
+  constructor(private storage: Storage, private http: HttpClient) {
     this.init();
+  }
+
+  getUserFromServer(id: string){
+    return this.http.get<{id: string, name: string, surname: string, email: string}>('http://localhost:3000/api/users/' + id);
   }
 
   async init() {
