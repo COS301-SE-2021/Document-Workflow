@@ -30,7 +30,6 @@ export class LoginRegisterComponent implements OnInit {
       loginEmail: ['', [Validators.required, Validators.email]],
       loginPassword: ['', [Validators.required, Validators.minLength(8)]],
     });
-
     const formOptions: AbstractControlOptions = {
       validators: match('password', 'confirmPassword'),
     };
