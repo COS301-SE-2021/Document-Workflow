@@ -1,14 +1,12 @@
 const express = require("express");
-const Doc = require("../../models/user");
+const Doc = require("../../models/document");
+const mongoose = require('mongoose')
 const router = express.Router();
 
 router.post('', (req, res) => {
-    console.log(req.body);
+
     const document = new Doc({
-        userId: req.body.userID,
         doc_name: req.body.documentName,
-        location: req.body.documentLocation,
-        status: req.body.status,
         type: req.body.type,
         description: req.body.description
     });
@@ -16,7 +14,7 @@ router.post('', (req, res) => {
     document.save()
         .then((doc)=>{
             res.status(200).json({
-                message: "User added successfully",
+                message: "Document added successfully",
                 docId: doc._id
             });
         })
