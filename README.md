@@ -56,7 +56,8 @@
 
 ## Technology Frameworks
 ### Client Side: Ionic and Angular
-### Server Side: NodeJS
+### Server Side: NodeJS Express
+### Persistence: Mongoose
 ### Database: MongoDB 
 
 ## Testing 
