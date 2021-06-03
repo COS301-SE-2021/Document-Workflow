@@ -45,9 +45,9 @@
 * master
     * develop
         * develop_backend
-            * backend_subsystem
+            * develop_backend_subsystem
         * develop_frontend
-            * frontend_subsystem  
+            * develop_frontend_subsystem  
          
 # Documentation
 ## Software Requirements Specification
