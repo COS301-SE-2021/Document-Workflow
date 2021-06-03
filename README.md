@@ -60,8 +60,9 @@
 ### Database: MongoDB 
 
 ## Testing 
-### Jasmine
-### Karma
+### Mocha
+### Chai
+### Mockingoose
 
 
 
