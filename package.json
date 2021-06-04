@@ -6,7 +6,8 @@
   "scripts": {
     "start": "nodemon server.js",
     "test:docs": "mocha test/**/documents.test.js --reporter spec --timeout=60000",
-    "test:users": "mocha test/**/users.test.js --reporter spec --timeout=60000"
+    "test:users": "mocha test/**/users.test.js --reporter spec --timeout=60000",
+    "test": "mocha test/**/*.test.js --reporter spec --timeout=60000"
   },
   "author": "Team Jar-gon",
   "license": "ISC",
@@ -29,7 +30,6 @@
     "@babel/preset-env": "^7.14.4",
     "jest": "^27.0.4",
     "mocha": "^8.4.0",
-    "mockgoose": "^8.0.4",
     "nodemon": "^2.0.7",
     "prettier": "^2.3.0",
     "typescript": "^4.3.2"
