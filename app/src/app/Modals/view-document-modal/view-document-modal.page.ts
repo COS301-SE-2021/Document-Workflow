@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {Filesystem, Directory, Encoding} from '@capacitor/filesystem';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import {Plugins} from '@capacitor/core';
+const {Browser} = Plugins;
+
 
 @Component({
   selector: 'app-view-document-modal',
@@ -7,14 +10,16 @@ import {Filesystem, Directory, Encoding} from '@capacitor/filesystem';
   styleUrls: ['./view-document-modal.page.scss'],
 })
 export class ViewDocumentModalPage implements OnInit {
+  constructor(
+  ) {}
 
-  constructor() { }
+  ngOnInit() {}
 
-  ngOnInit() {
+  download(url: string, title: string) {
+
   }
 
-  downloadPDF(){
-    console.log("here");
+  viewDoc(){
+    Browser.open({url: 'http://127.0.0.1/Files/Timesheet-Template.pdf'});
   }
-
 }

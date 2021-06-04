@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { LoginRegisterComponent } from './login-register.component';
+import { EditDocumentModalPage } from './edit-document-modal.page';
 
-describe('LoginRegisterComponent', () => {
-  let component: LoginRegisterComponent;
-  let fixture: ComponentFixture<LoginRegisterComponent>;
+describe('EditDocumentModalPage', () => {
+  let component: EditDocumentModalPage;
+  let fixture: ComponentFixture<EditDocumentModalPage>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoginRegisterComponent ],
+      declarations: [ EditDocumentModalPage ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(LoginRegisterComponent);
+    fixture = TestBed.createComponent(EditDocumentModalPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));
@@ -21,6 +21,4 @@ describe('LoginRegisterComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-
 });

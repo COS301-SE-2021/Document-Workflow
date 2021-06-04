@@ -28,10 +28,11 @@ export class AddDocumentModalPage implements OnInit {
 
   ngOnInit() {
     this.docForm = this.formBuilder.group({
-      documentName: ['', []],
+      docName: ['', []],
       documentDescription: ['', [Validators.required]],
       documentStatus: ['', [Validators.required]],
       documentType: ['', [Validators.required]],
+
     });
   }
 
@@ -41,10 +42,11 @@ export class AddDocumentModalPage implements OnInit {
 
   async addDocument() {
     console.log(await this.docService.getDocuments(1));
-    // let formCopy = this.docForm.value;
-    // console.log(formCopy);
-    // formCopy.userID = this.user.id;
-    // await this.docService.addDocument(formCopy);
+    let formCopy = this.docForm.value;
+    console.log(formCopy);
+    formCopy.userID = 1;
+    await this.docService.addDocument(formCopy);
+    this.dismissModal();
   }
 
   async loadDocument(event) {

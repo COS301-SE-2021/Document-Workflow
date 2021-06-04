@@ -1,18 +1,18 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>addDocumentModal</ion-title>
+    <ion-title>edit-document-modal</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <form [formGroup]="docForm" (ngSubmit)="addDocument()">
+  <form [formGroup]="docForm" (ngSubmit)="editDocument()">
+    <ion-item>
+      <ion-label position="stacked">Name of Document</ion-label>
+      <ion-input FormControlName="docName"></ion-input>
+    </ion-item>
     <ion-item>
       <ion-label position="stacked">Description of Document</ion-label>
       <ion-input formControlName="documentDescription" inputmode="text" placeholder="Description of doc here"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label position="stacked">Name of Document</ion-label>
-      <ion-input FormControlName="hello"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label position="stacked">Status of Document</ion-label>
@@ -21,13 +21,6 @@
     <ion-item>
       <ion-label position="stacked">Type of Document</ion-label>
       <ion-input formControlName="documentType" placeholder="Type of doc here"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label position="stacked">Choose doc</ion-label>
-      <ion-button expand="full">
-        <input type="file" (change)="loadDocument($event)" id="file-input"
-          accept="application/pdf">
-      </ion-button>
     </ion-item>
     <ion-button expand="block" color="primary" [disabled]="!docForm.valid" type="submit">Add button</ion-button>
   </form>

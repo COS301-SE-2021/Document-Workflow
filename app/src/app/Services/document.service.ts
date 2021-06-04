@@ -16,7 +16,7 @@ export class DocumentService{
     this._storage = storage;
   }
 
-  async initUser() {
+  async initDocuments() {
     const document: Document[] = [
       {
         id: 1,
@@ -35,10 +35,10 @@ export class DocumentService{
    async getDocuments(id: number): Promise<Document[]> {
     const docs = await this._storage?.get('documents');
     if (!docs) {
-      await this.initUser();
-      return await this._storage?.get('documents');
+      await this.initDocuments();
+     // return await this._storage?.get('documents');
     }
-
+    console.log(docs);
     return docs;
   }
 
@@ -48,7 +48,7 @@ export class DocumentService{
     doc.id = lastID + 1;
     docs.push(doc);
 
-    await this._storage.set('documents', doc);
+    await this._storage.set('documents', docs);
   }
 
   async updateDocument(doc: Document): Promise<void> {

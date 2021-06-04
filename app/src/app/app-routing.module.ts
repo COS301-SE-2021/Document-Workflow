@@ -30,7 +30,11 @@ const routes: Routes = [
   {
     path: 'view-document-modal',
     loadChildren: () => import('./Modals/view-document-modal/view-document-modal.module').then( m => m.ViewDocumentModalPageModule)
+  },  {
+    path: 'edit-document-modal',
+    loadChildren: () => import('./Modals/edit-document-modal/edit-document-modal.module').then( m => m.EditDocumentModalPageModule)
   },
+
 
 
 

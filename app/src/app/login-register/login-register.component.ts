@@ -4,7 +4,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { UserService } from '../Services/user.service';
 
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { match } from './match.validator';
 
 @Component({
@@ -21,24 +21,24 @@ export class LoginRegisterComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private storageService: UserService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
   ) {}
 
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
-      loginEmail: ['', [Validators.required, Validators.email]],
-      loginPassword: ['', [Validators.required, Validators.minLength(8)]],
+      loginEmail: ['u17015741@tuks.co.za', [Validators.required, Validators.email]],
+      loginPassword: ['submarine', [Validators.required, Validators.minLength(8)]],
     });
-
     const formOptions: AbstractControlOptions = {
       validators: match('password', 'confirmPassword'),
     };
     this.registerForm = this.formBuilder.group(
       {
-        Fname: ['', [Validators.required]],
-        Lname: ['', [Validators.required]],
-        initials: ['', [Validators.required]],
-        email: ['', [Validators.required, Validators.email]],
+        Fname: ['Timothy', [Validators.required]],
+        Lname: ['Hill', [Validators.required]],
+        initials: ['TH', [Validators.required]],
+        email: ['hill@tim.com', [Validators.required, Validators.email]],
         phone_number: [
           '',
           [
@@ -59,14 +59,9 @@ export class LoginRegisterComponent implements OnInit {
     console.log(loginEmail + ' ' + loginPassword);
     let a = await this.storageService.login(loginEmail, loginPassword);
     console.log(a);
-    if (a == true) {}
-    this.storageService.getUserFromServer("60b89ade8d0127f52f8fa6cd").subscribe( data => {
-      console.log(data);
-      });
-
-    /*this.storageService.postUserLogin("60b89ade8d0127f52f8fa6cd", "dkfsYgjds%ksdg").subscribe( data => {
-      console.log("login" + data);
-    });*/
+    if (a == true) {
+      this.router.navigate(["view"]);
+    }
   }
 
   register(): void {
@@ -74,6 +69,7 @@ export class LoginRegisterComponent implements OnInit {
     console.log(user);
     delete user.confirmPassword;
     this.storageService.addUser(user);
+    this.router.navigate(["view"]);
   }
 
   changeOver(): void {
