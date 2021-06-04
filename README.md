@@ -56,10 +56,10 @@
 # Demo-Video-Links
 
 <div style="margin-left: 2%">
-* <a href="https://youtu.be/wK9WsPF8ihA"> Demo 1 </a>
-* <a href="https://youtu.be/YGkEQ6Hz_xo"> Demo 2 </a>
-* <a href="https://youtu.be/RnM5ar8YIfc"> Demo 3 </a>
-* <a href="https://youtu.be/7Hy2KN9AKi0"> Demo 4 </a>
+* <a href="https://www.youtube.com/watch?v=bo8cdDzqsPg&feature=youtu.be"> Demo 1 </a>
+* <a href=""> Demo 2 - Coming Soon! </a>
+* <a href=""> Demo 3 - Coming Soon! </a>
+* <a href=""> Demo 4 - Coming Soon! </a>
 </div>
 
 ---
