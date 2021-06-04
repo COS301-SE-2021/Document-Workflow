@@ -33,7 +33,7 @@ import { DocumentService } from "./services/document.service";
     AppRoutingModule,
     ReactiveFormsModule,
     FormsModule,
-    IonicStorageModule.forRoot(),
+    IonicStorageModule.forRoot()
   ],
   providers: [
     {
