@@ -15,6 +15,7 @@ import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
 import { AddDocumentModalPage } from './Modals/add-document-modal/add-document-modal.page';
 
 import { DocumentService } from "./services/document.service";
+import { HttpClientModule } from "@angular/common/http";
 
 
 
@@ -33,7 +34,8 @@ import { DocumentService } from "./services/document.service";
     AppRoutingModule,
     ReactiveFormsModule,
     FormsModule,
-    IonicStorageModule.forRoot()
+    IonicStorageModule.forRoot(),
+    HttpClientModule
   ],
   providers: [
     {
