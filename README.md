@@ -71,7 +71,7 @@
 
 <div style="margin-left: 2%">
 * <a href="https://youtu.be/wK9WsPF8ihA"> Demo 1 </a>
-* <a href=""> Demo 2 </a>
+* <a href="https://youtu.be/YGkEQ6Hz_xo"> Demo 2 </a>
 * <a href=""> Demo 3 </a>
 * <a href=""> Demo 4 </a>
 </div>
