@@ -7,12 +7,12 @@
 <ion-content>
   <form [formGroup]="docForm" (ngSubmit)="addDocument()">
     <ion-item>
-      <ion-label position="stacked">Description of Document</ion-label>
-      <ion-input formControlName="documentDescription" inputmode="text" placeholder="Description of doc here"></ion-input>
+      <ion-label position="stacked">Name of Document</ion-label>
+      <ion-input FormControlName="documentName"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label position="stacked">Name of Document</ion-label>
-      <ion-input FormControlName="hello"></ion-input>
+      <ion-label position="stacked">Description of Document</ion-label>
+      <ion-input formControlName="documentDescription" inputmode="text" placeholder="Description of doc here"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label position="stacked">Status of Document</ion-label>
