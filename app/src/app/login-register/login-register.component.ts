@@ -76,7 +76,7 @@ export class LoginRegisterComponent implements OnInit {
   /**
    * TODO: add verification functions on front end (ie check that confirm password matches password
    */
-  register(): void {
+  async register(): Promise<void> {
     const userdata = this.registerForm.value;
     console.log(userdata);
     const user: User = {
@@ -86,9 +86,10 @@ export class LoginRegisterComponent implements OnInit {
       email: userdata.email,
       password: userdata.password
     };
-    if(UserAPIService.register(user))
-    {console.log('User registerd');}
-    else {console.log('registration failed');}
+    const success = await UserAPIService.register(user);
+    if(success)
+    {alert('User registerd');}
+    else {alert('registration failed');}
     delete userdata.confirmPassword;
     this.router.navigate(['login']);
   }
