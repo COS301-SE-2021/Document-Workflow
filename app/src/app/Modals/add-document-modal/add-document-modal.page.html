@@ -5,14 +5,14 @@
 </ion-header>
 
 <ion-content>
-  <form [formGroup]="docForm" (ngSubmit)="addDocument()">
+  <form [formGroup]="documentForm" (ngSubmit)="addDocument()">
+    <ion-item>
+      <ion-label position="stacked">Name of Document</ion-label>
+      <ion-input FormControlName="Fname" inputmode="text"></ion-input>
+    </ion-item>
     <ion-item>
       <ion-label position="stacked">Description of Document</ion-label>
       <ion-input formControlName="documentDescription" inputmode="text" placeholder="Description of doc here"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label position="stacked">Name of Document</ion-label>
-      <ion-input FormControlName="hello"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label position="stacked">Status of Document</ion-label>
@@ -29,6 +29,6 @@
           accept="application/pdf">
       </ion-button>
     </ion-item>
-    <ion-button expand="block" color="primary" [disabled]="!docForm.valid" type="submit">Add button</ion-button>
+    <ion-button expand="block" color="primary" [disabled]="!documentForm.valid" type="submit">Add button</ion-button>
   </form>
 </ion-content>

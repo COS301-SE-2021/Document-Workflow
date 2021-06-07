@@ -1,26 +1,20 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, Platform } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
-
-// import {ModalPage}
-import { ActivatedRoute } from '@angular/router';
-
-import { AddDocumentModalPage } from '../Modals/add-document-modal/add-document-modal.page';
-
-import { User } from './../Interfaces/user';
-import { Document } from '../Interfaces/document';
-import { UserService } from '../Services/user.service';
-import { DocumentService } from '../Services/document.service';
-
 import { Browser } from '@capacitor/browser';
 
-import {
-  FormControl,
-  FormBuilder,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+// import routing
+import { ActivatedRoute } from '@angular/router';
+
+// for the module pages
+import { AddDocumentModalPage } from '../Modals/add-document-modal/add-document-modal.page';
 import { EditDocumentModalPage } from '../Modals/edit-document-modal/edit-document-modal.page';
+
+//for the interfaces
+import { User } from './../Interfaces/user';
+
+//imports for services and interfaces
+import { DocumentAPIService, documentImage } from '../Services/document-api.service';
 
 @Component({
   selector: 'app-view-workflow',
@@ -28,32 +22,24 @@ import { EditDocumentModalPage } from '../Modals/edit-document-modal/edit-docume
   styleUrls: ['./view-workflow.component.scss'],
 })
 export class ViewWorkflowComponent implements OnInit {
+  documents: documentImage[]=[];
+
   constructor(
-    private storageService: UserService,
-    private docStorage: DocumentService,
-    private modals: ModalController
+    private docService: DocumentAPIService,
+    private modals: ModalController,
+    private plat : Platform
   ) {}
 
   @Input() user: User;
-  documents: Document[] = [];
 
-  async ngOnInit() {
-    this.user = await this.storageService.getUser(1);
-    this.documents = await this.docStorage.getDocuments(this.user.id);
-    console.log(this.documents);
+  async ngOnInit() {}
+
+  loadDocuments() {
+    this.docService.getDocuments().subscribe();
   }
 
   async viewDoc(id: number) {
-    // const viewModal = await this.modals.create({
-    //   component: ViewDocumentModalPage
-    //   // componentProps: {
-    //   //   'doc':
-    //   // }
-    // });
-    // (await viewModal).onDidDismiss().then(()=>{
-    // });
-
-    // return (await viewModal).present();
+    this;
     Browser.open({
       url: 'https://github.com/COS301-SE-2021/Document-Workflow/blob/develop_frontend_document_view/app/src/app/Files/Timesheet-Template.pdf',
     });
@@ -62,13 +48,13 @@ export class ViewWorkflowComponent implements OnInit {
   async editDoc(id: number) {
     const editModal = await this.modals.create({
       component: EditDocumentModalPage,
-      componentProps:{
-        'docID': id,
-      }
+      componentProps: {
+        docID: id,
+      },
     });
-     (await editModal).onDidDismiss().then(()=>{});
+    (await editModal).onDidDismiss().then(() => {});
 
-      return (await editModal).present();
+    return (await editModal).present();
   }
 
   async addDoc() {

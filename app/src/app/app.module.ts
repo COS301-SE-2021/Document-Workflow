@@ -12,11 +12,7 @@ import { ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
 import { LoginRegisterComponent } from './login-register/login-register.component';
 import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
 
-import { AddDocumentModalPage } from './Modals/add-document-modal/add-document-modal.page';
-
-import { DocumentService } from "./services/document.service";
-
-
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -34,12 +30,14 @@ import { DocumentService } from "./services/document.service";
     ReactiveFormsModule,
     FormsModule,
     IonicStorageModule.forRoot(),
+    HttpClientModule,
+
   ],
   providers: [
     {
       provide: RouteReuseStrategy,
       useClass: IonicRouteStrategy,
-    },
+    }
   ],
   bootstrap: [AppComponent],
 })
