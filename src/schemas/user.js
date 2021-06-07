@@ -19,7 +19,6 @@ const userSchema = mongoose.Schema({
     },
     password: { type: String, required: true },
     // signature: { type: String, required: true },
-    phone: { type: String, required: true },
     validated: { type: Boolean, default: false },
     tokenDate: { type: Date, default: Date.now }
 });

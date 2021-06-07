@@ -72,12 +72,12 @@ router.post('/login/:id', (req, res) => {
 router.post('', (req, res) => {
     //res.json(create_user.handle(req));
     //TODO: Convert password to hash with bcryptjs
+    console.log(req.body.name)
     const user = new User({
         name: req.body.name,
         surname: req.body.surname,
         email: req.body.email,
         password: req.body.password,
-        phone: req.body.phone
     });
     console.log(user);
     user.save()
