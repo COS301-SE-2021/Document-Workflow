@@ -1,6 +1,14 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
+
+/**
+ * The schema for a user. Since we are making use of NoSQL, this in essence defines the structure
+ * of what our user entries in the database look like. It also validates whether or not a user's email
+ * and password are valid.
+ * A password is valid iff it contains an uppercase,lowercase annd special character as well as being 8 characters long.
+ * //TODO: add signature to this list.
+ */
 const userSchema = mongoose.Schema({
     name: { type: String, required: true },
     surname: { type: String, required: true },
@@ -30,6 +38,11 @@ const userSchema = mongoose.Schema({
     tokenDate: { type: Date, default: Date.now }
 });
 
+/**
+ * This function is called automatically  before the save function is called is called for a user.
+ * It handles the process of salting and hashing a user password and sets the user's password to the
+ * generated hash.
+ */
 userSchema.pre("save", function(next)  {  //Cannot use lexical notation here (see: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions")
     const usr = this;
     if(this.isModified("password") || this.isNew){
