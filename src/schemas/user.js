@@ -19,14 +19,16 @@ const userSchema = mongoose.Schema({
     },
     password: { type: String, required: true },
     // signature: { type: String, required: true },
+    phone: {type: String, required: true},
     validated: { type: Boolean, default: false },
     tokenDate: { type: Date, default: Date.now }
 });
 
-userSchema.pre("save", next => {
+userSchema.pre("save", function(next)  {  //Cannot use lexical notation here (see: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions")
     const usr = this;
+    console.log(this);
     if(this.isModified("password") || this.isNew){
-        bcrypt.genSalt(process.env.SALT_ROUNDS, (saltErr,salt) => {
+        bcrypt.genSalt(parseInt(process.env.SALT_ROUNDS), (saltErr,salt) => {
             if(saltErr) {
                 throw saltErr;
             } else {
