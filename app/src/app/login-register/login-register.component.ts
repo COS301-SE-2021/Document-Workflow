@@ -10,7 +10,6 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 //import for the users API and interface
 import { UserAPIService, User } from '../Services/user-api.service';
 import { ActionSheetController, Platform } from '@ionic/angular';
-import { Plugins } from 'protractor/built/plugins';
 
 @Component({
   selector: 'app-login-register',
