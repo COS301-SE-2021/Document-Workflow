@@ -13,13 +13,14 @@ import { LoginRegisterComponent } from './login-register/login-register.componen
 import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
 
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { ViewAllWorkflowsComponent } from './view-all-workflows/view-all-workflows.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginRegisterComponent,
     ViewWorkflowComponent,
-
+    ViewAllWorkflowsComponent
   ],
   entryComponents: [],
   imports: [

@@ -67,7 +67,7 @@ export class LoginRegisterComponent implements OnInit {
     let a = true;
     console.log(a);
     if (a == true) {
-      this.router.navigate(['view']);
+      this.router.navigate(['viewAll']);
     }
   }
 
@@ -75,7 +75,7 @@ export class LoginRegisterComponent implements OnInit {
     let user = this.registerForm.value;
     console.log(user);
     delete user.confirmPassword;
-    this.router.navigate(['view']);
+    this.router.navigate(['viewAll']);
   }
 
   changeOver(): void {
