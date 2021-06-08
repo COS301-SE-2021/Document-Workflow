@@ -15,6 +15,13 @@ import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ViewAllWorkflowsComponent } from './view-all-workflows/view-all-workflows.component';
 
+import { AddDocumentModalPage } from './Modals/add-document-modal/add-document-modal.page';
+
+import { DocumentAPIService } from "./Services/document-api.service";
+import { HttpClientModule } from "@angular/common/http";
+
+
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -37,7 +44,7 @@ import { ViewAllWorkflowsComponent } from './view-all-workflows/view-all-workflo
     {
       provide: RouteReuseStrategy,
       useClass: IonicRouteStrategy,
-    }
+    },
   ],
   bootstrap: [AppComponent],
 })

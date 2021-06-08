@@ -13,4 +13,8 @@ describe('DocumentAPIService', () => {
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
+
+  it('should return a document', () =>{
+    expect(service.getDocuments(1)).toContain('');
+  });
 });

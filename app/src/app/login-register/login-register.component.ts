@@ -11,6 +11,7 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { UserAPIService, User } from '../Services/user-api.service';
 import { ActionSheetController, Platform } from '@ionic/angular';
 
+
 @Component({
   selector: 'app-login-register',
   templateUrl: './login-register.component.html',
@@ -64,11 +65,25 @@ export class LoginRegisterComponent implements OnInit {
     }
   }
 
-  register(): void {
-    let user = this.registerForm.value;
-    console.log(user);
-    delete user.confirmPassword;
-    this.router.navigate(['viewAll']);
+  /**
+   * TODO: add verification functions on front end (ie check that confirm password matches password
+   */
+  async register(): Promise<void> {
+    const userdata = this.registerForm.value;
+    console.log(userdata);
+    const user: User = {
+      Fname: userdata.Fname,
+      Lname: userdata.Lname,
+      initials: userdata.initials,
+      email: userdata.email,
+      password: userdata.password
+    };
+    const success = await UserAPIService.register(user);
+    if(success)
+    {alert('User registerd');}
+    else {alert('registration failed');}
+    delete userdata.confirmPassword;
+    this.router.navigate(['login']);
   }
 
   changeOver(): void {

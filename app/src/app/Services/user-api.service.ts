@@ -2,12 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 export interface User {
-  id: number;
   Fname: string;
   Lname: string;
   initials: string;
   email: string;
-  phone_number: string;
   password: string;
 }
 
@@ -15,7 +13,7 @@ export interface User {
   providedIn: 'root',
 })
 export class UserAPIService {
-  url = '';
+  static url =  'http://localhost:3000/api';
 
   constructor(private http: HttpClient) {}
 
@@ -23,7 +21,18 @@ export class UserAPIService {
     return true;
   }
 
-  register(user: User): boolean {
+  public static async register(user: User): Promise<boolean> {
+    const response = await fetch((UserAPIService.url).concat( '/users'), { //TODO: change this url
+      method: 'POST',
+      body: JSON.stringify({name:user.Fname, surname:user.Lname, initials:user.initials, email:user.email, password:user.password}),
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      headers: {'Content-Type': 'application/json; charset=UTF-8'} });
+
+    if (!response.ok)
+    {
+      return false;
+    }
+
     return true;
   }
 
@@ -36,6 +45,6 @@ export class UserAPIService {
     console.log(formData);
 
 
-    this.http.post(`${this.url}/signatures`, formData);
+    this.http.post(`${UserAPIService.url}/signatures`, formData);
   }
 }

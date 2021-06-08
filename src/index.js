@@ -1,29 +1,35 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-//const cors = require('cors');
+const mongoose = require('mongoose');
+require('dotenv').config();
+const userRoute = require("./api/routes/users");
+const documentRoute = require("./api/routes/documents");
+
+const fileUpload = require('express-fileupload');
 
 const app = express();
-const port = 3000;
 
-//app.use(cors());
+mongoose.connect(process.env.MONGO_PROD_URI, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true})
+    .then(()=>{
+        console.log('Connected to database!');
+    })
+    .catch((message)=>{
+        console.log('Connection failed!\n' + message + '\n');
+    });
 
-//configure body-parser: (Middleware)
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+app.use(fileUpload(undefined));
 
-//Accepting anything, must validate:
-app.post('/book', (req,res) => {
-    const book = req.body;
-    console.log(book);
-    //books.push(book);
-    res.send('Book added to database');
-})
-
-app.get('/', (req,res) => {
-    res.send('Hello world, from express');
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS, POST, DELETE, PUT, PATCH');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Origin, X-Requested-With, Accept');
+    //res.setHeader('Access-Control-Allow-Credentials', 'bearer');
+    next();
 });
 
-app.listen(port, () => {
-    console.log(`Hello world app listening on port ${port}`)
-});
+app.use("/api/documents", documentRoute);
+app.use("/api/users", userRoute);
+module.exports = app;
 

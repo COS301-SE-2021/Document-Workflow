@@ -3,9 +3,9 @@ import { IonicModule, Platform } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
 import { Browser } from '@capacitor/browser';
 
-
-// import {ModalPage}
+// import routing
 import { ActivatedRoute, Router } from '@angular/router';
+
 
 
 // for the module pages
@@ -65,9 +65,7 @@ export class ViewWorkflowComponent implements OnInit {
       component: AddDocumentModalPage,
     });
 
-    (await addModal).onDidDismiss().then(() => {
-      this.router.navigate(["view"]);
-    });
+    (await addModal).onDidDismiss().then(() => {});
 
     return (await addModal).present();
   }
