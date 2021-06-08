@@ -2,7 +2,6 @@ const express = require("express");
 const User = require("../../schemas/user");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
-const fs = require('fs')
 
 // "/api/users"
 
@@ -106,7 +105,7 @@ router.post('/login/', (req, res) => {
  *  email: the user's email address
  *  password: the user's password
  *
- *  TODO: incorporate the signature to this function.
+ *  TODO: Check that the signature is a valid filetype!!!!
  *  TODO: abstract the database functionality to a different file.
  */
 router.post('', (req, res) => {
