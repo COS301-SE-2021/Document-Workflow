@@ -1,8 +1,5 @@
 name: Ionic CI
-on:
-  pull_request:
-    paths:
-      - 'app/**'
+on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
