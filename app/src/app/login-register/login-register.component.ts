@@ -5,6 +5,11 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { match } from './match.validator';
 
+//popover
+import {PopoverController} from '@ionic/angular';
+import { RegisterLoginPopoverComponent } from './../Popovers/register-login-popover/register-login-popover.component';
+
+
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 //import for the users API and interface
@@ -30,7 +35,8 @@ export class LoginRegisterComponent implements OnInit {
     private router: Router,
     private userService: UserAPIService,
     private plat: Platform,
-    private actionSheetController: ActionSheetController
+    private actionSheetController: ActionSheetController,
+    private popController :PopoverController
   ) {}
 
   ngOnInit() {
@@ -80,8 +86,9 @@ export class LoginRegisterComponent implements OnInit {
     };
     const success = await UserAPIService.register(user);
     if(success)
-    {alert('User registerd');}
-    else {alert('registration failed');}
+    {    this.presentPopover("User registered");}
+    else {
+      this.presentPopover("registration failed");}
     delete userdata.confirmPassword;
     this.router.navigate(['login']);
   }
@@ -92,6 +99,7 @@ export class LoginRegisterComponent implements OnInit {
     } else {
       this.registerButton = true;
     }
+
   }
 
   loadSignature(event) {
@@ -165,5 +173,18 @@ export class LoginRegisterComponent implements OnInit {
     });
 
     console.log('image: ', image);
+  }
+
+  async presentPopover(message: string){
+    const popover = await this.popController.create({
+      component: RegisterLoginPopoverComponent,
+      componentProps: {"message": message},
+      translucent: true,
+    });
+
+    await popover.present();
+
+    const{role} = await popover.onDidDismiss();
+    console.log("closed with", role);
   }
 }
