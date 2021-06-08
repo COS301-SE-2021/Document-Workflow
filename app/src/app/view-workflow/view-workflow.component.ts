@@ -3,10 +3,10 @@ import { IonicModule, Platform } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
 import { Browser } from '@capacitor/browser';
 
+
 // import {ModalPage}
 import { ActivatedRoute, Router } from '@angular/router';
 
-// import routing
 
 // for the module pages
 import { AddDocumentModalPage } from '../Modals/add-document-modal/add-document-modal.page';

@@ -32,7 +32,6 @@ import { ViewAllWorkflowsComponent } from './view-all-workflows/view-all-workflo
     FormsModule,
     IonicStorageModule.forRoot(),
     HttpClientModule,
-
   ],
   providers: [
     {
