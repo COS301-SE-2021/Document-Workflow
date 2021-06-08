@@ -1,10 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { IonicModule, Platform } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
-import { Browser } from '@capacitor/browser';
 
 // import routing
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 // for the module pages
 import { AddDocumentModalPage } from '../Modals/add-document-modal/add-document-modal.page';
@@ -27,7 +26,8 @@ export class ViewAllWorkflowsComponent implements OnInit {
   constructor(
     private docService: DocumentAPIService,
     private modals: ModalController,
-    private plat : Platform
+    private plat : Platform,
+    private router: Router
   ) {}
 
   @Input() user: User;

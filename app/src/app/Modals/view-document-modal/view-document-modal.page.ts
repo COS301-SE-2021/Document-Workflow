@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 
 
-import { FormGroup, FormBuilder } from '@angular/forms';
-import { Platform, ToastController } from '@ionic/angular';
+import { Platform } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -13,39 +12,52 @@ import { HttpClient } from '@angular/common/http';
 })
 
 export class ViewDocumentModalPage implements OnInit {
-docForm: FormGroup;
-docPDF = null;
-
+  docPDF = null;
+  srcFile: string;
+  rotated: number;
+  setZoom: string;
+  zoomLevel: number;
 
   constructor(
-    private formBuilder: FormBuilder,
     private plat: Platform,
     private http: HttpClient,
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.srcFile = "./../../../assets/Timesheet-Template.pdf";
+    this.rotated = 0;
+    this.setZoom = "false";
+  }
 
   download(url: string, title: string) {
 
   }
 
-  viewDoc(){
-
+  rotation(){
+    this.rotated += 90;
+    if(this.rotated == 360){
+      this.rotated =0;
+    }
   }
 
-  private convertBlobToBase64 = (blob: Blob) => new Promise((resolve, reject) =>{
-    const reader = new FileReader;
-    reader.onerror = reject;
-    reader.onload = () =>{
-      resolve(reader.result);
-    }
-    reader.readAsDataURL(blob);
-  });
+  setZoomWidth(){
+    this.setZoom ='page-width';
+  }
 
-  private mimeTypeChecker(name){
-    if(name.indexOf('pdf') >= 0){
-      return 'application/pdf';
-    }//add other mime types that would be required here
+  setZoomFit(){
+    this.setZoom ='page-fit';
+  }
+
+  setZoomHeight(){
+    this.setZoom ='page-height';
+  }
+
+  zoomIn(){
+    this.zoomLevel += 0.25;
+  }
+
+  zoomOut(){
+    this.zoomLevel -=0.25;
   }
 
 
