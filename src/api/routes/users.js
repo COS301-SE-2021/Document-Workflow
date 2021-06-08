@@ -71,27 +71,35 @@ router.post('/login/:id', (req, res) => {
 
 router.post('/login/', (req, res) => {
 
+    console.log(req.body); //TODO: delete
     User.find({"email": req.body.email}, function(err, user) {
         if(err)
             res.status(500).json({
                 message: "Login Failed"
             });
         else {
-            bcrypt.compare(req.body.password, user[0].password, function(err, result)
+            if (user[0] !== undefined)
             {
-                if(err)
-                    res.status(500).json({
+                bcrypt.compare(req.body.password, user[0].password, function (err, result) {
+                    if (err)
+                        res.status(500).json({
+                            message: "Login Failed"
+                        });
+                    if (result)
+                        res.status(200).json({
+                            message: "Success!",
+                            token: "generated token"
+                        });
+                    else res.status(401).json({
                         message: "Login Failed"
                     });
-                if(result)
-                    res.status(200).json({
-                        message: "Success!",
-                        token: "generated token"
-                    });
-                else res.status(401).json({
+                })
+             }
+            else {
+                res.status(401).json({
                     message: "Login Failed"
-                });
-            })
+                })
+            }
         }
     });
 
@@ -112,9 +120,9 @@ router.post('/login/', (req, res) => {
 router.post('', (req, res) => {
 
     //Data comes in as a buffer, accessible through req.files.signature.data
-    console.log(req.body);
-    console.log(req.body.name);
-    console.log(req.files.signature);
+    //console.log(req.body);
+    //console.log(req.body.name);
+    //console.log(req.files.signature);
     let signature_base64 = req.files.signature.data.toString('base64');
     //TODO: encrypt signature
     console.log(req.body.name);
@@ -135,6 +143,7 @@ router.post('', (req, res) => {
             });
         })
         .catch((msg)=>{
+            console.log(msg);
             res.status(500).json({
                 message: msg
             });
