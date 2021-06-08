@@ -41,7 +41,7 @@ function compare(pass,hashed){
 }
 
 router.post('/login/:id', (req, res) => {
-    //res.json(login_user.handle(req));
+
     User.findById(req.params.id)
         .then((usr)=>{
             if(usr){
@@ -68,6 +68,34 @@ router.post('/login/:id', (req, res) => {
                 message: msg
             });
         });
+});
+
+router.post('/login/', (req, res) => {
+
+    User.find({"email": req.body.email}, function(err, user) {
+        if(err)
+            res.status(500).json({
+                message: "Login Failed"
+            });
+        else {
+            bcrypt.compare(req.body.password, user[0].password, function(err, result)
+            {
+                if(err)
+                    res.status(500).json({
+                        message: "Login Failed"
+                    });
+                if(result)
+                    res.status(200).json({
+                        message: "Success!",
+                        token: "generated token"
+                    });
+                else res.status(401).json({
+                    message: "Login Failed"
+                });
+            })
+        }
+    });
+
 });
 
 /**
@@ -120,5 +148,7 @@ function decryptSignature(signature_base64)
 {
 
 }
+
+
 
 module.exports = router;
