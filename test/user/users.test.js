@@ -20,4 +20,26 @@ describe("Users", () => {
                 });
         })
     });
+
+    describe("POST /api/users", () =>{
+
+        it("Should successfully create a new user if the given email is unique", (done) => {
+            const user = new User({
+                name:  "Test",
+                surname: "User",
+                initials: "TU",
+                email: "unique_email@address.com",
+                password: "p!@asdD3$sd"
+            });
+            chai.request(app)
+                .post("/api/users" )
+                .set('Content-Type', 'application/json; charset=UTF-8')
+                .send(user)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    mongoose.disconnect();
+                    done();
+                })
+        });
+    });
 });
