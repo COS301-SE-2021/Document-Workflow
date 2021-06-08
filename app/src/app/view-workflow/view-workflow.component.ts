@@ -29,7 +29,8 @@ export class ViewWorkflowComponent implements OnInit {
   constructor(
     private docService: DocumentAPIService,
     private modals: ModalController,
-    private plat : Platform
+    private plat : Platform,
+    private router: Router
   ) {}
 
   @Input() user: User;

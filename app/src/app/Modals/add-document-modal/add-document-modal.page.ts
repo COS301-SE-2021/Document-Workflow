@@ -23,7 +23,7 @@ export class AddDocumentModalPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.docForm = this.formBuilder.group({
+    this.documentForm = this.formBuilder.group({
       documentName: ['', []],
       documentDescription: ['', [Validators.required]],
       documentStatus: ['', [Validators.required]],
