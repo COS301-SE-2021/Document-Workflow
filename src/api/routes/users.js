@@ -69,17 +69,28 @@ router.post('/login/:id', (req, res) => {
         });
 });
 
+/**
+ * The api entry point for registering a new user. The request requires the following body parameters be set:
+ *  name: the user's firstname
+ *  surname: the user's surname
+ *  initials the user's initials
+ *  email: the user's email address
+ *  password: the user's password
+ *
+ *  TODO: incorporate the signature to this function.
+ *  TODO: abstract the database functionality to a different file.
+ */
 router.post('', (req, res) => {
-    //res.json(create_user.handle(req));
+
     //TODO: Convert password to hash with bcryptjs
     const user = new User({
         name: req.body.name,
         surname: req.body.surname,
+        initials: req.body.initials,
         email: req.body.email,
         password: req.body.password,
-        phone: req.body.phone
     });
-    console.log(user);
+
     user.save()
         .then((usr)=>{
             res.status(200).json({

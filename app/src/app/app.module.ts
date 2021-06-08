@@ -14,7 +14,7 @@ import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
 
 import { AddDocumentModalPage } from './Modals/add-document-modal/add-document-modal.page';
 
-import { DocumentService } from "./services/document.service";
+import { DocumentAPIService } from "./Services/document-api.service";
 import { HttpClientModule } from "@angular/common/http";
 
 

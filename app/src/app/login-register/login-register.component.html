@@ -63,10 +63,10 @@
         </ion-item>
         <ion-item>
           <ion-label position="stacked">Add your signature</ion-label>
-          <ion-button expand="full">
-            <input type="file" (change)="loadSignature($event)" id="file-input"
-              accept="image/jpeg, image/png, image/jpg">
+          <ion-button>
+            <input type="file" #fileInput (change)="uploadFile($event)" hidden="true" accept="image/*">
           </ion-button>
+          <ion-button (click)="selectImageSource()">Add</ion-button>
         </ion-item>
         <ion-button expand="block" color="primary" [disabled]="!registerForm.valid" type="submit">Register</ion-button>
       </form>

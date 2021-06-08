@@ -6,7 +6,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
-import { DocumentService } from './../../Services/document.service';
 
 @Component({
   selector: 'app-edit-document-modal',
@@ -17,7 +16,6 @@ export class EditDocumentModalPage implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private modal: ModalController,
-    private docService: DocumentService
   ) {}
 
   docForm: FormGroup;
@@ -35,11 +33,17 @@ export class EditDocumentModalPage implements OnInit {
   }
 
   async editDocument() {
-    console.log(await this.docService.getDocuments(1));
-    let formCopy = this.docForm.value;
-    console.log(formCopy);
-    formCopy.userID = 1;
-    await this.docService.addDocument(formCopy);
-    this.dismissModal();
+
+  }
+
+  public selectDoc(){
+    let blob;
+
+  }
+
+  private mimeTypeChecker(name){
+    if(name.indexOf('pdf') >= 0){
+      return 'application/pdf';
+    }//add other mime types that would be required here
   }
 }

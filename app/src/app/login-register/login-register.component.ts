@@ -1,11 +1,17 @@
-import { Component, OnInit, Input } from '@angular/core';
-import {  AbstractControlOptions, FormBuilder,} from '@angular/forms';
+import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
+import { AbstractControlOptions, FormBuilder } from '@angular/forms';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-
-import { UserService } from '../Services/user.service';
 
 import { ActivatedRoute, Router } from '@angular/router';
 import { match } from './match.validator';
+
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+
+//import for the users API and interface
+import { UserAPIService, User } from '../Services/user-api.service';
+import { ActionSheetController, Platform } from '@ionic/angular';
+import { Plugins } from 'protractor/built/plugins';
+
 
 @Component({
   selector: 'app-login-register',
@@ -18,11 +24,14 @@ export class LoginRegisterComponent implements OnInit {
 
   registerButton: boolean; //for the toggle to change modes
 
+  @ViewChild('fileInput', { static: false })fileInput: ElementRef;
   constructor(
     private formBuilder: FormBuilder,
-    private storageService: UserService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
+    private userService: UserAPIService,
+    private plat: Platform,
+    private actionSheetController: ActionSheetController
   ) {}
 
   ngOnInit() {
@@ -57,19 +66,32 @@ export class LoginRegisterComponent implements OnInit {
   async login(): Promise<void> {
     const { loginEmail, loginPassword } = this.loginForm.value;
     console.log(loginEmail + ' ' + loginPassword);
-    let a = await this.storageService.login(loginEmail, loginPassword);
+    let a = true;
     console.log(a);
     if (a == true) {
-      this.router.navigate(["view"]);
+      this.router.navigate(['view']);
     }
   }
 
-  register(): void {
-    let user = this.registerForm.value;
-    console.log(user);
-    delete user.confirmPassword;
-    this.storageService.addUser(user);
-    this.router.navigate(["view"]);
+  /**
+   * TODO: add verification functions on front end (ie check that confirm password matches password
+   */
+  async register(): Promise<void> {
+    const userdata = this.registerForm.value;
+    console.log(userdata);
+    const user: User = {
+      Fname: userdata.Fname,
+      Lname: userdata.Lname,
+      initials: userdata.initials,
+      email: userdata.email,
+      password: userdata.password
+    };
+    const success = await UserAPIService.register(user);
+    if(success)
+    {alert('User registerd');}
+    else {alert('registration failed');}
+    delete userdata.confirmPassword;
+    this.router.navigate(['login']);
   }
 
   changeOver(): void {
@@ -80,25 +102,76 @@ export class LoginRegisterComponent implements OnInit {
     }
   }
 
-  loadSignature(event)
-  {
+  loadSignature(event) {
     const file = event.target.files[0];
     const reader = new FileReader();
     reader.readAsArrayBuffer(file);
 
-    reader.onload = () =>
-    {
+    reader.onload = () => {
       // getting image blob
-      let blob: Blob = new Blob([new Uint8Array((reader.result as ArrayBuffer))]);
+      let blob: Blob = new Blob([new Uint8Array(reader.result as ArrayBuffer)]);
 
-    //  create URL element Object
+      //  create URL element Object
       let URL_blob: string = URL.createObjectURL(blob);
     };
 
-  // error checking
-    reader.onerror = (error) =>{
-    };
+    // error checking
+    reader.onerror = (error) => {};
   }
 
+  async selectImageSource() {
+    const buttons = [
+      {
+        text: 'Take Photo',
+        icon: 'camera',
+        handler: () => {
+          this.addSignature(CameraSource.Camera);
+        },
+      },
+      {
+        text: 'Choose from photo library',
+        icon: 'image',
+        handler: () => {
+          this.addSignature(CameraSource.Photos);
+        },
+      },
+    ];
 
+    if (!this.plat.is('hybrid')) {
+      console.log('here');
+      buttons.push({
+        text: 'Choose a File',
+        icon: 'attach',
+        handler: () => {
+          this.fileInput.nativeElement.click();
+        },
+      });
+    }
+
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Select Image Source',
+      buttons,
+    });
+
+    await actionSheet.present();
+  }
+
+  uploadFile(event: EventTarget) {
+    const eventObj: MSInputMethodContext = event as MSInputMethodContext;
+    const target: HTMLInputElement = eventObj.target as HTMLInputElement;
+    const file: File = target.files[0];
+
+    console.log("file", file);
+  }
+
+  async addSignature(source: CameraSource) {
+    const image = await Camera.getPhoto({
+      quality: 60,
+      allowEditing: true,
+      resultType: CameraResultType.Base64,
+      source
+    });
+
+    console.log('image: ', image);
+  }
 }
