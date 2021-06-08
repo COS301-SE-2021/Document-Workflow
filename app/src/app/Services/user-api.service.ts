@@ -33,7 +33,7 @@ export class UserAPIService {
     const formData = new FormData();
     formData.append('file', file, file.name);
     formData.append('name', file.name);
-
+    console.log(formData);
 
 
     this.http.post(`${this.url}/signatures`, formData);

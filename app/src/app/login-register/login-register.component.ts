@@ -46,6 +46,7 @@ export class LoginRegisterComponent implements OnInit {
         Lname: ['Hill', [Validators.required]],
         initials: ['TH', [Validators.required]],
         email: ['hill@tim.com', [Validators.required, Validators.email]],
+        phone_number: ['0814587896',[Validators.required, Validators.maxLength(10)]],
         password: ['', [Validators.required, Validators.minLength(9)]],
         confirmPassword: ['', [Validators.required, Validators.minLength(9)]],
       },
