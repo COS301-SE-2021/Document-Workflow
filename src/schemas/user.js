@@ -35,7 +35,8 @@ const userSchema = mongoose.Schema({
     },
     // signature: { type: String, required: true },
     validated: { type: Boolean, default: false },
-    tokenDate: { type: Date, default: Date.now }
+    tokenDate: { type: Date, default: Date.now },
+    signature: {type: Buffer}
 });
 
 /**
