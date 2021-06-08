@@ -2,11 +2,17 @@ const chai = require("chai");
 const chaiHttp = require("chai-http");
 const app = require("../../src/index");
 const mongoose = require("mongoose");
+const User = require("../../src/schemas/user");
 
 chai.use(chaiHttp);
 chai.should();
 
 describe("Users", () => {
+
+    beforeAll(()=> {
+        jest.setTimeout(5000);
+    });
+
     describe("GET /api/users/:id", () => {
         //Test to get single user:
         it("should get one user by id", (done) => {
@@ -20,7 +26,7 @@ describe("Users", () => {
                 });
         })
     });
-
+    /*
     describe("POST /api/users", () =>{
 
         it("Should successfully create a new user if the given email is unique", (done) => {
@@ -41,5 +47,9 @@ describe("Users", () => {
                     done();
                 })
         });
-    });
+    }); */
+
+    //afterAll(() =>{
+    //    mongoose.connection.close()
+    //});
 });
