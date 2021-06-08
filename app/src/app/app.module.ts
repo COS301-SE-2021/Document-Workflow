@@ -18,7 +18,6 @@ import { ViewAllWorkflowsComponent } from './view-all-workflows/view-all-workflo
 import { AddDocumentModalPage } from './Modals/add-document-modal/add-document-modal.page';
 
 import { DocumentAPIService } from "./Services/document-api.service";
-import { HttpClientModule } from "@angular/common/http";
 
 
 
