@@ -2,11 +2,21 @@ import { Component, NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { LoginRegisterComponent } from './login-register/login-register.component';
 import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
+import {RegisterComponent} from "./login-register/components/register/register.component";
+import {PasswordResetComponent} from "./login-register/components/password-reset/password-reset.component";
 
 const routes: Routes = [
   {
     path: 'login',
     component: LoginRegisterComponent,
+  },
+  {
+    path: 'register',
+    component: RegisterComponent,
+  },
+  {
+    path:'password-reset',
+    component: PasswordResetComponent,
   },
   {
     path: 'view',
@@ -30,7 +40,8 @@ const routes: Routes = [
   {
     path: 'view-document-modal',
     loadChildren: () => import('./Modals/view-document-modal/view-document-modal.module').then( m => m.ViewDocumentModalPageModule)
-  },  {
+  },
+  {
     path: 'edit-document-modal',
     loadChildren: () => import('./Modals/edit-document-modal/edit-document-modal.module').then( m => m.EditDocumentModalPageModule)
   },
