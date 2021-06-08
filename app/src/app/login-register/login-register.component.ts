@@ -8,7 +8,7 @@ import { match } from './match.validator';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 //import for the users API and interface
-import { UserAPIService, User } from '../Services/user-api.service';
+import { UserAPIService, User, LoginData } from '../Services/user-api.service';
 import { ActionSheetController, Platform } from '@ionic/angular';
 import { Plugins } from 'protractor/built/plugins';
 
@@ -64,13 +64,23 @@ export class LoginRegisterComponent implements OnInit {
   }
 
   async login(): Promise<void> {
-    const { loginEmail, loginPassword } = this.loginForm.value;
-    console.log(loginEmail + ' ' + loginPassword);
-    let a = true;
-    console.log(a);
-    if (a == true) {
+    console.log(this.loginForm.value);
+    const loginData: LoginData=
+    {
+      email: this.loginForm.value.loginEmail,
+      password : this.loginForm.value.loginPassword
+    };
+    console.log(loginData);
+    const success = await UserAPIService.login(loginData);
+    if(success === 'Success')
+    {
+      alert('Login Successful');
       this.router.navigate(['view']);
     }
+    else {
+      alert('Username or Password incorrect');
+    }
+
   }
 
   fileUnspecified(): void{
@@ -85,6 +95,13 @@ export class LoginRegisterComponent implements OnInit {
     const userdata = this.registerForm.value;
     console.log('Printing file:');
     console.log(this.file);
+
+    if(this.file === undefined) //We don't allow users to register if they dont specify a signature.
+    {
+        this.fileUnspecified();
+        return;
+    }
+
     console.log(userdata);
     const user: User = {
       Fname: userdata.Fname,
@@ -93,7 +110,7 @@ export class LoginRegisterComponent implements OnInit {
       email: userdata.email,
       password: userdata.password
     };
-    const success = await UserAPIService.register(user);
+    const success = await UserAPIService.register(user, this.file);
     if(success)
     {alert('User registered');}
     else {alert('registration failed');}
