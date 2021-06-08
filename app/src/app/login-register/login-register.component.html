@@ -1,75 +1,88 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>EPI-USE Document Workflow</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content>
+  <div class="logo"></div>
 
-
-<ion-content [fullscreen]="true">
   <ion-item>
     <ion-label position="stacked">Register</ion-label>
     <ion-toggle (click)="changeOver()"></ion-toggle>
   </ion-item>
 
 
-  <ion-card name="login" *ngIf="!registerButton">
-    <ion-card-title>Login</ion-card-title>
-    <ion-card-content>
-      <form [formGroup]="loginForm" (ngSubmit)="login()">
-        <ion-item>
-          <ion-label position="stacked">Your email Address:</ion-label>
-          <ion-input inputmode="email" formControlName="loginEmail" placeholder="u17015741@tuks.co.za"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Your password:</ion-label>
-          <ion-input type="password" formControlName="loginPassword" placeholder="....."></ion-input>
-        </ion-item>
-        <ion-button expand="block" color="primary" [disabled]="!loginForm.valid" type="submit">Login</ion-button>
-      </form>
-    </ion-card-content>
-  </ion-card>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <div style="height: 100%; display: flex; align-items: center; justify-content: center;">
+          <ion-card name="login" *ngIf="!registerButton">
+            <ion-card-header color="primary">Login</ion-card-header>
+            <ion-card-content>
+              <form [formGroup]="loginForm" (ngSubmit)="login()">
+                <ion-item>
+                  <ion-label position="stacked">Email Address:</ion-label>
+                  <ion-input inputmode="email" formControlName="loginEmail"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-label position="stacked">Password:</ion-label>
+                  <ion-input type="password" formControlName="loginPassword"></ion-input>
+                </ion-item>
+                <ion-button padding expand="block" color="primary" fill="outline" [disabled]="!loginForm.valid"
+                  type="submit">Login</ion-button>
+              </form>
+            </ion-card-content>
+          </ion-card>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
-  <ion-card name="register" *ngIf="registerButton">
-    <ion-card-title>Register</ion-card-title>
-    <ion-card-content>
-      <form [formGroup]="registerForm" (ngSubmit)="register()">
-        <ion-item>
-          <ion-label position="stacked">First name:</ion-label>
-          <ion-input inputmode="text" formControlName="Fname" placeholder="Brenton"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Last name:</ion-label>
-          <ion-input inputmode="text" formControlName="Lname" placeholder="Stroberg"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Initials:</ion-label>
-          <ion-input inputmode="text" formControlName="initials" placeholder="BP"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Email:</ion-label>
-          <ion-input inputmode="text" formControlName="email" placeholder=""></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Phone number:</ion-label>
-          <ion-input inputmode="text" formControlName="phone_number" placeholder=""></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Password</ion-label>
-          <ion-input type="password" formControlName="password" placeholder=""></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Confirm password</ion-label>
-          <ion-input type="password" formControlName="confirmPassword" placeholder=""></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Add your signature</ion-label>
-          <ion-button>
-            <input type="file" #fileInput (change)="uploadFile($event)" hidden="true" accept="image/*">
-          </ion-button>
-          <ion-button (click)="selectImageSource()">Add</ion-button>
-        </ion-item>
-        <ion-button expand="block" color="primary" [disabled]="!registerForm.valid" type="submit">Register</ion-button>
-      </form>
-    </ion-card-content>
-  </ion-card>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <div style="height: 100%; display: flex; align-items: center; justify-content: center;">
+          <ion-card name="register" *ngIf="registerButton">
+            <ion-card-header color="primary">Register</ion-card-header>
+            <ion-card-content>
+              <form [formGroup]="registerForm" (ngSubmit)="register()">
+                <ion-item>
+                  <ion-label position="stacked">First name:</ion-label>
+                  <ion-input inputmode="text" formControlName="Fname"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-label position="stacked">Last name:</ion-label>
+                  <ion-input inputmode="text" formControlName="Lname"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-label position="stacked">Initials:</ion-label>
+                  <ion-input inputmode="text" formControlName="initials"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-label position="stacked">Email:</ion-label>
+                  <ion-input inputmode="text" formControlName="email"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-label position="stacked">Phone number:</ion-label>
+                  <ion-input inputmode="text" formControlName="phone_number"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-label position="stacked">Password</ion-label>
+                  <ion-input type="password" formControlName="password"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-label position="stacked">Confirm password</ion-label>
+                  <ion-input type="password" formControlName="confirmPassword"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-label position="stacked">Add your signature</ion-label>
+                  <ion-button hidden="true">
+                    <input type="file" #fileInput (change)="uploadFile($event)" hidden="true" accept="image/*">
+                  </ion-button>
+                  <ion-button (click)="selectImageSource()">Add</ion-button>
+                </ion-item>
+                <ion-button expand="block" color="primary" fill="outline" [disabled]="!registerForm.valid"
+                  type="submit">Register</ion-button>
+              </form>
+            </ion-card-content>
+          </ion-card>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>
