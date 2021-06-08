@@ -21,7 +21,7 @@ import { Plugins } from 'protractor/built/plugins';
 export class LoginRegisterComponent implements OnInit {
   loginForm: FormGroup;
   registerForm: FormGroup;
-
+  file: File;
   registerButton: boolean; //for the toggle to change modes
 
   @ViewChild('fileInput', { static: false })fileInput: ElementRef;
@@ -73,11 +73,18 @@ export class LoginRegisterComponent implements OnInit {
     }
   }
 
+  fileUnspecified(): void{
+    //For Brent
+
+  }
+
   /**
    * TODO: add verification functions on front end (ie check that confirm password matches password
    */
   async register(): Promise<void> {
     const userdata = this.registerForm.value;
+    console.log('Printing file:');
+    console.log(this.file);
     console.log(userdata);
     const user: User = {
       Fname: userdata.Fname,
@@ -88,7 +95,7 @@ export class LoginRegisterComponent implements OnInit {
     };
     const success = await UserAPIService.register(user);
     if(success)
-    {alert('User registerd');}
+    {alert('User registered');}
     else {alert('registration failed');}
     delete userdata.confirmPassword;
     this.router.navigate(['login']);
@@ -100,23 +107,6 @@ export class LoginRegisterComponent implements OnInit {
     } else {
       this.registerButton = true;
     }
-  }
-
-  loadSignature(event) {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-    reader.readAsArrayBuffer(file);
-
-    reader.onload = () => {
-      // getting image blob
-      let blob: Blob = new Blob([new Uint8Array(reader.result as ArrayBuffer)]);
-
-      //  create URL element Object
-      let URL_blob: string = URL.createObjectURL(blob);
-    };
-
-    // error checking
-    reader.onerror = (error) => {};
   }
 
   async selectImageSource() {
@@ -159,9 +149,9 @@ export class LoginRegisterComponent implements OnInit {
   uploadFile(event: EventTarget) {
     const eventObj: MSInputMethodContext = event as MSInputMethodContext;
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
-    const file: File = target.files[0];
+    this.file = target.files[0];
 
-    console.log("file", file);
+    console.log("file", this.file);
   }
 
   async addSignature(source: CameraSource) {
