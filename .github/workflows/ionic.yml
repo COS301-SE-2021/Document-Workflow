@@ -1,0 +1,12 @@
+name: Ionic CI
+on:
+  pull_request:
+    paths:
+      - 'app/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: yarn run build:app
+      - run: yarn run test:app
