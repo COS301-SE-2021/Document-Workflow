@@ -63,15 +63,16 @@
               <ion-item>
                 <ion-label position="stacked">Confirm password</ion-label>
                 <ion-input type="password" formControlName="confirmPassword"></ion-input>
-              </ion-item>
-              <ion-item>
-                <ion-label position="stacked">Add your signature</ion-label>
-                <br>
-                <ion-button>
-                  <input type="file" (change)="loadSignature($event)" id="file-input"
-                         accept="image/jpeg, image/png, image/jpg">
-                </ion-button>
-              </ion-item>
+              </ion-item
+                
+                <ion-item>
+          <ion-label position="stacked">Add your signature</ion-label>
+                  <br>
+          <ion-button>
+            <input type="file" #fileInput (change)="uploadFile($event)" hidden="true" accept="image/*">
+          </ion-button>
+          <ion-button (click)="selectImageSource()">Add</ion-button>
+        </ion-item>
               <ion-button expand="block" color="primary" fill="outline" [disabled]="!registerForm.valid" type="submit">Register</ion-button>
             </form>
           </ion-card-content>
@@ -80,5 +81,4 @@
     </ion-col>
   </ion-row>
 </ion-grid>
-
 </ion-content>

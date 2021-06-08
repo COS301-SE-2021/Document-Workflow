@@ -5,7 +5,7 @@
 </ion-header>
 
 <ion-content>
-  <form [formGroup]="docForm" (ngSubmit)="addDocument()">
+  <form [formGroup]="documentForm" (ngSubmit)="addDocument()">
     <ion-item>
       <ion-label position="stacked">Name of Document</ion-label>
       <ion-input FormControlName="documentName"></ion-input>
@@ -29,6 +29,6 @@
           accept="application/pdf">
       </ion-button>
     </ion-item>
-    <ion-button expand="block" color="primary" [disabled]="!docForm.valid" type="submit">Add button</ion-button>
+    <ion-button expand="block" color="primary" [disabled]="!documentForm.valid" type="submit">Add button</ion-button>
   </form>
 </ion-content>

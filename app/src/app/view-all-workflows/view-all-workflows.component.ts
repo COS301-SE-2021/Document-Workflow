@@ -3,10 +3,8 @@ import { IonicModule, Platform } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
 import { Browser } from '@capacitor/browser';
 
-
-// import {ModalPage}
-import { ActivatedRoute, Router } from '@angular/router';
-
+// import routing
+import { ActivatedRoute } from '@angular/router';
 
 // for the module pages
 import { AddDocumentModalPage } from '../Modals/add-document-modal/add-document-modal.page';
@@ -19,18 +17,17 @@ import { User } from './../Interfaces/user';
 import { DocumentAPIService, documentImage } from '../Services/document-api.service';
 
 @Component({
-  selector: 'app-view-workflow',
-  templateUrl: './view-workflow.component.html',
-  styleUrls: ['./view-workflow.component.scss'],
+  selector: 'app-view-all-workflows',
+  templateUrl: './view-all-workflows.component.html',
+  styleUrls: ['./view-all-workflows.component.scss'],
 })
-export class ViewWorkflowComponent implements OnInit {
+export class ViewAllWorkflowsComponent implements OnInit {
   documents: documentImage[]=[];
 
   constructor(
     private docService: DocumentAPIService,
     private modals: ModalController,
-    private plat : Platform,
-    private router: Router
+    private plat : Platform
   ) {}
 
   @Input() user: User;
@@ -41,12 +38,7 @@ export class ViewWorkflowComponent implements OnInit {
     this.docService.getDocuments().subscribe();
   }
 
-  async viewDoc(id: number) {
-    this;
-    Browser.open({
-      url: 'https://github.com/COS301-SE-2021/Document-Workflow/blob/develop_frontend_document_view/app/src/app/Files/Timesheet-Template.pdf',
-    });
-  }
+
 
   async editDoc(id: number) {
     const editModal = await this.modals.create({
@@ -60,14 +52,12 @@ export class ViewWorkflowComponent implements OnInit {
     return (await editModal).present();
   }
 
-  async addDoc() {
+  async addWorkflow() {
     const addModal = await this.modals.create({
       component: AddDocumentModalPage,
     });
 
-    (await addModal).onDidDismiss().then(() => {
-      this.router.navigate(["view"]);
-    });
+    (await addModal).onDidDismiss().then(() => {});
 
     return (await addModal).present();
   }
