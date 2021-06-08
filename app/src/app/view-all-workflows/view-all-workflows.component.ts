@@ -61,4 +61,8 @@ export class ViewAllWorkflowsComponent implements OnInit {
 
     return (await addModal).present();
   }
+
+  viewWorkFlow(){
+    this.router.navigate(['view']);
+  }
 }
