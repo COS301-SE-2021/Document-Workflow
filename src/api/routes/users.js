@@ -106,11 +106,14 @@ router.post('/login/', (req, res) => {
  *  password: the user's password
  *
  *  TODO: Check that the signature is a valid filetype!!!!
+ *  TODO: Take in a confirm password field here and make sure it matches.
  *  TODO: abstract the database functionality to a different file.
  */
 router.post('', (req, res) => {
 
     //Data comes in as a buffer, accessible through req.files.signature.data
+    console.log(req.body);
+    console.log(req.body.name);
     console.log(req.files.signature);
     let signature_base64 = req.files.signature.data.toString('base64');
     //TODO: encrypt signature

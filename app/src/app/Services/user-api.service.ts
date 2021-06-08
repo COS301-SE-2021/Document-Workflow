@@ -21,19 +21,31 @@ export class UserAPIService {
     return true;
   }
 
-  public static async register(user: User): Promise<boolean> {
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  public static async register(user: User, file: File): Promise<boolean> {
+    /*
+    const formData = new FormData();
+    formData.append('data',
+      JSON.stringify({name:user.Fname, surname:user.Lname, initials:user.initials, email:user.email, password:user.password, signature:file}));
     const response = await fetch((UserAPIService.url).concat( '/users'), { //TODO: change this url
       method: 'POST',
-      body: JSON.stringify({name:user.Fname, surname:user.Lname, initials:user.initials, email:user.email, password:user.password}),
+      body: formData,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      headers: {'Content-Type': 'application/json; charset=UTF-8'} });
-
-    if (!response.ok)
-    {
-      return false;
-    }
-
-    return true;
+      headers: {'Content-Type': 'multipart/form-data'} });
+    //Content-Type: multipart/form-data
+    //'application/json; charset=UTF-8'
+    */
+    const formData = new FormData();
+    formData.append('name', user.Fname);
+    formData.append('surname', user.Lname);
+    formData.append('initials', user.initials);
+    formData.append('password', user.password);
+    formData.append('email', user.email);
+    formData.append('signature', file);
+    let request = new XMLHttpRequest();
+    request.open('POST', 'http://localhost:3000/api/users'); //TODO: swap out this url with environment variable.
+    request.send(formData);
+    return false;
   }
 
   uploadSignature(file: File, name: string){
