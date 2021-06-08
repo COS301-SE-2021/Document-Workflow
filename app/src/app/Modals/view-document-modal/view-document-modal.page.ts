@@ -15,7 +15,7 @@ export class ViewDocumentModalPage implements OnInit {
   docPDF = null;
   srcFile: string;
   rotated: number;
-  setZoom: string;
+  setZoom: any;
   zoomLevel: number;
 
   constructor(
@@ -27,6 +27,7 @@ export class ViewDocumentModalPage implements OnInit {
     this.srcFile = "./../../../assets/Timesheet-Template.pdf";
     this.rotated = 0;
     this.setZoom = "false";
+    this.zoomLevel=1;
   }
 
   download(url: string, title: string) {
@@ -42,22 +43,27 @@ export class ViewDocumentModalPage implements OnInit {
 
   setZoomWidth(){
     this.setZoom ='page-width';
+    console.log("width");
   }
 
   setZoomFit(){
     this.setZoom ='page-fit';
+    console.log("fit");
   }
 
   setZoomHeight(){
     this.setZoom ='page-height';
+    console.log("height");
   }
 
   zoomIn(){
     this.zoomLevel += 0.25;
+    console.log("in");
   }
 
   zoomOut(){
     this.zoomLevel -=0.25;
+    console.log("out");
   }
 
 
