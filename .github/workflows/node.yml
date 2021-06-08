@@ -1,10 +1,5 @@
 name: Node CI
-on:
-  pull_request:
-    paths-ignore:
-      - 'app/**'
-    branches:
-      - master
+on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
