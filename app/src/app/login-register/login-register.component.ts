@@ -34,18 +34,18 @@ export class LoginRegisterComponent implements OnInit {
 
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
-      loginEmail: ['', [Validators.required, Validators.email]],
-      loginPassword: ['', [Validators.required, Validators.minLength(8)]],
+      loginEmail: ['u17015741@tuks.co.za', [Validators.required, Validators.email]],
+      loginPassword: ['submarine', [Validators.required, Validators.minLength(8)]],
     });
     const formOptions: AbstractControlOptions = {
       validators: match('password', 'confirmPassword'),
     };
     this.registerForm = this.formBuilder.group(
       {
-        Fname: ['', [Validators.required]],
-        Lname: ['', [Validators.required]],
-        initials: ['', [Validators.required]],
-        email: ['', [Validators.required, Validators.email]],
+        Fname: ['Timothy', [Validators.required]],
+        Lname: ['Hill', [Validators.required]],
+        initials: ['TH', [Validators.required]],
+        email: ['hill@tim.com', [Validators.required, Validators.email]],
         phone_number: [
           '',
           [

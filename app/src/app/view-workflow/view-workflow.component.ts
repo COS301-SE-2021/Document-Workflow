@@ -3,8 +3,9 @@ import { IonicModule, Platform } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
 import { Browser } from '@capacitor/browser';
 
-// import routing
-import { ActivatedRoute } from '@angular/router';
+
+// import {ModalPage}
+import { ActivatedRoute, Router } from '@angular/router';
 
 // for the module pages
 import { AddDocumentModalPage } from '../Modals/add-document-modal/add-document-modal.page';
@@ -28,6 +29,7 @@ export class ViewWorkflowComponent implements OnInit {
     private docService: DocumentAPIService,
     private modals: ModalController,
     private plat : Platform
+
   ) {}
 
   @Input() user: User;
@@ -62,7 +64,9 @@ export class ViewWorkflowComponent implements OnInit {
       component: AddDocumentModalPage,
     });
 
-    (await addModal).onDidDismiss().then(() => {});
+    (await addModal).onDidDismiss().then(() => {
+      this.router.navigate(["view"]);
+    });
 
     return (await addModal).present();
   }
