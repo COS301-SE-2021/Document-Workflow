@@ -20,6 +20,9 @@ import { AddDocumentModalPage } from './Modals/add-document-modal/add-document-m
 import { DocumentAPIService } from "./Services/document-api.service";
 
 
+//pdf viewer
+import {PdfViewerModule} from 'ng2-pdf-viewer';
+
 
 @NgModule({
   declarations: [
@@ -38,6 +41,7 @@ import { DocumentAPIService } from "./Services/document-api.service";
     FormsModule,
     IonicStorageModule.forRoot(),
     HttpClientModule,
+    PdfViewerModule,
   ],
   providers: [
     {

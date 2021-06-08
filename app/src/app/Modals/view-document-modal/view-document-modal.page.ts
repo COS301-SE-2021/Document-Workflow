@@ -11,6 +11,7 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './view-document-modal.page.html',
   styleUrls: ['./view-document-modal.page.scss'],
 })
+
 export class ViewDocumentModalPage implements OnInit {
 docForm: FormGroup;
 docPDF = null;

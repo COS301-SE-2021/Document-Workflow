@@ -11,7 +11,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 // for the module pages
 import { AddDocumentModalPage } from '../Modals/add-document-modal/add-document-modal.page';
 import { EditDocumentModalPage } from '../Modals/edit-document-modal/edit-document-modal.page';
-
+import { ViewDocumentModalPage } from '../Modals/view-document-modal/view-document-modal.page';
 //for the interfaces
 import { User } from './../Interfaces/user';
 
@@ -41,11 +41,14 @@ export class ViewWorkflowComponent implements OnInit {
     this.docService.getDocuments().subscribe();
   }
 
-  async viewDoc(id: number) {
-    this;
-    Browser.open({
-      url: 'https://github.com/COS301-SE-2021/Document-Workflow/blob/develop_frontend_document_view/app/src/app/Files/Timesheet-Template.pdf',
+  async viewDoc() {
+    console.log("here");
+    const editModal = await this.modals.create({
+      component: ViewDocumentModalPage,
     });
+    (await editModal).onDidDismiss().then(() => {});
+
+    return (await editModal).present();
   }
 
   async editDoc(id: number) {
