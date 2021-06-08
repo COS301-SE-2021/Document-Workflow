@@ -2,6 +2,7 @@ const express = require("express");
 const User = require("../../schemas/user");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
+const fs = require('fs')
 
 // "/api/users"
 
@@ -82,13 +83,18 @@ router.post('/login/:id', (req, res) => {
  */
 router.post('', (req, res) => {
 
-    //TODO: Convert password to hash with bcryptjs
+    //Data comes in as a buffer, accessible through req.files.signature.data
+    console.log(req.files.signature);
+    let signature_base64 = req.files.signature.data.toString('base64');
+    //TODO: encrypt signature
+    console.log(req.body.name);
     const user = new User({
         name: req.body.name,
         surname: req.body.surname,
         initials: req.body.initials,
         email: req.body.email,
         password: req.body.password,
+        signature: Buffer.from(signature_base64)
     });
 
     user.save()
@@ -104,5 +110,15 @@ router.post('', (req, res) => {
             });
         });
 });
+
+function encryptSignature(signature_base64)
+{
+
+}
+
+function decryptSignature(signature_base64)
+{
+
+}
 
 module.exports = router;
