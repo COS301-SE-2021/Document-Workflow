@@ -38,12 +38,7 @@ export class ViewAllWorkflowsComponent implements OnInit {
     this.docService.getDocuments().subscribe();
   }
 
-  async viewDoc(id: number) {
-    this;
-    Browser.open({
-      url: 'https://github.com/COS301-SE-2021/Document-Workflow/blob/develop_frontend_document_view/app/src/app/Files/Timesheet-Template.pdf',
-    });
-  }
+
 
   async editDoc(id: number) {
     const editModal = await this.modals.create({
@@ -57,7 +52,7 @@ export class ViewAllWorkflowsComponent implements OnInit {
     return (await editModal).present();
   }
 
-  async addDoc() {
+  async addWorkflow() {
     const addModal = await this.modals.create({
       component: AddDocumentModalPage,
     });
