@@ -18,11 +18,11 @@
       <form [formGroup]="loginForm" (ngSubmit)="login()">
         <ion-item>
           <ion-label position="stacked">Your email Address:</ion-label>
-          <ion-input inputmode="email" formControlName="loginEmail" placeholder="u17015741@tuks.co.za"></ion-input>
+          <ion-input inputmode="email" formControlName="loginEmail"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="stacked">Your password:</ion-label>
-          <ion-input type="password" formControlName="loginPassword" placeholder="....."></ion-input>
+          <ion-input type="password" formControlName="loginPassword"></ion-input>
         </ion-item>
         <ion-button expand="block" color="primary" [disabled]="!loginForm.valid" type="submit">Login</ion-button>
       </form>
@@ -35,31 +35,27 @@
       <form [formGroup]="registerForm" (ngSubmit)="register()">
         <ion-item>
           <ion-label position="stacked">First name:</ion-label>
-          <ion-input inputmode="text" formControlName="Fname" placeholder="Brenton"></ion-input>
+          <ion-input inputmode="text" formControlName="Fname"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="stacked">Last name:</ion-label>
-          <ion-input inputmode="text" formControlName="Lname" placeholder="Stroberg"></ion-input>
+          <ion-input inputmode="text" formControlName="Lname"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="stacked">Initials:</ion-label>
-          <ion-input inputmode="text" formControlName="initials" placeholder="BP"></ion-input>
+          <ion-input inputmode="text" formControlName="initials"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="stacked">Email:</ion-label>
-          <ion-input inputmode="text" formControlName="email" placeholder=""></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">Phone number:</ion-label>
-          <ion-input inputmode="text" formControlName="phone_number" placeholder=""></ion-input>
+          <ion-input inputmode="text" formControlName="email"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="stacked">Password</ion-label>
-          <ion-input type="password" formControlName="password" placeholder=""></ion-input>
+          <ion-input type="password" formControlName="password"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="stacked">Confirm password</ion-label>
-          <ion-input type="password" formControlName="confirmPassword" placeholder=""></ion-input>
+          <ion-input type="password" formControlName="confirmPassword"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="stacked">Add your signature</ion-label>
