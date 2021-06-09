@@ -12,10 +12,16 @@ import { ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
 import { LoginRegisterComponent } from './login-register/login-register.component';
 import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
 
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { ViewAllWorkflowsComponent } from './view-all-workflows/view-all-workflows.component';
+
 import { AddDocumentModalPage } from './Modals/add-document-modal/add-document-modal.page';
 
-import { DocumentService } from "./services/document.service";
+import { DocumentAPIService } from "./Services/document-api.service";
 
+
+//pdf viewer
+import {PdfViewerModule} from 'ng2-pdf-viewer';
 
 
 @NgModule({
@@ -23,7 +29,7 @@ import { DocumentService } from "./services/document.service";
     AppComponent,
     LoginRegisterComponent,
     ViewWorkflowComponent,
-
+    ViewAllWorkflowsComponent
   ],
   entryComponents: [],
   imports: [
@@ -33,7 +39,9 @@ import { DocumentService } from "./services/document.service";
     AppRoutingModule,
     ReactiveFormsModule,
     FormsModule,
-    IonicStorageModule.forRoot()
+    IonicStorageModule.forRoot(),
+    HttpClientModule,
+    PdfViewerModule,
   ],
   providers: [
     {

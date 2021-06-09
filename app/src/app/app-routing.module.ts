@@ -4,6 +4,7 @@ import { LoginRegisterComponent } from './login-register/login-register.componen
 import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
 import {RegisterComponent} from "./login-register/components/register/register.component";
 import {PasswordResetComponent} from "./login-register/components/password-reset/password-reset.component";
+import { ViewAllWorkflowsComponent } from './view-all-workflows/view-all-workflows.component';
 
 const routes: Routes = [
   {
@@ -21,7 +22,10 @@ const routes: Routes = [
   {
     path: 'view',
     component: ViewWorkflowComponent,
-
+  },
+  {
+    path: 'viewAll',
+    component: ViewAllWorkflowsComponent,
   },
   {
     path: '',
@@ -29,26 +33,26 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   {
-    path: '',
-    loadChildren: () =>
-      import('./tabs/tabs.module').then((m) => m.TabsPageModule),
-  },
-  {
     path: 'add-document-modal',
-    loadChildren: () => import('./Modals/add-document-modal/add-document-modal.module').then( m => m.AddDocumentModalPageModule)
+    loadChildren: () =>
+      import('./Modals/add-document-modal/add-document-modal.module').then(
+        (m) => m.AddDocumentModalPageModule
+      ),
   },
   {
     path: 'view-document-modal',
-    loadChildren: () => import('./Modals/view-document-modal/view-document-modal.module').then( m => m.ViewDocumentModalPageModule)
+    loadChildren: () =>
+      import('./Modals/view-document-modal/view-document-modal.module').then(
+        (m) => m.ViewDocumentModalPageModule
+      ),
   },
   {
     path: 'edit-document-modal',
-    loadChildren: () => import('./Modals/edit-document-modal/edit-document-modal.module').then( m => m.EditDocumentModalPageModule)
+    loadChildren: () =>
+      import('./Modals/edit-document-modal/edit-document-modal.module').then(
+        (m) => m.EditDocumentModalPageModule
+      ),
   },
-
-
-
-
 ];
 @NgModule({
   imports: [

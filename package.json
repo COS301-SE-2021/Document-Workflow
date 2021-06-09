@@ -4,20 +4,34 @@
   "description": "A web-based solution that facilitate the reviewing, approval and signing of documents.",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon server.js",
+    "test:docs": "mocha test/**/documents.test.js --reporter spec --timeout=60000",
+    "test:users": "mocha test/**/users.test.js --reporter spec --timeout=60000",
+    "test": "mocha test/**/*.test.js --reporter spec --timeout=60000"
   },
   "author": "Team Jar-gon",
   "license": "ISC",
   "dependencies": {
     "@angular/cli": "^12.0.2",
-    "@ionic/storage-angular": "^3.0.6",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "bootstrap": "^5.0.1",
-    "cors": "^2.8.5",
-    "express": "^4.17.1"
+    "chai": "^4.3.4",
+    "chai-http": "^4.3.0",
+    "debug": "^2.6.9",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.2.1",
+    "mongoose": "^5.12.12",
+    "request": "^2.88.2"
   },
   "devDependencies": {
+    "@babel/cli": "^7.14.3",
+    "@babel/preset-env": "^7.14.4",
+    "jest": "^27.0.4",
+    "mocha": "^8.4.0",
+    "nodemon": "^2.0.7",
+    "prettier": "^2.3.0",
     "typescript": "^4.3.2"
   }
 }
