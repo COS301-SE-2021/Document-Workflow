@@ -24,8 +24,6 @@ const routes: Routes = [
     path:'password-reset',
     component: PasswordResetComponent,
   },
-
-
   {
     path: '',
     redirectTo: 'login',
