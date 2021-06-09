@@ -47,6 +47,7 @@ export class LoginRegisterComponent implements OnInit {
     const formOptions: AbstractControlOptions = {
       validators: match('password', 'confirmPassword'),
     };
+
     this.registerForm = this.formBuilder.group(
       {
         Fname: ['Timothy', [Validators.required]],
