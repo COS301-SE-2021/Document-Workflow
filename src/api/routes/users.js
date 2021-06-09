@@ -2,10 +2,46 @@ const express = require("express");
 const User = require("../../schemas/user");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
+const nodemailer = require('nodemailer');
+const url = require('url')
+const http = require('http')
 
 // "/api/users"
 
+/**
+ * NBNB THIS route must appear before the /:id otherwise requests for verify will wrongly be sent to /:id
+ * TODO: this get request needs to return some sort of html command to redirect the user to DocumentWorkflow.
+ */
+router.get('/verify/', (req, res) => {
+    const redirect_url = "http://localhost:3000/login-register";
+    const queryObject = url.parse(req.url, true).query
+    User.find({"email": queryObject["email"]}, function(err, user) {
+        if(err)
+            res.status(500).json({
+                message: "Validation Failed"
+            });
+        else {
+                if(user[0].validateCode === queryObject["verificationCode"])
+                {
+                    user[0].validated = true;
+                    user[0].save();
+                    res.writeHead(200, { 'Content-Type': 'text/html' });
+                    res.write('<html>Successfully verified. Click<a href= ' + redirect_url + '> here</a> to return to login</html>');
+                    res.end();
+                }
+                else {
+                    res.writeHead( 401, { 'Content-Type': 'text/html' });
+                    res.write('<html>The supplied validation code was incorrect. Contact our support line should this issue persist.</html>');
+                    res.end();
+                }
+        }
+    });
+});
+
+
 router.get('/:id', (req,res)=>{
+    console.log(req.params);
     User.findById(req.params.id)
         .then((usr)=>{
             if(usr){
@@ -69,6 +105,10 @@ router.post('/login/:id', (req, res) => {
         });
 });
 
+/**
+ * TODO: check that the account is verified
+ * TODO: send back a nice response that can be used on frontend.
+ */
 router.post('/login/', (req, res) => {
 
     console.log(req.body); //TODO: delete
@@ -116,6 +156,8 @@ router.post('/login/', (req, res) => {
  *  TODO: Check that the signature is a valid filetype!!!!
  *  TODO: Take in a confirm password field here and make sure it matches.
  *  TODO: abstract the database functionality to a different file.
+ *  TODO: send verify account email
+ *  TODO: fix logic error here (what If we have saved the user but the verification email fails to send?
  */
 router.post('', (req, res) => {
 
@@ -132,22 +174,26 @@ router.post('', (req, res) => {
         initials: req.body.initials,
         email: req.body.email,
         password: req.body.password,
-        signature: Buffer.from(signature_base64)
+        signature: Buffer.from(signature_base64),
+        validateCode: crypto.randomBytes(64).toString('hex')
     });
 
+
     user.save()
-        .then((usr)=>{
+        .then((usr) => {
+            sendVerificationEmail(user.validateCode, user.email);
             res.status(200).json({
                 message: "User added successfully",
                 userId: usr._id
             });
         })
-        .catch((msg)=>{
+        .catch((msg) => {
             console.log(msg);
             res.status(500).json({
                 message: msg
             });
         });
+
 });
 
 function encryptSignature(signature_base64)
@@ -158,6 +204,44 @@ function encryptSignature(signature_base64)
 function decryptSignature(signature_base64)
 {
 
+}
+
+/**
+ * Sends a verification email to the email address associated with a newly created user account.
+ * @param code: The verification code associated with the user.
+ * @param emailAddress The email address of the user to which the email must be sent.
+ * TODO: maybe move email functionality into another file?
+ * TODO: include a link for if this email address did not actually want to create a user account.
+ */
+function sendVerificationEmail(code, emailAddress)
+{
+    let url = process.env.BASE_URL + '/users/verify?verificationCode=' + code + '&email=' +emailAddress ;
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.EMAIL_ADDRESS,
+            pass: process.env.EMAIL_PASSWORD
+        }
+    });
+
+    let mailOptions = {
+        from: process.env.EMAIL_ADDRESS,
+        to: emailAddress,
+        subject: 'Verification Code',
+        html: "<html><p>Hello new DocumentWorkflow User, use this link to activate your account! </p>" +
+                "<a href='"+url+"'>Click here</a></html>"
+
+    };
+
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+            return false;
+        } else {
+            console.log('Email sent: ' + info.response);
+            return true;
+        }
+    });
 }
 
 
