@@ -24,9 +24,13 @@ import { ActionSheetController, Platform } from '@ionic/angular';
 })
 export class LoginRegisterComponent implements OnInit {
   loginForm: FormGroup;
+  registerForm: FormGroup;
+
+  registerButton: boolean; //for the toggle to change modes
+
+  @ViewChild('fileInput', { static: false })fileInput: ElementRef;
   constructor(
     private formBuilder: FormBuilder,
-    private storageService: UserService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private userService: UserAPIService,
@@ -43,7 +47,7 @@ export class LoginRegisterComponent implements OnInit {
     const formOptions: AbstractControlOptions = {
       validators: match('password', 'confirmPassword'),
     };
-    //take this to register
+
     this.registerForm = this.formBuilder.group(
       {
         Fname: ['Timothy', [Validators.required]],
@@ -53,7 +57,7 @@ export class LoginRegisterComponent implements OnInit {
         phone_number: ['0814587896',[Validators.required, Validators.maxLength(10)]],
         password: ['', [Validators.required, Validators.minLength(9)]],
         confirmPassword: ['', [Validators.required, Validators.minLength(9)]],
-      },//to register
+      },
       formOptions
     );
   }
@@ -61,12 +65,12 @@ export class LoginRegisterComponent implements OnInit {
   async login(): Promise<void> {
     const { loginEmail, loginPassword } = this.loginForm.value;
     console.log(loginEmail + ' ' + loginPassword);
-    const a = await this.storageService.login(loginEmail, loginPassword);
+    let a = true;
     console.log(a);
     if (a == true) {
       this.router.navigate(['viewAll']);
     }
-
+  }
 
   /**
    * TODO: add verification functions on front end (ie check that confirm password matches password
@@ -99,7 +103,6 @@ export class LoginRegisterComponent implements OnInit {
 
   }
 
-  //take this to register function
   loadSignature(event) {
     const file = event.target.files[0];
     const reader = new FileReader();
