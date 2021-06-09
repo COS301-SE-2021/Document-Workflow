@@ -21,15 +21,11 @@ const routes: Routes = [
     component: ViewAllWorkflowsComponent,
   },
   {
-    path: 'register',
-    component: RegisterComponent,
-  },
-  {
     path:'password-reset',
     component: PasswordResetComponent,
   },
 
-  
+
   {
     path: '',
     redirectTo: 'login',
@@ -48,7 +44,7 @@ const routes: Routes = [
       import('./Modals/view-document-modal/view-document-modal.module').then(
         (m) => m.ViewDocumentModalPageModule
       ),
-
+      },
   {
     path: 'edit-document-modal',
     loadChildren: () =>

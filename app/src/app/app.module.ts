@@ -15,6 +15,8 @@ import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ViewAllWorkflowsComponent } from './view-all-workflows/view-all-workflows.component';
 
+import { PasswordResetComponent } from "./login-register/components/password-reset/password-reset.component"
+
 import { AddDocumentModalPage } from './Modals/add-document-modal/add-document-modal.page';
 
 import { DocumentAPIService } from "./Services/document-api.service";
@@ -29,7 +31,8 @@ import {PdfViewerModule} from 'ng2-pdf-viewer';
     AppComponent,
     LoginRegisterComponent,
     ViewWorkflowComponent,
-    ViewAllWorkflowsComponent
+    ViewAllWorkflowsComponent,
+    PasswordResetComponent,
   ],
   entryComponents: [],
   imports: [

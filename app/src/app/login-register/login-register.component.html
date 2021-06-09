@@ -77,6 +77,7 @@
                 <ion-item>
                   <ion-label position="stacked">Add your signature</ion-label>
                   <ion-button hidden="true">
+                    <!-- dont edit, its not an error believe it or not -->
                     <input type="file" #fileInput (change)="uploadFile($event)" hidden="true" accept="image/*">
                   </ion-button>
                   <ion-button (click)="selectImageSource()">Add</ion-button>
