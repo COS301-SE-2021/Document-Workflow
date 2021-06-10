@@ -1,3 +1,4 @@
+
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { AbstractControlOptions, FormBuilder } from '@angular/forms';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -103,7 +104,7 @@ export class LoginRegisterPage implements OnInit {
 
   }
 
-  loadSignature(event) {
+  loadSignature(event: any) {
     const file = event.target.files[0];
     const reader = new FileReader();
     reader.readAsArrayBuffer(file);

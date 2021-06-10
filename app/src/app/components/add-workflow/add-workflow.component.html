@@ -1,3 +1,30 @@
-<p>
-  add-workflow works!
-</p>
+<ion-header>
+  <ion-title>
+    Add a new Workflow
+  </ion-title>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="workflowForm" (ngSubmit)="submit()">
+    <ion-item>
+      <ion-label>Document name</ion-label>
+      <ion-input formControlName="workflowName" inputmode="text"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Document Description</ion-label>
+      <ion-input formControlName="workflowDescription" inputmode="text"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Add your signature</ion-label>
+      <ion-button hidden="true">
+        <!-- dont edit, its not an error believe it or not -->
+        <input FormControlName="file" type="file" #fileInput (change)="uploadFile($event)" hidden="false"
+          accept="image/*">
+      </ion-button>
+
+      <ion-button expand="block" color="primary" fill="outline" [disabled]="!workflowForm.valid"
+      type="submit">Add workflow</ion-button>
+    </ion-item>
+  </form>
+</ion-content>
