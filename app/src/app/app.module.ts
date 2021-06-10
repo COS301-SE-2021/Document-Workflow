@@ -21,12 +21,11 @@ import { RegisterLoginPopoverComponent } from './Popovers/register-login-popover
 import { ViewAllWorkflowsComponent } from './view-all-workflows/view-all-workflows.component';
 import { LoginRegisterComponent } from './login-register/login-register.component';
 import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
-
-import { DocumentAPIService } from "./Services/document-api.service";
-
+import { DocumentArchiveComponent } from './document-archive/document-archive.component';
 
 //pdf viewer
 import {PdfViewerModule} from 'ng2-pdf-viewer';
+
 
 
 
@@ -37,7 +36,8 @@ import {PdfViewerModule} from 'ng2-pdf-viewer';
     ViewWorkflowComponent,
     ViewAllWorkflowsComponent,
     PasswordResetComponent,
-    RegisterLoginPopoverComponent
+    RegisterLoginPopoverComponent,
+    DocumentArchiveComponent
   ],
   entryComponents: [],
   imports: [

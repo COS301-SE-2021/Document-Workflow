@@ -19,11 +19,11 @@ import { User } from './../Interfaces/user';
 import { DocumentAPIService, documentImage } from '../Services/document-api.service';
 
 @Component({
-  selector: 'app-view-workflow',
-  templateUrl: './view-workflow.component.html',
-  styleUrls: ['./view-workflow.component.scss'],
+  selector: 'app-document-archive',
+  templateUrl: './document-archive.component.html',
+  styleUrls: ['./document-archive.component.scss'],
 })
-export class ViewWorkflowComponent implements OnInit {
+export class DocumentArchiveComponent implements OnInit {
   documents: documentImage[]=[];
 
   constructor(
