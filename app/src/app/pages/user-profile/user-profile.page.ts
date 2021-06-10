@@ -2,16 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import {AbstractControlOptions, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UserAPIService } from '../Services/user-api.service';
-import { match } from './../login-register/match.validator';
+import { UserAPIService } from '../../Services/User/user-api.service';
+import { match } from './../../Services/match.validator';
+
 
 
 @Component({
   selector: 'app-user-profile',
-  templateUrl: './user-profile.component.html',
-  styleUrls: ['./user-profile.component.scss'],
+  templateUrl: './user-profile.page.html',
+  styleUrls: ['./user-profile.page.scss'],
 })
-export class UserProfileComponent implements OnInit {
+export class UserProfilePage implements OnInit {
 
   userFrom: FormGroup;
   constructor(
@@ -36,5 +37,4 @@ export class UserProfileComponent implements OnInit {
   submit(){
 
   }
-
 }

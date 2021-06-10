@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { DocumentArchiveComponent } from './document-archive.component';
+import { DocumentArchivePage } from './document-archive.page';
 
-describe('DocumentArchiveComponent', () => {
-  let component: DocumentArchiveComponent;
-  let fixture: ComponentFixture<DocumentArchiveComponent>;
+describe('DocumentArchivePage', () => {
+  let component: DocumentArchivePage;
+  let fixture: ComponentFixture<DocumentArchivePage>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ DocumentArchiveComponent ],
+      declarations: [ DocumentArchivePage ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(DocumentArchiveComponent);
+    fixture = TestBed.createComponent(DocumentArchivePage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

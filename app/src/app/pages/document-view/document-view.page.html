@@ -1,0 +1,50 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Document name must go here</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <pdf-viewer class="modal-fullscreen "
+      [src]= "srcFile"
+      [render-text]="true"
+      [rotation]="rotated"
+      [original-size]="false"
+      [autoresize]="true"
+      [zoom]="zoomLevel"
+      [zoom-scale]="setZoom"
+      style="display: block;"
+    >
+    </pdf-viewer>
+
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button>
+        <ion-icon name="search-outline"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-list side="top">
+        <ion-fab-button (click)="zoomIn()">
+          <ion-icon name="add-outline"></ion-icon>
+        </ion-fab-button>
+        <ion-fab-button (click)="zoomOut()">
+          <ion-icon name="remove-outline"></ion-icon>
+        </ion-fab-button>
+      </ion-fab-list>
+    </ion-fab>
+
+    <ion-fab vertical="bottom" horizontal="start" slot="fixed">
+      <ion-fab-button>
+        <ion-icon name="scan-circle-outline"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-list side="top">
+        <ion-fab-button (click)="setZoomWidth()">
+          <ion-icon name="swap-horizontal-outline"></ion-icon>
+        </ion-fab-button>
+        <ion-fab-button (click)="setZoomFit()">
+          <ion-icon name="scan-outline"></ion-icon>
+        </ion-fab-button>
+        <ion-fab-button (click)="setZoomHeight()">
+          <ion-icon name="swap-vertical-outline"></ion-icon>
+        </ion-fab-button>
+      </ion-fab-list>
+    </ion-fab>
+</ion-content>
