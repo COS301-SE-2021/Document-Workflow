@@ -16,14 +16,14 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 
 //Components
-import { PasswordResetComponent } from "./login-register/components/password-reset/password-reset.component";
-import { RegisterLoginPopoverComponent } from './Popovers/register-login-popover/register-login-popover.component';
-import { ViewAllWorkflowsComponent } from './view-all-workflows/view-all-workflows.component';
-import { LoginRegisterComponent } from './login-register/login-register.component';
+
 
 
 //pdf viewer
 import {PdfViewerModule} from 'ng2-pdf-viewer';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { UpdateUserComponent } from './components/update-user/update-user.component';
+import { AddWorkflowComponent } from './components/add-workflow/add-workflow.component';
 
 
 
@@ -31,7 +31,9 @@ import {PdfViewerModule} from 'ng2-pdf-viewer';
 @NgModule({
   declarations: [
     AppComponent,
-
+    ResetPasswordComponent,
+    AddWorkflowComponent,
+    UpdateUserComponent
   ],
   entryComponents: [],
   imports: [

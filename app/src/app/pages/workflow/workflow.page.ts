@@ -5,7 +5,7 @@ import { fromEventPattern } from 'rxjs';
 //interface and services
 import { User } from  './../../Services/User/user-api.service';
 import { documentImage, DocumentAPIService } from './../../Services/Document/document-api.service';
-import { ModalController } from '@ionic/angular/providers/modal-controller';
+import { ModalController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 
