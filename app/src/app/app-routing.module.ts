@@ -2,35 +2,46 @@ import { Component, NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 
-import { LoginRegisterComponent } from './login-register/login-register.component';
-import { PasswordResetComponent } from "./login-register/components/password-reset/password-reset.component";
-import { WorkflowsPageModule } from './workflows/workflows.module';
 
 
 const routes: Routes = [
   {
     path: 'login',
-    component: LoginRegisterComponent,
-    pathMatch: 'full',
-    canLoad:[]
+    loadChildren: () => import('./pages/login-register/login-register.module').
+    then( m => m.LoginRegisterPageModule),
+    pathMatch: 'full'
   },
   {
-    path: 'password-reset',
-    component: PasswordResetComponent,
-    pathMatch: 'full',
+    path: 'archive',
+    loadChildren: () => import('./pages/document-archive/document-archive.module').
+    then( m => m.DocumentArchivePageModule),
+    pathMatch: 'full'
   },
-
   {
-    path: '',
-    redirectTo: 'login',
-    pathMatch: 'full',
+    path: 'documentView',
+    loadChildren: () => import('./pages/document-view/document-view.module').
+    then( m => m.DocumentViewPageModule),
+    pathMatch: 'full'
   },
-
   {
-    path: 'main',
-    loadChildren: () => import('./workflows/workflows.module').then( m => m.WorkflowsPageModule),
-    pathMatch: 'full',
-  },{
+    path: 'userProfile',
+    loadChildren: () => import('./pages/user-profile/user-profile.module').
+    then( m => m.UserProfilePageModule),
+    pathMatch: 'full'
+  },
+  {
+    path: 'home',
+    loadChildren: () => import('./pages/workflow/workflow.module').
+    then( m => m.WorkflowPageModule),
+    pathMatch: 'full'
+  },
+  {
+    path: 'intro',
+    loadChildren: () => import('./pages/intro/intro-routing.module').
+    then( m => m.IntroPageRoutingModule),
+    pathMatch: 'full'
+  },
+  {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full'
