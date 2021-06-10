@@ -55,8 +55,8 @@ export class LoginRegisterComponent implements OnInit {
         initials: ['TH', [Validators.required]],
         email: ['hill@tim.com', [Validators.required, Validators.email]],
         phone_number: ['0814587896',[Validators.required, Validators.maxLength(10)]],
-        password: ['', [Validators.required, Validators.minLength(9)]],
-        confirmPassword: ['', [Validators.required, Validators.minLength(9)]],
+        password: ['123456789', [Validators.required, Validators.minLength(9)]],
+        confirmPassword: ['123456789', [Validators.required, Validators.minLength(9)]],
       },
       formOptions
     );
@@ -85,13 +85,14 @@ export class LoginRegisterComponent implements OnInit {
       email: userdata.email,
       password: userdata.password
     };
-    const success = await UserAPIService.register(user);
-    if(success)
-    {    this.presentPopover("User registered");}
-    else {
-      this.presentPopover("registration failed");}
-    delete userdata.confirmPassword;
-    this.router.navigate(['login']);
+    // const success = await UserAPIService.register(user);
+    // if(success)
+    // {    this.presentPopover("termsOfService");}
+    // else {
+    //   this.presentPopover("registration failed");}
+    // delete userdata.confirmPassword;
+    this.presentPopover("termsOfService");
+    //this.router.navigate(['login']);
   }
 
   changeOver(): void {
@@ -177,6 +178,7 @@ export class LoginRegisterComponent implements OnInit {
   }
 
   async presentPopover(message: string){
+    console.log("here");
     const popover = await this.popController.create({
       component: RegisterLoginPopoverComponent,
       componentProps: {"message": message},

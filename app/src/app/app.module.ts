@@ -9,21 +9,25 @@ import { Browser } from '@capacitor/browser'
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
-import { LoginRegisterComponent } from './login-register/login-register.component';
-import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
+
 
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+
+
+
+//Components
+import { PasswordResetComponent } from "./login-register/components/password-reset/password-reset.component";
+import { RegisterLoginPopoverComponent } from './Popovers/register-login-popover/register-login-popover.component';
 import { ViewAllWorkflowsComponent } from './view-all-workflows/view-all-workflows.component';
-
-import { PasswordResetComponent } from "./login-register/components/password-reset/password-reset.component"
-
-import { AddDocumentModalPage } from './Modals/add-document-modal/add-document-modal.page';
+import { LoginRegisterComponent } from './login-register/login-register.component';
+import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
 
 import { DocumentAPIService } from "./Services/document-api.service";
 
 
 //pdf viewer
 import {PdfViewerModule} from 'ng2-pdf-viewer';
+
 
 
 @NgModule({
@@ -33,6 +37,7 @@ import {PdfViewerModule} from 'ng2-pdf-viewer';
     ViewWorkflowComponent,
     ViewAllWorkflowsComponent,
     PasswordResetComponent,
+    RegisterLoginPopoverComponent
   ],
   entryComponents: [],
   imports: [
