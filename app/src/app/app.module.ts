@@ -20,7 +20,6 @@ import { PasswordResetComponent } from "./login-register/components/password-res
 import { RegisterLoginPopoverComponent } from './Popovers/register-login-popover/register-login-popover.component';
 import { ViewAllWorkflowsComponent } from './view-all-workflows/view-all-workflows.component';
 import { LoginRegisterComponent } from './login-register/login-register.component';
-import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
 import { DocumentArchiveComponent } from './document-archive/document-archive.component';
 
 //pdf viewer
@@ -33,7 +32,6 @@ import {PdfViewerModule} from 'ng2-pdf-viewer';
   declarations: [
     AppComponent,
     LoginRegisterComponent,
-    ViewWorkflowComponent,
     ViewAllWorkflowsComponent,
     PasswordResetComponent,
     RegisterLoginPopoverComponent,

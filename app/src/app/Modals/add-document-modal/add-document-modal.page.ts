@@ -41,20 +41,4 @@ export class AddDocumentModalPage implements OnInit {
     this.dismissModal();
   }
 
-  async loadDocument(event) {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-    reader.readAsArrayBuffer(file);
-
-    reader.onload = () => {
-      // getting image blob
-      let blob: Blob = new Blob([new Uint8Array(reader.result as ArrayBuffer)]);
-
-      //  create URL element Object
-      let URL_blob: string = URL.createObjectURL(blob);
-    };
-
-    // error checking
-    reader.onerror = (error) => {};
-  }
 }
