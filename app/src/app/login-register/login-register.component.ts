@@ -16,6 +16,8 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { UserAPIService, User } from '../Services/user-api.service';
 import { ActionSheetController, Platform } from '@ionic/angular';
 
+//import for the loading controller
+import {LoadingController} from "@ionic/angular";
 
 @Component({
   selector: 'app-login-register',
@@ -36,7 +38,8 @@ export class LoginRegisterComponent implements OnInit {
     private userService: UserAPIService,
     private plat: Platform,
     private actionSheetController: ActionSheetController,
-    private popController :PopoverController
+    private popController: PopoverController,
+    private loadCtrl: LoadingController
   ) {}
 
   ngOnInit() {
@@ -110,10 +113,10 @@ export class LoginRegisterComponent implements OnInit {
 
     reader.onload = () => {
       // getting image blob
-      let blob: Blob = new Blob([new Uint8Array(reader.result as ArrayBuffer)]);
+      const blob: Blob = new Blob([new Uint8Array(reader.result as ArrayBuffer)]);
 
       //  create URL element Object
-      let URL_blob: string = URL.createObjectURL(blob);
+      const URL_blob: string = URL.createObjectURL(blob);
     };
 
     // error checking
@@ -162,7 +165,7 @@ export class LoginRegisterComponent implements OnInit {
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
     const file: File = target.files[0];
 
-    console.log("file", file);
+    console.log('file', file);
   }
 
   async addSignature(source: CameraSource) {
@@ -179,13 +182,30 @@ export class LoginRegisterComponent implements OnInit {
   async presentPopover(message: string){
     const popover = await this.popController.create({
       component: RegisterLoginPopoverComponent,
-      componentProps: {"message": message},
+      componentProps: {'message': message},
       translucent: true,
     });
 
     await popover.present();
 
     const{role} = await popover.onDidDismiss();
-    console.log("closed with", role);
+    console.log('closed with', role);
+  }
+
+//  Loading Control for buttons
+  async loadingRegister()
+  {
+    const load = await this.loadCtrl.create({
+      message: 'Hang in there... we almost done',
+      duration: 3000,
+      showBackdrop: false,
+      spinner: 'bubbles'
+    });
+
+    load.present();
+
+    setTimeout(() => {
+      load.dismiss();
+    },3000);
   }
 }
