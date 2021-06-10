@@ -11,6 +11,7 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { UserAPIService, User, LoginData } from '../Services/user-api.service';
 import { ActionSheetController, Platform } from '@ionic/angular';
 import { Plugins } from 'protractor/built/plugins';
+import {DocumentAPIService} from "../Services/document-api.service";
 
 
 @Component({
@@ -110,6 +111,7 @@ export class LoginRegisterComponent implements OnInit {
       email: userdata.email,
       password: userdata.password
     };
+
     const success = await UserAPIService.register(user, this.file);
     if(success)
     {alert('User registered');}
