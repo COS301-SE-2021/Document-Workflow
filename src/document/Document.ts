@@ -7,4 +7,5 @@ const documentSchema = mongoose.Schema({
     size: {type: Number, required: true},
 });
 
-module.exports = mongoose.model('Document', documentSchema);
+const model = mongoose.model("Document", documentSchema);
+export default model;
