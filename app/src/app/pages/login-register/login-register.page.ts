@@ -15,7 +15,12 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 //import for the users API and interface
 import { UserAPIService, User } from '../../Services/User/user-api.service';
+
+import { UserAPIService, User, LoginData } from '../Services/user-api.service';
+
 import { ActionSheetController, Platform } from '@ionic/angular';
+import { Plugins } from 'protractor/built/plugins';
+import {DocumentAPIService} from "../Services/document-api.service";
 
 @Component({
   selector: 'app-login-register',
@@ -25,7 +30,7 @@ import { ActionSheetController, Platform } from '@ionic/angular';
 export class LoginRegisterPage implements OnInit {
   loginForm: FormGroup;
   registerForm: FormGroup;
-
+  file: File;
   registerButton: boolean; //for the toggle to change modes
 
   @ViewChild('fileInput', { static: false })fileInput: ElementRef;
@@ -54,22 +59,44 @@ export class LoginRegisterPage implements OnInit {
         Lname: ['Hill', [Validators.required]],
         initials: ['TH', [Validators.required]],
         email: ['hill@tim.com', [Validators.required, Validators.email]],
-        phone_number: ['0814587896',[Validators.required, Validators.maxLength(10)]],
-        password: ['123456789', [Validators.required, Validators.minLength(9)]],
-        confirmPassword: ['123456789', [Validators.required, Validators.minLength(9)]],
+        phone_number: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(10),
+            Validators.maxLength(10),
+          ],
+        ],
+        password: ['', [Validators.required, Validators.minLength(9)]],
+        confirmPassword: ['', [Validators.required, Validators.minLength(9)]],
       },
       formOptions
     );
   }
 
   async login(): Promise<void> {
-    const { loginEmail, loginPassword } = this.loginForm.value;
-    console.log(loginEmail + ' ' + loginPassword);
-    let a = true;
-    console.log(a);
-    if (a == true) {
-      this.router.navigate(['viewAll']);
+    console.log(this.loginForm.value);
+    const loginData: LoginData=
+    {
+      email: this.loginForm.value.loginEmail,
+      password : this.loginForm.value.loginPassword
+    };
+    console.log(loginData);
+    const success = await UserAPIService.login(loginData);
+    if(success === 'Success')
+    {
+      alert('Login Successful');
+      this.router.navigate(['view']);
     }
+    else {
+      alert('Username or Password incorrect');
+    }
+
+  }
+
+  fileUnspecified(): void{
+    //For Brent for if the signasture doesnt exists
+
   }
 
   /**
@@ -77,6 +104,15 @@ export class LoginRegisterPage implements OnInit {
    */
   async register(): Promise<void> {
     const userdata = this.registerForm.value;
+    console.log('Printing file:');
+    console.log(this.file);
+
+    if(this.file === undefined) //We don't allow users to register if they dont specify a signature.
+    {
+        this.fileUnspecified();
+        return;
+    }
+
     console.log(userdata);
     const user: User = {
       Fname: userdata.Fname,
@@ -85,11 +121,15 @@ export class LoginRegisterPage implements OnInit {
       email: userdata.email,
       password: userdata.password
     };
-    const success = await UserAPIService.register(user);
+
+    const success = await UserAPIService.register(user, this.file);
     if(success)
-    {    this.presentPopover("termsOfService");}
-    else {
-      this.presentPopover("registration failed");}
+    // {    this.presentPopover("termsOfService");}
+    // else {
+    //   this.presentPopover("registration failed");}
+    {alert('User registered');}
+    else {alert('registration failed');}
+
     delete userdata.confirmPassword;
     this.presentPopover("termsOfService");
     this.router.navigate(['login']);
@@ -104,22 +144,6 @@ export class LoginRegisterPage implements OnInit {
 
   }
 
-  loadSignature(event: any) {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-    reader.readAsArrayBuffer(file);
-
-    reader.onload = () => {
-      // getting image blob
-      let blob: Blob = new Blob([new Uint8Array(reader.result as ArrayBuffer)]);
-
-      //  create URL element Object
-      let URL_blob: string = URL.createObjectURL(blob);
-    };
-
-    // error checking
-    reader.onerror = (error) => {};
-  }
 
   async selectImageSource() {
     const buttons = [
@@ -161,9 +185,9 @@ export class LoginRegisterPage implements OnInit {
   uploadFile(event: EventTarget) {
     const eventObj: MSInputMethodContext = event as MSInputMethodContext;
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
-    const file: File = target.files[0];
+    this.file = target.files[0];
 
-    console.log("file", file);
+    console.log("file", this.file);
   }
 
   async addSignature(source: CameraSource) {
