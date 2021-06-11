@@ -26,8 +26,8 @@
       <ion-label position="stacked">Add your signature</ion-label>
       <ion-button hidden="true">
         <!-- dont edit, its not an error believe it or not -->
-        <input FormControlName="file" type="file" #fileInput (change)="uploadFile($event)" hidden="true"
-          accept="application/pdf"></ion-button>
+        <input FormControlName="fileUploader" type="file" #fileInput (change)="uploadFile($event)" hidden="false"
+          accept="application/pdf" required></ion-button>
           <ion-button (click)="selectImageSource()">Add</ion-button>
     </ion-item>
     <ion-button expand="block" color="primary" fill="outline" [disabled]="!workflowForm.valid || !userForm.valid" type="submit">Add

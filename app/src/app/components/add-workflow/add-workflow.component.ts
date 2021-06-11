@@ -27,11 +27,11 @@ export class AddWorkflowComponent implements OnInit {
   ngOnInit() {
     this.workflowForm = this.fb.group({
       workflowName: ['',[Validators.required]],
-      workflowDescription:['', [Validators.required]]
+      workflowDescription:['', [Validators.required]],
     });
 
     this.userForm = this.fb.group({
-      user1: ['', [Validators.required]],
+      user1: ['', [Validators.email, Validators.required]],
     });
   }
 
