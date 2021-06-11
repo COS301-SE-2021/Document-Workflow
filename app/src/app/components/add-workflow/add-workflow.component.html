@@ -14,22 +14,23 @@
       <ion-label>Document Description</ion-label>
       <ion-input formControlName="workflowDescription" inputmode="text"></ion-input>
     </ion-item>
-
-    <ion-item *ngFor="let control of workflowForm.controls | keyvalue">
-      <ion-label>Add users</ion-label>
-      <ion-input required type="text" [formControlName]="control.key"></ion-input>
-    </ion-item>
-
+    <form  [formGroup]="userForm">
+      <ion-item *ngFor="let control of userForm.controls | keyvalue">
+        <ion-label>Add users</ion-label>
+        <ion-input  type="text" [formControlName]="control.key"></ion-input>
+        <ion-button expand="full" color="light" (click)="addUser()">Add Player</ion-button>
+        <ion-icon> Remove user</ion-icon>
+      </ion-item>
+  </form>
     <ion-item>
       <ion-label position="stacked">Add your signature</ion-label>
       <ion-button hidden="true">
         <!-- dont edit, its not an error believe it or not -->
-        <input FormControlName="file" type="file" #fileInput (change)="uploadFile($event)" hidden="false"
-          accept="image/*">
-      </ion-button>
-
-      <ion-button expand="block" color="primary" fill="outline" [disabled]="!workflowForm.valid"
-      type="submit">Add workflow</ion-button>
+        <input FormControlName="file" type="file" #fileInput (change)="uploadFile($event)" hidden="true"
+          accept="application/pdf"></ion-button>
+          <ion-button (click)="selectImageSource()">Add</ion-button>
     </ion-item>
+    <ion-button expand="block" color="primary" fill="outline" [disabled]="!workflowForm.valid || !userForm.valid" type="submit">Add
+      workflow</ion-button>
   </form>
 </ion-content>

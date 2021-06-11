@@ -1,3 +1,5 @@
+/* eslint-disable @angular-eslint/no-input-rename */
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
@@ -9,30 +11,29 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class RegisterLoginPopoverComponent implements OnInit {
 
   header: string;
-  @Input("Message") message: string;
-  term: boolean = false;
-  loader: boolean = false;
+  @Input('Message') message: string;
+  term = false;
+  loader = false;
 
-  tosForm: FormGroup
+  tosForm: FormGroup;
   constructor(private formbuilder: FormBuilder) { }
 
   ngOnInit() {
-    if(this.message==="load"){
+    if(this.message==='load'){
       this.term = false;
       this.loader = true;
-      this.message="";
-    }else if(this.message === "termsOfService"){
-      console.log("here");
-      this.header ="Terms of Service";
+      this.message='';
+    }else if(this.message === 'termsOfService'){
+      this.header ='Terms of Service';
       this.displayTermOfService();
       this.term = true;
 
       this.tosForm = this.formbuilder.group({
         reponse:['', [Validators.required]]
-      })
+      });
     }else{
       this.term=false;
-      this.header ="Message";
+      this.header ='Message';
     }
   }
 
