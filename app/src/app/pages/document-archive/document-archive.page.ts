@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Component, OnInit, Input } from '@angular/core';
 import { IonicModule, Platform } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
@@ -14,6 +15,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 //imports for services and interfaces
 import { User } from '../../Services/User/user-api.service';
 import { DocumentAPIService, documentImage } from '../../Services/Document/document-api.service';
+import { DocumentViewPage } from '../document-view/document-view.page';
 
 @Component({
   selector: 'app-document-archive',
@@ -26,7 +28,7 @@ export class DocumentArchivePage implements OnInit {
   constructor(
     private docService: DocumentAPIService,
     private modals: ModalController,
-    private plat : Platform,
+    private plat: Platform,
     private router: Router
   ) {}
 
@@ -38,15 +40,14 @@ export class DocumentArchivePage implements OnInit {
     this.docService.getDocuments().subscribe();
   }
 
-  // async viewDoc() {
-  //   console.log("here");
-  //   const editModal = await this.modals.create({
-  //     component: ViewDocumentModalPage,
-  //   });
-  //   (await editModal).onDidDismiss().then(() => {});
+  async viewDoc() {
+    const editModal = await this.modals.create({
+      component: DocumentViewPage,
+    });
+    (await editModal).onDidDismiss().then(() => {});
 
-  //   return (await editModal).present();
-  // }
+    return (await editModal).present();
+  }
 
   // async editDoc(id: number) {
   //   const editModal = await this.modals.create({
