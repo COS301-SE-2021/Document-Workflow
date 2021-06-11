@@ -17,7 +17,7 @@ import { UserAPIService, User } from '../Services/user-api.service';
 import { ActionSheetController, Platform } from '@ionic/angular';
 
 //import for the loading controller
-import {LoadingController} from "@ionic/angular";
+import {LoadingController} from '@ionic/angular';
 
 @Component({
   selector: 'app-login-register',
@@ -192,7 +192,7 @@ export class LoginRegisterComponent implements OnInit {
     console.log('closed with', role);
   }
 
-//  Loading Control for buttons
+//  Loading Control for Register buttons
   async loadingRegister()
   {
     const load = await this.loadCtrl.create({
@@ -202,7 +202,7 @@ export class LoginRegisterComponent implements OnInit {
       spinner: 'bubbles'
     });
 
-    load.present();
+    await load.present();
 
     setTimeout(() => {
       load.dismiss();
