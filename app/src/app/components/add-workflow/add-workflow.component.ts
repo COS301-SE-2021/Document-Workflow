@@ -11,7 +11,7 @@ import { DocumentViewPageRoutingModule } from 'src/app/pages/document-view/docum
 export class AddWorkflowComponent implements OnInit {
 
   workflowForm: FormGroup;
-  private userCount: number=1;
+  private userCount=1;
 
   constructor(
     private plat: Platform,
@@ -37,7 +37,7 @@ export class AddWorkflowComponent implements OnInit {
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
     const file: File = target.files[0];
 
-    console.log("file", file);
+    console.log('file', file);
   }
 
   submit(){

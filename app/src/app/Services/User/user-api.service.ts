@@ -22,10 +22,6 @@ export class UserAPIService {
 
   constructor(private http: HttpClient) {}
 
-  login(email: string, password: string): boolean {
-    return true;
-  }
-
   // eslint-disable-next-line @typescript-eslint/member-ordering
   public static async register(user: User, file: File): Promise<boolean> {
 

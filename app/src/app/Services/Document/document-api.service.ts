@@ -3,11 +3,12 @@ import { Injectable } from '@angular/core';
 
 
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface documentImage{
   _id: string;
   name: string;
   createdDate: Date;
-  url:string;
+  url: string;
   blob: Blob;
 }
 
@@ -15,8 +16,8 @@ export interface documentImage{
   providedIn: 'root'
 })
 export class DocumentAPIService {
-  url="http://127.0.0.1";
-constructor(private http:HttpClient) { };
+  url='http://127.0.0.1';
+constructor(private http: HttpClient) { };
 
 
 //maybe for the signatures
@@ -24,7 +25,7 @@ constructor(private http:HttpClient) { };
     return this.http.get<documentImage[]>(`${this.url}/image`);
   }
 
-  public static async testUploadDocument(file: File): Promise<boolean>
+  async testUploadDocument(file: File): Promise<boolean>
   {
     const formData = new FormData();
     formData.append('description', 'meow Meow Meow');

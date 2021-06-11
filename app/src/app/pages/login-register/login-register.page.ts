@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { AbstractControlOptions, FormBuilder } from '@angular/forms';
@@ -14,13 +15,13 @@ import { RegisterLoginPopoverComponent } from './../../Popovers/register-login-p
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 //import for the users API and interface
-import { UserAPIService, User } from '../../Services/User/user-api.service';
 
-import { UserAPIService, User, LoginData } from '../Services/user-api.service';
+
+import { UserAPIService, User, LoginData } from './../../Services/User/user-api.service';
 
 import { ActionSheetController, Platform } from '@ionic/angular';
 import { Plugins } from 'protractor/built/plugins';
-import {DocumentAPIService} from "../Services/document-api.service";
+import {DocumentAPIService} from './../../Services/Document/document-api.service';
 
 @Component({
   selector: 'app-login-register',
@@ -33,6 +34,7 @@ export class LoginRegisterPage implements OnInit {
   file: File;
   registerButton: boolean; //for the toggle to change modes
 
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   @ViewChild('fileInput', { static: false })fileInput: ElementRef;
   constructor(
     private formBuilder: FormBuilder,
@@ -41,7 +43,7 @@ export class LoginRegisterPage implements OnInit {
     private userService: UserAPIService,
     private plat: Platform,
     private actionSheetController: ActionSheetController,
-    private popController :PopoverController
+    private popController: PopoverController
   ) {}
 
   ngOnInit() {
@@ -131,7 +133,7 @@ export class LoginRegisterPage implements OnInit {
     else {alert('registration failed');}
 
     delete userdata.confirmPassword;
-    this.presentPopover("termsOfService");
+    this.presentPopover('termsOfService');
     this.router.navigate(['login']);
   }
 
@@ -187,7 +189,7 @@ export class LoginRegisterPage implements OnInit {
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
     this.file = target.files[0];
 
-    console.log("file", this.file);
+    console.log('file', this.file);
   }
 
   async addSignature(source: CameraSource) {
@@ -202,16 +204,15 @@ export class LoginRegisterPage implements OnInit {
   }
 
   async presentPopover(message: string){
-    console.log("here");
     const popover = await this.popController.create({
       component: RegisterLoginPopoverComponent,
-      componentProps: {"message": message},
+      componentProps: {message},
       translucent: true,
     });
 
     await popover.present();
 
     const{role} = await popover.onDidDismiss();
-    console.log("closed with", role);
+    console.log('closed with', role);
   }
 }

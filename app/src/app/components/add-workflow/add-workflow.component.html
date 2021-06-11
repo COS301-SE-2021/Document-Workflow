@@ -15,6 +15,11 @@
       <ion-input formControlName="workflowDescription" inputmode="text"></ion-input>
     </ion-item>
 
+    <ion-item *ngFor="let control of workflowForm.controls | keyvalue">
+      <ion-label>Add users</ion-label>
+      <ion-input required type="text" [formControlName]="control.key"></ion-input>
+    </ion-item>
+
     <ion-item>
       <ion-label position="stacked">Add your signature</ion-label>
       <ion-button hidden="true">
