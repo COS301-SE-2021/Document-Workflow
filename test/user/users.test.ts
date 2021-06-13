@@ -1,48 +1,74 @@
-// const chai = require("chai");
-// const chaiHttp = require("chai-http");
-// const app = require("../../src");
-// const mongoose = require("mongoose");
-//
-// chai.use(chaiHttp);
-// chai.should();
-//
-// describe("Users", () => {
-//     describe("GET /api/users/:id", () => {
-//         //Test to get single user:
-//         it("should get one user by id", (done) => {
-//             const id = "60b89ade8d0127f52f8fa6cd";
-//             chai.request(app)
-//                 .get("/api/users/" + id)
-//                 .end( (err,res) => {
-//                     res.should.have.status(200);
-//                     mongoose.disconnect();
-//                     done();
-//                 });
-//         })
-//     });
-// });
-//
-// const test_users = [
-//     {
-//         _id: "60b89ade8d0127f52f8fa6cd",
-//         name: "John",
-//         surname: "Cena",
-//         initials: "J,C",
-//         email: "youcantseeme@nowhere.com",
-//         password: "1234",
-//         phone: "1234567890",
-//         validated: false,
-//         tokenDate: Date.now()
-//     },
-//     {
-//         _id: "20b89ade8d4129f52f8fa6fd",
-//         name: "Nhoj",
-//         surname: "Anec",
-//         initials: "N,A",
-//         email: "emeestnacuoy@erehwon.com",
-//         password: "4321",
-//         phone: "0987654321",
-//         validated: false,
-//         tokenDate: Date.now()
-//     }
-// ]
+import sinon from "sinon";
+import UserService from "../../src/user/UserService";
+import UserRepository from "../../src/user/UserRepository";
+import UserController from "../../src/user/UserController";
+
+describe("UserController: UNIT TESTS", () => {
+    let userService;
+
+    beforeEach(()=>{
+        userService = new UserService(new UserRepository());
+    });
+
+    describe("/GET" ,()=>{
+        describe("api/users" ,()=> {
+            test("Zero Users Found: ", async () => {
+                sinon.stub(userService, "getUsers").returns([]);
+                const userController = new UserController(userService);
+                const users = await userController.getUsersRoute();
+                expect(users.length).toBe(0);
+            });
+
+            test("One User Found: ", async () => {
+                const currentDate = Date.now();
+                sinon.stub(userService, "getUsers").returns([{
+                    name: "Joey",
+                    surname: "Cooper",
+                    initials: "JC",
+                    email: "joey@hotmail.gov",
+                    password: "password1234",
+                    validated: false,
+                    tokenDate: currentDate
+                }]);
+                const userController = new UserController(userService);
+                userController.getUsersRoute()
+                    .then((users) => {
+                        expect(users.length).toBe(1);
+                        expect(users[0].name).toBe("Joey");
+                        expect(users[0].surname).toBe("Cooper");
+                        expect(users[0].initials).toBe("JC");
+                        expect(users[0].email).toBe("joey@hotmail.gov");
+                        expect(users[0].password).toBe("password1234");
+                        expect(users[0].validated).toBe(false);
+                        expect(users[0].tokenDate).toBe(currentDate);
+                    })
+                    .catch(err => {
+                        throw err;
+                    });
+            });
+        });
+
+        describe("api/users/:id" ,()=> {
+            test("Zero Users Found by id", async () => {
+            });
+
+            test("One User Found by id", async () => {
+            });
+
+            test("Something is wrong with URI", async () => {
+            });
+        });
+    });
+
+    describe("api/users POST", ()=>{
+
+    })
+
+    describe("api/users PUT", ()=>{
+
+    })
+
+    describe("api/users DELETE", ()=>{
+
+    })
+});
