@@ -4,18 +4,15 @@
   "description": "A web-based solution that facilitate the reviewing, approval and signing of documents.",
   "main": "src/index.js",
   "scripts": {
-    "build:server": "echo 'script for building server'",
-    "test:server": "echo 'script for running server test suite'",
-    "run:server": "echo 'script for running server in production'",
+    "build:server": "tsc",
+    "test:server": "jest --verbose",
+    "run:server": "node dist/src/server.js",
     "dev:server": "tsc-watch --onSuccess \"node ./dist/src/server.js\"",
+
     "build:app": "echo 'this is for anything that needs to be compiled before execution'",
     "test:app": "echo 'testing for frontend must run in cli'",
     "run:app": "echo 'this is for running in production'",
-    "dev:app": "cd app && npm start",
-    "start": "nodemon dist/server.js",
-    "test:docs": "mocha test/**/documents.test.js --reporter spec --timeout=60000",
-    "test:users": "mocha test/**/users.test.js --reporter spec --timeout=60000",
-    "test": "jest"
+    "dev:app": "cd app && npm start"
   },
   "author": "Team Jar-gon",
   "license": "ISC",
