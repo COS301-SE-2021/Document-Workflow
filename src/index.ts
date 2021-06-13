@@ -1,11 +1,11 @@
 import 'reflect-metadata';
 import express from 'express';
 import bodyParser from "body-parser";
-import * as dotenv from 'dotenv';
-dotenv.config();
-//import userRoute from "./user/UserController";
-import DocumentController from "./document/DocumentController";
 import { container } from "tsyringe";
+import * as dotenv from 'dotenv';
+import DocumentController from "./document/DocumentController";
+import UserController from "./user/UserController";
+dotenv.config();
 
 const fileUpload = require('express-fileupload');
 
@@ -24,6 +24,6 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/documents", container.resolve(DocumentController).routes());
-//app.use("/api/users", userRoute);
+app.use("/api/users", container.resolve(UserController).routes());
 export default app;
 
