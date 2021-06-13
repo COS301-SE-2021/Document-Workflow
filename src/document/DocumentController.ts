@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { autoInjectable } from "tsyringe";
 import DocumentService from "./DocumentService";
+import { DocumentI } from "./Document";
 
 @autoInjectable()
 export default class DocumentController{
@@ -12,23 +13,38 @@ export default class DocumentController{
         this.router = new Router();
     }
 
-    getDocumentsRoute(response) {
-        return this.documentService.getDocuments(response);
+    async getDocumentsRoute(): Promise<DocumentI[]> {
+        try{
+            return await this.documentService.getDocuments();
+        } catch(err) {
+            throw err;
+        }
     }
 
-    postDocumentRoute(request, response) {
-        return this.documentService.postDocument(request, response);
+    async postDocumentRoute(request) {
+        try {
+            return await this.documentService.postDocument(request);
+        } catch (err) {
+            throw err;
+        }
     }
 
     routes() {
         this.router.get("", async (req, res) => {
-            await res.send(this.getDocumentsRoute(res));
+            try {
+                res.status(200).json(await this.getDocumentsRoute());
+            } catch(err){
+                res.status(400).json(err);
+            }
         });
 
         this.router.post("", async (req,res) => {
-            await res.send(this.postDocumentRoute(req, res));
-        })
-
+            try {
+                res.status(200).json(await this.postDocumentRoute(req));
+            } catch(err){
+                res.status(400).json(err);
+            }
+        });
         return this.router;
     }
 }
