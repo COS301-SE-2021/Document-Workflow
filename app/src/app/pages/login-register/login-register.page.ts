@@ -46,8 +46,7 @@ export class LoginRegisterPage implements OnInit {
     private userService: UserAPIService,
     private plat: Platform,
     private actionSheetController: ActionSheetController,
-    private popController: PopoverController,
-    private loadCtrl: LoadingController
+    private loadCtrl: LoadingController,
     private popController: PopoverController
   ) {}
 
@@ -252,6 +251,5 @@ export class LoginRegisterPage implements OnInit {
     setTimeout(() => {
       load.dismiss();
     },7000);
-    console.log('closed with', role);
   }
 }
