@@ -1,3 +1,36 @@
-<p>
-  register-login-popover works!
-</p>
+<!-- <ion-header>
+  <ion-title *ngI="loader">
+    Loading
+  </ion-title>
+  <ion-title *ngIf="term")>
+    Terms of Service
+  </ion-title>
+  <ion-title *ngIf="!term && !loader">
+    Message
+  </ion-title>
+</ion-header>
+
+<ion-content>
+  <div *ngIf="loader">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+  <div *ngIf="term">
+    <p>
+      {{message}}
+    </p>
+    <form [formGroup]="tosForm">
+      <ion-item>
+        <ion-label>Do you agree </ion-label>
+        <ion-checkbox formControlName="reponse"></ion-checkbox>
+      </ion-item>
+      <ion-button padding expand="block" color="primary" fill="outline" [disabled]="!tosForm.valid" type="submit">Login</ion-button>
+    </form>
+
+  </div>
+  <div *ngIf="!term && !loader">
+    <p>
+      {{message}}
+    </p>
+  </div>
+
+</ion-content> -->

@@ -9,30 +9,31 @@ import { Browser } from '@capacitor/browser'
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
-import { LoginRegisterComponent } from './login-register/login-register.component';
-import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
+
 
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { ViewAllWorkflowsComponent } from './view-all-workflows/view-all-workflows.component';
 
-import { PasswordResetComponent } from "./login-register/components/password-reset/password-reset.component"
 
-import { AddDocumentModalPage } from './Modals/add-document-modal/add-document-modal.page';
 
-import { DocumentAPIService } from "./Services/document-api.service";
+//Components
+
 
 
 //pdf viewer
 import {PdfViewerModule} from 'ng2-pdf-viewer';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { UpdateUserComponent } from './components/update-user/update-user.component';
+import { AddWorkflowComponent } from './components/add-workflow/add-workflow.component';
+
+
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginRegisterComponent,
-    ViewWorkflowComponent,
-    ViewAllWorkflowsComponent,
-    PasswordResetComponent,
+    ResetPasswordComponent,
+    AddWorkflowComponent,
+    UpdateUserComponent
   ],
   entryComponents: [],
   imports: [
