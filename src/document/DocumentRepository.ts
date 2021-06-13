@@ -1,41 +1,27 @@
-import Document from "./Document";
-import Database from "../Database";
-import { injectable } from "tsyringe";
+import Document, { DocumentI } from "./Document";
 
-@injectable()
 export default class DocumentRepository {
-    db: Database;
 
-    constructor(db: Database) {
-        this.db = db;
-        this.db.get()
-            .then(() => {
-                console.log("connection received");
-            })
-            .catch((err) => {
-                console.error(err);
-            });
-    }
-
-    async postDocument(file): Promise<void> {
-        const newDocument = new Document({
+    async postDocument(request): Promise<void> {
+        const file = request.files.file;
+        const doc = new Document({
             doc_name: file.name,
             mimetype: file.mimetype,
             encoding: file.encoding,
             size: file.size,
         });
         try{
-            return await newDocument.save();
+            await doc.save();
         } catch (err) {
-            return err;
+            throw err;
         }
     }
 
-    async getDocuments(): Promise<Document[]> {
+    async getDocuments(): Promise<DocumentI[]> {
         try {
-            return await Document.find()
+            return await Document.find({});
         } catch(err) {
-            return err;
+            throw err;
         }
     }
 }
