@@ -8,7 +8,7 @@ import { ViewDocumentModalPageRoutingModule } from './view-document-modal-routin
 
 import { ViewDocumentModalPage } from './view-document-modal.page';
 
-import { PdfViewerModule } from 'ng2-pdf-viewer';
+
 
 import { Injectable } from "@angular/core";
 
@@ -18,8 +18,7 @@ import { Injectable } from "@angular/core";
     CommonModule,
     FormsModule,
     IonicModule,
-    ViewDocumentModalPageRoutingModule,
-    PdfViewerModule
+    ViewDocumentModalPageRoutingModule
   ],
   declarations: [ViewDocumentModalPage]
 })

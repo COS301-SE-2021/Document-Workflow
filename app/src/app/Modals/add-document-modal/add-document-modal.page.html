@@ -8,7 +8,7 @@
   <form [formGroup]="documentForm" (ngSubmit)="addDocument()">
     <ion-item>
       <ion-label position="stacked">Name of Document</ion-label>
-      <ion-input FormControlName="documentName"></ion-input>
+      <ion-input FormControlName="Fname" inputmode="text"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label position="stacked">Description of Document</ion-label>
@@ -25,9 +25,10 @@
     <ion-item>
       <ion-label position="stacked">Choose doc</ion-label>
       <ion-button expand="full">
-
+        <input type="file" (change)="loadDocument($event)" id="file-input"
+          accept="application/pdf">
       </ion-button>
     </ion-item>
-    <ion-button expand="block" color="primary" [disabled]="!documentForm.valid" (click)="docAdded()" type="submit">Add button</ion-button>
+    <ion-button expand="block" color="primary" [disabled]="!documentForm.valid" type="submit">Add button</ion-button>
   </form>
 </ion-content>

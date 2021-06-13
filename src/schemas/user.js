@@ -35,10 +35,7 @@ const userSchema = mongoose.Schema({
     },
     // signature: { type: String, required: true },
     validated: { type: Boolean, default: false },
-    validateCode: {type: String, required: true},
-    tokenDate: { type: Date, default: Date.now },
-    signature: {type: Buffer},
-    resetPasswordToken: {type: String, default: ""}
+    tokenDate: { type: Date, default: Date.now }
 });
 
 /**

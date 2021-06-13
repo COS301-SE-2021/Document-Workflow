@@ -37,7 +37,6 @@
     "cordova-plugin-file-opener2": "^3.0.5",
     "cordova-plugin-filechooser": "^1.2.0",
     "http-proxy-middleware": "^0.19.1",
-    "ng2-pdf-viewer": "^7.0.1",
     "pdfmake": "^0.1.71",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
