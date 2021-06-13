@@ -29,6 +29,6 @@
           accept="application/pdf">
       </ion-button>
     </ion-item>
-    <ion-button expand="block" color="primary" [disabled]="!documentForm.valid" type="submit">Add button</ion-button>
+    <ion-button expand="block" color="primary" [disabled]="!documentForm.valid" (click)="docAdded()" type="submit">Add button</ion-button>
   </form>
 </ion-content>

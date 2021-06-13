@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControlOptions, FormBuilder } from '@angular/forms';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-password-reset',
@@ -10,12 +11,30 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 export class PasswordResetComponent implements OnInit {
 
   resetForm: FormGroup;
-  constructor() { }
+  constructor(
+    private toastCtrlr: ToastController) {}
 
   ngOnInit() {}
 
 
   reset(){
 
+  }
+
+  //  Toast Controller for reset-password
+  async emailSent()
+  {
+    const toastEmail = await this.toastCtrlr.create({
+      message: 'Password email verification sent',
+      color:'dark',
+      duration: 3000,
+      position:'top',
+    });
+
+    await toastEmail.present();
+
+    setTimeout(() => {
+      toastEmail.dismiss();
+    },3000);
   }
 }

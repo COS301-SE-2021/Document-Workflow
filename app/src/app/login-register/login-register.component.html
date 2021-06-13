@@ -82,7 +82,7 @@
                   </ion-button>
                   <ion-button (click)="selectImageSource()">Add</ion-button>
                 </ion-item>
-                <ion-button expand="block" color="primary" fill="outline" [disabled]="!registerForm.valid"
+                <ion-button expand="block" color="primary" fill="outline" [disabled]="!registerForm.valid" (click)="loadingRegister()"
                   type="submit">Register</ion-button>
                 <div text-center>
                   If you don't have an account, please <a routerLink='/register'>
