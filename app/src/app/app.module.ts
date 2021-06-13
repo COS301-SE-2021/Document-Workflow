@@ -9,22 +9,31 @@ import { Browser } from '@capacitor/browser'
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
-import { LoginRegisterComponent } from './login-register/login-register.component';
-import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
 
-import { AddDocumentModalPage } from './Modals/add-document-modal/add-document-modal.page';
 
-import { DocumentAPIService } from "./Services/document-api.service";
-import { HttpClientModule } from "@angular/common/http";
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+
+
+
+//Components
+
+
+
+//pdf viewer
+import {PdfViewerModule} from 'ng2-pdf-viewer';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { UpdateUserComponent } from './components/update-user/update-user.component';
+import { AddWorkflowComponent } from './components/add-workflow/add-workflow.component';
+
 
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginRegisterComponent,
-    ViewWorkflowComponent,
-
+    ResetPasswordComponent,
+    AddWorkflowComponent,
+    UpdateUserComponent
   ],
   entryComponents: [],
   imports: [
@@ -35,7 +44,8 @@ import { HttpClientModule } from "@angular/common/http";
     ReactiveFormsModule,
     FormsModule,
     IonicStorageModule.forRoot(),
-    HttpClientModule
+    HttpClientModule,
+    PdfViewerModule,
   ],
   providers: [
     {
