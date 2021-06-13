@@ -1,29 +1,42 @@
-import * as mongoose from "mongoose";
+import mongoose from "mongoose";
+import { singleton } from "tsyringe";
 
+@singleton()
 export default class Database{
-    private db = null;
-    async connect(){
+    private static db = null;
+
+    static async connect(): Promise<void> {
         try{
             await mongoose.connect(process.env.MONGO_PROD_URI, {
                 useNewUrlParser: true,
                 useUnifiedTopology: true,
-                useCreateIndex: true
+                useCreateIndex: true,
+                bufferCommands: false
             });
+            Database.db = mongoose.connection;
+            Database.db.on('error', console.error.bind(console, 'connection error:'));
+            Database.db.once('open', () => {
+                 console.log("Connection opened");
+             });
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    static async get(): Promise<void> {
+        try{
+            if(Database.db === null){
+                await this.connect();
+            } else {
+                console.log("Connection already exists");
+            }
         } catch (err) {
             return err;
         }
     }
 
-    async get() {
-        try{
-            if(this.db === null){
-                this.db = await this.connect();
-            } else {
-                return this.db;
-            }
-        } catch (err) {
-            return err;
-        }
+    static async disconnect() {
+        await mongoose.disconnect();
     }
 }
 
