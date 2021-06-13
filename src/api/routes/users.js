@@ -10,6 +10,8 @@ const http = require('http')
 // "/api/users"
 
 /**
+ * This route is used to validate a newly registered user. It takes in one parameter,namely 'verificationCode' which
+ * is the automatically generated code used when a new user signs up.
  * NBNB THIS route must appear before the /:id otherwise requests for verify will wrongly be sent to /:id
  * TODO: this get request needs to return some sort of html command to redirect the user to DocumentWorkflow.
  */
@@ -106,6 +108,9 @@ router.post('/login/:id', (req, res) => {
 });
 
 /**
+ * This function is the function used to login a user to the Document Workflow website/app. It expects two body
+ * parameters, 'email' and 'password'. For now, it just asserts that the hash of the input password corresponds
+ * to the hash stored for this user (given that this email address exists in the system).
  * TODO: check that the account is verified
  * TODO: send back a nice response that can be used on frontend.
  */
@@ -196,15 +201,6 @@ router.post('', (req, res) => {
 
 });
 
-function encryptSignature(signature_base64)
-{
-
-}
-
-function decryptSignature(signature_base64)
-{
-
-}
 
 /**
  * Sends a verification email to the email address associated with a newly created user account.
