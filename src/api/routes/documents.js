@@ -3,6 +3,13 @@ const Doc = require("../../schemas/document");
 const router = express.Router();
 const document_server = require('../../services/document_server')
 
+
+/**
+ * This function is used to retrieve a document from the AWS server using the metadata about a workspace stored in the metadata
+ * database. It expects to receive a field 'key' which corresponds to a Workflow id. For now it just returns the document
+ * specified by the name field that is in the AWS server.
+ * TODO: implement the process of storing document workflow id's and such so that this function can be completed.
+ */
 router.post('/retrieve/', async (req, res) => {
     //for now we will just take in the document key/name is the key but in future we must search for the path
     //to this document (using the workflow id as the filename in the bucket)
@@ -14,6 +21,9 @@ router.post('/retrieve/', async (req, res) => {
 });
 
 /**
+ * This path is a post path that is used to upload a document to the AWS server as well as store the metadata of the file
+ * in the Mongoose database. This post request expects a file as well as a 'description' field.
+ * TODO: decide what all the metadata we want to store is.
  * TODO: save the meta data about the file in the database.
  */
 router.post('', async (req, res) => {
