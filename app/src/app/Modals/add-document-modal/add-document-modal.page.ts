@@ -65,7 +65,7 @@ export class AddDocumentModalPage implements OnInit {
     const toastDocAdd = await this.toastCtrlr.create({
       message: 'File Uploaded',
       color:'dark',
-      duration: 3000,
+      duration: 4000,
       position:'top',
     });
 
@@ -73,6 +73,6 @@ export class AddDocumentModalPage implements OnInit {
 
     setTimeout(() => {
       toastDocAdd.dismiss();
-    },3000);
+    },4000);
   }
 }
