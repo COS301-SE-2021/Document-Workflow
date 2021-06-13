@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import {AbstractControlOptions, Validators } from '@angular/forms';
@@ -14,7 +15,7 @@ import { match } from './../../Services/match.validator';
 })
 export class UserProfilePage implements OnInit {
 
-  userFrom: FormGroup;
+  userForm: FormGroup;
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -23,7 +24,7 @@ export class UserProfilePage implements OnInit {
 
   ngOnInit() {
     const formOptions: AbstractControlOptions = { validators: match('password', 'confirmPassword') };
-    this.userFrom = this.fb.group({
+    this.userForm = this.fb.group({
       Fname:['',[Validators.required]],
       Lname: ['',[Validators.required]],
       initials: ['',[Validators.required]],
@@ -35,6 +36,10 @@ export class UserProfilePage implements OnInit {
   }
 
   submit(){
+
+  }
+
+  update(){
 
   }
 }

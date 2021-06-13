@@ -9,7 +9,7 @@ import { match } from './../../Services/match.validator';
 
 //popover
 import {PopoverController} from '@ionic/angular';
-import { RegisterLoginPopoverComponent } from './../../Popovers/register-login-popover/register-login-popover.component';
+// import { RegisterLoginPopoverComponent } from './../../Popovers/register-login-popover/register-login-popover.component';
 
 
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
@@ -137,7 +137,7 @@ export class LoginRegisterPage implements OnInit {
     else {alert('registration failed');}
 
     delete userdata.confirmPassword;
-    this.presentPopover('termsOfService');
+    // this.presentPopover('termsOfService');
     this.router.navigate(['login']);
   }
 
@@ -223,24 +223,12 @@ export class LoginRegisterPage implements OnInit {
     console.log('image: ', image);
   }
 
-  async presentPopover(message: string){
-    const popover = await this.popController.create({
-      component: RegisterLoginPopoverComponent,
-      componentProps: {message},
-      translucent: true,
-    });
-
-    await popover.present();
-
-    const{role} = await popover.onDidDismiss();
-    console.log('closed with', role);
-  }
 
 //  Loading Control for Register buttons
   async loadingRegister()
   {
     const load = await this.loadCtrl.create({
-      message: 'Hang in there... we almost done',
+      message: 'Hang in there... we are almost done',
       duration: 7000,
       showBackdrop: false,
       spinner: 'bubbles'

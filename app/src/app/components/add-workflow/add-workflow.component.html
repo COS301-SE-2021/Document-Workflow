@@ -12,13 +12,13 @@
     </ion-item>
     <ion-item>
       <ion-label>Document Description</ion-label>
-      <ion-input formControlName="workflowDescription" inputmode="text"></ion-input>
+      <ion-textarea formControlName="workflowDescription" inputmode="text"></ion-textarea>
     </ion-item>
     <form  [formGroup]="userForm">
       <ion-item *ngFor="let control of userForm.controls | keyvalue">
         <ion-label>Add users</ion-label>
         <ion-input  type="text" [formControlName]="control.key"></ion-input>
-        <ion-button expand="full" color="light" (click)="addUser()">Add Player</ion-button>
+        <ion-button expand="full" color="light" (click)="addUser()">Add User</ion-button>
         <ion-icon> Remove user</ion-icon>
       </ion-item>
   </form>

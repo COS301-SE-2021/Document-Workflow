@@ -24,9 +24,9 @@ export class DocumentViewPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.srcFile = "./../../../assets/Timesheet-Template.pdf";
+    this.srcFile = './../../../assets/Timesheet-Template.pdf';
     this.rotated = 0;
-    this.setZoom = "false";
+    this.setZoom = 'false';
     this.zoomLevel=1;
   }
 
@@ -36,34 +36,34 @@ export class DocumentViewPage implements OnInit {
 
   rotation(){
     this.rotated += 90;
-    if(this.rotated == 360){
+    if(this.rotated === 360){
       this.rotated =0;
     }
   }
 
   setZoomWidth(){
     this.setZoom ='page-width';
-    console.log("width");
+    console.log('width');
   }
 
   setZoomFit(){
     this.setZoom ='page-fit';
-    console.log("fit");
+    console.log('fit');
   }
 
   setZoomHeight(){
     this.setZoom ='page-height';
-    console.log("height");
+    console.log('height');
   }
 
   zoomIn(){
     this.zoomLevel += 0.25;
-    console.log("in");
+    console.log('in');
   }
 
   zoomOut(){
     this.zoomLevel -=0.25;
-    console.log("out");
+    console.log('out');
   }
 
 
