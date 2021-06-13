@@ -21,7 +21,7 @@ export class PasswordResetComponent implements OnInit {
 
   }
 
-  //  Toast Controller for reset-password
+  //  Toast Controller for reset-password...
   async emailSent()
   {
     const toastEmail = await this.toastCtrlr.create({

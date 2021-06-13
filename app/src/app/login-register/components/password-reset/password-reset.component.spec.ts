@@ -21,4 +21,5 @@ describe('PasswordResetComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+  // Add more test
 });
