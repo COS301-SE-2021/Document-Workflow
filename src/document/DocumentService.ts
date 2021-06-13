@@ -1,5 +1,6 @@
 import { injectable } from "tsyringe";
 import DocumentRepository from "./DocumentRepository";
+import { DocumentI } from "./Document";
 
 @injectable()
 export default class DocumentService {
@@ -9,31 +10,24 @@ export default class DocumentService {
         this.documentRepository = documentRepository;
     }
 
-    getDocuments(response) {
-        return this.documentRepository.getDocuments()
-            .then((documents) => {
-                return response.status(200).json(documents);
-            })
-            .catch((err) => {
-                return err;
-            });
+    async getDocuments(): Promise<DocumentI[]> {
+        try{
+            return await this.documentRepository.getDocuments();
+        }catch(err){
+            throw err;
+        }
     }
 
-    postDocument(request, response) {
+    async postDocument(request) {
+
         if(!request.files || Object.keys(request.files).length === 0) {
-            return response.status(400).json({
-                message: "No files sent"
-            });
+            return { message: "No files sent" };
         } else {
-            this.documentRepository.postDocument(request)
-                .then(() => {
-                    return response.status(200).json({
-                        message: "successfully posted document"
-                    })
-                })
-                .catch((err) => {
-                    return err;
-                })
+            try {
+                return await this.documentRepository.postDocument(request)
+            } catch (err) {
+                throw err;
+            }
         }
     }
 }
