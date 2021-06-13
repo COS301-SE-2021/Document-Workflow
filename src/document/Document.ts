@@ -1,11 +1,17 @@
-const mongoose = require("mongoose");
+import { Schema, model } from 'mongoose';
 
-const documentSchema = mongoose.Schema({
+export interface DocumentI {
+    doc_name: string;
+    mimetype: string;
+    encoding: string;
+    size: string;
+}
+
+const documentSchema = new Schema<DocumentI>({
     doc_name: { type: String, required: true},
     mimetype: { type: String, required: true },
     encoding: {type: String, required: true},
     size: {type: Number, required: true},
 });
 
-const model = mongoose.model("Document", documentSchema);
-export default model;
+export default model<DocumentI>("Document", documentSchema);
