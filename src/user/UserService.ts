@@ -1,6 +1,7 @@
 import { injectable } from "tsyringe";
 import UserRepository from "./UserRepository";
 import { UserI } from "./User";
+import url from 'url';
 
 @injectable()
 export default class UserService {
@@ -21,7 +22,7 @@ export default class UserService {
 
     async getUsers(): Promise<UserI[]> {
         try{
-            const users = await this.userRepository.getUsers();
+            const users = await this.userRepository.getUsers({});
             console.log(users);
             return users;
         }catch(err){
@@ -50,6 +51,13 @@ export default class UserService {
                 throw err;
             }
         }
+    }
+
+    async verifyUser(req) : Promise<any>{
+        const redirect_url = "http://localhost:3000/login-register";
+        const queryObject = url.parse(req.url, true).query
+
+        let users = await this.userRepository.getUsers({"email": queryObject["email"]});
     }
 }
 
