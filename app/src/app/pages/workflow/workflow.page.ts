@@ -7,6 +7,7 @@ import { Platform } from '@ionic/angular';
 import { User } from  './../../Services/User/user-api.service';
 import { documentImage, DocumentAPIService } from './../../Services/Document/document-api.service';
 import { AddWorkflowComponent } from 'src/app/components/add-workflow/add-workflow.component';
+import { EditWorkflowComponent } from 'src/app/components/edit-workflow/edit-workflow.component';
 
 
 
@@ -38,15 +39,15 @@ export class WorkflowPage implements OnInit {
 
 
   async editDoc(id: number) {
-    // const editModal = await this.modals.create({
-    //   component: EditDocumentModalPage,
-    //   componentProps: {
-    //     docID: id,
-    //   },
-    // });
-    // (await editModal).onDidDismiss().then(() => {});
+    const editModal = await this.modals.create({
+      component: EditWorkflowComponent,
+      componentProps: {
+        docID: id,
+      },
+    });
+    (await editModal).onDidDismiss().then(() => {});
 
-    // return (await editModal).present();
+    return (await editModal).present();
   }
 
   async addWorkflow() {
@@ -60,6 +61,6 @@ export class WorkflowPage implements OnInit {
   }
 
   viewWorkFlow(){
-    this.router.navigate(['view']);
+    this.router.navigate(['documentView']);
   }
 }

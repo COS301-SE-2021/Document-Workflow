@@ -1,14 +1,16 @@
 <ion-header>
   Are you sure you want to sign
 </ion-header>
+<ion-content>
+  <ion-card>
+    <ion-card-header>
+      <h3>Confirm if you want to sign</h3>
+    </ion-card-header>
+    <ion-card-content>
+      <h3>Are you sure you want to sign this document</h3>
 
-<ion-card>
-  <ion-card-header>
-    <h3>Confirm if you want to sign</h3>
-  </ion-card-header>
-  <ion-card-content>
-    <h3>Are you sure you want to sign this document</h3>
-    <ion-button (click)="confirm()">Confirm</ion-button>
-    <ion-button (click)="reject()">Reject</ion-button>
-  </ion-card-content>
-</ion-card>
+      <ion-button inline (click)="confirm()">Confirm</ion-button>
+      <ion-button inline (click)="reject()">Reject</ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

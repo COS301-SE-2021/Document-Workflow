@@ -24,6 +24,8 @@ import { AddSignatureComponent } from './components/add-signature/add-signature.
 
 //pdf viewer
 import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { EditWorkflowComponent } from './components/edit-workflow/edit-workflow.component';
+import { AddCommentComponent } from './components/add-comment/add-comment.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +33,9 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
     ResetPasswordComponent,
     AddWorkflowComponent,
     UpdateUserComponent,
-    AddSignatureComponent
+    AddSignatureComponent,
+    EditWorkflowComponent,
+    AddCommentComponent
   ],
   entryComponents: [],
   imports: [
