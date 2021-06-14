@@ -1,5 +1,10 @@
 name: Node CI
-on: [push, pull_request]
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+      - develop/backend
 jobs:
   build:
     runs-on: ubuntu-latest
