@@ -29,7 +29,7 @@ export default class UserController{
         }
     }
 
-    async postUserRoute(request) {
+    async postUserRoute(request): Promise<any> {
         try {
             return await this.userService.postUser(request);
         } catch (err) {

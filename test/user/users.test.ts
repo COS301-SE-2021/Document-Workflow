@@ -3,7 +3,7 @@ import UserService from "../../src/user/UserService";
 import UserRepository from "../../src/user/UserRepository";
 import UserController from "../../src/user/UserController";
 
-describe("UserController: UNIT TESTS", () => {
+describe("user unit tests", () => {
     let userService;
 
     beforeEach(()=>{
@@ -22,6 +22,7 @@ describe("UserController: UNIT TESTS", () => {
             test("One User Found: ", async () => {
                 const currentDate = Date.now();
                 sinon.stub(userService, "getUsers").returns([{
+                    //_id: "123456789",
                     name: "Joey",
                     surname: "Cooper",
                     initials: "JC",
@@ -34,6 +35,7 @@ describe("UserController: UNIT TESTS", () => {
                 userController.getUsersRoute()
                     .then((users) => {
                         expect(users.length).toBe(1);
+                        //expect(users[0]._id).toBe("123456789");
                         expect(users[0].name).toBe("Joey");
                         expect(users[0].surname).toBe("Cooper");
                         expect(users[0].initials).toBe("JC");
