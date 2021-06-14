@@ -16,7 +16,7 @@ const http = require('http')
  * TODO: this get request needs to return some sort of html command to redirect the user to DocumentWorkflow.
  */
 router.get('/verify/', (req, res) => {
-    const redirect_url = "http://localhost:3000/login-register";
+    const redirect_url = "http://localhost:8100/login-register";
     const queryObject = url.parse(req.url, true).query
     User.find({"email": queryObject["email"]}, function(err, user) {
         if(err)
