@@ -21,4 +21,8 @@ describe('LoginRegisterPage', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should change register button',()=>{
+    expect(component.changeOver()).toBe(true);
+  });
 });

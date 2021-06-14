@@ -41,7 +41,6 @@ export class LoginRegisterPage implements OnInit {
   @ViewChild('fileInput', { static: false })fileInput: ElementRef;
   constructor(
     private formBuilder: FormBuilder,
-    private activatedRoute: ActivatedRoute,
     private router: Router,
     private userService: UserAPIService,
     private plat: Platform,
@@ -141,31 +140,17 @@ export class LoginRegisterPage implements OnInit {
     this.router.navigate(['login']);
   }
 
-  changeOver(): void {
+  changeOver(): boolean {
     if (this.registerButton) {
       this.registerButton = false;
+      return false;
     } else {
       this.registerButton = true;
+      return true;
     }
 
   }
 
-  loadSignature(event) {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-    reader.readAsArrayBuffer(file);
-
-    reader.onload = () => {
-      // getting image blob
-      const blob: Blob = new Blob([new Uint8Array(reader.result as ArrayBuffer)]);
-
-      //  create URL element Object
-      const URL_blob: string = URL.createObjectURL(blob);
-    };
-
-    // error checking
-    reader.onerror = (error) => {};
-  }
 
   async selectImageSource() {
     const buttons = [
