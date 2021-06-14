@@ -2,13 +2,16 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
 export interface UserI {
+    _id: string,
     name: string,
     surname: string,
     initials: string,
     email: string,
     password: string,
     validated: Boolean,
-    tokenDate: Date
+    validateCode: string,
+    tokenDate: Date,
+    signature: Buffer
 }
 
 /**

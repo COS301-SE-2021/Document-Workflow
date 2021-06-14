@@ -27,7 +27,30 @@ export default class UserRepository {
         }
     }
 
-    async getUser(id: string) {
+    async putUser(Usr: UserI): Promise<UserI> {
+        try {
+            const usr = await User.findById(Usr._id);
+            if(usr){
+                const _usr = new User({
+                    _id: Usr._id,
+                    name: Usr.name,
+                    surname: Usr.surname,
+                    initials: Usr.initials,
+                    email: Usr.email,
+                    password: Usr.password,
+                    validated: Usr.validated,
+                    tokenDate: Usr.tokenDate
+                });
+                await _usr.save();
+                return _usr;
+            } else {
+                return null;
+            }
+        } catch(err){
+            throw err;
+        }
+    }
+    async getUser(id: string) : Promise<UserI> {
         try {
             return await User.findById(id);
         } catch(err) {
