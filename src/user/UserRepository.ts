@@ -19,9 +19,9 @@ export default class UserRepository {
         }
     }
 
-    async getUsers(): Promise<UserI[]> {
+    async getUsers(filter): Promise<UserI[]> {
         try {
-            return await User.find({});
+            return await User.find(filter);
         } catch(err) {
             throw err;
         }
