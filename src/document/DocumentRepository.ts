@@ -1,18 +1,12 @@
 import Document, { DocumentI } from "./Document";
-import AWS from 'aws-sdk';
+import * as AWS from 'aws-sdk';
 
 
-const bucketName = process.env.AWS_BUCKET_NAME;
-const region = process.env.AWS_REGION;
-const accessKeyId = process.env.AWS_SECRET_ACCESS_KEY;
-const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-
-AWS.config.update({
-    accessKeyId: accessKeyId,
-    secretAccessKey: secretAccessKey
+const s3 = new AWS.S3({
+    region: process.env.AWS_REGION,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID
 });
-
-const s3 = new AWS.S3();
 
 export default class DocumentRepository {
 
@@ -33,26 +27,30 @@ export default class DocumentRepository {
             console.log(err)
             throw err;
         }
+        /*
         console.log("Saving the document metadata");
         try{
             await doc.save();
         } catch (err) {
             throw "Could not access database";
-        }
+        }*/
         console.log("Uploading the file to AWS")
         const uploadParams = {
-            Bucket: bucketName,
+            Bucket: process.env.AWS_BUCKET_NAME,
             Body: file.data,
             Key: file.name
         }
 
-        try {
-            let res = await s3.upload(uploadParams)
-            console.log(res);
-        }
-        catch(err)
-        {throw "Error establishing connection to the cloud file server"}
+        console.log(uploadParams);
+        s3.upload(uploadParams, (err, data) =>{
+            if(err)
+            {
+                console.log(err)
+                throw "Error establishing connection to the cloud file server";
+            }
+            else console.log(data);
 
+        });
     }
 
     async getDocument(key) : Promise<any>{
