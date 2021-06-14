@@ -5,6 +5,7 @@ export interface DocumentI {
     mimetype: string;
     encoding: string;
     size: string;
+    aws_path: string;
 }
 
 const documentSchema = new Schema<DocumentI>({
@@ -12,6 +13,7 @@ const documentSchema = new Schema<DocumentI>({
     mimetype: { type: String, required: true },
     encoding: {type: String, required: true},
     size: {type: Number, required: true},
+    aws_path: {type:String, required: true}
 });
 
 export default model<DocumentI>("Document", documentSchema);

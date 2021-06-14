@@ -12,23 +12,30 @@ export default class DocumentService {
 
     async getDocuments(): Promise<DocumentI[]> {
         try{
-            return await this.documentRepository.getDocuments();
+            return await this.documentRepository.getDocuments({});
         }catch(err){
             throw err;
         }
     }
 
-    async postDocument(request) {
-
+    async uploadDocument(request) :Promise<any>{
+        console.log("Received a request to upload a document")
+        console.log(request.body)
+        console.log(request.files)
         if(!request.files || Object.keys(request.files).length === 0) {
-            return { message: "No files sent" };
+            throw "No files sent";
         } else {
             try {
-                return await this.documentRepository.postDocument(request)
+                await this.documentRepository.postDocument(request)
+                return "File Successfully uploaded";
             } catch (err) {
                 throw err;
             }
         }
+    }
+
+    async retrieveDocument(req) : Promise<any> {
+
     }
 }
 
