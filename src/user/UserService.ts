@@ -2,6 +2,9 @@ import { injectable } from "tsyringe";
 import UserRepository from "./UserRepository";
 import { UserI } from "./User";
 import url from 'url';
+import crypto from "crypto";
+import nodemailer from 'nodemailer';
+import bcrypt from "bcryptjs";
 
 @injectable()
 export default class UserService {
@@ -30,23 +33,30 @@ export default class UserService {
         }
     }
 
-    async postUser(request) {
+    async registerUser(req) : Promise<any>{
         //Validation:
-        if(request.body.length === 0 || !request.body) {
+        let signature_base64 = req.files.signature.data.toString('base64');
+        if(req.body.length === 0 || !req.body) {
             return { message: "No User details sent" };
         } else {
             try {
-                const Usr = request.body;
+                const Usr = req.body;
                 const usr: UserI = {
+                    _id: null,
                     name: Usr.name,
                     surname: Usr.surname,
                     initials: Usr.initials,
                     email: Usr.email,
                     password: Usr.password,
                     validated: Usr.validated,
-                    tokenDate: Usr.tokenDate
+                    tokenDate: Usr.tokenDate,
+                    validateCode: crypto.randomBytes(64).toString('hex'),
+                    signature: Buffer.from(signature_base64) // req.files.signature.data could maybe go straight here
                 }
-                return await this.userRepository.postUser(usr)
+                let response = await this.userRepository.postUser(usr)
+                await this.sendVerificationEmail(usr.email, usr.validateCode);
+                return response;
+
             } catch (err) {
                 throw err;
             }
@@ -58,6 +68,67 @@ export default class UserService {
         const queryObject = url.parse(req.url, true).query
 
         let users = await this.userRepository.getUsers({"email": queryObject["email"]});
+        if(users[0].validateCode === queryObject["verificationCode"])
+        {
+            users[0].validated = true;
+            await this.userRepository.putUser(users[0]);
+            return ('<html>Successfully verified. Click<a href= ' + redirect_url + '> here</a> to return to login</html>');
+        }
+        else {
+            throw "Validation Codes do not match";
+        }
+    }
+
+    async sendVerificationEmail(code, emailAddress): Promise<void>
+    {
+        function sendVerificationEmail(code, emailAddress)
+        {
+            let url = process.env.BASE_URL + '/users/verify?verificationCode=' + code + '&email=' +emailAddress ;
+            let transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: process.env.EMAIL_ADDRESS,
+                    pass: process.env.EMAIL_PASSWORD
+                }
+            });
+
+            let mailOptions = {
+                from: process.env.EMAIL_ADDRESS,
+                to: emailAddress,
+                subject: 'DocumentWorkflow Verification Code',
+                html: "<html><p>Hello new DocumentWorkflow User, use this link to activate your account! </p>" +
+                    "<a href='"+url+"'>Click here</a></html>"
+
+            };
+
+            transporter.sendMail(mailOptions, function(error, info){
+                if (error) {
+                    console.log(error);
+                    return false;
+                } else {
+                    console.log('Email sent: ' + info.response);
+                    return true;
+                }
+            });
+        }
+    }
+
+    async loginUser(req) :Promise<any>{
+        console.log(req.body); //TODO: delete
+        let users = await this.userRepository.getUsers({"email": req.body.email})
+        try {
+            bcrypt.compare(req.body.password, users[0].password, function (err, result) {
+                if (err)
+                    throw err;
+                if (result) {
+                    if(users[0].validated)
+                        return "success";
+                    else throw "You need to verify your account";
+                } else throw "Email or password incorrect";
+            });
+        }
+        catch(err)
+        { throw "Email or password incorrect"}
     }
 }
 
