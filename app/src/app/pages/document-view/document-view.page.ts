@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/dot-notation */
 import { Component, OnInit } from '@angular/core';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 
 
-import { Platform } from '@ionic/angular';
+import { ModalController, Platform } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
+import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
 
 
 @Component({
@@ -21,6 +23,7 @@ export class DocumentViewPage implements OnInit {
   constructor(
     private plat: Platform,
     private http: HttpClient,
+    private modalCtrl: ModalController,
   ) {}
 
   ngOnInit() {
@@ -32,6 +35,21 @@ export class DocumentViewPage implements OnInit {
 
   download(url: string, title: string) {
 
+  }
+
+  async sign(){
+    const sign = this.modalCtrl.create({
+      component: AddSignatureComponent
+    });
+    // const { confirm } = (await sign).onWillDismiss();
+    // console.log(data);
+
+   (await sign).present();
+
+    const data =  (await sign).onDidDismiss();
+    if(await (await data).data['confirm']){
+      this.addSignature();
+    }
   }
 
   rotation(){
@@ -66,5 +84,7 @@ export class DocumentViewPage implements OnInit {
     console.log('out');
   }
 
-
+  addSignature(){
+    console.log("here");
+  }
 }

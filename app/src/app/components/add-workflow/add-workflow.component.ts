@@ -37,7 +37,7 @@ export class AddWorkflowComponent implements OnInit {
 
   addUser(){
     this.userCount = this.userCount +1;
-    this.userForm.addControl('user'+ this.userCount, new FormControl('',[Validators.required]));
+    this.userForm.addControl('user'+ this.userCount, new FormControl('',[Validators.email,Validators.required]));
   }
 
   removeUser(control){
