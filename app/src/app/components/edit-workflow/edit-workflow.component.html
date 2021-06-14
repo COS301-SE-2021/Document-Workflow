@@ -1,6 +1,6 @@
 <ion-header>
   <ion-title>
-    Add a new Workflow
+    Edit the Workflow
   </ion-title>
 </ion-header>
 
@@ -23,15 +23,7 @@
         <ion-icon name="close-circle-outline" (click)="removeUser(control)"></ion-icon>
       </ion-item>
   </form>
-    <ion-item>
-      <ion-label position="stacked">Add your document</ion-label>
-      <ion-button hidden="true">
-        <!-- dont edit, its not an error believe it or not -->
-        <input FormControlName="fileUploader" type="file" #fileInput (change)="uploadFile($event)" hidden="false"
-          accept="application/pdf" required></ion-button>
-          <ion-button (click)="selectImageSource()">Add</ion-button>
-    </ion-item>
-    <ion-button expand="block" color="primary" fill="outline" [disabled]="!workflowForm.valid || !userForm.valid" type="submit">Add
+    <ion-button expand="block" color="primary" fill="outline" [disabled]="!workflowForm.valid || !userForm.valid" type="submit">Edit
       workflow</ion-button>
   </form>
 </ion-content>

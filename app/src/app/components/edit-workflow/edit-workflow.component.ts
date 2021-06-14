@@ -6,11 +6,12 @@ import { ActionSheetController, Platform } from '@ionic/angular';
 import { DocumentViewPageRoutingModule } from 'src/app/pages/document-view/document-view-routing.module';
 
 @Component({
-  selector: 'app-add-workflow',
-  templateUrl: './add-workflow.component.html',
-  styleUrls: ['./add-workflow.component.scss'],
+  selector: 'app-edit-workflow',
+  templateUrl: './edit-workflow.component.html',
+  styleUrls: ['./edit-workflow.component.scss'],
 })
-export class AddWorkflowComponent implements OnInit {
+export class EditWorkflowComponent implements OnInit {
+
 
   workflowForm: FormGroup;
   userForm: FormGroup;
@@ -47,34 +48,6 @@ export class AddWorkflowComponent implements OnInit {
   removeUser(control){
     this.userForm.removeControl(control.key);
   }
-
-  async selectImageSource() {
-    const buttons = [
-      {
-        text: 'Choose a file',
-        icon: 'attach',
-        handler: () => {
-          this.fileInput.nativeElement.click();
-        },
-      },
-    ];
-
-    const actionSheet = await this.actionSheetController.create({
-      header: 'Select PDF',
-      buttons,
-    });
-
-    await actionSheet.present();
-  }
-
-  uploadFile(event: EventTarget) {
-    const eventObj: MSInputMethodContext = event as MSInputMethodContext;
-    const target: HTMLInputElement = eventObj.target as HTMLInputElement;
-    this.file = target.files[0];
-
-    console.log('file', this.file);
-  }
-
   submit(){
 
   }

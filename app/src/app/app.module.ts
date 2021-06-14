@@ -4,7 +4,7 @@ import { RouteReuseStrategy } from '@angular/router';
 
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { IonicStorageModule } from '@ionic/storage-angular';
-import { Browser } from '@capacitor/browser'
+
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -16,24 +16,26 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 
 //Components
-
-
-
-//pdf viewer
-import {PdfViewerModule} from 'ng2-pdf-viewer';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { UpdateUserComponent } from './components/update-user/update-user.component';
 import { AddWorkflowComponent } from './components/add-workflow/add-workflow.component';
+import { AddSignatureComponent } from './components/add-signature/add-signature.component';
 
 
-
+//pdf viewer
+import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { EditWorkflowComponent } from './components/edit-workflow/edit-workflow.component';
+import { AddCommentComponent } from './components/add-comment/add-comment.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ResetPasswordComponent,
     AddWorkflowComponent,
-    UpdateUserComponent
+    UpdateUserComponent,
+    AddSignatureComponent,
+    EditWorkflowComponent,
+    AddCommentComponent
   ],
   entryComponents: [],
   imports: [

@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+/* eslint-disable @typescript-eslint/naming-convention */
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import {AbstractControlOptions, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UserAPIService } from '../../Services/User/user-api.service';
+import { User, UserAPIService } from '../../Services/User/user-api.service';
 import { match } from './../../Services/match.validator';
 
 
@@ -12,9 +13,10 @@ import { match } from './../../Services/match.validator';
   templateUrl: './user-profile.page.html',
   styleUrls: ['./user-profile.page.scss'],
 })
-export class UserProfilePage implements OnInit {
 
-  userFrom: FormGroup;
+export class UserProfilePage implements OnInit {
+  user: User;
+  userForm: FormGroup;
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -22,19 +24,24 @@ export class UserProfilePage implements OnInit {
     ) { }
 
   ngOnInit() {
+
     const formOptions: AbstractControlOptions = { validators: match('password', 'confirmPassword') };
-    this.userFrom = this.fb.group({
-      Fname:['',[Validators.required]],
-      Lname: ['',[Validators.required]],
-      initials: ['',[Validators.required]],
+    this.userForm = this.fb.group({
+      Fname:[this.user.Fname,[Validators.required]],
+      Lname: [this.user.Lname,[Validators.required]],
+      initials: [this.user.initials,[Validators.required]],
       // phone_number: ['',[Validators.required]],
-      email: ['',[Validators.required]],
+      email: [this.user.email,[Validators.required]],
       password: ['',[Validators.nullValidator]],
       confirmPassword: ['',[Validators.nullValidator]],
     });
   }
 
   submit(){
+    this.user = this.userForm.value;
+  }
+
+  update(){
 
   }
 }
