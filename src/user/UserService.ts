@@ -55,7 +55,7 @@ export default class UserService {
                 }
                 await this.userRepository.postUser(usr);
                 console.log("User posted to database, sending verification email now");
-                await this.sendVerificationEmail(usr.email, usr.validateCode);
+                await this.sendVerificationEmail(usr.validateCode, usr.email );
 
                 return "Successfully created user account";
 
@@ -97,6 +97,8 @@ export default class UserService {
                     "<a href='" + url + "'>Click here</a></html>"
 
             };
+
+            console.log(mailOptions);
 
             transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
