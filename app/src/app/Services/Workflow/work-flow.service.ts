@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { User } from './user-api.service';
-import { documentImage } from './document-api.service';
+import { User } from './../User/user-api.service';
+import { documentImage } from './../Document/document-api.service';
 
 export interface Comments{
   comment: string;
