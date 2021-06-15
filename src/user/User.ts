@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
+import { Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
 
-export interface UserI {
-    _id: string,
+
+export interface UserI{
     name: string,
     surname: string,
     initials: string,
@@ -21,7 +21,7 @@ export interface UserI {
  * A password is valid iff it contains an uppercase,lowercase annd special character as well as being 8 characters long.
  * //TODO: add signature to this list.
  */
-const userSchema = new mongoose.Schema<UserI>({
+const userSchema = new Schema<UserI>({
     name: {type: String, required: true},
     surname: {type: String, required: true},
     initials: {type: String, required: true},
@@ -55,7 +55,6 @@ const userSchema = new mongoose.Schema<UserI>({
  * This function is called automatically  before the save function is called is called for a user.
  * It handles the process of salting and hashing a user password and sets the user's password to the
  * generated hash.
- * TODO: Figure out what happened after I changed require to import, why does usr.password fail now?
  */
 userSchema.pre("save", function(next)  {
     const usr = this;
@@ -85,4 +84,4 @@ export function compare(pass,hashed){
     return false;
 }
 
-export default mongoose.model<UserI>('User', userSchema);
+export default model<UserI>('User', userSchema);

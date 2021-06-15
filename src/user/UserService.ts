@@ -17,7 +17,8 @@ export default class UserService {
             throw new URIError("id is required");
         }
         try{
-            return await this.userRepository.getUser(request.params.id);
+            const res = await this.userRepository.getUsers({_id: request.params.id});
+            return res[0];
         }catch(err) {
             throw err;
         }
@@ -33,7 +34,9 @@ export default class UserService {
         }
     }
 
-    async registerUser(req) : Promise<any>{
+    async registerUser(req) : Promise<any>{}
+
+    async postUser(request): Promise<any> {
         //Validation:
         let signature_base64 = req.files.signature.data.toString('base64');
         if(req.body.length === 0 || !req.body) {
@@ -62,7 +65,7 @@ export default class UserService {
             }
         }
     }
-
+    
     async verifyUser(req) : Promise<any>{
         const redirect_url = "http://localhost:3000/login-register";
         const queryObject = url.parse(req.url, true).query
@@ -130,7 +133,18 @@ export default class UserService {
         catch(err)
         { throw "Email or password incorrect"}
     }
-}
+
+    async deleteUser(request): Promise<{}> {
+        const id = request.params.id;
+        if(!id){
+            return { message: "No user specified" };
+        }
+        const usr = await this.userRepository.getUser(id);
+        if(!usr){
+            return { message: "User not found" };
+        }
+        return { user: await this.userRepository.deleteUser(id) };
+    }
 
 // router.get('/:id', (req,res)=>{
 //     User.findById(req.params.id)

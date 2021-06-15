@@ -1,17 +1,18 @@
 import mongoose from "mongoose";
 import { singleton } from "tsyringe";
+import dotenv from "dotenv";
+dotenv.config();
 
 @singleton()
 export default class Database{
     private static db = null;
 
-    static async connect(): Promise<void> {
+    private static async connect(): Promise<void> {
         try{
             await mongoose.connect(process.env.MONGO_PROD_URI, {
                 useNewUrlParser: true,
                 useUnifiedTopology: true,
-                useCreateIndex: true,
-                bufferCommands: false
+                useCreateIndex: true
             });
             Database.db = mongoose.connection;
             Database.db.on('error', console.error.bind(console, 'connection error:'));

@@ -29,6 +29,7 @@ export default class UserController{
         }
     }
 
+
     async registerUserRoute(request) :Promise<any>{
         try{
             return await this.userService.registerUser(request)
@@ -48,7 +49,10 @@ export default class UserController{
         }
     }
 
-    async loginUserRoute(request) : Promise<any>{
+    async loginUserRoute(request) : Promise<any>{}
+
+    async postUserRoute(request): Promise<any> {
+
         try {
             return await this.userService.loginUser(request);
         }

@@ -2,7 +2,7 @@ import User, { UserI } from "./User";
 
 export default class UserRepository {
 
-    async postUser(Usr: UserI): Promise<void> {
+    async postUser(Usr: UserI): Promise<any> {
         const usr = new User({
             name: Usr.name,
             surname: Usr.surname,
@@ -13,43 +13,45 @@ export default class UserRepository {
             tokenDate: Usr.tokenDate
         });
         try{
-            await usr.save();
+            return await usr.save();
         } catch (err) {
             throw err;
         }
     }
 
+
     async getUsers(filter): Promise<UserI[]> {
         try {
             return await User.find(filter);
-        } catch(err) {
-            throw err;
+        } catch (err) {
+          throw err;
         }
     }
 
-    async putUser(Usr: UserI): Promise<UserI> {
-        try {
-            const usr = await User.findById(Usr._id);
-            if(usr){
-                const _usr = new User({
-                    _id: Usr._id,
-                    name: Usr.name,
-                    surname: Usr.surname,
-                    initials: Usr.initials,
-                    email: Usr.email,
-                    password: Usr.password,
-                    validated: Usr.validated,
-                    tokenDate: Usr.tokenDate
-                });
-                await _usr.save();
-                return _usr;
-            } else {
-                return null;
-            }
-        } catch(err){
-            throw err;
-        }
-    }
+    // async putUser(Usr: UserI): Promise<UserI> {
+    //     try {
+    //         const usr = await User.findById();
+    //         if(usr){
+    //             const _usr = new User({
+    //                 _id: Usr._id,
+    //                 name: Usr.name,
+    //                 surname: Usr.surname,
+    //                 initials: Usr.initials,
+    //                 email: Usr.email,
+    //                 password: Usr.password,
+    //                 validated: Usr.validated,
+    //                 tokenDate: Usr.tokenDate
+    //             });
+    //             await _usr.save();
+    //             return _usr;
+    //         } else {
+    //             return null;
+    //         }
+    //     } catch(err){
+    //         throw err;
+    //     }
+    // }
+
     async getUser(id: string) : Promise<UserI> {
         try {
             return await User.findById(id);
