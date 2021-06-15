@@ -59,6 +59,23 @@ export default class UserController{
         }
     }
 
+    private async retrieveOwnedWorkFlows(req):Promise<any> {
+        try{
+            return await this.userService.retrieveOwnedWorkFlows(req);
+        }
+        catch(err) {
+            throw err;
+        }
+    }
+
+    private async retrieveWorkFlows(req):Promise<any> {
+        try{
+            return await this.userService.retrieveWorkFlows(req);
+        }
+        catch(err) {
+            throw err;
+        }
+    }
 
     /*
     * error codes:
@@ -85,11 +102,20 @@ export default class UserController{
         });
 
         this.router.post("/retrieveOwnedWorkflows", async (req,res) =>{
-
+            console.log(req);
+            try {
+                res.status(200).json(await this.retrieveOwnedWorkFlows(req));
+            } catch(err){
+                res.status(400).json(err);
+            }
         });
 
         this.router.post("/retrieveWorkflows", async(req,res) =>{
-
+            try {
+                res.status(200).json(await this.retrieveWorkFlows(req));
+            } catch(err){
+                res.status(400).json({status:"error", data:{}, message:err});
+            }
         });
 
         this.router.post("/login", async (req,res) => {
@@ -135,4 +161,6 @@ export default class UserController{
         });
         return this.router;
     }
+
+
 }

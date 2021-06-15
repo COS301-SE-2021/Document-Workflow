@@ -140,6 +140,23 @@ export default class UserService {
         }
         return {user: await this.userRepository.deleteUser(id)};
     }
+
+    async retrieveOwnedWorkFlows(req):Promise<any> {
+        console.log(req);
+        if(req.body.email == null)
+            throw "Missing parameter email";
+        const users = await this.userRepository.getUsers({email:req.body.email});
+        let user = users[0];
+        return {status:"success", data:user.owned_workflows, message:""};
+    }
+
+    async retrieveWorkFlows(req):Promise<any> {
+        if(req.body.email == null)
+            throw "Missing parameter email";
+        const users = await this.userRepository.getUsers({email:req.body.email});
+        let user = users[0];
+        return {status:"success", data:user.workflows, message:""};
+    }
 }
 
 // router.get('/:id', (req,res)=>{
