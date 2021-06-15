@@ -10,7 +10,7 @@ describe("user unit tests", () => {
         userService = new UserService(new UserRepository());
     });
 
-    describe("/GET" ,()=>{
+    describe("GET" ,()=>{
         describe("api/users" ,()=> {
             test("Zero Users Found: ", async () => {
                 sinon.stub(userService, "getUsers").returns([]);
@@ -62,15 +62,15 @@ describe("user unit tests", () => {
         });
     });
 
-    describe("api/users POST", ()=>{
+    describe("POST", ()=>{
 
     })
 
-    describe("api/users PUT", ()=>{
+    describe("PUT", ()=>{
 
     })
 
-    describe("api/users DELETE", ()=>{
+    describe("DELETE", ()=>{
 
     })
 });
