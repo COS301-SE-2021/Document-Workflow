@@ -8,9 +8,7 @@ import { User } from  './../../Services/User/user-api.service';
 import { documentImage, DocumentAPIService } from './../../Services/Document/document-api.service';
 import { AddWorkflowComponent } from 'src/app/components/add-workflow/add-workflow.component';
 import { EditWorkflowComponent } from 'src/app/components/edit-workflow/edit-workflow.component';
-
-
-
+import {WorkFlowService} from "../../Services/Workflow/work-flow.service";
 
 @Component({
   selector: 'app-workflow',
@@ -36,8 +34,6 @@ export class WorkflowPage implements OnInit {
     this.docService.getDocuments().subscribe();
   }
 
-
-
   async editDoc(id: number) {
     const editModal = await this.modals.create({
       component: EditWorkflowComponent,
@@ -58,11 +54,24 @@ export class WorkflowPage implements OnInit {
     (await addModal).present();
 
     (await addModal).onDidDismiss().then(async (data) => {
-        let user = (await data).data['users'];
-        let docummentsss = (await data).data['document'];
+        let users = (await data).data['users'];
+        let documents = (await data).data['document'];
         let file = (await data).data['file'];
 
-        console.log(user);
+        let workflowData = {
+          owner_email: 'timothyhill202@gmail.com', //TODO: swap out this email address using the JWT/stored email address after login
+          name: documents.workflowName
+        };
+        console.log(workflowData);
+        console.log(file);
+        console.log(users);
+        let response = await WorkFlowService.createWorkflow(workflowData, users, file);
+        if(response === 'success')
+          alert('Workflow succesfully created');
+        else {
+            console.log(response);
+            alert(response);
+        };
     });
     return;
   }

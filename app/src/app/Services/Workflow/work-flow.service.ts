@@ -31,7 +31,14 @@ export class WorkFlowService {
     formData.append('owner_email', workflow_info.owner_email);
     formData.append('name', workflow_info.name);
     formData.append('document', document);
-    formData.append('members', users);
+    console.log('Monkey man');
+    console.log(formData);
+
+    Object.keys(users).forEach(key =>{
+      console.log(key, ' ', users[key]);
+      formData.append('members', users[key]);
+    });
+
 
     const response = await fetch((WorkFlowService.url).concat( '/workflows'), { //TODO: change this url
       method: 'POST',
@@ -39,6 +46,6 @@ export class WorkFlowService {
       // eslint-disable-next-line @typescript-eslint/naming-convention
     });
 
-    return response;
+    return response.status;
   }
 }

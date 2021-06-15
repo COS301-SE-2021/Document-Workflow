@@ -25,6 +25,8 @@ export default class WorkFlowService{
         //Before we can create any workflow, we will have to do some validation
         if(req.body.members == undefined)
             req.body.members = [];
+        if(typeof(req.body.members) == 'string')
+            req.body.members = [req.body.members]
         let users_exist = await this.checkUsersExist(req.body.members)
 
         //Now that validation is complete we can create the workflow
@@ -67,6 +69,7 @@ export default class WorkFlowService{
             return true;
         for (let email of users)
         {
+            //console.log(email);
             const result = await this.usersRepository.getUsers({email: email});
             if(result.length == 0) {
                 console.log("User " + email + " does not exist")
@@ -87,7 +90,6 @@ export default class WorkFlowService{
             user.workflows.push(workflow_id);
             console.log(user.workflows);
             await this.usersRepository.putUser(user);
-
         }
     }
 

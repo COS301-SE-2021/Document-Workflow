@@ -75,7 +75,7 @@ export default class UserService {
         if (users[0].validateCode === queryObject["verificationCode"]) {
             users[0].validated = true;
             await this.userRepository.putUser(users[0]);
-            return ('<html>Successfully verified. Click<a href= ' + redirect_url + '> here</a> to return to login</html>');
+            return '<html>Successfully verified. Click<a href= ' + redirect_url + '> here</a> to return to login</html>';
         } else {
             throw "Validation Codes do not match";
         }
@@ -120,7 +120,7 @@ export default class UserService {
                     throw err;
                 if (result) {
                     if (users[0].validated)
-                        return "success";
+                        return {status:"success", data:{}, message:""};
                     else throw "You need to verify your account";
                 } else throw "Email or password incorrect";
             });
