@@ -1,6 +1,15 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+import { Schema, model } from "mongoose";
+import bcrypt from "bcryptjs";
 
+export interface UserI{
+    name: string,
+    surname: string,
+    initials: string,
+    email: string,
+    password: string,
+    validated: Boolean,
+    tokenDate: Date
+}
 
 /**
  * The schema for a user. Since we are making use of NoSQL, this in essence defines the structure
@@ -9,13 +18,13 @@ const bcrypt = require("bcryptjs");
  * A password is valid iff it contains an uppercase,lowercase annd special character as well as being 8 characters long.
  * //TODO: add signature to this list.
  */
-const userSchema = mongoose.Schema({
-    name: { type: String, required: true },
-    surname: { type: String, required: true },
-    initials: { type: String, required: true},
+const userSchema = new Schema<UserI>({
+    name: {type: String, required: true},
+    surname: {type: String, required: true},
+    initials: {type: String, required: true},
     email: {
         type: String,
-        required: [ true, "Email is required" ],
+        required: [true, "Email is required"],
         trim: true,
         lowercase: true,
         unique: true,
@@ -25,7 +34,8 @@ const userSchema = mongoose.Schema({
             }
         }
     },
-    password: { type: String,
+    password: {
+        type: String,
         required: true,
         validate: {
             validator: value => {
@@ -34,8 +44,8 @@ const userSchema = mongoose.Schema({
         }
     },
     // signature: { type: String, required: true },
-    validated: { type: Boolean, default: false },
-    tokenDate: { type: Date, default: Date.now }
+    validated: {type: Boolean, default: false},
+    tokenDate: {type: Date, default: Date.now}
 });
 
 /**
@@ -43,7 +53,7 @@ const userSchema = mongoose.Schema({
  * It handles the process of salting and hashing a user password and sets the user's password to the
  * generated hash.
  */
-userSchema.pre("save", function(next)  {  //Cannot use lexical notation here (see: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions")
+userSchema.pre("save", function(next)  {
     const usr = this;
     if(this.isModified("password") || this.isNew){
         bcrypt.genSalt(parseInt(process.env.SALT_ROUNDS), (saltErr,salt) => {
@@ -62,4 +72,13 @@ userSchema.pre("save", function(next)  {  //Cannot use lexical notation here (se
     }
 });
 
-module.exports = mongoose.model('User', userSchema);
+export function compare(pass,hashed){
+    bcrypt.compare(pass, hashed, (err,match) => {
+        if(err){
+            throw err;
+        } else return match;
+    });
+    return false;
+}
+
+export default model<UserI>('User', userSchema);

@@ -1,6 +1,8 @@
-const app = require("./src/index");
-const http = require("http");
-require("dotenv").config();
+import app from "./index";
+import http from "http";
+import dotenv from "dotenv";
+import Database from "./Database";
+dotenv.config();
 
 const port = process.env.PORT || 3000;
 
@@ -12,11 +14,21 @@ const onError = error => {
     if(error.code === "EADDRINUSE")
         console.error("port is already in use");
 };
+
 const onListen = () => {
-    console.log("listening on port" + port);
+    console.log("Listening on port " + port);
+    Database.get().then(()=>{
+        console.log("Connection Established to MongoDB server");
+    });
 };
+
+const onClose = async () => {
+    console.log("Stopped listening");
+    await Database.disconnect();
+}
 
 const server = http.createServer(app);
 server.on("error", onError);
 server.on("listening", onListen);
+server.on("close", onClose);
 server.listen(port);
