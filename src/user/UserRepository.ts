@@ -11,7 +11,8 @@ export default class UserRepository {
             password: Usr.password,
             validated: Usr.validated,
             tokenDate: Usr.tokenDate,
-            validateCode: Usr.validateCode
+            validateCode: Usr.validateCode,
+            signature: Usr.signature
         });
         try{
             return await usr.save();

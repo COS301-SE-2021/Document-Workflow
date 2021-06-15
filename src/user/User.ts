@@ -46,7 +46,7 @@ const userSchema = new Schema<UserI>({
             }
         }
     },
-    // signature: { type: String, required: true },
+    signature: { type: Buffer, required: true },
     validated: {type: Boolean, default: false},
     validateCode: {type: String, required:true},
     tokenDate: {type: Date, default: Date.now}
