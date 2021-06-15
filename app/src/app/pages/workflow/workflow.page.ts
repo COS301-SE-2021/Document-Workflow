@@ -55,10 +55,16 @@ export class WorkflowPage implements OnInit {
       component: AddWorkflowComponent,
     });
 
-    (await addModal).onDidDismiss().then(() => {});
-    console.log('Delete me');
-    console.log('REEEEEE');
-    return (await addModal).present();
+    (await addModal).present();
+
+    (await addModal).onDidDismiss().then(async (data) => {
+        let user = (await data).data['users'];
+        let documment = (await data).data['document'];
+        let file = (await data).data['file'];
+
+        console.log(document);
+    });
+    return;
   }
 
   viewWorkFlow(){
