@@ -50,7 +50,7 @@ export default class DocumentRepository {
         }
 
         console.log(uploadParams);
-        s3.upload(uploadParams, (err, data) =>{
+        await s3.upload(uploadParams, (err, data) =>{
             if(err)
             {
                 console.log(err)
