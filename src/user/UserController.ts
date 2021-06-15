@@ -49,7 +49,15 @@ export default class UserController{
         }
     }
 
-    async loginUserRoute(request) : Promise<any>{}
+    async loginUserRoute(request) : Promise<any>{
+        try{
+            return await this.userService.loginUser(request);
+        }
+        catch(err)
+        {
+            throw err;
+        }
+    }
 
 
     /*
@@ -69,12 +77,19 @@ export default class UserController{
 
     routes() {
         this.router.get("", async (req, res) => {
-
             try {
                 res.status(200).json(await this.registerUserRoute(req));
             } catch(err){
                 res.status(400).json(err);
             }
+        });
+
+        this.router.post("/retrieveOwnedWorkflows", async (req,res) =>{
+
+        });
+
+        this.router.post("/retrieveWorkflows", async(req,res) =>{
+
         });
 
         this.router.post("/login", async (req,res) => {
