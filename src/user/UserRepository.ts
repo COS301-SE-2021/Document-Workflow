@@ -10,15 +10,33 @@ export default class UserRepository {
             email: Usr.email,
             password: Usr.password,
             validated: Usr.validated,
-            tokenDate: Usr.tokenDate
+            tokenDate: Usr.tokenDate,
+            validateCode: Usr.validateCode
         });
         try{
             return await usr.save();
         } catch (err) {
-            throw err;
+            throw "Could not register user";
         }
     }
 
+    async putUser(Usr: UserI): Promise<void> {
+        try {
+            const updated_user = await User.updateOne({email:Usr.email}, {
+                    name: Usr.name,
+                    surname: Usr.surname,
+                    initials: Usr.initials,
+                    password: Usr.password,
+                    validated: Usr.validated,
+                    validateCode: Usr.validateCode,
+                    tokenDate: Usr.tokenDate,
+                    signature: Usr.signature
+                });
+
+         } catch(err){
+             throw err;
+         }
+    }
 
     async getUsers(filter): Promise<UserI[]> {
         try {
@@ -27,30 +45,6 @@ export default class UserRepository {
           throw err;
         }
     }
-
-    // async putUser(Usr: UserI): Promise<UserI> {
-    //     try {
-    //         const usr = await User.findById();
-    //         if(usr){
-    //             const _usr = new User({
-    //                 _id: Usr._id,
-    //                 name: Usr.name,
-    //                 surname: Usr.surname,
-    //                 initials: Usr.initials,
-    //                 email: Usr.email,
-    //                 password: Usr.password,
-    //                 validated: Usr.validated,
-    //                 tokenDate: Usr.tokenDate
-    //             });
-    //             await _usr.save();
-    //             return _usr;
-    //         } else {
-    //             return null;
-    //         }
-    //     } catch(err){
-    //         throw err;
-    //     }
-    // }
 
     async getUser(id: string) : Promise<UserI> {
         try {
