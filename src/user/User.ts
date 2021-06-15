@@ -12,8 +12,8 @@ export interface UserI{
     validateCode: string,
     tokenDate: Date,
     signature: Buffer,
-    owned_workflows: [string],
-    workflows: [string]
+    owned_workflows: Array<string>,
+    workflows: Array<string>
 }
 
 /**
