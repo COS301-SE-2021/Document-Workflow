@@ -16,9 +16,9 @@ const workflowSchema = new mongoose.Schema<WorkFlowI>({
     owner_id: {type:String},
     name: {type: String, required: true},
     owner_email: {type:String, required: true},
-    document_id: {type:String, required:true},
+    document_id: {type:String},
     document_path: {type:String, required:true},
     members: {type: [String], required:true}
 });
 
-export default mongoose.model<WorkFlowI>('Workflow', workflowSchema)
+export default mongoose.model<WorkFlowI>('WorkFlow', workflowSchema)
