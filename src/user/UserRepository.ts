@@ -31,7 +31,9 @@ export default class UserRepository {
                     validated: Usr.validated,
                     validateCode: Usr.validateCode,
                     tokenDate: Usr.tokenDate,
-                    signature: Usr.signature
+                    signature: Usr.signature,
+                    owned_workflows: Usr.owned_workflows,
+                    workflows: Usr.workflows
                 });
 
          } catch(err){
