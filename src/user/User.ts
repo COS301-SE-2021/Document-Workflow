@@ -11,14 +11,16 @@ export interface UserI{
     validated: Boolean,
     validateCode: string,
     tokenDate: Date,
-    signature: Buffer
+    signature: Buffer,
+    owned_workflows: [string],
+    workflows: [string]
 }
 
 /**
  * The schema for a user. Since we are making use of NoSQL, this in essence defines the structure
  * of what our user entries in the database look like. It also validates whether or not a user's email
  * and password are valid.
- * A password is valid iff it contains an uppercase,lowercase annd special character as well as being 8 characters long.
+ * A password is valid iff it contains an uppercase,lowercase and special character as well as being 8 characters long.
  * //TODO: add signature to this list.
  */
 const userSchema = new Schema<UserI>({
@@ -49,7 +51,9 @@ const userSchema = new Schema<UserI>({
     signature: { type: Buffer, required: true },
     validated: {type: Boolean, default: false},
     validateCode: {type: String, required:true},
-    tokenDate: {type: Date, default: Date.now}
+    tokenDate: {type: Date, default: Date.now},
+    owned_workflows: {type: [String], default: []},
+    workflows: {type: [String], default: []}
 });
 
 /**
