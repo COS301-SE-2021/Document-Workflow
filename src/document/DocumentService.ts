@@ -18,6 +18,22 @@ export default class DocumentService {
         }
     }
 
+    /**
+     *
+     * @param document
+     * @param workflow_id
+     */
+    async uploadDocument(document, workflow_id) : Promise<any>{
+        try{
+            return await this.documentRepository.postDocument(document, workflow_id);
+        }
+        catch(err)
+        {
+            throw err
+        }
+    }
+
+    /*
     async uploadDocument(request) :Promise<any>{
         console.log("Received a request to upload a document")
         console.log(request.body)
@@ -33,6 +49,7 @@ export default class DocumentService {
             }
         }
     }
+    */
 
     async retrieveDocument(req) : Promise<any> {
 
