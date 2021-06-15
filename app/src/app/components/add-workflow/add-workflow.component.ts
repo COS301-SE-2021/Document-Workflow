@@ -33,8 +33,6 @@ export class AddWorkflowComponent implements OnInit {
 
     this.userForm = this.fb.group({
       user1: ['', [Validators.email, Validators.required]],
-      read: ['', [Validators.required]],
-      write: ['', [Validators.required]]
     });
   }
 

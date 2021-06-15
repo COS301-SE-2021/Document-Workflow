@@ -59,10 +59,10 @@ export class WorkflowPage implements OnInit {
 
     (await addModal).onDidDismiss().then(async (data) => {
         let user = (await data).data['users'];
-        let documment = (await data).data['document'];
+        let docummentsss = (await data).data['document'];
         let file = (await data).data['file'];
 
-        console.log(document);
+        console.log(user);
     });
     return;
   }
