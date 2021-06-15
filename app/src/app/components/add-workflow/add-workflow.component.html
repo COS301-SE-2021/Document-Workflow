@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-title>
+    Add a new Workflow
+  </ion-title>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="workflowForm" (ngSubmit)="submit()">
+    <ion-item>
+      <ion-label>Document name</ion-label>
+      <ion-input formControlName="workflowName" inputmode="text"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Document Description</ion-label>
+      <ion-textarea formControlName="workflowDescription" inputmode="text"></ion-textarea>
+    </ion-item>
+    <form  [formGroup]="userForm">
+      <div></div>
+      <ion-item *ngFor="let control of userForm.controls | keyvalue">
+        <ion-label>Add users</ion-label>
+        <ion-input  type="text" [formControlName]="control.key"></ion-input>
+        <ion-button expand="full" color="light" (click)="addUser()">Add User</ion-button>
+        <ion-icon name="close-circle-outline" (click)="removeUser(control)"></ion-icon>
+      </ion-item>
+  </form>
+    <ion-item>
+      <ion-label position="stacked">Add your document</ion-label>
+      <ion-button hidden="true">
+        <!-- dont edit, its not an error believe it or not -->
+        <input FormControlName="fileUploader" type="file" #fileInput (change)="uploadFile($event)" hidden="false"
+          accept="application/pdf" required></ion-button>
+          <ion-button (click)="selectImageSource()">Add</ion-button>
+    </ion-item>
+    <ion-button expand="block" color="primary" fill="outline" [disabled]="!workflowForm.valid || !userForm.valid" type="submit">Add
+      workflow</ion-button>
+  </form>
+</ion-content>

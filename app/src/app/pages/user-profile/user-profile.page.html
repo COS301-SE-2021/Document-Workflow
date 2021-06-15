@@ -1,0 +1,65 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>UserProfile</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <form [formGroup]="userForm" (ngSubmit)="update()">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12" style="justify-content: center; display: block;  text-align: center">
+          <img src="./../../../assets/defaultProfileImage.jpg" height="150px" width="151px">
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size='6'>
+          <ion-item>
+            <ion-label position="stacked">First name:</ion-label>
+            <ion-input inputmode="text" formControlName="Fname"></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size='6'>
+          <ion-item>
+            <ion-label position="stacked">Last name:</ion-label>
+            <ion-input inputmode="text" formControlName="Lname"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size='4'>
+          <ion-item>
+            <ion-label position="stacked">Initials:</ion-label>
+            <ion-input inputmode="text" formControlName="initials"></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size='8'>
+          <ion-item>
+            <ion-label position="stacked">Email:</ion-label>
+            <ion-input inputmode="text" formControlName="email"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size='6'>
+          <ion-item>
+            <ion-label position="stacked">Password</ion-label>
+            <ion-input type="password" formControlName="password"></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size='6'>
+          <ion-item>
+            <ion-label position="stacked">Confirm password</ion-label>
+            <ion-input type="password" formControlName="confirmPassword"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>
+<!--
+<ion-item>
+  <ion-label position="stacked">Phone number:</ion-label>
+  <ion-input inputmode="text" formControlName="phone_number"></ion-input>
+</ion-item> -->

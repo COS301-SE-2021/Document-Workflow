@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { FormControl, FormGroup, Validators,} from '@angular/forms';
 import { AbstractControlOptions, FormBuilder } from '@angular/forms';
 
-import { ActionSheetController, ModalController, Platform } from '@ionic/angular';
+import {ActionSheetController, ModalController, Platform, ToastController} from '@ionic/angular';
 import { User } from './../../Interfaces/user';
 import { Document } from './../../Interfaces/document';
 
@@ -19,7 +19,8 @@ export class AddDocumentModalPage implements OnInit {
     private formBuilder: FormBuilder,
     private modal: ModalController,
     private plat: Platform,
-    private actionSheet: ActionSheetController
+    private actionSheet: ActionSheetController,
+    private toastCtrlr: ToastController
   ) {}
 
   ngOnInit() {
@@ -48,13 +49,30 @@ export class AddDocumentModalPage implements OnInit {
 
     reader.onload = () => {
       // getting image blob
-      let blob: Blob = new Blob([new Uint8Array(reader.result as ArrayBuffer)]);
+      const blob: Blob = new Blob([new Uint8Array(reader.result as ArrayBuffer)]);
 
       //  create URL element Object
-      let URL_blob: string = URL.createObjectURL(blob);
+      const URL_blob: string = URL.createObjectURL(blob);
     };
 
     // error checking
     reader.onerror = (error) => {};
+  }
+
+  //  Toast Controller for document succesfully added
+  async docAdded()
+  {
+    const toastDocAdd = await this.toastCtrlr.create({
+      message: 'File Uploaded',
+      color:'dark',
+      duration: 4000,
+      position:'top',
+    });
+
+    await toastDocAdd.present();
+
+    setTimeout(() => {
+      toastDocAdd.dismiss();
+    },4000);
   }
 }

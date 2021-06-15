@@ -1,48 +1,53 @@
 import { Component, NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { LoginRegisterComponent } from './login-register/login-register.component';
-import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
-import { ViewAllWorkflowsComponent } from './view-all-workflows/view-all-workflows.component';
+
+
+
 
 const routes: Routes = [
   {
     path: 'login',
-    component: LoginRegisterComponent,
+    loadChildren: () => import('./pages/login-register/login-register.module').
+    then( m => m.LoginRegisterPageModule),
+    pathMatch: 'full'
   },
   {
-    path: 'view',
-    component: ViewWorkflowComponent,
+    path: 'archive',
+    loadChildren: () => import('./pages/document-archive/document-archive.module').
+    then( m => m.DocumentArchivePageModule),
+    pathMatch: 'full'
   },
   {
-    path: 'viewAll',
-    component: ViewAllWorkflowsComponent,
+    path: 'documentView',
+    loadChildren: () => import('./pages/document-view/document-view.module').
+    then( m => m.DocumentViewPageModule),
+    pathMatch: 'full'
+  },
+  {
+    path: 'userProfile',
+    loadChildren: () => import('./pages/user-profile/user-profile.module').
+    then( m => m.UserProfilePageModule),
+    pathMatch: 'full'
+  },
+  {
+    path: 'home',
+    loadChildren: () => import('./pages/workflow/workflow.module').
+    then( m => m.WorkflowPageModule),
+    pathMatch: 'full'
+  },
+  {
+    path: 'intro',
+    loadChildren: () => import('./pages/intro/intro-routing.module').
+    then( m => m.IntroPageRoutingModule),
+    pathMatch: 'full'
   },
   {
     path: '',
     redirectTo: 'login',
-    pathMatch: 'full',
-  },
-  {
-    path: 'add-document-modal',
-    loadChildren: () =>
-      import('./Modals/add-document-modal/add-document-modal.module').then(
-        (m) => m.AddDocumentModalPageModule
-      ),
-  },
-  {
-    path: 'view-document-modal',
-    loadChildren: () =>
-      import('./Modals/view-document-modal/view-document-modal.module').then(
-        (m) => m.ViewDocumentModalPageModule
-      ),
-  },
-  {
-    path: 'edit-document-modal',
-    loadChildren: () =>
-      import('./Modals/edit-document-modal/edit-document-modal.module').then(
-        (m) => m.EditDocumentModalPageModule
-      ),
-  },
+    pathMatch: 'full'
+  }
+
+
 ];
 @NgModule({
   imports: [
