@@ -51,16 +51,6 @@ export default class UserController{
 
     async loginUserRoute(request) : Promise<any>{}
 
-    async postUserRoute(request): Promise<any> {
-
-        try {
-            return await this.userService.loginUser(request);
-        }
-        catch(err){
-            console.log(err);
-            throw err;
-        }
-    }
 
     /*
     * error codes:
@@ -81,7 +71,7 @@ export default class UserController{
         this.router.get("", async (req, res) => {
 
             try {
-                res.status(200).json(await this.getUsersRoute());
+                res.status(200).json(await this.registerUserRoute(req));
             } catch(err){
                 res.status(400).json(err);
             }
@@ -121,7 +111,7 @@ export default class UserController{
 
         this.router.post("", async (req,res) => {
             console.log("Register request");
-            console.log(req.body);
+            //console.log(req.body);
             try {
                 res.status(201).json(await this.registerUserRoute(req));
             } catch(err){

@@ -66,7 +66,7 @@ export default class UserService {
     }
 
     async verifyUser(req): Promise<any> {
-        const redirect_url = "http://localhost:3000/login-register";
+        const redirect_url = "http://localhost:8100/login-register";
         const queryObject = url.parse(req.url, true).query
 
         let users = await this.userRepository.getUsers({"email": queryObject["email"]});
@@ -97,8 +97,6 @@ export default class UserService {
                     "<a href='" + url + "'>Click here</a></html>"
 
             };
-
-            console.log(mailOptions);
 
             transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
