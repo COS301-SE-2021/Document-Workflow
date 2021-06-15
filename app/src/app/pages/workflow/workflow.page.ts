@@ -56,7 +56,8 @@ export class WorkflowPage implements OnInit {
     });
 
     (await addModal).onDidDismiss().then(() => {});
-
+    console.log('Delete me');
+    console.log('REEEEEE');
     return (await addModal).present();
   }
 

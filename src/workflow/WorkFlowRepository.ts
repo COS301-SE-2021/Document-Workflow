@@ -11,7 +11,6 @@ export default class WorkFlowRepository{
             document_id: workflow.document_id,
             document_path: workflow.document_path,
             members: workflow.members
-
         });
 
         try {

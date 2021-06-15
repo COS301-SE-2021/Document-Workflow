@@ -22,9 +22,9 @@ export default class WorkFlowController{
         }
     }
 
-    async retrieveOwnedWorkflows(req) : Promise<any>{
+    async getWorkFlowDetails(req):Promise<any>{
         try{
-            return await this.workflowService.retrieveOwnedWorkflows(req);
+            return await this.workflowService.getWorkFlowDetails(req);
         } catch(err) {
             throw err;
         }
@@ -40,11 +40,11 @@ export default class WorkFlowController{
             }
         });
 
-        this.router.post("/retrieveOwnedWorkflows", async (req,res) => {
+        this.router.post("/getDetails", async (req,res) =>{
             try {
-                res.status(200).json(await this.retrieveOwnedWorkflows(req));
+                res.status(200).json(await this.getWorkFlowDetails(req));
             } catch(err){
-                res.status(400).json(err);
+                res.status(400).json({status:"error", data:{}, message:err});
             }
         });
 
