@@ -8,9 +8,10 @@ import { match } from './match.validator';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 //import for the users API and interface
-import { UserAPIService, User } from '../Services/user-api.service';
+import { UserAPIService, User, LoginData } from '../Services/user-api.service';
 import { ActionSheetController, Platform } from '@ionic/angular';
 import { Plugins } from 'protractor/built/plugins';
+import {DocumentAPIService} from "../Services/document-api.service";
 
 
 @Component({
@@ -21,7 +22,7 @@ import { Plugins } from 'protractor/built/plugins';
 export class LoginRegisterComponent implements OnInit {
   loginForm: FormGroup;
   registerForm: FormGroup;
-
+  file: File;
   registerButton: boolean; //for the toggle to change modes
 
   @ViewChild('fileInput', { static: false })fileInput: ElementRef;
@@ -64,13 +65,28 @@ export class LoginRegisterComponent implements OnInit {
   }
 
   async login(): Promise<void> {
-    const { loginEmail, loginPassword } = this.loginForm.value;
-    console.log(loginEmail + ' ' + loginPassword);
-    let a = true;
-    console.log(a);
-    if (a == true) {
+    console.log(this.loginForm.value);
+    const loginData: LoginData=
+    {
+      email: this.loginForm.value.loginEmail,
+      password : this.loginForm.value.loginPassword
+    };
+    console.log(loginData);
+    const success = await UserAPIService.login(loginData);
+    if(success === 'Success')
+    {
+      alert('Login Successful');
       this.router.navigate(['view']);
     }
+    else {
+      alert('Username or Password incorrect');
+    }
+
+  }
+
+  fileUnspecified(): void{
+    //For Brent
+
   }
 
   /**
@@ -78,6 +94,15 @@ export class LoginRegisterComponent implements OnInit {
    */
   async register(): Promise<void> {
     const userdata = this.registerForm.value;
+    console.log('Printing file:');
+    console.log(this.file);
+
+    if(this.file === undefined) //We don't allow users to register if they dont specify a signature.
+    {
+        this.fileUnspecified();
+        return;
+    }
+
     console.log(userdata);
     const user: User = {
       Fname: userdata.Fname,
@@ -86,9 +111,10 @@ export class LoginRegisterComponent implements OnInit {
       email: userdata.email,
       password: userdata.password
     };
-    const success = await UserAPIService.register(user);
+
+    const success = await UserAPIService.register(user, this.file);
     if(success)
-    {alert('User registerd');}
+    {alert('User registered');}
     else {alert('registration failed');}
     delete userdata.confirmPassword;
     this.router.navigate(['login']);
@@ -100,23 +126,6 @@ export class LoginRegisterComponent implements OnInit {
     } else {
       this.registerButton = true;
     }
-  }
-
-  loadSignature(event) {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-    reader.readAsArrayBuffer(file);
-
-    reader.onload = () => {
-      // getting image blob
-      let blob: Blob = new Blob([new Uint8Array(reader.result as ArrayBuffer)]);
-
-      //  create URL element Object
-      let URL_blob: string = URL.createObjectURL(blob);
-    };
-
-    // error checking
-    reader.onerror = (error) => {};
   }
 
   async selectImageSource() {
@@ -159,9 +168,9 @@ export class LoginRegisterComponent implements OnInit {
   uploadFile(event: EventTarget) {
     const eventObj: MSInputMethodContext = event as MSInputMethodContext;
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
-    const file: File = target.files[0];
+    this.file = target.files[0];
 
-    console.log("file", file);
+    console.log("file", this.file);
   }
 
   async addSignature(source: CameraSource) {

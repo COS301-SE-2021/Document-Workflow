@@ -20,16 +20,24 @@ export default class DocumentController{
             throw err;
         }
     }
-
-    async postDocumentRoute(request) {
+    /*
+    async uploadDocumentRoute(request) {
         try {
-            return await this.documentService.postDocument(request);
+            return await this.documentService.uploadDocument(request);
+        } catch (err) {
+            throw err;
+        }
+    }*/
+
+    async retrieveDocumentRoute(request) :Promise<any>{
+        try {
+            return await this.documentService.retrieveDocument(request);
         } catch (err) {
             throw err;
         }
     }
 
-    routes() {
+    routes() { //TODO: get rid of this later on since it isn't as secure as a post request.
         this.router.get("", async (req, res) => {
             try {
                 res.status(200).json(await this.getDocumentsRoute());
@@ -38,13 +46,22 @@ export default class DocumentController{
             }
         });
 
-        this.router.post("", async (req,res) => {
+        /*this.router.post("", async (req,res) => {
             try {
-                res.status(200).json(await this.postDocumentRoute(req));
+                res.status(200).json(await this.uploadDocumentRoute(req));
+            } catch(err){
+                res.status(400).json(err);
+            }
+        });*/
+
+        this.router.post('/retrieve', async (req,res)=>{
+            try {
+                res.status(200).json(await this.retrieveDocumentRoute(req));
             } catch(err){
                 res.status(400).json(err);
             }
         });
+
         return this.router;
     }
 }

@@ -29,10 +29,35 @@ export default class UserController{
         }
     }
 
-    async postUserRoute(request): Promise<any> {
+
+    async registerUserRoute(request) :Promise<any>{
+        try{
+            return await this.userService.registerUser(request)
+        }
+        catch(err)
+        {
+            throw err;
+        }
+    }
+
+    async verifyUserRoute(request) : Promise<any>{
         try {
-            return await this.userService.postUser(request);
-        } catch (err) {
+            return await this.userService.verifyUser(request);
+        }
+        catch(err){
+            throw err;
+        }
+    }
+
+    async loginUserRoute(request) : Promise<any>{}
+
+    async postUserRoute(request): Promise<any> {
+
+        try {
+            return await this.userService.loginUser(request);
+        }
+        catch(err){
+            console.log(err);
             throw err;
         }
     }
@@ -54,8 +79,28 @@ export default class UserController{
 
     routes() {
         this.router.get("", async (req, res) => {
+
             try {
                 res.status(200).json(await this.getUsersRoute());
+            } catch(err){
+                res.status(400).json(err);
+            }
+        });
+
+        this.router.post("/login", async (req,res) => {
+            try {
+                let inner_res =await this.loginUserRoute(req);
+                res.status(200).json(
+                    {status: "Success", data:{}, message: "JWT TOKEN HERE"} //TODO: return a JWT Token!!!
+                )
+            } catch(err){ //Lets assume that we throw the error message up to here.
+                res.status(400).json({status: "Failed", data:{}, message: err});
+            }
+        });
+
+        this.router.get("/verify", async(req,res) =>{
+            try {
+                res.status(200).json(await this.verifyUserRoute(req));
             } catch(err){
                 res.status(400).json(err);
             }
@@ -75,8 +120,10 @@ export default class UserController{
         });
 
         this.router.post("", async (req,res) => {
+            console.log("Register request");
+            console.log(req.body);
             try {
-                res.status(201).json(await this.postUserRoute(req));
+                res.status(201).json(await this.registerUserRoute(req));
             } catch(err){
                 res.status(400).json(err);
             }

@@ -19,6 +19,15 @@ export default class UserRepository {
         }
     }
 
+
+    async getUsers(filter): Promise<UserI[]> {
+        try {
+            return await User.find(filter);
+        } catch (err) {
+          throw err;
+        }
+    }
+
     // async putUser(Usr: UserI): Promise<UserI> {
     //     try {
     //         const usr = await User.findById();
@@ -43,15 +52,7 @@ export default class UserRepository {
     //     }
     // }
 
-    async getUsers(filter): Promise<UserI[]> {
-        try {
-            return await User.find({filter});
-        } catch(err) {
-            throw err;
-        }
-    }
-
-    async getUser(id: string) {
+    async getUser(id: string) : Promise<UserI> {
         try {
             return await User.findById(id);
         } catch(err) {

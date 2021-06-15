@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
 
+
 export interface UserI{
     name: string,
     surname: string,
@@ -8,7 +9,9 @@ export interface UserI{
     email: string,
     password: string,
     validated: Boolean,
-    tokenDate: Date
+    validateCode: string,
+    tokenDate: Date,
+    signature: Buffer
 }
 
 /**

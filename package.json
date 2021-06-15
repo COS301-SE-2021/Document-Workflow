@@ -8,7 +8,6 @@
     "test:server": "jest --verbose",
     "run:server": "node dist/src/server.js",
     "dev:server": "tsc-watch --onSuccess \"node ./dist/src/server.js\"",
-
     "build:app": "echo 'this is for anything that needs to be compiled before execution'",
     "test:app": "echo 'testing for frontend must run in cli'",
     "run:app": "echo 'this is for running in production'",
@@ -18,6 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "@angular/cli": "^12.0.2",
+    "aws-sdk": "^2.927.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "bootstrap": "^5.0.1",
@@ -28,6 +28,7 @@
     "express": "^4.17.1",
     "express-fileupload": "^1.2.1",
     "mongoose": "^5.12.12",
+    "nodemailer": "^6.6.1",
     "reflect-metadata": "^0.1.13",
     "request": "^2.88.2",
     "tsyringe": "^4.5.0"
