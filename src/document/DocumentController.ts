@@ -20,14 +20,14 @@ export default class DocumentController{
             throw err;
         }
     }
-
+    /*
     async uploadDocumentRoute(request) {
         try {
             return await this.documentService.uploadDocument(request);
         } catch (err) {
             throw err;
         }
-    }
+    }*/
 
     async retrieveDocumentRoute(request) :Promise<any>{
         try {
@@ -46,13 +46,13 @@ export default class DocumentController{
             }
         });
 
-        this.router.post("", async (req,res) => {
+        /*this.router.post("", async (req,res) => {
             try {
                 res.status(200).json(await this.uploadDocumentRoute(req));
             } catch(err){
                 res.status(400).json(err);
             }
-        });
+        });*/
 
         this.router.post('/retrieve', async (req,res)=>{
             try {
