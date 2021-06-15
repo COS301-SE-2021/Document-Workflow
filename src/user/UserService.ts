@@ -13,39 +13,36 @@ export default class UserService {
     }
 
     async getUser(request): Promise<UserI> {
-        if(!request.params.id){
+        if (!request.params.id) {
             throw new URIError("id is required");
         }
-        try{
+        try {
             const res = await this.userRepository.getUsers({_id: request.params.id});
             return res[0];
-        }catch(err) {
+        } catch (err) {
             throw err;
         }
     }
 
     async getUsers(): Promise<UserI[]> {
-        try{
+        try {
             const users = await this.userRepository.getUsers({});
             console.log(users);
             return users;
-        }catch(err){
+        } catch (err) {
             throw err;
         }
     }
 
-    async registerUser(req) : Promise<any>{}
-
-    async postUser(request): Promise<any> {
+    async registerUser(req): Promise<any> {
         //Validation:
         let signature_base64 = req.files.signature.data.toString('base64');
-        if(req.body.length === 0 || !req.body) {
-            return { message: "No User details sent" };
+        if (req.body.length === 0 || !req.body) {
+            return {message: "No User details sent"};
         } else {
             try {
                 const Usr = req.body;
                 const usr: UserI = {
-                    _id: null,
                     name: Usr.name,
                     surname: Usr.surname,
                     initials: Usr.initials,
@@ -56,37 +53,34 @@ export default class UserService {
                     validateCode: crypto.randomBytes(64).toString('hex'),
                     signature: Buffer.from(signature_base64) // req.files.signature.data could maybe go straight here
                 }
-                let response = await this.userRepository.postUser(usr)
+                await this.userRepository.postUser(usr);
+                console.log("User posted to database, sending verification email now");
                 await this.sendVerificationEmail(usr.email, usr.validateCode);
-                return response;
+
+                return "Successfully created user account";
 
             } catch (err) {
                 throw err;
             }
         }
     }
-    
-    async verifyUser(req) : Promise<any>{
+
+    async verifyUser(req): Promise<any> {
         const redirect_url = "http://localhost:3000/login-register";
         const queryObject = url.parse(req.url, true).query
 
         let users = await this.userRepository.getUsers({"email": queryObject["email"]});
-        if(users[0].validateCode === queryObject["verificationCode"])
-        {
+        if (users[0].validateCode === queryObject["verificationCode"]) {
             users[0].validated = true;
             await this.userRepository.putUser(users[0]);
             return ('<html>Successfully verified. Click<a href= ' + redirect_url + '> here</a> to return to login</html>');
-        }
-        else {
+        } else {
             throw "Validation Codes do not match";
         }
     }
 
-    async sendVerificationEmail(code, emailAddress): Promise<void>
-    {
-        function sendVerificationEmail(code, emailAddress)
-        {
-            let url = process.env.BASE_URL + '/users/verify?verificationCode=' + code + '&email=' +emailAddress ;
+    async sendVerificationEmail(code, emailAddress): Promise<void> {
+            let url = process.env.BASE_URL + '/users/verify?verificationCode=' + code + '&email=' + emailAddress;
             let transporter = nodemailer.createTransport({
                 service: 'gmail',
                 auth: {
@@ -100,11 +94,11 @@ export default class UserService {
                 to: emailAddress,
                 subject: 'DocumentWorkflow Verification Code',
                 html: "<html><p>Hello new DocumentWorkflow User, use this link to activate your account! </p>" +
-                    "<a href='"+url+"'>Click here</a></html>"
+                    "<a href='" + url + "'>Click here</a></html>"
 
             };
 
-            transporter.sendMail(mailOptions, function(error, info){
+            transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
                     console.log(error);
                     return false;
@@ -113,10 +107,9 @@ export default class UserService {
                     return true;
                 }
             });
-        }
     }
 
-    async loginUser(req) :Promise<any>{
+    async loginUser(req): Promise<any> {
         console.log(req.body); //TODO: delete
         let users = await this.userRepository.getUsers({"email": req.body.email})
         try {
@@ -124,27 +117,28 @@ export default class UserService {
                 if (err)
                     throw err;
                 if (result) {
-                    if(users[0].validated)
+                    if (users[0].validated)
                         return "success";
                     else throw "You need to verify your account";
                 } else throw "Email or password incorrect";
             });
+        } catch (err) {
+            throw "Email or password incorrect"
         }
-        catch(err)
-        { throw "Email or password incorrect"}
     }
 
     async deleteUser(request): Promise<{}> {
         const id = request.params.id;
-        if(!id){
-            return { message: "No user specified" };
+        if (!id) {
+            return {message: "No user specified"};
         }
         const usr = await this.userRepository.getUser(id);
-        if(!usr){
-            return { message: "User not found" };
+        if (!usr) {
+            return {message: "User not found"};
         }
-        return { user: await this.userRepository.deleteUser(id) };
+        return {user: await this.userRepository.deleteUser(id)};
     }
+}
 
 // router.get('/:id', (req,res)=>{
 //     User.findById(req.params.id)
