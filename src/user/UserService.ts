@@ -51,7 +51,9 @@ export default class UserService {
                     validated: Usr.validated,
                     tokenDate: Usr.tokenDate,
                     validateCode: crypto.randomBytes(64).toString('hex'),
-                    signature: Buffer.from(signature_base64) // req.files.signature.data could maybe go straight here
+                    signature: Buffer.from(signature_base64), // req.files.signature.data could maybe go straight here
+                    owned_workflows: [],
+                    workflows: []
                 }
                 await this.userRepository.postUser(usr);
                 console.log("User posted to database, sending verification email now");
