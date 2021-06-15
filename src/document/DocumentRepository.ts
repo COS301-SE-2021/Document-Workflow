@@ -10,35 +10,43 @@ const s3 = new AWS.S3({
 
 export default class DocumentRepository {
 
-    async postDocument(request): Promise<void> {
-        const file = request.files.document;
+
+    /**
+     *
+     * @param document
+     * @param workflow_id
+     */
+    async postDocument(document, workflow_id): Promise<void> {
+        const file = document;
         console.log("Creating the document metadata")
         let doc = null;
         try {
                 doc = new Document({
+                workflow_id: workflow_id,
                 doc_name: file.name,
                 mimetype: file.mimetype,
                 encoding: file.encoding,
                 size: file.size,
-                aws_path: file.name  //TODO: change this path to start with the workflow id
+                document_path: workflow_id + file.name
             });
         }
         catch(err) {
             console.log(err)
             throw err;
         }
-        /*
+
         console.log("Saving the document metadata");
         try{
             await doc.save();
         } catch (err) {
             throw "Could not access database";
-        }*/
+        }
+
         console.log("Uploading the file to AWS")
         const uploadParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
             Body: file.data,
-            Key: file.name
+            Key: workflow_id +"/"+ file.name
         }
 
         console.log(uploadParams);
@@ -51,6 +59,7 @@ export default class DocumentRepository {
             else console.log(data);
 
         });
+        return doc._id;
     }
 
     async getDocument(key) : Promise<any>{
