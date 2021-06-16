@@ -1,15 +1,19 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { UserAPIService, User } from '../User/user-api.service';
 
 
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface documentImage{
   _id: string;
+  document_id: string;
+  description: string;
+  document_path: string;
   name: string;
-  createdDate: Date;
-  url: string;
-  blob: Blob;
+  owner_email: string;
+  _v: number;
+  members: User[];
 }
 
 @Injectable({
