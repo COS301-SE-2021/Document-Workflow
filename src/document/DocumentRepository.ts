@@ -73,7 +73,7 @@ export default class DocumentRepository {
 
     async getDocumentFromS3(path):Promise<any>{
         try{
-            return await s3.getObject({Bucket: process.env.AWS_BUCKET_NAME, Key:path}).createReadStream();
+            return await s3.getObject({Bucket: process.env.AWS_BUCKET_NAME, Key:path}).promise();
         }
         catch(err){
             throw "The document server could not be reached";
