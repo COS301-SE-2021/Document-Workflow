@@ -30,6 +30,7 @@ export class WorkFlowService {
     const formData = new FormData();
     formData.append('owner_email', workflow_info.owner_email);
     formData.append('name', workflow_info.name);
+    formData.append('description', workflow_info.description);
     formData.append('document', document);
     console.log('Monkey man');
     console.log(formData);

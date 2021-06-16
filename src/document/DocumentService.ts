@@ -33,25 +33,24 @@ export default class DocumentService {
         }
     }
 
-    /*
-    async uploadDocument(request) :Promise<any>{
-        console.log("Received a request to upload a document")
-        console.log(request.body)
-        console.log(request.files)
-        if(!request.files || Object.keys(request.files).length === 0) {
-            throw "No files sent";
-        } else {
-            try {
-                await this.documentRepository.postDocument(request)
-                return "File Successfully uploaded";
-            } catch (err) {
-                throw err;
-            }
-        }
-    }
-    */
 
     async retrieveDocument(req) : Promise<any> {
+        console.log("retrieving a document");
+        console.log(req.body.doc_id);
+        try {
+            const metadata = await this.documentRepository.getDocument(req.body.doc_id);
+            console.log(metadata);
+            console.log(metadata.document_path);
+            const filedata = await this.documentRepository.getDocumentFromS3(metadata.document_path);
+            if(filedata === null)
+                throw "The specified document does not exist.";
+            return {status:"success", data:{metadata: metadata, buffer: new Buffer(filedata.Body)}, message:"" };
+        }
+        catch(err)
+        {
+            console.log(err);
+            throw err;
+        }
 
     }
 }

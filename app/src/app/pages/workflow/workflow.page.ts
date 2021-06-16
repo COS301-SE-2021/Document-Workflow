@@ -91,27 +91,26 @@ export class WorkflowPage implements OnInit {
     (await addModal).present();
 
     (await addModal).onDidDismiss().then(async (data) => {
-      let users = (await data).data['users'];
-      let documents = (await data).data['document'];
-      let file = (await data).data['file'];
 
-      let workflowData = {
-        owner_email: 'timothyhill202@gmail.com', //TODO: swap out this email address using the JWT/stored email address after login
-        name: documents.workflowName,
-      };
-      console.log(workflowData);
-      console.log(file);
-      console.log(users);
-      let response = await WorkFlowService.createWorkflow(
-        workflowData,
-        users,
-        file
-      );
-      if (response === 'success') alert('Workflow successfully created');
-      else {
-        console.log(response);
-        alert(response);
-      }
+        let users = (await data).data['users'];
+        let documents = (await data).data['document'];
+        let file = (await data).data['file'];
+
+        let workflowData = {
+          owner_email: 'timothyhill202@gmail.com', //TODO: swap out this email address using the JWT/stored email address after login
+          name: documents.workflowName,
+          description: documents.workflowDescription
+        };
+        console.log(workflowData);
+        console.log(file);
+        console.log(users);
+        let response = await WorkFlowService.createWorkflow(workflowData, users, file);
+        if(response === 'success')
+          alert('Workflow successfully created');
+        else {
+            console.log(response);
+            alert(response);
+        };
     });
     return;
   }
