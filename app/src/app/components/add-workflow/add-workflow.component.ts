@@ -2,7 +2,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { ActionSheetController, Platform } from '@ionic/angular';
+import {ActionSheetController, Platform, ToastController} from '@ionic/angular';
 import { DocumentViewPageRoutingModule } from 'src/app/pages/document-view/document-view-routing.module';
 
 @Component({
@@ -21,7 +21,8 @@ export class AddWorkflowComponent implements OnInit {
   constructor(
     private plat: Platform,
     private fb: FormBuilder,
-    private actionSheetController: ActionSheetController
+    private actionSheetController: ActionSheetController,
+    private toastCtrlr: ToastController
     ) { }
 
   ngOnInit() {
@@ -77,5 +78,21 @@ export class AddWorkflowComponent implements OnInit {
 
   submit(){
 
+  }
+//  Toast Controller for document succesfully added
+  async docAdded()
+  {
+    const toastDocAdd = await this.toastCtrlr.create({
+      message: 'File Uploaded',
+      color:'dark',
+      duration: 3000,
+      position:'top',
+    });
+
+    await toastDocAdd.present();
+
+    setTimeout(() => {
+      toastDocAdd.dismiss();
+    },3000);
   }
 }
