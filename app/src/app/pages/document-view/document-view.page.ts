@@ -20,7 +20,7 @@ import { async } from '@angular/core/testing';
 })
 export class DocumentViewPage implements OnInit {
   docPDF = null;
-  srcFile: Uint8Array;
+  srcFile: any;
   rotated: number;
   setZoom: any;
   zoomLevel: number;
@@ -50,21 +50,33 @@ export class DocumentViewPage implements OnInit {
 
   }
   async writeMyFile(fileData) {
+    console.log(fileData);
     await Filesystem.writeFile({
-      path: 'temp.pdf',
+      path: '/temp.pdf',
       data :  fileData,
       directory: Directory.Documents,
-      encoding: Encoding.UTF8,
+
     });
+    console.log('herre');
   }
 
   getDocument(id: string){
     this.docApi.getDocument(id, (data)=>{
       if (data){
-        console.log(data.data.buffer.data);
-        this.srcFile = new  Uint8Array(data.data.buffer.data);
-        console.log(this.srcFile);
-        this.writeMyFile(this.srcFile);
+        const mapped = Object.entries(data).map(([type, value]) => ({type, value}));
+        //console.log(data.data.buffer.data.toString());
+        console.log(mapped)
+        console.log(mapped[1].value['buffer'].data);
+        console.log(typeof (data.data.buffer));
+        console.log( typeof data.data.buffer.data.toString());
+        let a  = new Uint8Array( mapped[1].value['buffer'].data);
+        let b = new Blob([a], {type: 'application/octet-stream'});
+        console.log(b);
+        let url = URL.createObjectURL(b);
+        console.log(url);
+        this.srcFile = a;
+        // console.log(this.srcFile);
+        //this.writeMyFile(this.srcFile);
       }else{
 
       }
@@ -119,6 +131,6 @@ export class DocumentViewPage implements OnInit {
   }
 
   addSignature(){
-    console.log("here");
+    console.log('here');
   }
 }
