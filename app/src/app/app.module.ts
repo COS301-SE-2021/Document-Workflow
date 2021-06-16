@@ -54,6 +54,7 @@ import { AddCommentComponent } from './components/add-comment/add-comment.compon
       provide: RouteReuseStrategy,
       useClass: IonicRouteStrategy,
     },
+    NavParams
   ],
   bootstrap: [AppComponent],
 })

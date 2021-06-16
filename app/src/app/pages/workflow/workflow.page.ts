@@ -117,6 +117,7 @@ export class WorkflowPage implements OnInit {
   }
 
   viewWorkFlow(id: string, name: string) {
+    // this.navControl.navigateForward
     this.router.navigate(['documentView', {
       id: id,
       documentname: name
