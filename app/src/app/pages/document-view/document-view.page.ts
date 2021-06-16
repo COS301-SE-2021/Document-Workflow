@@ -1,3 +1,5 @@
+/* eslint-disable @angular-eslint/no-input-rename */
+/* eslint-disable @typescript-eslint/member-ordering */
 /* eslint-disable @typescript-eslint/dot-notation */
 import { Component, OnInit, Input } from '@angular/core';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
@@ -7,6 +9,8 @@ import { ModalController, NavParams, Platform } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
 import { ActivatedRoute } from '@angular/router';
+import { DocumentAPIService } from 'src/app/Services/Document/document-api.service';
+import { async } from '@angular/core/testing';
 
 
 @Component({
@@ -16,7 +20,7 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class DocumentViewPage implements OnInit {
   docPDF = null;
-  srcFile: string;
+  srcFile: Uint8Array;
   rotated: number;
   setZoom: any;
   zoomLevel: number;
@@ -25,26 +29,46 @@ export class DocumentViewPage implements OnInit {
   @Input('id') id: string;
   @Input('documentname') docName: string;
   constructor(
-    private plat: Platform,
-    private http: HttpClient,
     private modalCtrl: ModalController,
     private navpar: NavParams,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private docApi: DocumentAPIService
   ) {}
 
-  ngOnInit() {
-    this.srcFile = './../../../assets/Timesheet-Template.pdf';
+  async ngOnInit() {
     this.rotated = 0;
     this.setZoom = 'false';
     this.zoomLevel=1;
-    this.route.params.subscribe(stuff =>{
+    await this.route.params.subscribe(stuff =>{
       this.id = stuff['id'];
       this.docName = stuff['documentname'];
     });
+    await (this.getDocument(this.id));
   }
 
   download(url: string, title: string) {
 
+  }
+  async writeMyFile(fileData) {
+    await Filesystem.writeFile({
+      path: 'temp.pdf',
+      data :  fileData,
+      directory: Directory.Documents,
+      encoding: Encoding.UTF8,
+    });
+  }
+
+  getDocument(id: string){
+    this.docApi.getDocument(id, (data)=>{
+      if (data){
+        console.log(data.data.buffer.data);
+        this.srcFile = new  Uint8Array(data.data.buffer.data);
+        console.log(this.srcFile);
+        this.writeMyFile(this.srcFile);
+      }else{
+
+      }
+    });
   }
 
   async sign(){

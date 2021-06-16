@@ -11,7 +11,7 @@ import { AppComponent } from './app.component';
 import { ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
 
 
-import {SignaturePadModule} from 'angular2-signaturepad';
+// import {SignaturePadModule} from 'angular2-signaturepad';
 import { HttpClientModule } from '@angular/common/http';
 
 //pdf viewer
@@ -48,7 +48,6 @@ import { ConfirmSignaturesComponent } from './components/confirm-signatures/conf
     IonicStorageModule.forRoot(),
     HttpClientModule,
     PdfViewerModule,
-    SignaturePadModule,
   ],
   providers: [
     {
