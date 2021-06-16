@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 
 //interface and services
-import { User } from  './../../Services/User/user-api.service';
+import { User, UserAPIService } from  './../../Services/User/user-api.service';
 import { documentImage, DocumentAPIService } from './../../Services/Document/document-api.service';
 import { AddWorkflowComponent } from 'src/app/components/add-workflow/add-workflow.component';
 import { EditWorkflowComponent } from 'src/app/components/edit-workflow/edit-workflow.component';
@@ -23,15 +23,30 @@ export class WorkflowPage implements OnInit {
     private docService: DocumentAPIService,
     private modals: ModalController,
     private plat: Platform,
-    private router: Router
+    private router: Router,
+    private userApiService: UserAPIService
   ) {}
 
 
 
-  async ngOnInit() {}
+  ngOnInit() {
+    //TODO: Have a nice loader
+    this.loadWorkFlows();
+  }
 
-  loadDocuments() {
-    this.docService.getDocuments().subscribe();
+  async loadWorkFlows() {
+    alert('REMEMBER TO ADD FUNCTIONALITY OF GETTING CURRENTLY LOGGED IN USER!!!');
+    const email = 'timothyhill202@gmail.com';
+
+    this.userApiService.getAllWorkOwnedFlows(email, (response) =>{
+        console.log('inside of callback and having data');
+        console.log(response);
+    });
+    this.userApiService.getAllWorkFlows(email, (response)=>{
+      console.log('Thats right friends, we are going to use callbacks');
+      console.log(response);
+    });
+
   }
 
   async editDoc(id: number) {
@@ -67,7 +82,7 @@ export class WorkflowPage implements OnInit {
         console.log(users);
         let response = await WorkFlowService.createWorkflow(workflowData, users, file);
         if(response === 'success')
-          alert('Workflow succesfully created');
+          alert('Workflow successfully created');
         else {
             console.log(response);
             alert(response);
