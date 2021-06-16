@@ -36,6 +36,7 @@ export class UserAPIService {
     formData.append('signature', file);
     this.http.post(UserAPIService.url + '/users', formData).subscribe(data =>{ //TODO: change url
       if(data) {
+
         callback(data);
       }
       else callback({status:'error', message: 'Cannot connect to Server'});
@@ -48,12 +49,19 @@ export class UserAPIService {
     const formData = new FormData();
     formData.append('email', loginData.email);
     formData.append('password', loginData.password);
-    this.http.post(UserAPIService.url + '/users/login', formData).subscribe(data =>{ //TODO: change url
-      if(data) {
-        callback(data);
-      }
-      else callback({status:'error', message: 'Cannot connect to Server'});
-    });
+    try {
+      this.http.post(UserAPIService.url + '/users/login', formData).subscribe(data => { //TODO: change url
+        if (data) {
+          console.log('in user-api.service.ts');
+          console.log(data);
+          callback(data);
+        } else callback({status: 'error', message: 'Cannot connect to Server'});
+      });
+    }
+    catch(e){
+      console.log('Caught an http.post error');
+      console.log(e);
+    }
   }
 
   public getAllWorkOwnedFlows(email, callback) {
