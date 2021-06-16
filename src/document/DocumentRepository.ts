@@ -27,7 +27,7 @@ export default class DocumentRepository {
                 mimetype: file.mimetype,
                 encoding: file.encoding,
                 size: file.size,
-                document_path: workflow_id + file.name
+                document_path: workflow_id + '/' + file.name
             });
         }
         catch(err) {
@@ -63,7 +63,21 @@ export default class DocumentRepository {
     }
 
     async getDocument(key) : Promise<any>{
+        try{
+            return await Document.findById(key);
+        }
+        catch(err){
+            throw "The specified document Id could not be found";
+        }
+    }
 
+    async getDocumentFromS3(path):Promise<any>{
+        try{
+            return await s3.getObject({Bucket: process.env.AWS_BUCKET_NAME, Key:path}).createReadStream();
+        }
+        catch(err){
+            throw "The document server could not be reached";
+        }
     }
 
     async getDocuments(filter): Promise<DocumentI[]> {
