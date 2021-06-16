@@ -42,7 +42,7 @@ export class LoginRegisterPage implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
-    private userService: UserAPIService,
+    private userAPIService: UserAPIService,
     private plat: Platform,
     private actionSheetController: ActionSheetController,
     private loadCtrl: LoadingController,
@@ -87,16 +87,13 @@ export class LoginRegisterPage implements OnInit {
       password : this.loginForm.value.loginPassword
     };
     console.log(loginData);
-    const success = await UserAPIService.login(loginData);
-    if(success === 'Success')
-    {
-      alert('Login Successful');
-      this.router.navigate(['view']);
-    }
-    else {
-      alert('Username or Password incorrect');
-    }
-
+    this.userAPIService.login(loginData, (response)=>{
+        if(response.status === 'success'){
+          alert('Login Successful');
+          this.router.navigate(['home']);
+        }
+        else{alert(response.message);}
+    });
   }
 
   fileUnspecified(): void{
@@ -104,9 +101,6 @@ export class LoginRegisterPage implements OnInit {
 
   }
 
-  /**
-   * TODO: add verification functions on front end (ie check that confirm password matches password
-   */
   async register(): Promise<void> {
     const userdata = this.registerForm.value;
     console.log('Printing file:');
@@ -127,17 +121,18 @@ export class LoginRegisterPage implements OnInit {
       password: userdata.password
     };
 
-    const success = await UserAPIService.register(user, this.file);
-    if(success)
-    // {    this.presentPopover("termsOfService");}
-    // else {
-    //   this.presentPopover("registration failed");}
-    {alert('User registered');}
-    else {alert('registration failed');}
 
-    delete userdata.confirmPassword;
-    // this.presentPopover('termsOfService');
-    this.router.navigate(['login']);
+    this.userAPIService.register(user, this.file, (response)=>{
+        if(response.status === 'success')
+        {
+          alert('Successfully created new user account, check your email for account verification');
+          this.router.navigate(['home']);
+        }
+        else {
+          alert('Failed to make a new account: ' + response.message);
+        }
+        this.loadCtrl.dismiss();
+    });
   }
 
   changeOver(): boolean {
@@ -220,9 +215,5 @@ export class LoginRegisterPage implements OnInit {
     });
 
     await load.present();
-
-    setTimeout(() => {
-      load.dismiss();
-    },7000);
   }
 }

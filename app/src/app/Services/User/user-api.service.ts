@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import {resolveFileWithPostfixes} from "@angular/compiler-cli/ngcc/src/utils";
 
 export interface User {
   Fname: string;
@@ -22,8 +23,9 @@ export class UserAPIService {
 
   constructor(private http: HttpClient) {}
 
+
   // eslint-disable-next-line @typescript-eslint/member-ordering
-  public static async register(user: User, file: File): Promise<boolean> {
+  public register(user: User, file: File, callback){
 
     const formData = new FormData();
     formData.append('name', user.Fname);
@@ -32,52 +34,60 @@ export class UserAPIService {
     formData.append('password', user.password);
     formData.append('email', user.email);
     formData.append('signature', file);
-    const response = await fetch((UserAPIService.url).concat( '/users'), { //TODO: change this url
-      method: 'POST',
-      body: formData,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-       });
-    //Content-Type: multipart/form-data
-    //'application/json; charset=UTF-8'
+    this.http.post(UserAPIService.url + '/users', formData).subscribe(data =>{ //TODO: change url
+      if(data) {
 
-    if(response.ok)
-    {return true;}
-    else {return false;}
-
-    /* THIS WORKS
-    const formData = new FormData();
-    formData.append('name', user.Fname);
-    formData.append('surname', user.Lname);
-    formData.append('initials', user.initials);
-    formData.append('password', user.password);
-    formData.append('email', user.email);
-    formData.append('signature', file);
-    let request = new XMLHttpRequest();
-
-    request.open('POST', 'http://localhost:3000/api/users'); //TODO: swap out this url with environment variable.
-    const response = await request.send(formData);
-    //TODO: after the request is sent return the correct value
-    return false;
-    */
+        callback(data);
+      }
+      else callback({status:'error', message: 'Cannot connect to Server'});
+    });
   }
 
-  public static async login(loginData: LoginData): Promise<string>
+  public login(loginData: LoginData , callback)
   {
-
-    /*const response = await fetch((UserAPIService.url).concat( '/users/login'), { //TODO: change this url
-      method: 'POST',
-      body: loginData,
-      headers:  {'Content-Type': 'application/json; charset=UTF-8'} });*/
-    const response = await fetch((UserAPIService.url).concat( '/users/login'), { //TODO: change this url
-      method: 'POST',
-      body: JSON.stringify({email:loginData.email, password: loginData.password}),
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      headers: {'Content-Type': 'application/json; charset=UTF-8'} });
-
-    if(response.ok)
-    {return 'Success';}
-    else {return 'Failure';}
+    console.log('Logging in a user');
+    const formData = new FormData();
+    formData.append('email', loginData.email);
+    formData.append('password', loginData.password);
+    try {
+      this.http.post(UserAPIService.url + '/users/login', formData).subscribe(data => { //TODO: change url
+        if (data) {
+          console.log('in user-api.service.ts');
+          console.log(data);
+          callback(data);
+        } else callback({status: 'error', message: 'Cannot connect to Server'});
+      });
+    }
+    catch(e){
+      console.log('Caught an http.post error');
+      console.log(e);
+    }
   }
 
+  public getAllWorkOwnedFlows(email, callback) {
+    const formData = new FormData();
+    formData.append('email', email);
+    console.log('Getting all owned workflows');
+     this.http.post(UserAPIService.url + '/users/retrieveOwnedWorkflows', formData).subscribe(data =>{ //TODO: change url
+        if(data) {
+          callback(data);
+        }
+        else callback({status:'error', message: 'Cannot connect to Server'});
+     });
+
+  }
+
+  public getAllWorkFlows(email, callback){
+    const formData = new FormData();
+    formData.append('email', email);
+    console.log('Getting all normal workflows');
+    this.http.post(UserAPIService.url + '/users/retrieveWorkflows', formData).subscribe(data =>{ //TODO: change url
+      if(data) {
+        callback(data);
+      }
+      else callback({status:'error', message: 'Cannot connect to Server'});
+    });
+
+  }
 
 }

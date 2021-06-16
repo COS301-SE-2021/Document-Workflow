@@ -1,28 +1,44 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { UserAPIService, User } from '../User/user-api.service';
 
 
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface documentImage{
   _id: string;
+  document_id: string;
+  description: string;
+  document_path: string;
   name: string;
-  createdDate: Date;
-  url: string;
-  blob: Blob;
+  owner_email: string;
+  _v: number;
+  members: User[];
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class DocumentAPIService {
-  url='http://127.0.0.1';
+  url='http://loalhost:3000/api'; //TODO: change url
 constructor(private http: HttpClient) { };
 
 
 //maybe for the signatures
   getDocuments(){
     return this.http.get<documentImage[]>(`${this.url}/image`);
+  }
+
+  async getDocument(doc_id, callback) {
+    const formData = new FormData();
+    formData.append('doc_id', doc_id);
+
+    this.http.post(this.url + '/documents/retrieve', formData).subscribe(data =>{
+      if(data) {
+        callback(data);
+      }
+      else callback({status:'error', message: 'Cannot connect to Server'});
+    });
   }
 
   async testUploadDocument(file: File): Promise<boolean>

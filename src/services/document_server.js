@@ -33,6 +33,14 @@ function uploadFileToS3(file)
 }
 exports.uploadFile = uploadFileToS3
 
+/**
+ * This function handles the process of fetching a stored document from the AWS S3 server so that it can be returned
+ * To the end user. The basic idea is that each workflow will get its own folder in which all version's of its document are stored
+ * .The key used to fetch the document will be a combination of the workflowID/document name (this key will be stored in
+ * the metadata database).
+ * @param key
+ * @returns {ReadStream}
+ */
 function downloadFileFromS3(key)
 {
     const downloadParams = {
