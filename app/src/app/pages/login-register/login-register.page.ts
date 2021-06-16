@@ -214,7 +214,7 @@ export class LoginRegisterPage implements OnInit {
   {
     const load = await this.loadCtrl.create({
       message: 'Hang in there... we are almost done',
-      duration: 7000,
+      duration: 5000,
       showBackdrop: false,
       spinner: 'bubbles'
     });
@@ -223,6 +223,6 @@ export class LoginRegisterPage implements OnInit {
 
     setTimeout(() => {
       load.dismiss();
-    },7000);
+    },5000);
   }
 }

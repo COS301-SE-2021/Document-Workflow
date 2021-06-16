@@ -22,7 +22,7 @@ export class ResetPasswordComponent implements OnInit {
     const toastEmail = await this.toastCtrlr.create({
       message: 'Password email verification sent',
       color:'dark',
-      duration: 4000,
+      duration: 3000,
       position:'top',
     });
 
@@ -30,7 +30,7 @@ export class ResetPasswordComponent implements OnInit {
 
     setTimeout(() => {
       toastEmail.dismiss();
-    },4000);
+    },3000);
   }
 }
 

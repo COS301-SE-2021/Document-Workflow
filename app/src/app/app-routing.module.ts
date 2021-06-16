@@ -1,6 +1,6 @@
 import { Component, NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 
 
 
@@ -10,6 +10,10 @@ const routes: Routes = [
     loadChildren: () => import('./pages/login-register/login-register.module').
     then( m => m.LoginRegisterPageModule),
     pathMatch: 'full'
+  },
+  {
+    path: 'resetPassword',
+    component: ResetPasswordComponent
   },
   {
     path: 'archive',
@@ -56,3 +60,4 @@ const routes: Routes = [
   exports: [RouterModule],
 })
 export class AppRoutingModule {}
+export const routingComponents = [ResetPasswordComponent];

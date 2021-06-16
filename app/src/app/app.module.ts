@@ -12,8 +12,7 @@ import { ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
 
 
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-
-
+import {SignaturePadModule} from 'angular2-signaturepad';
 
 //Components
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
@@ -48,6 +47,7 @@ import { AddCommentComponent } from './components/add-comment/add-comment.compon
     IonicStorageModule.forRoot(),
     HttpClientModule,
     PdfViewerModule,
+    SignaturePadModule,
   ],
   providers: [
     {
