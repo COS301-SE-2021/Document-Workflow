@@ -24,11 +24,11 @@
                   <ion-input type="password" formControlName="loginPassword"></ion-input>
                 </ion-item>
                 <div text-center>
-                  Reset <a routerLink='/password-reset'>
+                  Reset <a routerLink='/resetPassword'>
                     password</a>
                 </div>
 
-                <ion-button padding expand="block" color="primary" fill="outline" [disabled]="!loginForm.valid"
+                <ion-button padding expand="block" color="primary" fill="outline" [disabled]="!loginForm.valid"(click)="login()"
                   type="submit">Login</ion-button>
               </form>
             </ion-card-content>

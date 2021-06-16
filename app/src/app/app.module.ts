@@ -12,11 +12,9 @@ import { ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
 
 
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-
-
+import {SignaturePadModule} from 'angular2-signaturepad';
 
 //Components
-
 
 
 //pdf viewer
@@ -46,6 +44,7 @@ import { AddWorkflowComponent } from './components/add-workflow/add-workflow.com
     IonicStorageModule.forRoot(),
     HttpClientModule,
     PdfViewerModule,
+    SignaturePadModule,
   ],
   providers: [
     {
