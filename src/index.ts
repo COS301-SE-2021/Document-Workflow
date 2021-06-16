@@ -25,7 +25,14 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(cors);
+const allowedOrigins = ['http://localhost:8100'];
+
+const options: cors.CorsOptions = {
+    origin: allowedOrigins
+};
+
+// Then pass these options to cors:
+app.use(cors(options));
 
 app.use("/api/documents", container.resolve(DocumentController).routes());
 app.use("/api/users", container.resolve(UserController).routes());
