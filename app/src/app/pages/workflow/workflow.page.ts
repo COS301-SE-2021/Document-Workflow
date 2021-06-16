@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { LoadingController, ModalController } from '@ionic/angular';
+import { LoadingController, ModalController, NavController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 
@@ -29,7 +29,8 @@ export class WorkflowPage implements OnInit {
     private plat: Platform,
     private router: Router,
     private userApiService: UserAPIService,
-    private loadctrl: LoadingController
+    private loadctrl: LoadingController,
+    private navControl: NavController
   ) {}
 
   ngOnInit() {
