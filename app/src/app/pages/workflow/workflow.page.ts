@@ -74,7 +74,8 @@ export class WorkflowPage implements OnInit {
 
         let workflowData = {
           owner_email: 'timothyhill202@gmail.com', //TODO: swap out this email address using the JWT/stored email address after login
-          name: documents.workflowName
+          name: documents.workflowName,
+          description: documents.workflowDescription
         };
         console.log(workflowData);
         console.log(file);
