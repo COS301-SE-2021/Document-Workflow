@@ -4,17 +4,17 @@ export interface WorkFlowI{
 
     _id: string,
     name: string,
-    owner_id: string,
     owner_email: string,
     document_id: string,
     document_path: string,
+    description: string,
     members: [string]
 }
 
 const workflowSchema = new mongoose.Schema<WorkFlowI>({
 
-    owner_id: {type:String},
     name: {type: String, required: true},
+    description: {type: String, default:""},
     owner_email: {type:String, required: true},
     document_id: {type:String},
     document_path: {type:String, required:true},

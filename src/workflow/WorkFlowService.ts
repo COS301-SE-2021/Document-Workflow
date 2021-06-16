@@ -33,8 +33,8 @@ export default class WorkFlowService{
         try{
             const workflow : WorkFlowI = {
                 _id: null,
-                owner_id: null,
                 name: req.body.name,
+                description: req.body.description,
                 owner_email: req.body.owner_email,
                 document_id: null,
                 document_path: req.files.document.name,

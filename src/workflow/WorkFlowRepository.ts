@@ -6,7 +6,7 @@ export default class WorkFlowRepository{
         console.log("Posting a new workflow");
         const new_workflow = new WorkFlow({
             name: workflow.name,
-            owner_id: workflow.owner_id,
+            description:workflow.description,
             owner_email: workflow.owner_email,
             document_id: workflow.document_id,
             document_path: workflow.document_path,
@@ -27,7 +27,7 @@ export default class WorkFlowRepository{
             if(_workflow){ //this is just to avoid creating a new workflow by accident
                 const updated_workflow = await WorkFlow.updateOne({_id:workflow._id},
                     {
-                        owner_id: workflow.owner_id,
+                        description: workflow.description,
                         name: workflow.name,
                         owner_email: workflow.owner_email,
                         document_id: workflow.document_id,
