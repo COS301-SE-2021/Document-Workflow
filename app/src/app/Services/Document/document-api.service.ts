@@ -20,25 +20,21 @@ export interface documentImage{
   providedIn: 'root'
 })
 export class DocumentAPIService {
-  url='http://loalhost:3000/api'; //TODO: change url
+  url='http://localhost:3000/api'; //TODO: change url
 constructor(private http: HttpClient) { };
 
-
-//maybe for the signatures
-  getDocuments(){
-    return this.http.get<documentImage[]>(`${this.url}/image`);
-  }
-
-  async getDocument(doc_id, callback) {
+  async getDocument(doc_id: string, callback) {
     const formData = new FormData();
     formData.append('doc_id', doc_id);
 
     this.http.post(this.url + '/documents/retrieve', formData).subscribe(data =>{
       if(data) {
         callback(data);
+      } else {
+        callback({status:'error', message: 'Cannot connect to Server'});
       }
-      else callback({status:'error', message: 'Cannot connect to Server'});
-    });
+    }
+    );
   }
 
   async testUploadDocument(file: File): Promise<boolean>

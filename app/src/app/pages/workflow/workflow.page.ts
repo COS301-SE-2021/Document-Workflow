@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-for-of */
 import { Component, OnInit, Input } from '@angular/core';
 import { LoadingController, ModalController, NavController } from '@ionic/angular';
 import { Router } from '@angular/router';

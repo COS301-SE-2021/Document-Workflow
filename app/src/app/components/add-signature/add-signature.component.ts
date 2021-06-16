@@ -12,16 +12,5 @@ export class AddSignatureComponent implements OnInit {
 
   ngOnInit() {}
 
-  confirm(){
-    this.modal.dismiss({
-      confirm: true
-    });
-  }
-
-  reject(){
-    this.modal.dismiss({
-      confirm: false
-    });
-  }
 
 }

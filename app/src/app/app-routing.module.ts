@@ -1,10 +1,12 @@
 import { Component, NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { AddSignatureComponent } from './components/add-signature/add-signature.component';
 
 
 
 
 const routes: Routes = [
+
   {
     path: 'login',
     loadChildren: () => import('./pages/login-register/login-register.module').
@@ -40,6 +42,10 @@ const routes: Routes = [
     loadChildren: () => import('./pages/intro/intro-routing.module').
     then( m => m.IntroPageRoutingModule),
     pathMatch: 'full'
+  },
+  {
+    path: 'addSignature',
+    component: AddSignatureComponent,
   },
   {
     path: '',
