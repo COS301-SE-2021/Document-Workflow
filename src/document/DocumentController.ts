@@ -58,7 +58,7 @@ export default class DocumentController{
             try {
                 res.status(200).json(await this.retrieveDocumentRoute(req));
             } catch(err){
-                res.status(400).json(err);
+                res.status(200).json({status:"error", data:{}, message:err});
             }
         });
 
