@@ -46,7 +46,6 @@ export class WorkflowPage implements OnInit {
       console.log('Thats right friends, we are going to use callbacks');
       console.log(response);
     });
-
   }
 
   async editDoc(id: number) {
