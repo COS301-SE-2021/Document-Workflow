@@ -97,7 +97,7 @@ export default class UserController{
             try {
                 res.status(200).json(await this.registerUserRoute(req));
             } catch(err){
-                res.status(400).json(err);
+                res.status(400).json({status:"error", data:{}, message:err});
             }
         });
 
@@ -111,6 +111,8 @@ export default class UserController{
         });
 
         this.router.post("/retrieveWorkflows", async(req,res) =>{
+            console.log(req);
+            console.log(req.headers);
             try {
                 res.status(200).json(await this.retrieveWorkFlows(req));
             } catch(err){
@@ -118,14 +120,12 @@ export default class UserController{
             }
         });
 
-        this.router.post("/login", async (req,res) => {
+        this.router.post("/login", async (req,res) => { //TODO: return a JWT token
             try {
-                let inner_res =await this.loginUserRoute(req);
-                res.status(200).json(
-                    {status: "Success", data:{}, message: "JWT TOKEN HERE"} //TODO: return a JWT Token!!!
-                )
+                res.status(200).json( await this.loginUserRoute(req));
             } catch(err){ //Lets assume that we throw the error message up to here.
-                res.status(400).json({status: "Failed", data:{}, message: err});
+                //NBNBNBNB DONT CHANGE THIS RESPONSE CODE JUST YET!!!!
+                res.status(200).json({status: "Failed", data:{}, message: err}); //TODO change the status in such a way that it doesnt break the frontend pls
             }
         });
 
