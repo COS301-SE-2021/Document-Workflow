@@ -90,7 +90,7 @@ export class LoginRegisterPage implements OnInit {
     this.userAPIService.login(loginData, (response)=>{
         if(response.status === 'success'){
           alert('Login Successful');
-          this.router.navigate(['view']);
+          this.router.navigate(['home']);
         }
         else{alert(response.message);}
     });
@@ -101,9 +101,6 @@ export class LoginRegisterPage implements OnInit {
 
   }
 
-  /**
-   * TODO: add verification functions on front end (ie check that confirm password matches password
-   */
   async register(): Promise<void> {
     const userdata = this.registerForm.value;
     console.log('Printing file:');
@@ -125,11 +122,11 @@ export class LoginRegisterPage implements OnInit {
     };
 
 
-    this.userAPIService.register(user, this.file, (response)=>{ 
+    this.userAPIService.register(user, this.file, (response)=>{
         if(response.status === 'success')
         {
           alert('Successfully created new user account, check your email for account verification');
-          this.router.navigate(['login']);
+          this.router.navigate(['home']);
         }
         else {
           alert('Failed to make a new account: ' + response.message);
