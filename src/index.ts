@@ -6,6 +6,7 @@ import * as dotenv from 'dotenv';
 import DocumentController from "./document/DocumentController";
 import UserController from "./user/UserController";
 import WorkFlowController from "./workflow/WorkFlowController";
+import cors from 'cors';
 dotenv.config();
 
 const fileUpload = require('express-fileupload');
@@ -23,6 +24,8 @@ app.use((req, res, next) => {
     //res.setHeader('Access-Control-Allow-Credentials', 'bearer');
     next();
 });
+
+app.use(cors);
 
 app.use("/api/documents", container.resolve(DocumentController).routes());
 app.use("/api/users", container.resolve(UserController).routes());
