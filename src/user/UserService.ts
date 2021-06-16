@@ -115,18 +115,32 @@ export default class UserService {
     async loginUser(req): Promise<any> {
         console.log(req.body); //TODO: delete
         let users = await this.userRepository.getUsers({"email": req.body.email})
+        console.log(users);
+        if(users.length == 0) {
+            console.log('User does not exist');
+            throw "Email or password incorrect";
+        }
+
         try {
-            bcrypt.compare(req.body.password, users[0].password, function (err, result) {
-                if (err)
-                    throw err;
-                if (result) {
-                    if (users[0].validated)
-                        return {status:"success", data:{}, message:""};
-                    else throw "You need to verify your account";
-                } else throw "Email or password incorrect";
-            });
+            let result = await bcrypt.compare(req.body.password, users[0].password);
+            console.log(result);
+
+            if (!result) {
+                console.log('Password is incorrect');
+                throw "Email or password incorrect";
+            }
+            else{
+                if (users[0].validated)
+                    return {status:"success", data:{}, message:""};
+                else {
+                    console.log('User has not verified their account');
+                    throw "You need to verify your account";
+                }
+            }
+
         } catch (err) {
-            throw "Email or password incorrect"
+            console.log(err);
+            throw err;
         }
     }
 
@@ -143,23 +157,25 @@ export default class UserService {
     }
 
     async retrieveOwnedWorkFlows(req):Promise<any> {
-        console.log(req);
+        console.log("Retrieving owned workflows")
+        //console.log(req);
         if(req.body.email == null)
             throw "Missing parameter email";
         const users = await this.userRepository.getUsers({email:req.body.email});
         let user = users[0];
 
-        console.log(user.owned_workflows);
+        //console.log(user.owned_workflows);
         let workflows = [];
         for(let id of user.owned_workflows)
         {
             workflows.push(await this.workFlowRepository.getWorkFlow(id));
         }
 
-        return {status:"success", workflows, message:""};
+        return {status:"success", data: workflows, message:""};
     }
 
     async retrieveWorkFlows(req):Promise<any> {
+        console.log("Retrieving workflows")
         if(req.body.email == null)
             throw "Missing parameter email";
         const users = await this.userRepository.getUsers({email:req.body.email});
@@ -171,7 +187,7 @@ export default class UserService {
             workflows.push(await this.workFlowRepository.getWorkFlow(id));
         }
 
-        return {status:"success", workflows, message:""};
+        return {status:"success", data: workflows, message:""};
     }
 }
 
