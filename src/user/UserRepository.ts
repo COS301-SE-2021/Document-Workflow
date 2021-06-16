@@ -2,6 +2,11 @@ import User, { UserI } from "./User";
 
 export default class UserRepository {
 
+    /**
+     * @returns Promise<any> The newly created user.
+     * @throws Error
+     * @param Usr: An object containing all the information to create a new user.
+     */
     async postUser(Usr: UserI): Promise<any> {
         const usr = new User({
             name: Usr.name,
@@ -9,8 +14,7 @@ export default class UserRepository {
             initials: Usr.initials,
             email: Usr.email,
             password: Usr.password,
-            validated: Usr.validated,
-            tokenDate: Usr.tokenDate
+            validated: Usr.validated
         });
         try{
             return await usr.save();
@@ -19,52 +23,61 @@ export default class UserRepository {
         }
     }
 
-
-    async getUsers(filter): Promise<UserI[]> {
+    /**
+     * @returns Promise<any> A list of the found users.
+     * @throws Error If something goes horribly wrong
+     * @param filter An object containing the search criteria
+     */
+    async getUsers(filter): Promise<any[]> {
         try {
             return await User.find(filter);
         } catch (err) {
-          throw err;
+          throw new Error(err);
         }
     }
 
-    // async putUser(Usr: UserI): Promise<UserI> {
-    //     try {
-    //         const usr = await User.findById();
-    //         if(usr){
-    //             const _usr = new User({
-    //                 _id: Usr._id,
-    //                 name: Usr.name,
-    //                 surname: Usr.surname,
-    //                 initials: Usr.initials,
-    //                 email: Usr.email,
-    //                 password: Usr.password,
-    //                 validated: Usr.validated,
-    //                 tokenDate: Usr.tokenDate
-    //             });
-    //             await _usr.save();
-    //             return _usr;
-    //         } else {
-    //             return null;
-    //         }
-    //     } catch(err){
-    //         throw err;
-    //     }
-    // }
+    /**
+     * @returns Promise<any> The user object after it has been changed
+     * @throws Error when the user object is not found
+     * @param Usr The user object to be modified
+     */
+    async putUser(Usr: UserI): Promise<any> {
+            const usr = await User.findOne({email: Usr.email});
+            if(usr){
+                usr.name = Usr.name;
+                usr.surname = Usr.surname;
+                usr.initials = Usr.initials;
+                usr.email = Usr.email;
+                usr.password = Usr.password;
+                usr.validated = Usr.validated;
+                return await usr.save();
+            } else {
+                throw new Error("Could not update user");
+            }
+    }
 
-    async getUser(id: string) : Promise<UserI> {
+    /**
+     * @returns Promise<any> The user object if it was found
+     * @throws Error if findOne breaks somehow
+     * @param filter An object containing the search criteria
+     */
+    async getUser(filter): Promise<any> {
         try {
-            return await User.findById(id);
+            return await User.findOne(filter);
         } catch(err) {
             throw err;
         }
     }
 
-    async deleteUser(id: string) {
-        try {
-            const usr: UserI = await this.getUser(id);
-            return await User.deleteOne(usr);
-        } catch(err) {
+    /**
+     * @returns Promise<any> The deleted user
+     * @throws Error If the user could not be deleted
+     * @param id The id of the user that is to be deleted
+     */
+    async deleteUser(id: string): Promise<any> {
+        try{
+            User.findByIdAndDelete(id);
+        } catch (err){
             throw err;
         }
     }

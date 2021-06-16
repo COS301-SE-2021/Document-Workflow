@@ -2,6 +2,7 @@ import { Router } from "express";
 import { autoInjectable } from "tsyringe";
 import UserService from "./UserService";
 import { UserI } from "./User";
+import jwt from "jsonwebtoken";
 
 // "/api/users"
 
@@ -13,22 +14,45 @@ export default class UserController{
         this.router = new Router();
     }
 
+    Authenticate = async(req,res,next)=>{
+        try{
+            const token = req.header("Authorization").replace("Bearer ", "");
+            const decoded = jwt.verify(token, process.env.SECRET);
+            const user = await this.userService.getUser({_id: decoded._id, 'tokens.token': token});
+
+            if(!user) {
+                throw new Error();
+            }
+            req.user = user;
+            next();
+        } catch (e) {
+            res.status(401).send({message: "Unable to Authenticate"});
+        }
+    }
+
     async getUsersRoute(): Promise<UserI[]> {
         try{
-            return await this.userService.getUsers();
+            return await this.userService.getAllUsers();
         } catch(err) {
             throw err;
         }
     }
 
-    async getUserRoute(request): Promise<UserI> {
+    async getUserByIdRoute(request): Promise<UserI> {
         try{
-            return await this.userService.getUser(request);
+            return await this.userService.getUserById(request);
         }catch(err) {
             throw err;
         }
     }
 
+    async getUserByEmailRoute(request): Promise<UserI> {
+        try{
+            return await this.userService.getUserByEmail(request);
+        }catch(err) {
+            throw err;
+        }
+    }
 
     async registerUserRoute(request) :Promise<any>{
         try{
@@ -49,9 +73,7 @@ export default class UserController{
         }
     }
 
-    async loginUserRoute(request) : Promise<any>{}
-
-    async postUserRoute(request): Promise<any> {
+    async loginUserRoute(request): Promise<any> {
 
         try {
             return await this.userService.loginUser(request);
@@ -78,7 +100,7 @@ export default class UserController{
     * */
 
     routes() {
-        this.router.get("", async (req, res) => {
+        this.router.get("", this.Authenticate, async (req, res) => {
 
             try {
                 res.status(200).json(await this.getUsersRoute());
@@ -89,10 +111,14 @@ export default class UserController{
 
         this.router.post("/login", async (req,res) => {
             try {
-                let inner_res =await this.loginUserRoute(req);
-                res.status(200).json(
-                    {status: "Success", data:{}, message: "JWT TOKEN HERE"} //TODO: return a JWT Token!!!
-                )
+                let token = await this.loginUserRoute(req);
+                if(token){
+                    res.status(200).json(
+                        {status: "Success", data:{}, message: token}
+                    )
+                } else {
+                    res.status(400).send("Could not log in user");
+                }
             } catch(err){ //Lets assume that we throw the error message up to here.
                 res.status(400).json({status: "Failed", data:{}, message: err});
             }
@@ -106,9 +132,22 @@ export default class UserController{
             }
         });
 
-        this.router.get("/:id", async (req, res) => {
+        this.router.get("/:id", this.Authenticate , async (req, res) => {
             try {
-                res.status(200).json(await this.getUserRoute(req));
+                res.status(200).json(await this.getUserByIdRoute(req));
+            } catch(err){
+                if(err instanceof URIError){
+                    res.status(400).json("id field is required");
+                } else {
+                    res.status(400).json(err);
+                }
+
+            }
+        });
+
+        this.router.get("/:email", async (req, res) => {
+            try {
+                res.status(200).json(await this.getUserByEmailRoute(req));
             } catch(err){
                 if(err instanceof URIError){
                     res.status(400).json("id field is required");
@@ -120,10 +159,9 @@ export default class UserController{
         });
 
         this.router.post("", async (req,res) => {
-            console.log("Register request");
-            console.log(req.body);
             try {
-                res.status(201).json(await this.registerUserRoute(req));
+                //returns JWT if successful:
+                res.status(201).json({message: await this.registerUserRoute(req)});
             } catch(err){
                 res.status(400).json(err);
             }

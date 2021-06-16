@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
-
+import jwt from "jsonwebtoken";
 
 export interface UserI{
     name: string,
@@ -8,10 +8,9 @@ export interface UserI{
     initials: string,
     email: string,
     password: string,
-    validated: Boolean,
-    validateCode: string,
-    tokenDate: Date,
     signature: Buffer
+    validated: Boolean,
+    validateCode: string
 }
 
 /**
@@ -46,9 +45,15 @@ const userSchema = new Schema<UserI>({
             }
         }
     },
-    // signature: { type: String, required: true },
+    signature: { type: String, required: true },
     validated: {type: Boolean, default: false},
-    tokenDate: {type: Date, default: Date.now}
+    tokenDate: {type: Date, default: Date.now},
+    tokens: [{
+        token: {
+            type: String,
+            required: true
+        }
+    }]
 });
 
 /**
@@ -75,7 +80,14 @@ userSchema.pre("save", function(next)  {
     }
 });
 
-export function compare(pass,hashed){
+userSchema.methods.genAuthToken = async function() {
+    const token = jwt.sign({_id: this._id.toString()}, process.env.SECRET);
+    this.tokens = this.tokens.concat({token});
+    await this.save();
+    return token;
+}
+
+userSchema.methods.compare = async function(pass,hashed){
     bcrypt.compare(pass, hashed, (err,match) => {
         if(err){
             throw err;

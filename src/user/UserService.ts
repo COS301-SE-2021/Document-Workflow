@@ -5,6 +5,7 @@ import url from 'url';
 import crypto from "crypto";
 import nodemailer from 'nodemailer';
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 @injectable()
 export default class UserService {
@@ -12,81 +13,116 @@ export default class UserService {
     constructor(private userRepository: UserRepository) {
     }
 
-    async getUser(request): Promise<UserI> {
-        if(!request.params.id){
-            throw new URIError("id is required");
+    async authenticateUser(email, password, id, hash){
+        try {
+            bcrypt.compare(password, hash, function (err, result) {
+                if (err)
+                    throw err;
+                if (result) {
+                    return jwt.sign({id: id}, process.env.SECRET, {expiresIn: '24 hours'});
+                } else throw "Email or password incorrect";
+            });
+        } catch (err) {
+            throw "Email or password incorrect"
         }
-        try{
-            const res = await this.userRepository.getUsers({_id: request.params.id});
+    }
+
+    async getUser(request): Promise<any> {
+        if(!request.params){
+            throw new Error("Search criteria required");
+        }
+        try {
+            const res = await this.userRepository.getUser(request.params);
             return res[0];
-        }catch(err) {
+        } catch (err) {
             throw err;
         }
     }
 
-    async getUsers(): Promise<UserI[]> {
-        try{
+    async getUserById(request): Promise<UserI> {
+        if(!request.params.id){
+            throw new Error("Search criteria required");
+        }
+        try {
+            return await this.userRepository.getUser({id: request.params.id});
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async getUserByEmail(request): Promise<UserI> {
+        if(!request.params.email){
+            throw new Error("Search criteria required");
+        }
+        try {
+            return await this.userRepository.getUser({email: request.params.email});
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async getAllUsers(): Promise<UserI[]> {
+        try {
             const users = await this.userRepository.getUsers({});
             console.log(users);
             return users;
-        }catch(err){
+        } catch (err) {
             throw err;
         }
     }
 
-    async registerUser(req) : Promise<any>{}
-
-    async postUser(request): Promise<any> {
+    /**
+     * @returns A JWT authentication token if the request was successful
+     * @param req
+     */
+    async registerUser(req): Promise<any> {
         //Validation:
         let signature_base64 = req.files.signature.data.toString('base64');
-        if(req.body.length === 0 || !req.body) {
-            return { message: "No User details sent" };
+        if (req.body.length === 0 || !req.body) {
+            return {message: "No User details sent"};
         } else {
             try {
                 const Usr = req.body;
                 const usr: UserI = {
-                    _id: null,
                     name: Usr.name,
                     surname: Usr.surname,
                     initials: Usr.initials,
                     email: Usr.email,
                     password: Usr.password,
                     validated: Usr.validated,
-                    tokenDate: Usr.tokenDate,
                     validateCode: crypto.randomBytes(64).toString('hex'),
                     signature: Buffer.from(signature_base64) // req.files.signature.data could maybe go straight here
                 }
                 let response = await this.userRepository.postUser(usr)
-                await this.sendVerificationEmail(usr.email, usr.validateCode);
-                return response;
+                if(response){
+                    await this.sendVerificationEmail(usr.email, usr.validateCode);
+                    return this.authenticateUser(response.email, Usr.password, response._id, response.password);
+                }
+
 
             } catch (err) {
                 throw err;
             }
         }
     }
-    
-    async verifyUser(req) : Promise<any>{
+
+    async verifyUser(req): Promise<any> {
         const redirect_url = "http://localhost:3000/login-register";
         const queryObject = url.parse(req.url, true).query
 
         let users = await this.userRepository.getUsers({"email": queryObject["email"]});
-        if(users[0].validateCode === queryObject["verificationCode"])
-        {
+        if (users[0].validateCode === queryObject["verificationCode"]) {
             users[0].validated = true;
             await this.userRepository.putUser(users[0]);
-            return ('<html>Successfully verified. Click<a href= ' + redirect_url + '> here</a> to return to login</html>');
-        }
-        else {
+            return ('<html lang="en">Successfully verified. Click<a href= ' + redirect_url + '> here</a> to return to login</html>');
+        } else {
             throw "Validation Codes do not match";
         }
     }
 
-    async sendVerificationEmail(code, emailAddress): Promise<void>
-    {
-        function sendVerificationEmail(code, emailAddress)
-        {
-            let url = process.env.BASE_URL + '/users/verify?verificationCode=' + code + '&email=' +emailAddress ;
+    async sendVerificationEmail(code, emailAddress): Promise<void> {
+        function sendVerificationEmail(code, emailAddress) {
+            let url = process.env.BASE_URL + '/users/verify?verificationCode=' + code + '&email=' + emailAddress;
             let transporter = nodemailer.createTransport({
                 service: 'gmail',
                 auth: {
@@ -99,12 +135,12 @@ export default class UserService {
                 from: process.env.EMAIL_ADDRESS,
                 to: emailAddress,
                 subject: 'DocumentWorkflow Verification Code',
-                html: "<html><p>Hello new DocumentWorkflow User, use this link to activate your account! </p>" +
-                    "<a href='"+url+"'>Click here</a></html>"
+                html: "<html lang='en'><p>Hello new DocumentWorkflow User, use this link to activate your account! </p>" +
+                    "<a href='" + url + "'>Click here</a></html>"
 
             };
 
-            transporter.sendMail(mailOptions, function(error, info){
+            transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
                     console.log(error);
                     return false;
@@ -113,38 +149,33 @@ export default class UserService {
                     return true;
                 }
             });
-        }
+        } sendVerificationEmail(code, emailAddress);
     }
 
-    async loginUser(req) :Promise<any>{
-        console.log(req.body); //TODO: delete
-        let users = await this.userRepository.getUsers({"email": req.body.email})
-        try {
-            bcrypt.compare(req.body.password, users[0].password, function (err, result) {
-                if (err)
-                    throw err;
-                if (result) {
-                    if(users[0].validated)
-                        return "success";
-                    else throw "You need to verify your account";
-                } else throw "Email or password incorrect";
-            });
+    async loginUser(req): Promise<any> {
+        if(!req.body.email || !req.body.password){
+            throw new Error("Could not log in");
         }
-        catch(err)
-        { throw "Email or password incorrect"}
+        let user = await this.userRepository.getUser({"email": req.body.email})
+        if(user.validated){
+            return await this.authenticateUser(user.email, req.body.password, user._id, user.password);
+        } else {
+            throw new Error("User must be validated");
+        }
     }
 
     async deleteUser(request): Promise<{}> {
         const id = request.params.id;
-        if(!id){
-            return { message: "No user specified" };
+        if (!id) {
+            return {message: "No user specified"};
         }
         const usr = await this.userRepository.getUser(id);
-        if(!usr){
-            return { message: "User not found" };
+        if (!usr) {
+            return {message: "User not found"};
         }
-        return { user: await this.userRepository.deleteUser(id) };
+        return {user: await this.userRepository.deleteUser(id)};
     }
+}
 
 // router.get('/:id', (req,res)=>{
 //     User.findById(req.params.id)

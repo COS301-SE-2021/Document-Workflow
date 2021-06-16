@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 export interface WorkFlowI{
-
     _id: string,
     name: string,
     owner_id: string,
@@ -12,7 +11,6 @@ export interface WorkFlowI{
 }
 
 const workflowSchema = new mongoose.Schema<WorkFlowI>({
-
     owner_id: {type:String},
     name: {type: String, required: true},
     owner_email: {type:String, required: true},
