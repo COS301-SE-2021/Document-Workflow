@@ -2,7 +2,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { ActionSheetController, Platform } from '@ionic/angular';
+import { ActionSheetController, ModalController, Platform } from '@ionic/angular';
 import { DocumentViewPageRoutingModule } from 'src/app/pages/document-view/document-view-routing.module';
 
 @Component({
@@ -21,7 +21,8 @@ export class AddWorkflowComponent implements OnInit {
   constructor(
     private plat: Platform,
     private fb: FormBuilder,
-    private actionSheetController: ActionSheetController
+    private actionSheetController: ActionSheetController,
+    private modal: ModalController
     ) { }
 
   ngOnInit() {
@@ -32,8 +33,6 @@ export class AddWorkflowComponent implements OnInit {
 
     this.userForm = this.fb.group({
       user1: ['', [Validators.email, Validators.required]],
-      read: ['', [Validators.required]],
-      write: ['', [Validators.required]]
     });
   }
 
@@ -76,6 +75,10 @@ export class AddWorkflowComponent implements OnInit {
   }
 
   submit(){
-
+    this.modal.dismiss({
+      users:  this.userForm.value,
+      document: this.workflowForm.value,
+      file: this.file
+    });
   }
 }

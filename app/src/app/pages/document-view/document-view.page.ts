@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 
 
-import { ModalController, Platform } from '@ionic/angular';
+import { ModalController, NavParams, Platform } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -20,10 +21,15 @@ export class DocumentViewPage implements OnInit {
   setZoom: any;
   zoomLevel: number;
 
+
+  @Input('id') id: string;
+  @Input('documentname') docName: string;
   constructor(
     private plat: Platform,
     private http: HttpClient,
     private modalCtrl: ModalController,
+    private navpar: NavParams,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
@@ -31,6 +37,10 @@ export class DocumentViewPage implements OnInit {
     this.rotated = 0;
     this.setZoom = 'false';
     this.zoomLevel=1;
+    this.route.params.subscribe(stuff =>{
+      this.id = stuff['id'];
+      this.docName = stuff['documentname'];
+    });
   }
 
   download(url: string, title: string) {

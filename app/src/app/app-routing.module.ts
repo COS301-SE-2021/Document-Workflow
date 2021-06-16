@@ -1,10 +1,14 @@
 import { Component, NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 
 
 
+
+
 const routes: Routes = [
+
   {
     path: 'login',
     loadChildren: () => import('./pages/login-register/login-register.module').

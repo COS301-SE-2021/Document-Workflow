@@ -8,7 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { match } from './../../Services/match.validator';
 
 //popover
-import {PopoverController} from '@ionic/angular';
+import {ModalController, PopoverController} from '@ionic/angular';
 // import { RegisterLoginPopoverComponent } from './../../Popovers/register-login-popover/register-login-popover.component';
 
 
@@ -25,6 +25,7 @@ import { ActionSheetController, Platform } from '@ionic/angular';
 import {LoadingController} from '@ionic/angular';
 import { Plugins } from 'protractor/built/plugins';
 import {DocumentAPIService} from './../../Services/Document/document-api.service';
+import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
 
 @Component({
   selector: 'app-login-register',
@@ -42,11 +43,11 @@ export class LoginRegisterPage implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
-    private userService: UserAPIService,
+    private userAPIService: UserAPIService,
     private plat: Platform,
     private actionSheetController: ActionSheetController,
     private loadCtrl: LoadingController,
-    private popController: PopoverController
+    private modal: ModalController,
   ) {}
 
   ngOnInit() {
@@ -87,16 +88,13 @@ export class LoginRegisterPage implements OnInit {
       password : this.loginForm.value.loginPassword
     };
     console.log(loginData);
-    const success = await UserAPIService.login(loginData);
-    if(success === 'Success')
-    {
-      alert('Login Successful');
-      this.router.navigate(['view']);
-    }
-    else {
-      alert('Username or Password incorrect');
-    }
-
+    this.userAPIService.login(loginData, (response)=>{
+        if(response.status === 'success'){
+          alert('Login Successful');
+          this.router.navigate(['home']);
+        }
+        else{alert(response.message);}
+    });
   }
 
   fileUnspecified(): void{
@@ -104,9 +102,6 @@ export class LoginRegisterPage implements OnInit {
 
   }
 
-  /**
-   * TODO: add verification functions on front end (ie check that confirm password matches password
-   */
   async register(): Promise<void> {
     const userdata = this.registerForm.value;
     console.log('Printing file:');
@@ -127,17 +122,18 @@ export class LoginRegisterPage implements OnInit {
       password: userdata.password
     };
 
-    const success = await UserAPIService.register(user, this.file);
-    if(success)
-    // {    this.presentPopover("termsOfService");}
-    // else {
-    //   this.presentPopover("registration failed");}
-    {alert('User registered');}
-    else {alert('registration failed');}
 
-    delete userdata.confirmPassword;
-    // this.presentPopover('termsOfService');
-    this.router.navigate(['login']);
+    this.userAPIService.register(user, this.file, (response)=>{
+        if(response.status === 'success')
+        {
+          alert('Successfully created new user account, check your email for account verification');
+          this.router.navigate(['home']);
+        }
+        else {
+          alert('Failed to make a new account: ' + response.message);
+        }
+        this.loadCtrl.dismiss();
+    });
   }
 
   changeOver(): boolean {
@@ -168,6 +164,13 @@ export class LoginRegisterPage implements OnInit {
           this.addSignature(CameraSource.Photos);
         },
       },
+      {
+        text: 'Draw your signature',
+        icon: 'create',
+        handler:()=>{
+          this.addSignatureDraw();
+        }
+      }
     ];
 
     if (!this.plat.is('hybrid')) {
@@ -197,6 +200,18 @@ export class LoginRegisterPage implements OnInit {
     console.log('file', this.file);
   }
 
+  async addSignatureDraw(){
+    const mod = this.modal.create({
+      component: AddSignatureComponent
+    });
+
+    (await mod).present();
+
+    (await mod).onDidDismiss().then(async (data) => {
+      // data goes in here, workflow page.ts as an example
+    });
+  }
+
   async addSignature(source: CameraSource) {
     const image = await Camera.getPhoto({
       quality: 60,
@@ -220,9 +235,5 @@ export class LoginRegisterPage implements OnInit {
     });
 
     await load.present();
-
-    setTimeout(() => {
-      load.dismiss();
-    },5000);
   }
 }
