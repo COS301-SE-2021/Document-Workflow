@@ -5,11 +5,12 @@ import url from 'url';
 import crypto from "crypto";
 import nodemailer from 'nodemailer';
 import bcrypt from "bcryptjs";
+import WorkFlowRepository from "../workflow/WorkFlowRepository"; //TODO: NBNB this may result in a cyclical dependency.
 
 @injectable()
 export default class UserService {
 
-    constructor(private userRepository: UserRepository) {
+    constructor(private userRepository: UserRepository, private workFlowRepository: WorkFlowRepository) {
     }
 
     async getUser(request): Promise<UserI> {
@@ -147,7 +148,15 @@ export default class UserService {
             throw "Missing parameter email";
         const users = await this.userRepository.getUsers({email:req.body.email});
         let user = users[0];
-        return {status:"success", data:user.owned_workflows, message:""};
+
+        console.log(user.owned_workflows);
+        let workflows = [];
+        for(let id of user.owned_workflows)
+        {
+            workflows.push(await this.workFlowRepository.getWorkFlow(id));
+        }
+
+        return {status:"success", workflows, message:""};
     }
 
     async retrieveWorkFlows(req):Promise<any> {
@@ -155,7 +164,14 @@ export default class UserService {
             throw "Missing parameter email";
         const users = await this.userRepository.getUsers({email:req.body.email});
         let user = users[0];
-        return {status:"success", data:user.workflows, message:""};
+
+        let workflows = [];
+        for(let id of user.workflows)
+        {
+            workflows.push(await this.workFlowRepository.getWorkFlow(id));
+        }
+
+        return {status:"success", workflows, message:""};
     }
 }
 
