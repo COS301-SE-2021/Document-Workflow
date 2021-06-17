@@ -146,7 +146,6 @@ export default class UserController{
                 } else {
                     res.status(400).json(err);
                 }
-
             }
         });
 

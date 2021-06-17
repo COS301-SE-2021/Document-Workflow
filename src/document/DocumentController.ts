@@ -57,6 +57,7 @@ export default class DocumentController{
 
         this.router.post('/retrieve', async (req,res)=>{
             try {
+                //TODO: look at how we are returning the document. Will probably have to return a buffer to the frontend side instead of piping a readStream
                 const temp_res = await this.retrieveDocumentRoute(req);
                 const readStream = fs.createReadStream(temp_res.data.filepath);
                 readStream.pipe(res);
