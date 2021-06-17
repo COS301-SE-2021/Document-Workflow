@@ -2,6 +2,7 @@ import { Router } from "express";
 import { autoInjectable } from "tsyringe";
 import DocumentService from "./DocumentService";
 import { DocumentI } from "./Document";
+import fs from "fs";
 
 @autoInjectable()
 export default class DocumentController{
@@ -56,7 +57,11 @@ export default class DocumentController{
 
         this.router.post('/retrieve', async (req,res)=>{
             try {
-                res.status(200).json(await this.retrieveDocumentRoute(req));
+                const temp_res = await this.retrieveDocumentRoute(req);
+                const readStream = fs.createReadStream(temp_res.data.filepath);
+                readStream.pipe(res);
+                //have to remember to delete the temporary file
+
             } catch(err){
                 res.status(200).json({status:"error", data:{}, message:err});
             }

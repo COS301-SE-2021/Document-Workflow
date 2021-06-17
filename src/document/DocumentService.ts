@@ -1,6 +1,7 @@
 import { injectable } from "tsyringe";
 import DocumentRepository from "./DocumentRepository";
 import { DocumentI } from "./Document";
+import fs from 'fs';
 
 @injectable()
 export default class DocumentService {
@@ -44,7 +45,8 @@ export default class DocumentService {
             const filedata = await this.documentRepository.getDocumentFromS3(metadata.document_path);
             if(filedata === null)
                 throw "The specified document does not exist.";
-            return {status:"success", data:{metadata: metadata, buffer:  Buffer.from(filedata.Body)}, message:"" };
+            await this.turnBufferIntoFile(filedata,metadata);
+            return {status:"success", data:{filepath: metadata.doc_name}, message:"" }; //need to return filepath ( which is just the file name) up the chain so we can pipe it to the response.
         }
         catch(err)
         {
@@ -54,7 +56,21 @@ export default class DocumentService {
     }
 
     async turnBufferIntoFile(filedata, metadata): Promise<any>{
+        console.log("Turning retrieved buffer into a file")
+        const buf = Buffer.from(filedata.Body);
 
+        fs.open(metadata.doc_name, 'w', (err,fd)=>{
+            if(err)
+                throw 'Error retrieving the file';
+            fs.write(fd, buf, 0, buf.length, null, function(err) {
+                if (err) {
+                    throw 'Error retrieving the file';
+                }
+                fs.close(fd, function() {
+                    console.log('file written successfully');
+                });
+            });
+        });
     }
 }
 
