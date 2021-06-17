@@ -29,7 +29,8 @@ constructor(private http: HttpClient) { };
     formData.append('doc_id', doc_id);
 
     this.http.post(this.url + '/documents/retrieve', formData).subscribe(data =>{
-      if(data) {
+      console.log(data);
+      if(data != null) {
         callback(data);
       } else {
         callback({status:'error', message: 'Cannot connect to Server'});

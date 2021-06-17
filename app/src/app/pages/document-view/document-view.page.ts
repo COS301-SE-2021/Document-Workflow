@@ -61,22 +61,16 @@ export class DocumentViewPage implements OnInit {
   }
 
   getDocument(id: string){
-    this.docApi.getDocument(id, (data)=>{
-      if (data){
-        const mapped = Object.entries(data).map(([type, value]) => ({type, value}));
-        //console.log(data.data.buffer.data.toString());
-        console.log(mapped)
-        console.log(mapped[1].value['buffer'].data);
-        console.log(typeof (data.data.buffer));
-        console.log( typeof data.data.buffer.data.toString());
-        let a  = new Uint8Array( mapped[1].value['buffer'].data);
-        let b = new Blob([a], {type: 'application/octet-stream'});
-        console.log(b);
-        let url = URL.createObjectURL(b);
-        console.log(url);
+    console.log("ABOUT TO FETCH A DOCUMENt");
+    console.log(id);
+    this.docApi.getDocument(id, (response)=>{
+      if (response){
+        console.log(response);
+        console.log(response.data.filedata);
+        const buff = response.data.filedata.Body.data; //wut
+        console.log(buff);
+        const a  = new Uint8Array( buff);
         this.srcFile = a;
-        // console.log(this.srcFile);
-        //this.writeMyFile(this.srcFile);
       }else{
 
       }
