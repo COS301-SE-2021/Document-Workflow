@@ -28,6 +28,7 @@ export class WorkFlowService {
   public static async createWorkflow(workflow_info, users, document): Promise<any>{
 
     const formData = new FormData();
+    console.log("OWNER EMAIL IS " + workflow_info.owner_email);
     formData.append('owner_email', workflow_info.owner_email);
     formData.append('name', workflow_info.name);
     formData.append('description', workflow_info.description);

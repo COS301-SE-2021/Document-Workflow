@@ -46,14 +46,15 @@ export class WorkflowPage implements OnInit {
     alert(
       'REMEMBER TO ADD FUNCTIONALITY OF GETTING CURRENTLY LOGGED IN USER!!!'
     );
-    const email = 'timothyhill202@gmail.com';
+    const email = 'johnaldweasely2@gmail.com';
 
     this.userApiService.getAllWorkOwnedFlows(email, (response) => {
+      console.log("Got owned workflows")
+      console.log(response);
       if (response.status === 'success') {
         for (let i = 0; i < response.data.length; i++) {
           let tmpDoc: documentImage;
           tmpDoc = response.data[i];
-
           this.documents.push(tmpDoc);
         }
       } else {
@@ -61,6 +62,8 @@ export class WorkflowPage implements OnInit {
       }
     });
     this.userApiService.getAllWorkFlows(email, (response) => {
+      console.log("Got normal workflows");
+      console.log(response);
       if (response.status === 'success') {
         for (let i = 0; i < response.data.length; i++) {
           let tmpDoc: documentImage;
@@ -98,9 +101,9 @@ export class WorkflowPage implements OnInit {
         const users = (await data).data['users'];
         const documents = (await data).data['document'];
         const file = (await data).data['file'];
-
+        const email = 'johnaldweasely2@gmail.com';
         const workflowData = {
-          owner_email: 'timothyhill202@gmail.com', //TODO: swap out this email address using the JWT/stored email address after login
+          owner_email: email, //TODO: swap out this email address using the JWT/stored email address after login
           name: documents.workflowName,
           description: documents.workflowDescription
         };
