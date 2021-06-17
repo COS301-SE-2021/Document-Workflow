@@ -1,14 +1,17 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { LoadingController, ModalController, NavController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 
 //interface and services
-import { User, UserAPIService } from  './../../Services/User/user-api.service';
-import { documentImage, DocumentAPIService } from './../../Services/Document/document-api.service';
+import { User, UserAPIService } from './../../Services/User/user-api.service';
+import {
+  documentImage,
+  DocumentAPIService,
+} from './../../Services/Document/document-api.service';
 import { AddWorkflowComponent } from 'src/app/components/add-workflow/add-workflow.component';
 import { EditWorkflowComponent } from 'src/app/components/edit-workflow/edit-workflow.component';
-import {WorkFlowService} from "../../Services/Workflow/work-flow.service";
+import { WorkFlowService } from '../../Services/Workflow/work-flow.service';
 
 @Component({
   selector: 'app-workflow',
@@ -16,39 +19,60 @@ import {WorkFlowService} from "../../Services/Workflow/work-flow.service";
   styleUrls: ['./workflow.page.scss'],
 })
 export class WorkflowPage implements OnInit {
-  documents: documentImage[]=[];
+  documents: documentImage[] = [];
+
   // eslint-disable-next-line @typescript-eslint/member-ordering
-  @Input()user: User;
+  @Input() user: User;
   constructor(
     private docService: DocumentAPIService,
     private modals: ModalController,
     private plat: Platform,
     private router: Router,
-    private userApiService: UserAPIService
+    private userApiService: UserAPIService,
+    private loadctrl: LoadingController,
+    private navControl: NavController
   ) {}
 
-
-
   ngOnInit() {
+
     //TODO: Have a nice loader
     this.loadWorkFlows();
   }
 
   async loadWorkFlows() {
-    alert('REMEMBER TO ADD FUNCTIONALITY OF GETTING CURRENTLY LOGGED IN USER!!!');
+    alert(
+      'REMEMBER TO ADD FUNCTIONALITY OF GETTING CURRENTLY LOGGED IN USER!!!'
+    );
     const email = 'timothyhill202@gmail.com';
 
-    this.userApiService.getAllWorkOwnedFlows(email, (response) =>{
-        console.log('inside of callback and having data');
-        console.log(response);
+    this.userApiService.getAllWorkOwnedFlows(email, (response) => {
+      if (response.status === 'success') {
+        for (let i = 0; i < response.data.length; i++) {
+          let tmpDoc: documentImage;
+          tmpDoc = response.data[i];
+
+          this.documents.push(tmpDoc);
+        }
+      } else {
+        alert('workflow not found');
+      }
     });
-    this.userApiService.getAllWorkFlows(email, (response)=>{
-      console.log('Thats right friends, we are going to use callbacks');
-      console.log(response);
+    this.userApiService.getAllWorkFlows(email, (response) => {
+      if (response.status === 'success') {
+        for (let i = 0; i < response.data.length; i++) {
+          let tmpDoc: documentImage;
+          tmpDoc = response.data[i];
+          this.documents.push(tmpDoc);
+        }
+      } else {
+        alert('workflow not found');
+      }
     });
+    console.log(this.documents);
+    this.loadctrl.dismiss();
   }
 
-  async editDoc(id: number) {
+  async editDoc(id: string) {
     const editModal = await this.modals.create({
       component: EditWorkflowComponent,
       componentProps: {
@@ -68,6 +92,7 @@ export class WorkflowPage implements OnInit {
     (await addModal).present();
 
     (await addModal).onDidDismiss().then(async (data) => {
+
         let users = (await data).data['users'];
         let documents = (await data).data['document'];
         let file = (await data).data['file'];
@@ -91,7 +116,12 @@ export class WorkflowPage implements OnInit {
     return;
   }
 
-  viewWorkFlow(){
-    this.router.navigate(['documentView']);
+  viewWorkFlow(id: string, name: string) {
+    this.router.navigate(['documentView', {
+      id: id,
+      documentname: name
+    }]);
   }
+
+
 }

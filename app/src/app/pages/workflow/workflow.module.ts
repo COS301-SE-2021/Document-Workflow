@@ -13,7 +13,7 @@ import { WorkflowPage } from './workflow.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    WorkflowPageRoutingModule
+    WorkflowPageRoutingModule,
   ],
   declarations: [WorkflowPage]
 })
