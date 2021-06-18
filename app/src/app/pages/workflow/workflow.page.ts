@@ -39,8 +39,11 @@ export class WorkflowPage implements OnInit {
   ngOnInit() {
     //TODO: Have a nice loader
     //Loader start
+    console.log(localStorage.getItem('token'));
     this.userApiService.checkIfAuthorized().subscribe((response)=>{
+       console.log("Successfully authorized user");
     }, (error) =>{
+        console.log(error);
         this.router.navigate(['/login']);
     });
     this.loadWorkFlows();
@@ -48,9 +51,7 @@ export class WorkflowPage implements OnInit {
   }
 
   async loadWorkFlows() {
-    const email = 'timothyhill202@gmail.com';
-
-    this.userApiService.getAllWorkOwnedFlows(email, (response) => {
+    this.userApiService.getAllWorkOwnedFlows((response) => {
       console.log("Got owned workflows");
       console.log(response);
       if (response.status === 'success') {
@@ -63,7 +64,7 @@ export class WorkflowPage implements OnInit {
         alert('workflow not found');
       }
     });
-    this.userApiService.getAllWorkFlows(email, (response) => {
+    this.userApiService.getAllWorkFlows( (response) => {
       console.log("Got normal workflows");
       console.log(response);
       if (response.status === 'success') {
