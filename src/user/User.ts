@@ -1,26 +1,29 @@
-import { Schema, model } from "mongoose";
-import bcrypt from "bcryptjs";
+import { Schema, model, Document } from "mongoose";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { isStrongPassword, isEmail } from "validator";
 
-export interface UserI{
-    name: string,
-    surname: string,
-    initials: string,
-    email: string,
-    password: string,
+export default interface User extends Document{
+    name: string
+    surname: string
+    initials: string
+    email: string
+    password: string
     signature: Buffer
-    validated: Boolean,
+    validated: Boolean
     validateCode: string
+    tokens: Object[]
 }
 
 /**
- * The schema for a user. Since we are making use of NoSQL, this in essence defines the structure
- * of what our user entries in the database look like. It also validates whether or not a user's email
- * and password are valid.
- * A password is valid iff it contains an uppercase,lowercase annd special character as well as being 8 characters long.
- * //TODO: add signature to this list.
+ * <p>
+ * Schema that defines the User entity and it used to
+ * create the Mongoose Model of the same name
+ * Options objects for the properties are used to validate their respective properties
+ * <p>
+ * @param Object definition object containing the properties and their options used to create the Schema
  */
-const userSchema = new Schema<UserI>({
+const userSchema = new Schema<User>({
     name: {type: String, required: true},
     surname: {type: String, required: true},
     initials: {type: String, required: true},
@@ -32,7 +35,8 @@ const userSchema = new Schema<UserI>({
         unique: true,
         validate: {
             validator: value => {
-                return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value);
+                //return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value);
+                return isEmail(value);
             }
         }
     },
@@ -41,11 +45,12 @@ const userSchema = new Schema<UserI>({
         required: true,
         validate: {
             validator: value => {
-                return /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/.test(value);
+                // return /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/.test(value);
+                return isStrongPassword(value);
             }
         }
     },
-    signature: { type: String, required: true },
+    signature: {type: String, required: true },
     validated: {type: Boolean, default: false},
     tokenDate: {type: Date, default: Date.now},
     tokens: [{
@@ -57,27 +62,29 @@ const userSchema = new Schema<UserI>({
 });
 
 /**
- * This function is called automatically  before the save function is called is called for a user.
+ * @function This function is called automatically  before the save function is called is called for a user.
  * It handles the process of salting and hashing a user password and sets the user's password to the
  * generated hash.
  */
-userSchema.pre("save", function(next)  {
+
+userSchema.pre("save", async function(next)  {
     const usr = this;
     if(this.isModified("password") || this.isNew){
-        bcrypt.genSalt(parseInt(process.env.SALT_ROUNDS), (saltErr,salt) => {
-            if(saltErr) {
-                throw saltErr;
-            } else {
-                bcrypt.hash(usr.password, salt, (hashErr,_hash) => {
-                    if(hashErr) return next(hashErr);
-                    usr.password = _hash;
-                    next();
-                })
-            }
-        });
-    } else {
-        return next();
+        //Salt is automatically generated:
+        bcrypt.hash(usr.password, process.env.SALT_ROUNDS)
+            .then(async (hash) => {
+                usr.password = hash;
+                await usr.save();
+                next();
+            })
+            .catch((err) => {
+                throw err;
+            })
     }
+    if(this.isModified("signature") || this.isNew){
+
+    }
+    return next();
 });
 
 userSchema.methods.genAuthToken = async function() {
@@ -87,13 +94,17 @@ userSchema.methods.genAuthToken = async function() {
     return token;
 }
 
-userSchema.methods.compare = async function(pass,hashed){
-    bcrypt.compare(pass, hashed, (err,match) => {
-        if(err){
-            throw err;
-        } else return match;
-    });
-    return false;
-}
+export const UserModel = model<User>('User', userSchema);
 
-export default model<UserI>('User', userSchema);
+/*
+*  bcrypt.genSalt(parseInt(process.env.SALT_ROUNDS), (saltErr,salt) => {
+            if(saltErr) {
+                throw saltErr;
+            } else {
+                bcrypt.hash(usr.password, salt, (hashErr,_hash) => {
+                    if(hashErr) return next(hashErr);
+                    usr.password = _hash;
+                    next();
+                })
+            }
+        });*/
