@@ -43,13 +43,10 @@ export class WorkflowPage implements OnInit {
   }
 
   async loadWorkFlows() {
-    alert(
-      'REMEMBER TO ADD FUNCTIONALITY OF GETTING CURRENTLY LOGGED IN USER!!!'
-    );
     const email = 'johnaldweasely2@gmail.com';
 
     this.userApiService.getAllWorkOwnedFlows(email, (response) => {
-      console.log("Got owned workflows")
+      console.log("Got owned workflows");
       console.log(response);
       if (response.status === 'success') {
         for (let i = 0; i < response.data.length; i++) {

@@ -81,15 +81,14 @@ export class LoginRegisterPage implements OnInit {
   }
 
   async login(): Promise<void> {
-    console.log(this.loginForm.value);
     const loginData: LoginData=
     {
       email: this.loginForm.value.loginEmail,
       password : this.loginForm.value.loginPassword
     };
-    console.log(loginData);
     this.userAPIService.login(loginData, (response)=>{
         if(response.status === 'success'){
+          localStorage.setItem('token', response.data.token);
           alert('Login Successful');
           this.router.navigate(['home']);
         }
