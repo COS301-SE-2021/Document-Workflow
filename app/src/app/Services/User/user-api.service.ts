@@ -25,19 +25,13 @@ export class UserAPIService {
   //.setRequestHeader("Authorization", "Bearer " +  $window.sessionStorage.token);
 
   public checkIfAuthorized(){//callback){
+    alert("CHECKING IF AUTHORIZED");
     const formData = new FormData();
     const token = localStorage.getItem('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: ('Bearer ' + token)
     });
     return this.http.post(UserAPIService.url + '/users/retrieveOwnedWorkflows', formData, {headers: httpHeaders});
-    /*
-    this.http.post(UserAPIService.url + '/users/retrieveOwnedWorkflows', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
-      callback(true);
-      }, (error) =>{
-      console.log("Should redirect the user now"); //TODO: delete
-      callback(false);
-    });*/
   }
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
@@ -77,7 +71,7 @@ export class UserAPIService {
     }
   }
 
-  public getAllWorkOwnedFlows(email, callback) {
+  public getAllWorkOwnedFlows(callback) {
     console.log('Getting all owned workflows');
     const formData = new FormData();
     //formData.append('email', email);
@@ -86,7 +80,7 @@ export class UserAPIService {
       Authorization: ('Bearer ' + token)
     });
 
-      this.http.post(UserAPIService.url + '/users/retrieveOwnedWorkflows', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
+      this.http.post(UserAPIService.url + '/users/authenticate', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
         if (data) {
           callback(data);
         } else callback({status: 'error', message: 'Cannot connect to Server'});
