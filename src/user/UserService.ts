@@ -14,16 +14,13 @@ export default class UserService {
     constructor(private userRepository: UserRepository, private workFlowRepository: WorkFlowRepository) {
     }
 
-
     async authenticateUser(email, password, id, hash){
         try {
-            bcrypt.compare(password, hash, function (err, result) {
-                if (err)
-                    throw err;
-                if (result) {
-                    return jwt.sign({id: id}, process.env.SECRET, {expiresIn: '24 hours'});
-                } else throw "Email or password incorrect";
-            });
+            let result = await bcrypt.compare(password, hash);
+            if (!result) {
+                throw "Email or password incorrect";
+            }
+            return jwt.sign({id: id, email: email}, process.env.SECRET, {expiresIn: '15 seconds'});
         } catch (err) {
             throw "Email or password incorrect"
         }
@@ -166,7 +163,9 @@ export default class UserService {
         if(!req.body.email || !req.body.password){
             throw new Error("Could not log in");
         }
-        let user = await this.userRepository.getUser({"email": req.body.email})
+        let user = await this.userRepository.getUser({"email": req.body.email});
+        if(user == null)
+            throw new Error("Email or password incorrect");
         if(user.validated){
             return await this.authenticateUser(user.email, req.body.password, user._id, user.password);
         } else {
