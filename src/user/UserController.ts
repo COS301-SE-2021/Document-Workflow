@@ -75,6 +75,24 @@ export default class UserController{
         }
     }
 
+    private async retrieveOwnedWorkFlows(req):Promise<any> {
+        try{
+            return await this.userService.retrieveOwnedWorkFlows(req);
+        }
+        catch(err) {
+            throw err;
+        }
+    }
+
+    private async retrieveWorkFlows(req):Promise<any> {
+        try{
+            return await this.userService.retrieveWorkFlows(req);
+        }
+        catch(err) {
+            throw err;
+        }
+    }
+
     /*
     * error codes:
     * 200 OK request succeeded
@@ -96,6 +114,25 @@ export default class UserController{
                 res.status(200).json(await this.getUsersRoute());
             } catch(err){
                 res.status(400).json(err);
+            }
+        });
+
+        this.router.post("/retrieveOwnedWorkflows", async (req,res) =>{
+
+            try {
+                res.status(200).json(await this.retrieveOwnedWorkFlows(req));
+            } catch(err){
+                res.status(400).json(err);
+            }
+        });
+
+        this.router.post("/retrieveWorkflows", async(req,res) =>{
+            console.log(req);
+            console.log(req.headers);
+            try {
+                res.status(200).json(await this.retrieveWorkFlows(req));
+            } catch(err){
+                res.status(400).json({status:"error", data:{}, message:err});
             }
         });
 

@@ -173,7 +173,6 @@ export default class UserService {
         }
     }
 
-
     async deleteUser(request): Promise<{}> {
         const id = request.params.id;
         if(!id){
@@ -184,6 +183,24 @@ export default class UserService {
             return { message: "User not found" };
         }
         return { user: await this.userRepository.deleteUser(id) };
+    }
+
+    async retrieveOwnedWorkFlows(req): Promise<any> {
+        console.log("Retrieving owned workflows")
+        //console.log(req);
+        if(req.body.email == null)
+            throw "Missing parameter email";
+        const users = await this.userRepository.getUsers({email:req.body.email});
+        let user = users[0];
+
+        //console.log(user.owned_workflows);
+        let workflows = [];
+        for(let id of user.owned_workflows)
+        {
+            workflows.push(await this.workFlowRepository.getWorkFlow(id));
+        }
+
+        return {status:"success", data: workflows, message:""};
     }
 
     async retrieveWorkFlows(req):Promise<any> {
@@ -201,5 +218,7 @@ export default class UserService {
 
         return {status:"success", data: workflows, message:""};
     }
+
+
 }
 
