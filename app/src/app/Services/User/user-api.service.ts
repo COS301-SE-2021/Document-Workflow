@@ -79,7 +79,7 @@ export class UserAPIService {
       Authorization: ('Bearer ' + token)
     });
 
-      this.http.post(UserAPIService.url + '/users/authenticate', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
+      this.http.post(UserAPIService.url + '/users/retrieveOwnedWorkflows', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
         if (data) {
           callback(data);
         } else callback({status: 'error', message: 'Cannot connect to Server'});
@@ -88,12 +88,15 @@ export class UserAPIService {
       });
   }
 
-  public getAllWorkFlows(email, callback){
+  public getAllWorkFlows( callback){
     const formData = new FormData();
-    formData.append('email', email);
     console.log('Getting all normal workflows');
+    const token = localStorage.getItem('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: ('Bearer ' + token)
+    });
 
-      this.http.post(UserAPIService.url + '/users/retrieveWorkflows', formData).subscribe(data => { //TODO: change url
+      this.http.post(UserAPIService.url + '/users/retrieveWorkflows', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
         if (data) {
           callback(data);
         } else callback({status: 'error', message: 'Cannot connect to Server'});
