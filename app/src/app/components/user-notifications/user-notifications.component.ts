@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-user-notifications',
@@ -7,6 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class UserNotificationsComponent implements OnInit {
 
+  @Input() message: string
   constructor() { }
 
   ngOnInit() {}

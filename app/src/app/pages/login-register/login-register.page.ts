@@ -27,6 +27,7 @@ import { Plugins } from 'protractor/built/plugins';
 import {DocumentAPIService} from './../../Services/Document/document-api.service';
 import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
 import { ResetPasswordComponent } from 'src/app/components/reset-password/reset-password.component';
+import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
 
 @Component({
   selector: 'app-login-register',
@@ -49,6 +50,7 @@ export class LoginRegisterPage implements OnInit {
     private actionSheetController: ActionSheetController,
     private loadCtrl: LoadingController,
     private modal: ModalController,
+    private pop: PopoverController,
   ) {}
 
   ngOnInit() {
@@ -249,4 +251,21 @@ export class LoginRegisterPage implements OnInit {
 
     await load.present();
   }
+
+  async displayPopOver(message: string){
+    const poper = await this.pop.create({
+      component: UserNotificationsComponent,
+      componentProps:{
+        'message': message
+      }
+    });
+    await poper.present();
+
+    const a = await poper.onDidDismiss();
+    console.log( a );
+   }
+
+   test(){
+     this.displayPopOver("tim eats his own toe nails")
+   }
 }
