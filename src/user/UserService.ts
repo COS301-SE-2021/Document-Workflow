@@ -22,7 +22,7 @@ export default class UserService {
             }
             return jwt.sign({id: id, email: email}, process.env.SECRET, {expiresIn: '15 seconds'});
         } catch (err) {
-            throw "Email or password incorrect"
+            throw Error("Email or password incorrect");
         }
     }
 

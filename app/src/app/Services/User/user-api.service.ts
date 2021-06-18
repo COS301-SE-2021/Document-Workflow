@@ -22,7 +22,7 @@ export class UserAPIService {
   static url =  'http://localhost:3000/api';
 
   constructor(private http: HttpClient) {}
-
+  //.setRequestHeader("Authorization", "Bearer " +  $window.sessionStorage.token);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   public register(user: User, file: File, callback){
@@ -52,15 +52,12 @@ export class UserAPIService {
     try {
       this.http.post(UserAPIService.url + '/users/login', formData).subscribe(data => { //TODO: change url
         if (data) {
-          console.log('in user-api.service.ts');
-          console.log(data);
           callback(data);
         } else callback({status: 'error', message: 'Cannot connect to Server'});
       });
     }
     catch(e){
-      console.log('Caught an http.post error');
-      console.log(e);
+      alert("An unexpected error occured, please try again later");
     }
   }
 
