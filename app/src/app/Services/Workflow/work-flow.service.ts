@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { User } from './../User/user-api.service';
 import { documentImage } from './../Document/document-api.service';
+import WorkFlow from "../../../../../src/workflow/WorkFlow";
 
 export interface Comments{
   comment: string;
@@ -25,10 +26,9 @@ export class WorkFlowService {
   constructor(private http: HttpClient) {}
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  public static async createWorkflow(workflow_info, users, document): Promise<any>{
+  public async createWorkflow(workflow_info, users, document, callback): Promise<any>{
 
     const formData = new FormData();
-    formData.append('owner_email', workflow_info.owner_email);
     formData.append('name', workflow_info.name);
     formData.append('description', workflow_info.description);
     formData.append('document', document);
@@ -37,13 +37,16 @@ export class WorkFlowService {
       formData.append('members', users[key]);
     });
 
-
-    const response = await fetch((WorkFlowService.url).concat( '/workflows'), { //TODO: change this url
-      method: 'POST',
-      body: formData,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
+    const token = localStorage.getItem('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: ('Bearer ' + token)
     });
 
-    return response.status;
+    this.http.post(WorkFlowService.url + '/workflows', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
+      if (data) {
+        callback(data);
+      } else callback({status: 'error', message: 'Cannot connect to Server'});
+    }, error =>{
+    });
   }
 }

@@ -26,23 +26,25 @@ export class WorkflowPage implements OnInit {
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   @Input() user: User;
+
   constructor(
     private docService: DocumentAPIService,
     private modals: ModalController,
     private plat: Platform,
     private router: Router,
     private userApiService: UserAPIService,
+    private workFlowService: WorkFlowService,
     private loadctrl: LoadingController,
     private navControl: NavController
-  ) {}
+  ) {
+  }
 
   ngOnInit() {
-    //TODO: Have a nice loader
-    //Loader start
+
     console.log(localStorage.getItem('token'));
-    this.userApiService.checkIfAuthorized().subscribe((response)=>{
+    this.userApiService.checkIfAuthorized().subscribe((response) => {
       console.log("Successfully authorized user");
-    }, (error) =>{
+    }, (error) => {
       console.log(error);
       this.router.navigate(['/login']);
     });
@@ -64,7 +66,7 @@ export class WorkflowPage implements OnInit {
         alert('workflow not found');
       }
     });
-    this.userApiService.getAllWorkFlows( (response) => {
+    this.userApiService.getAllWorkFlows((response) => {
       console.log("Got normal workflows");
       console.log(response);
       if (response.status === 'success') {
@@ -93,24 +95,21 @@ export class WorkflowPage implements OnInit {
       // const users = (await data).data['users'];
       const documents = (await data).data['document'];
       const file = (await data).data['file'];
-      const email = 'johnaldweasely2@gmail.com';
       const users = documents.phases;
 
-
       const workflowData = {
-        owner_email: email, //TODO: swap out this email address using the JWT/stored email address after login
         name: documents.workflowName,
         description: documents.workflowDescription
       };
-      const response = await WorkFlowService.createWorkflow(workflowData, users, file);
-      if(response === 'success'){
-        this.userApiService.displayPopOver('Congrats', 'Workflow has been created');
-      }else {
-        console.log(response);
-        this.userApiService.displayPopOver('Unexpected failure', 'Workflow has not been created');
-      };
+      this.workFlowService.createWorkflow(workflowData, users, file, (response) => {
+        if (response === 'success') {
+          this.userApiService.displayPopOver('Congrats', 'Workflow has been created');
+        } else {
+          console.log(response);
+          this.userApiService.displayPopOver('Unexpected failure', 'Workflow has not been created');
+        }
+      });
     });
-    return;
   }
 
   viewWorkFlow(id: string, name: string) {
@@ -120,6 +119,6 @@ export class WorkflowPage implements OnInit {
       documentname: name
     }]);
   }
-
-
 }
+
+
