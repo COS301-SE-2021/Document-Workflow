@@ -2,6 +2,7 @@ import { Router } from "express";
 import { autoInjectable } from "tsyringe";
 import UserService from "./UserService";
 import { UserI } from "./User";
+import jwt from "jsonwebtoken";
 
 // "/api/users"
 
@@ -11,6 +12,22 @@ export default class UserController{
 
     constructor(private userService: UserService) {
         this.router = new Router();
+    }
+
+    Authenticate = async(req,res,next)=>{
+        try{
+            const token = req.header("Authorization").replace("Bearer ", "");
+            const decoded = jwt.verify(token, process.env.SECRET);
+            const user = await this.userService.getUser({_id: decoded._id, 'tokens.token': token});
+
+            if(!user) {
+                throw new Error();
+            }
+            req.user = user;
+            next();
+        } catch (e) {
+            res.status(401).send({message: "Unable to Authenticate"});
+        }
     }
 
     async getUsersRoute(): Promise<UserI[]> {
@@ -50,29 +67,11 @@ export default class UserController{
     }
 
     async loginUserRoute(request) : Promise<any>{
-        try{
+        try {
             return await this.userService.loginUser(request);
         }
-        catch(err)
-        {
-            throw err;
-        }
-    }
-
-    private async retrieveOwnedWorkFlows(req):Promise<any> {
-        try{
-            return await this.userService.retrieveOwnedWorkFlows(req);
-        }
-        catch(err) {
-            throw err;
-        }
-    }
-
-    private async retrieveWorkFlows(req):Promise<any> {
-        try{
-            return await this.userService.retrieveWorkFlows(req);
-        }
-        catch(err) {
+        catch(err){
+            console.log(err);
             throw err;
         }
     }
@@ -93,51 +92,38 @@ export default class UserController{
     * */
 
     routes() {
-        this.router.get("", async (req, res) => {
+        this.router.get("", this.Authenticate, async (req, res) => {
             try {
-                res.status(200).json(await this.registerUserRoute(req));
-            } catch(err){
-                res.status(400).json({status:"error", data:{}, message:err});
-            }
-        });
-
-        this.router.post("/retrieveOwnedWorkflows", async (req,res) =>{
-
-            try {
-                res.status(200).json(await this.retrieveOwnedWorkFlows(req));
+                res.status(200).json(await this.getUsersRoute());
             } catch(err){
                 res.status(400).json(err);
             }
         });
 
-        this.router.post("/retrieveWorkflows", async(req,res) =>{
-            console.log(req);
-            console.log(req.headers);
+        this.router.post("/login", async (req,res) => {
             try {
-                res.status(200).json(await this.retrieveWorkFlows(req));
-            } catch(err){
-                res.status(400).json({status:"error", data:{}, message:err});
-            }
-        });
-
-        this.router.post("/login", async (req,res) => { //TODO: return a JWT token
-            try {
-                res.status(200).json( await this.loginUserRoute(req));
+                let token = await this.loginUserRoute(req);
+                if(token){
+                    res.status(200).json(
+                        {status: "Success", data:{token: token}, message: ""}
+                    )
+                } else {
+                    res.status(400).send("Could not log in user");
+                }
             } catch(err){ //Lets assume that we throw the error message up to here.
-                //NBNBNBNB DONT CHANGE THIS RESPONSE CODE JUST YET!!!!
-                res.status(200).json({status: "Failed", data:{}, message: err}); //TODO change the status in such a way that it doesnt break the frontend pls
+                res.status(400).json({status: "Failed", data:{}, message: err});
             }
         });
 
         this.router.get("/verify", async(req,res) =>{
             try {
-                res.status(200).send(await this.verifyUserRoute(req));
+                res.status(200).json(await this.verifyUserRoute(req));
             } catch(err){
                 res.status(400).json(err);
             }
         });
 
-        this.router.get("/:id", async (req, res) => {
+        this.router.get("/:id", this.Authenticate , async (req, res) => {
             try {
                 res.status(200).json(await this.getUserRoute(req));
             } catch(err){
@@ -146,12 +132,13 @@ export default class UserController{
                 } else {
                     res.status(400).json(err);
                 }
+
             }
         });
 
         this.router.post("", async (req,res) => {
             console.log("Register request");
-            //console.log(req.body);
+            console.log(req.body);
             try {
                 res.status(201).json(await this.registerUserRoute(req));
             } catch(err){
@@ -160,6 +147,4 @@ export default class UserController{
         });
         return this.router;
     }
-
-
 }

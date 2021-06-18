@@ -5,7 +5,8 @@ import url from 'url';
 import crypto from "crypto";
 import nodemailer from 'nodemailer';
 import bcrypt from "bcryptjs";
-import WorkFlowRepository from "../workflow/WorkFlowRepository"; //TODO: NBNB this may result in a cyclical dependency.
+import WorkFlowRepository from "../workflow/WorkFlowRepository";
+import jwt from "jsonwebtoken";
 
 @injectable()
 export default class UserService {
@@ -13,24 +14,71 @@ export default class UserService {
     constructor(private userRepository: UserRepository, private workFlowRepository: WorkFlowRepository) {
     }
 
+
+    async authenticateUser(email, password, id, hash){
+        try {
+            bcrypt.compare(password, hash, function (err, result) {
+                if (err)
+                    throw err;
+                if (result) {
+                    return jwt.sign({id: id}, process.env.SECRET, {expiresIn: '24 hours'});
+                } else throw "Email or password incorrect";
+            });
+        } catch (err) {
+            throw "Email or password incorrect"
+        }
+    }
+
     async getUser(request): Promise<UserI> {
-        if (!request.params.id) {
+        if(!request.params.id){
             throw new URIError("id is required");
         }
-        try {
+        try{
             const res = await this.userRepository.getUsers({_id: request.params.id});
             return res[0];
+        }catch(err) {
+            throw err;
+        }
+    }
+
+    async getUserById(request): Promise<UserI> {
+        if(!request.params.id){
+            throw new Error("Search criteria required");
+        }
+        try {
+            return await this.userRepository.getUser({id: request.params.id});
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async getUserByEmail(request): Promise<UserI> {
+        if(!request.params.email){
+            throw new Error("Search criteria required");
+        }
+        try {
+            return await this.userRepository.getUser({email: request.params.email});
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async getAllUsers(): Promise<UserI[]> {
+        try {
+            const users = await this.userRepository.getUsers({});
+            console.log(users);
+            return users;
         } catch (err) {
             throw err;
         }
     }
 
     async getUsers(): Promise<UserI[]> {
-        try {
+        try{
             const users = await this.userRepository.getUsers({});
             console.log(users);
             return users;
-        } catch (err) {
+        }catch(err){
             throw err;
         }
     }
@@ -57,9 +105,7 @@ export default class UserService {
                     workflows: []
                 }
                 await this.userRepository.postUser(usr);
-                console.log("User posted to database, sending verification email now");
                 await this.sendVerificationEmail(usr.validateCode, usr.email );
-
                 return {status:'success', data:{}, message:"Successfully created user account"};
 
             } catch (err) {
@@ -67,22 +113,25 @@ export default class UserService {
             }
         }
     }
-
-    async verifyUser(req): Promise<any> {
-        const redirect_url = "http://localhost:8100/login-register";
+    
+    async verifyUser(req) : Promise<any>{
+        const redirect_url = "http://localhost:3000/login-register";
         const queryObject = url.parse(req.url, true).query
 
         let users = await this.userRepository.getUsers({"email": queryObject["email"]});
-        if (users[0].validateCode === queryObject["verificationCode"]) {
+        if(users[0].validateCode === queryObject["verificationCode"])
+        {
             users[0].validated = true;
             await this.userRepository.putUser(users[0]);
-            return '<html>Successfully verified. Click<a href= ' + redirect_url + '> here</a> to return to login</html>';
-        } else {
+            return ('<html>Successfully verified. Click<a href= ' + redirect_url + '> here</a> to return to login</html>');
+        }
+        else {
             throw "Validation Codes do not match";
         }
     }
 
     async sendVerificationEmail(code, emailAddress): Promise<void> {
+        function sendVerificationEmail(code, emailAddress) {
             let url = process.env.BASE_URL + '/users/verify?verificationCode=' + code + '&email=' + emailAddress;
             let transporter = nodemailer.createTransport({
                 service: 'gmail',
@@ -96,7 +145,7 @@ export default class UserService {
                 from: process.env.EMAIL_ADDRESS,
                 to: emailAddress,
                 subject: 'DocumentWorkflow Verification Code',
-                html: "<html><p>Hello new DocumentWorkflow User, use this link to activate your account! </p>" +
+                html: "<html lang='en'><p>Hello new DocumentWorkflow User, use this link to activate your account! </p>" +
                     "<a href='" + url + "'>Click here</a></html>"
 
             };
@@ -110,68 +159,32 @@ export default class UserService {
                     return true;
                 }
             });
+        } sendVerificationEmail(code, emailAddress);
     }
 
     async loginUser(req): Promise<any> {
-        console.log('Logging in a user----------------------------------------------');
-        console.log(req.body); //TODO: delete
-        let users = await this.userRepository.getUsers({"email": req.body.email})
-        console.log(users);
-        if(users.length == 0) {
-            console.log('User does not exist');
-            throw "Email or password incorrect";  //This is intetional. We do not want hackers to know what email addresses do and dont exist in our database
+        if(!req.body.email || !req.body.password){
+            throw new Error("Could not log in");
         }
-        try {
-            let result = await bcrypt.compare(req.body.password, users[0].password);
-            console.log(result);
-
-            if (!result) {
-                console.log('Password is incorrect');
-                throw "Email or password incorrect";
-            }
-            else{
-                if (users[0].validated)
-                    return {status:"success", data:{}, message:""};
-                else {
-                    console.log('User has not verified their account');
-                    throw "You need to verify your account";
-                }
-            }
-
-        } catch (err) {
-            console.log(err);
-            throw err;
+        let user = await this.userRepository.getUser({"email": req.body.email})
+        if(user.validated){
+            return await this.authenticateUser(user.email, req.body.password, user._id, user.password);
+        } else {
+            throw new Error("User must be validated");
         }
     }
+
 
     async deleteUser(request): Promise<{}> {
         const id = request.params.id;
-        if (!id) {
-            return {message: "No user specified"};
+        if(!id){
+            return { message: "No user specified" };
         }
         const usr = await this.userRepository.getUser(id);
-        if (!usr) {
-            return {message: "User not found"};
+        if(!usr){
+            return { message: "User not found" };
         }
-        return {user: await this.userRepository.deleteUser(id)};
-    }
-
-    async retrieveOwnedWorkFlows(req): Promise<any> {
-        console.log("Retrieving owned workflows")
-        //console.log(req);
-        if(req.body.email == null)
-            throw "Missing parameter email";
-        const users = await this.userRepository.getUsers({email:req.body.email});
-        let user = users[0];
-
-        //console.log(user.owned_workflows);
-        let workflows = [];
-        for(let id of user.owned_workflows)
-        {
-            workflows.push(await this.workFlowRepository.getWorkFlow(id));
-        }
-
-        return {status:"success", data: workflows, message:""};
+        return { user: await this.userRepository.deleteUser(id) };
     }
 
     async retrieveWorkFlows(req):Promise<any> {
@@ -190,3 +203,4 @@ export default class UserService {
         return {status:"success", data: workflows, message:""};
     }
 }
+
