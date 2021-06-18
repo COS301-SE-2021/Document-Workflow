@@ -1,7 +1,5 @@
 import { Component, NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-
-//components
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { AddSignatureComponent } from './components/add-signature/add-signature.component';
 

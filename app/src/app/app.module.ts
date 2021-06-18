@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
-import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+import { IonicModule, IonicRouteStrategy, NavController, NavParams } from '@ionic/angular';
 import { IonicStorageModule } from '@ionic/storage-angular';
 
 
@@ -11,20 +11,20 @@ import { AppComponent } from './app.component';
 import { ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
 
 
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import {SignaturePadModule} from 'angular2-signaturepad';
+// import {SignaturePadModule} from 'angular2-signaturepad';
+import { HttpClientModule } from '@angular/common/http';
+
+//pdf viewer
+import { PdfViewerModule } from 'ng2-pdf-viewer';
 
 //Components
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { UpdateUserComponent } from './components/update-user/update-user.component';
 import { AddWorkflowComponent } from './components/add-workflow/add-workflow.component';
 import { AddSignatureComponent } from './components/add-signature/add-signature.component';
-
-
-//pdf viewer
-import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { EditWorkflowComponent } from './components/edit-workflow/edit-workflow.component';
 import { AddCommentComponent } from './components/add-comment/add-comment.component';
+import { ConfirmSignaturesComponent } from './components/confirm-signatures/confirm-signatures.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +34,8 @@ import { AddCommentComponent } from './components/add-comment/add-comment.compon
     UpdateUserComponent,
     AddSignatureComponent,
     EditWorkflowComponent,
-    AddCommentComponent
+    AddCommentComponent,
+    ConfirmSignaturesComponent
   ],
   entryComponents: [],
   imports: [
@@ -47,13 +48,13 @@ import { AddCommentComponent } from './components/add-comment/add-comment.compon
     IonicStorageModule.forRoot(),
     HttpClientModule,
     PdfViewerModule,
-    SignaturePadModule,
   ],
   providers: [
     {
       provide: RouteReuseStrategy,
       useClass: IonicRouteStrategy,
     },
+    NavParams
   ],
   bootstrap: [AppComponent],
 })

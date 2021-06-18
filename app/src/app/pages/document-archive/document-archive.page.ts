@@ -37,7 +37,7 @@ export class DocumentArchivePage implements OnInit {
   async ngOnInit() {}
 
   loadDocuments() {
-    this.docService.getDocuments().subscribe();
+    // this.docService.getDocuments().subscribe();
   }
 
   async viewDoc() {

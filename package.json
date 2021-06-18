@@ -4,44 +4,49 @@
   "description": "A web-based solution that facilitate the reviewing, approval and signing of documents.",
   "main": "src/index.js",
   "scripts": {
-    "build:server" : "echo 'script for building server'",
-    "test:server" : "echo 'script for running server test suite'",
-    "run:server" : "echo 'script for running server in production'",
-    "dev:server" : "nodemon server.js",
-
-    "build:app" : "echo 'this is for anything that needs to be compiled before execution'",
-    "test:app" : "echo 'testing for frontend must run in cli'",
-    "run:app" : "echo 'this is for running in production'",
-    "dev:app" : "cd app && npm start",
-
-    "start": "nodemon server.js",
-    "test:docs": "mocha test/**/documents.test.js --reporter spec --timeout=60000",
-    "test:users": "mocha test/**/users.test.js --reporter spec --timeout=60000",
-    "test": "mocha test/**/*.test.js --reporter spec --timeout=60000"
+    "build:server": "tsc",
+    "test:server": "jest --verbose",
+    "run:server": "node dist/src/server.js",
+    "dev:server": "tsc-watch --onSuccess \"node ./dist/src/server.js\"",
+    "build:app": "echo 'this is for anything that needs to be compiled before execution'",
+    "test:app": "echo 'testing for frontend must run in cli'",
+    "run:app": "echo 'this is for running in production'",
+    "dev:app": "cd app && npm start"
   },
   "author": "Team Jar-gon",
   "license": "ISC",
   "dependencies": {
     "@angular/cli": "^12.0.2",
+    "aws-sdk": "^2.927.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "bootstrap": "^5.0.1",
     "chai": "^4.3.4",
     "chai-http": "^4.3.0",
+    "cors": "^2.8.5",
     "debug": "^2.6.9",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-fileupload": "^1.2.1",
     "mongoose": "^5.12.12",
-    "request": "^2.88.2"
+    "nodemailer": "^6.6.1",
+    "reflect-metadata": "^0.1.13",
+    "request": "^2.88.2",
+    "tsyringe": "^4.5.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.3",
     "@babel/preset-env": "^7.14.4",
+    "@types/cors": "^2.8.10",
+    "@types/jest": "^26.0.23",
     "jest": "^27.0.4",
     "mocha": "^8.4.0",
     "nodemon": "^2.0.7",
     "prettier": "^2.3.0",
+    "sinon": "^11.1.1",
+    "ts-jest": "^27.0.3",
+    "ts-node": "^10.0.0",
+    "tsc-watch": "^4.4.0",
     "typescript": "^4.3.2"
   }
 }
