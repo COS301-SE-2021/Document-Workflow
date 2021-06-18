@@ -1,7 +1,10 @@
 import { Component, OnInit, ViewChild, HostListener, ElementRef, AfterViewInit } from '@angular/core';
-// import SignaturePad from 'signature_pad';
+import SignaturePad from 'signature_pad';
 // import { Base64ToGallery } from '@ionic-native/base64-to-gallery/ngx';
 import {FormGroup} from '@angular/forms';
+import { NavController, ModalController } from '@ionic/angular';
+import { Router } from '@angular/router';
+import {LoginRegisterPage} from '../../pages/login-register/login-register.page';
 
 @Component({
   selector: 'app-add-signature',
@@ -9,26 +12,27 @@ import {FormGroup} from '@angular/forms';
   styleUrls: ['./add-signature.component.scss'],
 })
 export class AddSignatureComponent implements OnInit, AfterViewInit {
+  @ViewChild('canvas', { static: true }) signaturePadElement;
   signForm: FormGroup;
-
-  //@ViewChild('canvas', { static: true }) signaturePadElement;
   signaturePad: any;
   canvasWidth: 300;
   canvasHeight: 200;
+  public saveSign: string;
+  constructor(
+    private elementRef: ElementRef,
+    public navCtrl: NavController,
+    private router: Router,
+    private modalCtrl: ModalController
+  ) { }
 
-  constructor(private elementRef: ElementRef,
-              // private base64ToGallery: Base64ToGallery
-              ) { }
-
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.init();
+  }
   ngOnInit(): void
   {
     this.init();
   }
-
-  // @HostListener('window:resize', ['$event'])
-  // onResize(event) {
-  //   this.init();
-  // }
 
   init()
   {
@@ -41,17 +45,24 @@ export class AddSignatureComponent implements OnInit, AfterViewInit {
   }
 
   public ngAfterViewInit(): void {
-    // this.signaturePad = new SignaturePad(this.signaturePadElement.nativeElement);
+    this.signaturePad = new SignaturePad(this.signaturePadElement.nativeElement);
     this.signaturePad.clear();
     this.signaturePad.penColor = 'rgb(56,128,255)';
   }
 
-  save(): void {
-    const img = this.signaturePad.toDataURL();
-    // this.base64ToGallery.base64ToGallery(img).then(
-      // res => console.log('Saved image to gallery ', res),
-      // err => console.log('Error saving image to gallery ', err)
-    // );
+  save() {
+    this.saveSign = this.signaturePad.toDataURL();
+    console.log(this.saveSign);
+    // this.navCtrl.push(LoginRegisterPage,{saveSign: this.saveSign});
+  }
+  done()
+  {
+    // this.navCtrl.navigateBack('/login');
+    this.modalCtrl.create({
+      component: LoginRegisterPage
+    }).then((modal) => {
+      modal.present();
+    });
   }
 
   isCanvasBlank(): boolean {
@@ -70,10 +81,5 @@ export class AddSignatureComponent implements OnInit, AfterViewInit {
       data.pop(); // remove the last dot or line
       this.signaturePad.fromData(data);
     }
-  }
-  async addSign(){
-    this.isCanvasBlank();
-    this.undo();
-    this.clear();
   }
 }
