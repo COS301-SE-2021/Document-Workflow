@@ -43,9 +43,6 @@ export class WorkflowPage implements OnInit {
   }
 
   async loadWorkFlows() {
-    alert(
-      'REMEMBER TO ADD FUNCTIONALITY OF GETTING CURRENTLY LOGGED IN USER!!!'
-    );
     const email = 'johnaldweasely2@gmail.com';
 
     this.userApiService.getAllWorkOwnedFlows(email, (response) => {
@@ -98,10 +95,13 @@ export class WorkflowPage implements OnInit {
 
     (await addModal).onDidDismiss().then(async (data) => {
 
-        const users = (await data).data['users'];
+        // const users = (await data).data['users'];
         const documents = (await data).data['document'];
         const file = (await data).data['file'];
         const email = 'johnaldweasely2@gmail.com';
+        const users ='';
+        console.log(documents);
+
         const workflowData = {
           owner_email: email, //TODO: swap out this email address using the JWT/stored email address after login
           name: documents.workflowName,
@@ -109,7 +109,7 @@ export class WorkflowPage implements OnInit {
         };
         console.log(workflowData);
         console.log(file);
-        console.log(users);
+        // console.log(users);
         const response = await WorkFlowService.createWorkflow(workflowData, users, file);
         if(response === 'success'){
           alert('Workflow successfully created');
