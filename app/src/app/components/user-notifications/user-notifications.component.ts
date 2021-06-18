@@ -8,8 +8,11 @@ import { Component, Input, OnInit } from '@angular/core';
 export class UserNotificationsComponent implements OnInit {
 
   @Input() message: string
+  @Input() title: string
   constructor() { }
 
-  ngOnInit() {}
+  ngOnInit() {
+
+  }
 
 }

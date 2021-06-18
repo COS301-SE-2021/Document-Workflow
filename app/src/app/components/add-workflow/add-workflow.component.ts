@@ -111,8 +111,4 @@ export class AddWorkflowComponent implements OnInit {
       file: this.file,
     });
   }
-
-  test(){
-    console.log(this.workflowForm.value)
-  }
 }

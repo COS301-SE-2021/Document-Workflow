@@ -46,8 +46,6 @@ export class WorkflowPage implements OnInit {
     const email = 'johnaldweasely2@gmail.com';
 
     this.userApiService.getAllWorkOwnedFlows(email, (response) => {
-      console.log("Got owned workflows")
-      console.log(response);
       if (response.status === 'success') {
         for (let i = 0; i < response.data.length; i++) {
           let tmpDoc: documentImage;
@@ -59,8 +57,6 @@ export class WorkflowPage implements OnInit {
       }
     });
     this.userApiService.getAllWorkFlows(email, (response) => {
-      console.log("Got normal workflows");
-      console.log(response);
       if (response.status === 'success') {
         for (let i = 0; i < response.data.length; i++) {
           let tmpDoc: documentImage;
@@ -99,23 +95,20 @@ export class WorkflowPage implements OnInit {
         const documents = (await data).data['document'];
         const file = (await data).data['file'];
         const email = 'johnaldweasely2@gmail.com';
-        const users ='';
-        console.log(documents);
+        const users = documents.phases;
+
 
         const workflowData = {
           owner_email: email, //TODO: swap out this email address using the JWT/stored email address after login
           name: documents.workflowName,
           description: documents.workflowDescription
         };
-        console.log(workflowData);
-        console.log(file);
-        // console.log(users);
         const response = await WorkFlowService.createWorkflow(workflowData, users, file);
         if(response === 'success'){
-          alert('Workflow successfully created');
+          this.userApiService.displayPopOver('Congrats', 'Workflow has been created');
         }else {
             console.log(response);
-            alert(response);
+            this.userApiService.displayPopOver('Unexpected failure', 'Workflow has not been created');
         };
     });
     return;
@@ -128,6 +121,4 @@ export class WorkflowPage implements OnInit {
       documentname: name
     }]);
   }
-
-
 }

@@ -102,7 +102,7 @@ export class LoginRegisterPage implements OnInit {
 
   fileUnspecified(): void{
     //For Brent for if the signasture doesnt exists
-
+    this.userAPIService.displayPopOver('Missing signature', 'Please add a signature')
   }
 
 
@@ -251,22 +251,4 @@ export class LoginRegisterPage implements OnInit {
 
     await load.present();
   }
-
-  async displayPopOver(title: string, message: string){
-    const poper = await this.pop.create({
-      component: UserNotificationsComponent,
-      componentProps:{
-        'title': title,
-        'message': message
-      }
-    });
-    await poper.present();
-
-    const a = await poper.onDidDismiss();
-    console.log( a );
-   }
-
-   test(){
-     this.displayPopOver('Unauthorized',"tim eats his own toe nails")
-   }
 }
