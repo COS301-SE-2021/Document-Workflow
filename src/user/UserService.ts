@@ -20,7 +20,7 @@ export default class UserService {
             if (!result) {
                 throw "Email or password incorrect";
             }
-            return jwt.sign({_id: id, email: email}, process.env.SECRET, {expiresIn: '15 seconds'});
+            return jwt.sign({_id: id, email: email}, process.env.SECRET, {expiresIn: '1d'});
         } catch (err) {
             throw Error("Email or password incorrect");
         }
@@ -189,7 +189,6 @@ export default class UserService {
 
     async retrieveOwnedWorkFlows(req): Promise<any> {
         console.log("Retrieving owned workflows")
-        console.log(req);
         //if(req.body.email == null) //TODO: remove
         //    throw "Missing parameter email";
         const user = await this.userRepository.getUser(req.user.id);
