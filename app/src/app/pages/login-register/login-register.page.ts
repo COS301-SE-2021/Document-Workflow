@@ -26,6 +26,7 @@ import {LoadingController} from '@ionic/angular';
 import { Plugins } from 'protractor/built/plugins';
 import {DocumentAPIService} from './../../Services/Document/document-api.service';
 import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
+import { ResetPasswordComponent } from 'src/app/components/reset-password/reset-password.component';
 
 @Component({
   selector: 'app-login-register',
@@ -101,6 +102,8 @@ export class LoginRegisterPage implements OnInit {
     //For Brent for if the signasture doesnt exists
 
   }
+
+
 
   async register(): Promise<void> {
     const userdata = this.registerForm.value;
@@ -210,6 +213,16 @@ export class LoginRegisterPage implements OnInit {
     (await mod).onDidDismiss().then(async (data) => {
       // data goes in here, workflow page.ts as an example
     });
+  }
+
+  async displayResetPassword(){
+    const mod = this.modal.create({
+      component: ResetPasswordComponent
+    });
+
+    (await mod).present();
+
+    (await mod).onDidDismiss();
   }
 
   async addSignature(source: CameraSource) {
