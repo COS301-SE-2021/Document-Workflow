@@ -26,7 +26,7 @@ export default class UserController{
             req.user = user;
             next();
         } catch (e) {
-            res.status(401).send({message: "Unable to Authenticate"});
+            res.status(401).send({status: "failed", data: {},  message: "Unable to Authenticate"});
         }
     }
 
@@ -117,8 +117,7 @@ export default class UserController{
             }
         });
 
-        this.router.post("/retrieveOwnedWorkflows", async (req,res) =>{
-
+        this.router.post("/retrieveOwnedWorkflows", this.Authenticate, async (req,res) =>{
             try {
                 res.status(200).json(await this.retrieveOwnedWorkFlows(req));
             } catch(err){
@@ -126,9 +125,7 @@ export default class UserController{
             }
         });
 
-        this.router.post("/retrieveWorkflows", async(req,res) =>{
-            console.log(req);
-            console.log(req.headers);
+        this.router.post("/retrieveWorkflows",  this.Authenticate, async(req,res) =>{
             try {
                 res.status(200).json(await this.retrieveWorkFlows(req));
             } catch(err){
@@ -136,7 +133,7 @@ export default class UserController{
             }
         });
 
-        this.router.post("/login", async (req,res) => {
+        this.router.post("/login",  async (req,res) => {
             try {
                 let token = await this.loginUserRoute(req);
                 if(token){
@@ -182,8 +179,14 @@ export default class UserController{
                 res.status(400).json(err);
             }
         });
+
+        this.router.post("/authenticate", this.Authenticate, async (req,res) =>{ //This route is used by the front end to forbid access to certain pages.
+            res.status(200).json({status:"success", data:{}, message:""});
+        });
+
         return this.router;
     }
+
 
 
 }

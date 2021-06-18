@@ -37,13 +37,20 @@ export class WorkflowPage implements OnInit {
   ) {}
 
   ngOnInit() {
-
     //TODO: Have a nice loader
+    //Loader start
+    this.userApiService.checkIfAuthorized(function(authorized){
+      if(!authorized) {
+        console.log("MEEOWEOWE");
+        this.router.navigate(['login']);
+      }
+    });
     this.loadWorkFlows();
+
   }
 
   async loadWorkFlows() {
-    const email = 'johnaldweasely2@gmail.com';
+    const email = 'timothyhill202@gmail.com';
 
     this.userApiService.getAllWorkOwnedFlows(email, (response) => {
       console.log("Got owned workflows");
