@@ -55,14 +55,19 @@ export class AddSignatureComponent implements OnInit, AfterViewInit {
     console.log(this.saveSign);
     // this.navCtrl.push(LoginRegisterPage,{saveSign: this.saveSign});
   }
+
   done()
   {
-    // this.navCtrl.navigateBack('/login');
-    this.modalCtrl.create({
-      component: LoginRegisterPage
-    }).then((modal) => {
-      modal.present();
+    this.modalCtrl.dismiss({
+      "signature": this.saveSign,
+      "registerBtn" : true
     });
+    // // this.navCtrl.navigateBack('/login');
+    // this.modalCtrl.create({
+    //   component: LoginRegisterPage
+    // }).then((modal) => {
+    //   modal.present();
+    // });
   }
 
   isCanvasBlank(): boolean {

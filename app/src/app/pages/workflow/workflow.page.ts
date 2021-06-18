@@ -89,8 +89,6 @@ export class WorkflowPage implements OnInit {
     (await addModal).present();
 
     (await addModal).onDidDismiss().then(async (data) => {
-
-      // const users = (await data).data['users'];
       const documents = (await data).data['document'];
       const file = (await data).data['file'];
       const email = 'johnaldweasely2@gmail.com';

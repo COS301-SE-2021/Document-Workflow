@@ -49,28 +49,6 @@ export class DocumentArchivePage implements OnInit {
     return (await editModal).present();
   }
 
-  // async editDoc(id: number) {
-  //   const editModal = await this.modals.create({
-  //     component: EditDocumentModalPage,
-  //     componentProps: {
-  //       docID: id,
-  //     },
-  //   });
-  //   (await editModal).onDidDismiss().then(() => {});
-
-  //   return (await editModal).present();
-  // }
-
-  // async addDoc() {
-  //   const addModal = await this.modals.create({
-  //     component: AddDocumentModalPage,
-  //   });
-
-  //   (await addModal).onDidDismiss().then(() => {});
-
-  //   return (await addModal).present();
-  // }
-
   back(){
     this.router.navigate(['viewAll']);
   }
