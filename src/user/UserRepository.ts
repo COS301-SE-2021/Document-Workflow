@@ -1,4 +1,5 @@
-import User, { UserI } from "./User";
+import User, { UserModel } from "./User";
+import { Types } from "mongoose";
 
 export default class UserRepository {
 
@@ -7,8 +8,8 @@ export default class UserRepository {
      * @throws Error
      * @param Usr: An object containing all the information to create a new user.
      */
-    async postUser(Usr: UserI): Promise<any> {
-        const usr = new User({
+    async postUser(Usr: User): Promise<User> {
+        const usr = new UserModel({
             name: Usr.name,
             surname: Usr.surname,
             initials: Usr.initials,
@@ -23,14 +24,15 @@ export default class UserRepository {
         }
     }
 
+
     /**
      * @returns Promise<any> A list of the found users.
      * @throws Error If something goes horribly wrong
      * @param filter An object containing the search criteria
      */
-    async getUsers(filter): Promise<any[]> {
+    async getUsers(filter): Promise<User[]> {
         try {
-            return await User.find(filter);
+            return await UserModel.find(filter);
         } catch (err) {
           throw new Error(err);
         }
@@ -41,16 +43,11 @@ export default class UserRepository {
      * @throws Error when the user object is not found
      * @param Usr The user object to be modified
      */
-    async putUser(Usr: UserI): Promise<any> {
-            const usr = await User.findOne({email: Usr.email});
+    async putUser(Usr: User): Promise<User> {
+            const usr = await UserModel.findOne({id: Usr._id});
             if(usr){
-                usr.name = Usr.name;
-                usr.surname = Usr.surname;
-                usr.initials = Usr.initials;
-                usr.email = Usr.email;
-                usr.password = Usr.password;
-                usr.validated = Usr.validated;
-                return await usr.save();
+                await Usr.validate();
+                return await Usr.save();
             } else {
                 throw new Error("Could not update user");
             }
@@ -61,9 +58,9 @@ export default class UserRepository {
      * @throws Error if findOne breaks somehow
      * @param filter An object containing the search criteria
      */
-    async getUser(filter): Promise<any> {
+    async getUser(filter): Promise<User> {
         try {
-            return await User.findOne(filter);
+            return await UserModel.findOne(filter);
         } catch(err) {
             throw err;
         }
@@ -74,9 +71,9 @@ export default class UserRepository {
      * @throws Error If the user could not be deleted
      * @param id The id of the user that is to be deleted
      */
-    async deleteUser(id: string): Promise<any> {
+    async deleteUser(id: Types._ObjectId): Promise<User> {
         try{
-            User.findByIdAndDelete(id);
+            return await UserModel.findOneAndDelete({_id: id});
         } catch (err){
             throw err;
         }
