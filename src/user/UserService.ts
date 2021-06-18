@@ -20,15 +20,13 @@ export default class UserService {
             if (!result) {
                 throw "Email or password incorrect";
             }
-            return jwt.sign({_id: id, email: email}, process.env.SECRET, {expiresIn: '1d'});
+            return jwt.sign({_id: id, email: email}, process.env.SECRET, {expiresIn: '24h'});
         } catch (err) {
             throw Error("Email or password incorrect");
         }
     }
 
     async getUser(request): Promise<UserI> {
-        console.log("ERROR IS HERE AND DELte ME!!!");
-        console.log(request);
         if(!request._id){
             throw new URIError("id is required");
         }
@@ -189,12 +187,8 @@ export default class UserService {
 
     async retrieveOwnedWorkFlows(req): Promise<any> {
         console.log("Retrieving owned workflows")
-        //if(req.body.email == null) //TODO: remove
-        //    throw "Missing parameter email";
-        const user = await this.userRepository.getUser(req.user.id);
-        //let user = users[0]; //TODO: remove
+        const user = await this.userRepository.getUser({email: req.user.email});
 
-        //console.log(user.owned_workflows);
         let workflows = [];
         for(let id of user.owned_workflows)
         {
@@ -206,10 +200,8 @@ export default class UserService {
 
     async retrieveWorkFlows(req):Promise<any> {
         console.log("Retrieving workflows")
-        if(req.body.email == null)
-            throw "Missing parameter email";
-        const users = await this.userRepository.getUsers({email:req.body.email});
-        let user = users[0];
+
+        const user = await this.userRepository.getUser({email: req.user.email});
 
         let workflows = [];
         for(let id of user.workflows)

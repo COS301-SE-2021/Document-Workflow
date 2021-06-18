@@ -19,9 +19,8 @@ export default class UserController{
             const token = req.header("Authorization").replace("Bearer ", "");
             const decoded = jwt.verify(token, process.env.SECRET);
             const user = await this.userService.getUser({_id: decoded._id, 'tokens.token': token});
-
             if(!user) {
-                throw new Error();
+                throw new Error("User could not be found");
             }
             req.user = user;
             next();
@@ -109,13 +108,21 @@ export default class UserController{
     * */
 
     routes() {
+        this.router.post("", async (req,res) => {
+            try {
+                res.status(201).json(await this.registerUserRoute(req));
+            } catch(err){
+                res.status(400).json(err);
+            }
+        });
+        /*
         this.router.get("", this.Authenticate, async (req, res) => {
             try {
                 res.status(200).json(await this.getUsersRoute());
             } catch(err){
                 res.status(400).json(err);
             }
-        });
+        });*/
 
         this.router.post("/retrieveOwnedWorkflows", this.Authenticate, async (req,res) =>{
             try {
@@ -170,15 +177,7 @@ export default class UserController{
             }
         });
 
-        this.router.post("", async (req,res) => {
-            console.log("Register request");
-            console.log(req.body);
-            try {
-                res.status(201).json(await this.registerUserRoute(req));
-            } catch(err){
-                res.status(400).json(err);
-            }
-        });
+
 
         this.router.post("/authenticate", this.Authenticate, async (req,res) =>{ //This route is used by the front end to forbid access to certain pages.
             res.status(200).json({status:"success", data:{}, message:""});
