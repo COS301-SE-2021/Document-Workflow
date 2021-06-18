@@ -1,3 +1,6 @@
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/prefer-for-of */
 import { Component, OnInit, Input } from '@angular/core';
 import { LoadingController, ModalController, NavController } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -43,14 +46,15 @@ export class WorkflowPage implements OnInit {
     alert(
       'REMEMBER TO ADD FUNCTIONALITY OF GETTING CURRENTLY LOGGED IN USER!!!'
     );
-    const email = 'timothyhill202@gmail.com';
+    const email = 'johnaldweasely2@gmail.com';
 
     this.userApiService.getAllWorkOwnedFlows(email, (response) => {
+      console.log("Got owned workflows")
+      console.log(response);
       if (response.status === 'success') {
         for (let i = 0; i < response.data.length; i++) {
           let tmpDoc: documentImage;
           tmpDoc = response.data[i];
-
           this.documents.push(tmpDoc);
         }
       } else {
@@ -58,6 +62,8 @@ export class WorkflowPage implements OnInit {
       }
     });
     this.userApiService.getAllWorkFlows(email, (response) => {
+      console.log("Got normal workflows");
+      console.log(response);
       if (response.status === 'success') {
         for (let i = 0; i < response.data.length; i++) {
           let tmpDoc: documentImage;
@@ -69,7 +75,6 @@ export class WorkflowPage implements OnInit {
       }
     });
     console.log(this.documents);
-    this.loadctrl.dismiss();
   }
 
   async editDoc(id: string) {
@@ -93,22 +98,22 @@ export class WorkflowPage implements OnInit {
 
     (await addModal).onDidDismiss().then(async (data) => {
 
-        let users = (await data).data['users'];
-        let documents = (await data).data['document'];
-        let file = (await data).data['file'];
-
-        let workflowData = {
-          owner_email: 'timothyhill202@gmail.com', //TODO: swap out this email address using the JWT/stored email address after login
+        const users = (await data).data['users'];
+        const documents = (await data).data['document'];
+        const file = (await data).data['file'];
+        const email = 'johnaldweasely2@gmail.com';
+        const workflowData = {
+          owner_email: email, //TODO: swap out this email address using the JWT/stored email address after login
           name: documents.workflowName,
           description: documents.workflowDescription
         };
         console.log(workflowData);
         console.log(file);
         console.log(users);
-        let response = await WorkFlowService.createWorkflow(workflowData, users, file);
-        if(response === 'success')
+        const response = await WorkFlowService.createWorkflow(workflowData, users, file);
+        if(response === 'success'){
           alert('Workflow successfully created');
-        else {
+        }else {
             console.log(response);
             alert(response);
         };
@@ -117,8 +122,9 @@ export class WorkflowPage implements OnInit {
   }
 
   viewWorkFlow(id: string, name: string) {
+    // this.navControl.navigateForward
     this.router.navigate(['documentView', {
-      id: id,
+      id,
       documentname: name
     }]);
   }

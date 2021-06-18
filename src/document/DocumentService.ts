@@ -45,9 +45,10 @@ export default class DocumentService {
             const filedata = await this.documentRepository.getDocumentFromS3(metadata.document_path);
             if(filedata === null)
                 throw "The specified document does not exist.";
-            await this.turnBufferIntoFile(filedata,metadata);
-
-            return {status:"success", data:{filepath: metadata.doc_name}, message:"" }; //need to return filepath ( which is just the file name) up the chain so we can pipe it to the response.
+            //await this.turnBufferIntoFile(filedata,metadata);
+            console.log({status:"success", data:{metadata: metadata, filedata: filedata}, message:"" });
+            return {status:"success", data:{metadata: metadata, filedata: filedata}, message:"" };
+            //return {status:"success", data:{filepath: metadata.doc_name}, message:"" }; //need to return filepath ( which is just the file name) up the chain so we can pipe it to the response.
         }
         catch(err)
         {

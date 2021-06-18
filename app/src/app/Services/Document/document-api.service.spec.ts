@@ -14,7 +14,5 @@ describe('DocumentAPIService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should return a document', () =>{
-    expect(service.getDocuments(1)).toContain('');
-  });
+
 });

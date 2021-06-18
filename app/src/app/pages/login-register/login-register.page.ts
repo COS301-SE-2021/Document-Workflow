@@ -8,7 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { match } from './../../Services/match.validator';
 
 //popover
-import {PopoverController} from '@ionic/angular';
+import {ModalController, PopoverController} from '@ionic/angular';
 // import { RegisterLoginPopoverComponent } from './../../Popovers/register-login-popover/register-login-popover.component';
 
 
@@ -25,6 +25,7 @@ import { ActionSheetController, Platform } from '@ionic/angular';
 import {LoadingController} from '@ionic/angular';
 import { Plugins } from 'protractor/built/plugins';
 import {DocumentAPIService} from './../../Services/Document/document-api.service';
+import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
 
 @Component({
   selector: 'app-login-register',
@@ -46,7 +47,7 @@ export class LoginRegisterPage implements OnInit {
     private plat: Platform,
     private actionSheetController: ActionSheetController,
     private loadCtrl: LoadingController,
-    private popController: PopoverController
+    private modal: ModalController,
   ) {}
 
   ngOnInit() {
@@ -163,6 +164,13 @@ export class LoginRegisterPage implements OnInit {
           this.addSignature(CameraSource.Photos);
         },
       },
+      {
+        text: 'Draw your signature',
+        icon: 'create',
+        handler:()=>{
+          this.addSignatureDraw();
+        }
+      }
     ];
 
     if (!this.plat.is('hybrid')) {
@@ -192,6 +200,18 @@ export class LoginRegisterPage implements OnInit {
     console.log('file', this.file);
   }
 
+  async addSignatureDraw(){
+    const mod = this.modal.create({
+      component: AddSignatureComponent
+    });
+
+    (await mod).present();
+
+    (await mod).onDidDismiss().then(async (data) => {
+      // data goes in here, workflow page.ts as an example
+    });
+  }
+
   async addSignature(source: CameraSource) {
     const image = await Camera.getPhoto({
       quality: 60,
@@ -209,7 +229,7 @@ export class LoginRegisterPage implements OnInit {
   {
     const load = await this.loadCtrl.create({
       message: 'Hang in there... we are almost done',
-      duration: 7000,
+      duration: 5000,
       showBackdrop: false,
       spinner: 'bubbles'
     });

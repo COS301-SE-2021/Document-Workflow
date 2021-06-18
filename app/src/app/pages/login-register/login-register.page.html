@@ -24,7 +24,7 @@
                   <ion-input type="password" formControlName="loginPassword"></ion-input>
                 </ion-item>
                 <div text-center>
-                  Reset <a routerLink='/password-reset'>
+                  Reset <a routerLink='/resetPassword'>
                     password</a>
                 </div>
 
@@ -82,7 +82,7 @@
                   </ion-button>
                   <ion-button (click)="selectImageSource()">Add</ion-button>
                 </ion-item>
-                <ion-button expand="block" color="primary" fill="outline" [disabled]="!registerForm.valid" (click)="loadingRegister()"
+                <ion-button expand="block" color="primary" fill="outline" [disabled]="!registerForm.valid"
                   type="submit">Register</ion-button>
               </form>
             </ion-card-content>
