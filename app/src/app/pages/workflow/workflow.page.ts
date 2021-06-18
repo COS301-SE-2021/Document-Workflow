@@ -41,10 +41,10 @@ export class WorkflowPage implements OnInit {
     //Loader start
     console.log(localStorage.getItem('token'));
     this.userApiService.checkIfAuthorized().subscribe((response)=>{
-       console.log("Successfully authorized user");
+      console.log("Successfully authorized user");
     }, (error) =>{
-        console.log(error);
-        this.router.navigate(['/login']);
+      console.log(error);
+      this.router.navigate(['/login']);
     });
     this.loadWorkFlows();
 
@@ -80,17 +80,6 @@ export class WorkflowPage implements OnInit {
     console.log(this.documents);
   }
 
-  async editDoc(id: string) {
-    const editModal = await this.modals.create({
-      component: EditWorkflowComponent,
-      componentProps: {
-        docID: id,
-      },
-    });
-    (await editModal).onDidDismiss().then(() => {});
-
-    return (await editModal).present();
-  }
 
   async addWorkflow() {
     const addModal = await this.modals.create({
@@ -101,25 +90,25 @@ export class WorkflowPage implements OnInit {
 
     (await addModal).onDidDismiss().then(async (data) => {
 
-        const users = (await data).data['users'];
-        const documents = (await data).data['document'];
-        const file = (await data).data['file'];
-        const email = 'johnaldweasely2@gmail.com';
-        const workflowData = {
-          owner_email: email, //TODO: swap out this email address using the JWT/stored email address after login
-          name: documents.workflowName,
-          description: documents.workflowDescription
-        };
-        console.log(workflowData);
-        console.log(file);
-        console.log(users);
-        const response = await WorkFlowService.createWorkflow(workflowData, users, file);
-        if(response === 'success'){
-          alert('Workflow successfully created');
-        }else {
-            console.log(response);
-            alert(response);
-        };
+      // const users = (await data).data['users'];
+      const documents = (await data).data['document'];
+      const file = (await data).data['file'];
+      const email = 'johnaldweasely2@gmail.com';
+      const users = documents.phases;
+
+
+      const workflowData = {
+        owner_email: email, //TODO: swap out this email address using the JWT/stored email address after login
+        name: documents.workflowName,
+        description: documents.workflowDescription
+      };
+      const response = await WorkFlowService.createWorkflow(workflowData, users, file);
+      if(response === 'success'){
+        this.userApiService.displayPopOver('Congrats', 'Workflow has been created');
+      }else {
+        console.log(response);
+        this.userApiService.displayPopOver('Unexpected failure', 'Workflow has not been created');
+      };
     });
     return;
   }

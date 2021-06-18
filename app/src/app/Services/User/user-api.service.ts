@@ -1,6 +1,8 @@
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {resolveFileWithPostfixes} from "@angular/compiler-cli/ngcc/src/utils";
+import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
+import { PopoverController } from '@ionic/angular';
 
 export interface User {
   Fname: string;
@@ -21,8 +23,10 @@ export interface LoginData{
 export class UserAPIService {
   static url =  'http://localhost:3000/api';
 
-  constructor(private http: HttpClient) {}
-  //.setRequestHeader("Authorization", "Bearer " +  $window.sessionStorage.token);
+  constructor(
+    private http: HttpClient,
+    private pop: PopoverController
+    ) {}
 
   public checkIfAuthorized(){//callback){
     const formData = new FormData();
@@ -103,5 +107,21 @@ export class UserAPIService {
       }, error =>{
       });
     }
+
+  //for the pop over
+  async displayPopOver(title: string, message: string){
+    const poper = await this.pop.create({
+      component: UserNotificationsComponent,
+      componentProps:{
+        'title': title,
+        'message': message
+      }
+    });
+    await poper.present();
+
+    const a = await poper.onDidDismiss();
+    console.log( a );
+   }
+
 
 }

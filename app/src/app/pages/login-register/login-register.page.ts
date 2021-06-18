@@ -26,6 +26,8 @@ import {LoadingController} from '@ionic/angular';
 import { Plugins } from 'protractor/built/plugins';
 import {DocumentAPIService} from './../../Services/Document/document-api.service';
 import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
+import { ResetPasswordComponent } from 'src/app/components/reset-password/reset-password.component';
+import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
 
 @Component({
   selector: 'app-login-register',
@@ -48,6 +50,7 @@ export class LoginRegisterPage implements OnInit {
     private actionSheetController: ActionSheetController,
     private loadCtrl: LoadingController,
     private modal: ModalController,
+    private pop: PopoverController,
   ) {}
 
   ngOnInit() {
@@ -98,8 +101,10 @@ export class LoginRegisterPage implements OnInit {
 
   fileUnspecified(): void{
     //For Brent for if the signasture doesnt exists
-
+    this.userAPIService.displayPopOver('Missing signature', 'Please add a signature')
   }
+
+
 
   async register(): Promise<void> {
     const userdata = this.registerForm.value;
@@ -209,6 +214,16 @@ export class LoginRegisterPage implements OnInit {
     (await mod).onDidDismiss().then(async (data) => {
       // data goes in here, workflow page.ts as an example
     });
+  }
+
+  async displayResetPassword(){
+    const mod = this.modal.create({
+      component: ResetPasswordComponent
+    });
+
+    (await mod).present();
+
+    (await mod).onDidDismiss();
   }
 
   async addSignature(source: CameraSource) {
