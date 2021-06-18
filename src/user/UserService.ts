@@ -27,11 +27,13 @@ export default class UserService {
     }
 
     async getUser(request): Promise<UserI> {
-        if(!request.params.id){
+        console.log("ERROR IS HERE AND DELte ME!!!");
+        console.log(request);
+        if(!request._id){
             throw new URIError("id is required");
         }
         try{
-            const res = await this.userRepository.getUsers({_id: request.params.id});
+            const res = await this.userRepository.getUsers({_id: request._id});
             return res[0];
         }catch(err) {
             throw err;
