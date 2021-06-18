@@ -39,11 +39,9 @@ export class WorkflowPage implements OnInit {
   ngOnInit() {
     //TODO: Have a nice loader
     //Loader start
-    this.userApiService.checkIfAuthorized(function(authorized){
-      if(!authorized) {
-        console.log("MEEOWEOWE");
-        this.router.navigate(['login']);
-      }
+    this.userApiService.checkIfAuthorized().subscribe((response)=>{
+    }, (error) =>{
+        this.router.navigate(['/login']);
     });
     this.loadWorkFlows();
 

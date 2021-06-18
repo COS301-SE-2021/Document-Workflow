@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {resolveFileWithPostfixes} from "@angular/compiler-cli/ngcc/src/utils";
 
@@ -23,6 +23,22 @@ export class UserAPIService {
 
   constructor(private http: HttpClient) {}
   //.setRequestHeader("Authorization", "Bearer " +  $window.sessionStorage.token);
+
+  public checkIfAuthorized(){//callback){
+    const formData = new FormData();
+    const token = localStorage.getItem('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: ('Bearer ' + token)
+    });
+    return this.http.post(UserAPIService.url + '/users/retrieveOwnedWorkflows', formData, {headers: httpHeaders});
+    /*
+    this.http.post(UserAPIService.url + '/users/retrieveOwnedWorkflows', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
+      callback(true);
+      }, (error) =>{
+      console.log("Should redirect the user now"); //TODO: delete
+      callback(false);
+    });*/
+  }
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   public register(user: User, file: File, callback){
@@ -62,29 +78,34 @@ export class UserAPIService {
   }
 
   public getAllWorkOwnedFlows(email, callback) {
-    const formData = new FormData();
-    formData.append('email', email);
     console.log('Getting all owned workflows');
-     this.http.post(UserAPIService.url + '/users/retrieveOwnedWorkflows', formData).subscribe(data =>{ //TODO: change url
-        if(data) {
-          callback(data);
-        }
-        else callback({status:'error', message: 'Cannot connect to Server'});
-     });
+    const formData = new FormData();
+    //formData.append('email', email);
+    const token = localStorage.getItem('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: ('Bearer ' + token)
+    });
 
+      this.http.post(UserAPIService.url + '/users/retrieveOwnedWorkflows', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
+        if (data) {
+          callback(data);
+        } else callback({status: 'error', message: 'Cannot connect to Server'});
+        }, (error) =>{
+        console.log(error);
+      });
   }
 
   public getAllWorkFlows(email, callback){
     const formData = new FormData();
     formData.append('email', email);
     console.log('Getting all normal workflows');
-    this.http.post(UserAPIService.url + '/users/retrieveWorkflows', formData).subscribe(data =>{ //TODO: change url
-      if(data) {
-        callback(data);
-      }
-      else callback({status:'error', message: 'Cannot connect to Server'});
-    });
 
-  }
+      this.http.post(UserAPIService.url + '/users/retrieveWorkflows', formData).subscribe(data => { //TODO: change url
+        if (data) {
+          callback(data);
+        } else callback({status: 'error', message: 'Cannot connect to Server'});
+      }, error =>{
+      });
+    }
 
 }

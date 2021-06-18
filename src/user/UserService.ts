@@ -187,11 +187,11 @@ export default class UserService {
 
     async retrieveOwnedWorkFlows(req): Promise<any> {
         console.log("Retrieving owned workflows")
-        //console.log(req);
-        if(req.body.email == null)
-            throw "Missing parameter email";
-        const users = await this.userRepository.getUsers({email:req.body.email});
-        let user = users[0];
+        const email = req.user.email;
+        //if(req.body.email == null) //TODO: remove
+        //    throw "Missing parameter email";
+        const user = await this.userRepository.getUser(req.user.id);
+        //let user = users[0]; //TODO: remove
 
         //console.log(user.owned_workflows);
         let workflows = [];
