@@ -2,6 +2,9 @@ import { Component, OnInit, ViewChild, HostListener, ElementRef, AfterViewInit }
 import SignaturePad from 'signature_pad';
 // import { Base64ToGallery } from '@ionic-native/base64-to-gallery/ngx';
 import {FormGroup} from '@angular/forms';
+import { NavController, ModalController } from '@ionic/angular';
+import { Router } from '@angular/router';
+import {LoginRegisterPage} from '../../pages/login-register/login-register.page';
 
 @Component({
   selector: 'app-add-signature',
@@ -14,10 +17,14 @@ export class AddSignatureComponent implements OnInit, AfterViewInit {
   signaturePad: any;
   canvasWidth: 300;
   canvasHeight: 200;
+  public saveSign: string;
+  constructor(
+    private elementRef: ElementRef,
+    public navCtrl: NavController,
+    private router: Router,
+    private modalCtrl: ModalController
+  ) { }
 
-  constructor(private elementRef: ElementRef,
-              // private base64ToGallery: Base64ToGallery
-              ) { }
   @HostListener('window:resize', ['$event'])
   onResize(event) {
     this.init();
@@ -44,7 +51,18 @@ export class AddSignatureComponent implements OnInit, AfterViewInit {
   }
 
   save() {
-    console.log(this.signaturePad.toDataURL());
+    this.saveSign = this.signaturePad.toDataURL();
+    console.log(this.saveSign);
+    // this.navCtrl.push(LoginRegisterPage,{saveSign: this.saveSign});
+  }
+  done()
+  {
+    // this.navCtrl.navigateBack('/login');
+    this.modalCtrl.create({
+      component: LoginRegisterPage
+    }).then((modal) => {
+      modal.present();
+    });
   }
 
   isCanvasBlank(): boolean {
