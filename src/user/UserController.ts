@@ -71,7 +71,6 @@ export default class UserController{
             return await this.userService.loginUser(request);
         }
         catch(err){
-            console.log(err);
             throw err;
         }
     }
@@ -105,13 +104,14 @@ export default class UserController{
                 let token = await this.loginUserRoute(req);
                 if(token){
                     res.status(200).json(
-                        {status: "Success", data:{token: token}, message: ""}
+                        {status: "success", data:{token: token}, message: ""}
                     )
                 } else {
-                    res.status(400).send("Could not log in user");
+                    res.status(400).send("Could not log in user"); //Unexpected error occurred
                 }
-            } catch(err){ //Lets assume that we throw the error message up to here.
-                res.status(400).json({status: "Failed", data:{}, message: err});
+            } catch(err){
+                //Leave this as status 200 for now. We can change it after demo 2 if we really want but its important for the backend.
+                res.status(200).json({status: "failed", data:{}, message: err.message});
             }
         });
 
@@ -147,4 +147,6 @@ export default class UserController{
         });
         return this.router;
     }
+
+
 }
