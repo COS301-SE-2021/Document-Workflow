@@ -15,6 +15,7 @@ import {
 import { AddWorkflowComponent } from 'src/app/components/add-workflow/add-workflow.component';
 import { EditWorkflowComponent } from 'src/app/components/edit-workflow/edit-workflow.component';
 import { WorkFlowService } from '../../Services/Workflow/work-flow.service';
+import { ConfirmDeleteWorkflowComponent } from 'src/app/components/confirm-delete-workflow/confirm-delete-workflow.component';
 
 @Component({
   selector: 'app-workflow',
@@ -40,7 +41,6 @@ export class WorkflowPage implements OnInit {
   }
 
   ngOnInit() {
-
     console.log(localStorage.getItem('token'));
     this.userApiService.checkIfAuthorized().subscribe((response) => {
       console.log("Successfully authorized user");
@@ -52,10 +52,26 @@ export class WorkflowPage implements OnInit {
 
   }
 
+  async deleteWorkFlow(id: string){
+    const deleteMod = this.modals.create({
+      component: ConfirmDeleteWorkflowComponent
+    });
+
+    (await deleteMod).present();
+    (await deleteMod).onDidDismiss().then(async (data) => {
+      const hello = (await data).data['confirm'];
+      if (hello){
+        //then delete
+        this.userApiService.displayPopOver("Deletion of workflow", 'Workflow has been successfully deleted');
+      }else{
+        //not delete
+      }
+    });
+  }
+
   async loadWorkFlows() {
     this.userApiService.getAllWorkOwnedFlows((response) => {
-      console.log("Got owned workflows");
-      console.log(response);
+
       if (response.status === 'success') {
         for (let i = 0; i < response.data.length; i++) {
           let tmpDoc: documentImage;
@@ -67,8 +83,7 @@ export class WorkflowPage implements OnInit {
       }
     });
     this.userApiService.getAllWorkFlows((response) => {
-      console.log("Got normal workflows");
-      console.log(response);
+
       if (response.status === 'success') {
         for (let i = 0; i < response.data.length; i++) {
           let tmpDoc: documentImage;

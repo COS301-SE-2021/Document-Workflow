@@ -60,7 +60,7 @@ export class AddSignatureComponent implements OnInit, AfterViewInit {
   {
     this.modalCtrl.dismiss({
       "signature": this.saveSign,
-      "registerBtn" : true
+      "registerBtn" : false
     });
     // // this.navCtrl.navigateBack('/login');
     // this.modalCtrl.create({

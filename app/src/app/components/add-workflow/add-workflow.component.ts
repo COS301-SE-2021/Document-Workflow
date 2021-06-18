@@ -28,6 +28,7 @@ export class AddWorkflowComponent implements OnInit {
   private phaseNumber: number[];
   phases: FormArray;
   file: File;
+  addFile: boolean;
 
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
   constructor(
@@ -38,7 +39,8 @@ export class AddWorkflowComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.phaseNumber = Array(2)
+    this.addFile = false;
+    this.phaseNumber = Array(1)
       .fill(0)
       .map((x, i) => i);
     this.workflowForm = this.fb.group({
@@ -71,11 +73,16 @@ export class AddWorkflowComponent implements OnInit {
     });
   }
 
-  addPhase(form: FormGroup) {
-    console.log('here');
+  addPhase() {
     this.phaseNumber.push(0);
     let phase = this.workflowForm.get('phases') as FormArray;
     phase.push(this.createPhase());
+  }
+
+  removePhase( i: number){
+    this.phaseNumber.pop();
+    let phase = this.workflowForm.get('phases') as FormArray;
+    phase.removeAt(i);
   }
 
   async selectImageSource() {
@@ -103,6 +110,7 @@ export class AddWorkflowComponent implements OnInit {
     this.file = target.files[0];
 
     console.log('file', this.file);
+    this.addFile = true;
   }
 
   submit() {

@@ -50,6 +50,9 @@
               <ion-fab-button>
                 <ion-icon name="eye-off-outline"></ion-icon>
               </ion-fab-button>
+              <ion-fab-button *ngIf="">
+                <ion-icon name="trash" (click)="deleteWorkFlow(doc.document_id)"></ion-icon>
+              </ion-fab-button>
             </ion-fab-list>
           </ion-fab>
         </ion-card-header>

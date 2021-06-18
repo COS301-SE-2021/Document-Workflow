@@ -54,7 +54,7 @@ export class LoginRegisterPage implements OnInit {
 
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
-      loginEmail: ['u17015741@tuks.co.za', [Validators.required, Validators.email]],
+      loginEmail: ['bstroberg123@gmail.com', [Validators.required, Validators.email]],
       loginPassword: ['submarine', [Validators.required, Validators.minLength(8)]],
     });
     const formOptions: AbstractControlOptions = {
@@ -94,7 +94,9 @@ export class LoginRegisterPage implements OnInit {
           alert('Login Successful');
           this.router.navigate(['home']);
         }
-        else{alert(response.message);}
+        else{
+          this.userAPIService.displayPopOver('Failure in logging in', 'Email or password is incorrect')
+        }
     });
   }
 

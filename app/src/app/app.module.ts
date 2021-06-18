@@ -26,7 +26,7 @@ import { EditWorkflowComponent } from './components/edit-workflow/edit-workflow.
 import { AddCommentComponent } from './components/add-comment/add-comment.component';
 import { ConfirmSignaturesComponent } from './components/confirm-signatures/confirm-signatures.component';
 import { UserNotificationsComponent } from './components/user-notifications/user-notifications.component';
-
+import { ConfirmDeleteWorkflowComponent } from './components/confirm-delete-workflow/confirm-delete-workflow.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -38,6 +38,7 @@ import { UserNotificationsComponent } from './components/user-notifications/user
     AddCommentComponent,
     ConfirmSignaturesComponent,
     UserNotificationsComponent,
+    ConfirmDeleteWorkflowComponent
   ],
   entryComponents: [],
   imports: [
