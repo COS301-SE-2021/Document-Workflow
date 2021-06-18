@@ -2,19 +2,23 @@ import sinon from "sinon";
 import UserService from "../../src/user/UserService";
 import UserRepository from "../../src/user/UserRepository";
 import UserController from "../../src/user/UserController";
+import Authentication from "../../src/auth/Authentication";
 
 describe("user unit tests", () => {
     let userService;
+    let userController;
+    let userRepository;
 
     beforeEach(()=>{
-        userService = new UserService(new UserRepository());
+        userRepository = new UserRepository();
+        userService = new UserService(userRepository);
+        userController = new UserController(userService, new Authentication(userService));
     });
 
-    describe("GET" ,()=>{
-        describe("api/users" ,()=> {
+    describe("GET api/users" ,()=>{
+        describe("" ,() => {
             test("Zero Users Found: ", async () => {
                 sinon.stub(userService, "getUsers").returns([]);
-                const userController = new UserController(userService);
                 const users = await userController.getUsersRoute();
                 expect(users.length).toBe(0);
             });
@@ -22,7 +26,6 @@ describe("user unit tests", () => {
             test("One User Found: ", async () => {
                 const currentDate = Date.now();
                 sinon.stub(userService, "getUsers").returns([{
-                    //_id: "123456789",
                     name: "Joey",
                     surname: "Cooper",
                     initials: "JC",
@@ -31,11 +34,10 @@ describe("user unit tests", () => {
                     validated: false,
                     tokenDate: currentDate
                 }]);
-                const userController = new UserController(userService);
+
                 userController.getUsersRoute()
                     .then((users) => {
                         expect(users.length).toBe(1);
-                        //expect(users[0]._id).toBe("123456789");
                         expect(users[0].name).toBe("Joey");
                         expect(users[0].surname).toBe("Cooper");
                         expect(users[0].initials).toBe("JC");
@@ -50,7 +52,7 @@ describe("user unit tests", () => {
             });
         });
 
-        describe("api/users/:id" ,()=> {
+        describe("/:id" ,() => {
             test("Zero Users Found by id", async () => {
             });
 
@@ -60,17 +62,50 @@ describe("user unit tests", () => {
             test("Something is wrong with URI", async () => {
             });
         });
+
+        describe("/verify", () => {});
+
+        describe("/verify", () => {});
     });
 
-    describe("POST", ()=>{
+    describe("POST api/users", ()=>{
+        describe("/login", () => {
+
+            // if(!req.body.email || !req.body.password){
+            //     throw new Error("Could not log in");
+            // }
+            // let user = await this.userRepository.getUser({"email": req.body.email})
+            // if(user.validated){
+            //     return await this.authenticateUser(req.body.password, user.password, user._id);
+            // } else {
+            //     throw new AuthenticationError("User must be validated");
+            // }
+
+            test("Positive Case:", async () => {
+               sinon.stub(userRepository, "")
+            });
+
+
+        });
+
+        describe("/logout", () => {});
+
+        describe("/register", () => {});
 
     })
 
-    describe("PUT", ()=>{
+    describe("PUT api/users", ()=>{
+        describe("/:id", () => {
+            test("", async() => {
 
+            });
+
+
+        });
     })
 
     describe("DELETE", ()=>{
+        describe("", () => {});
 
     })
 });
