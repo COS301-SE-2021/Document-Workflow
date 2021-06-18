@@ -252,10 +252,11 @@ export class LoginRegisterPage implements OnInit {
     await load.present();
   }
 
-  async displayPopOver(message: string){
+  async displayPopOver(title: string, message: string){
     const poper = await this.pop.create({
       component: UserNotificationsComponent,
       componentProps:{
+        'title': title,
         'message': message
       }
     });
@@ -266,6 +267,6 @@ export class LoginRegisterPage implements OnInit {
    }
 
    test(){
-     this.displayPopOver("tim eats his own toe nails")
+     this.displayPopOver('Unauthorized',"tim eats his own toe nails")
    }
 }
