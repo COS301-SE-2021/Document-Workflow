@@ -25,7 +25,6 @@ export class UserAPIService {
   //.setRequestHeader("Authorization", "Bearer " +  $window.sessionStorage.token);
 
   public checkIfAuthorized(){//callback){
-    alert("CHECKING IF AUTHORIZED");
     const formData = new FormData();
     const token = localStorage.getItem('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
