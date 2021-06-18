@@ -31,7 +31,7 @@ export class UserAPIService {
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: ('Bearer ' + token)
     });
-    return this.http.post(UserAPIService.url + '/users/retrieveOwnedWorkflows', formData, {headers: httpHeaders});
+    return this.http.post(UserAPIService.url + '/users/authenticate', formData, {headers: httpHeaders});
   }
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
