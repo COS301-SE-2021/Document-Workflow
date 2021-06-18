@@ -20,7 +20,7 @@ export default class WorkFlowService{
      * @param req
      */
     async createWorkFlow(req) :Promise<any>{
-        //console.log(req);
+        console.log(req);
 
         //Before we can create any workflow, we will have to do some validation
         if(req.body.members == undefined)
@@ -35,7 +35,7 @@ export default class WorkFlowService{
                 _id: null,
                 name: req.body.name,
                 description: req.body.description,
-                owner_email: req.body.owner_email,
+                owner_email: req.user.email,
                 document_id: null,
                 document_path: req.files.document.name,
                 members: req.body.members
@@ -53,7 +53,7 @@ export default class WorkFlowService{
             console.log("------------------------------------------------");
 
             console.log("Workflow successfully updated, adding id to the members of the workflow");
-            await this.addWorkFlowIdToOwnedWorkflows(req.body.owner_email, workflow_id);
+            await this.addWorkFlowIdToOwnedWorkflows(req.user.email, workflow_id);
             return "New workflow successfully created";
         }
         catch(err) {
@@ -69,7 +69,6 @@ export default class WorkFlowService{
             return true;
         for (let email of users)
         {
-            //console.log(email);
             const result = await this.usersRepository.getUsers({email: email});
             if(result.length == 0) {
                 console.log("User " + email + " does not exist")
