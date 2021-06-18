@@ -1,8 +1,20 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+  AbstractControl
+} from '@angular/forms';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { ActionSheetController, ModalController, Platform } from '@ionic/angular';
+import {
+  ActionSheetController,
+  ModalController,
+  Platform,
+} from '@ionic/angular';
+import { FORMERR } from 'dns';
 import { DocumentViewPageRoutingModule } from 'src/app/pages/document-view/document-view-routing.module';
 
 @Component({
@@ -11,40 +23,59 @@ import { DocumentViewPageRoutingModule } from 'src/app/pages/document-view/docum
   styleUrls: ['./add-workflow.component.scss'],
 })
 export class AddWorkflowComponent implements OnInit {
-
   workflowForm: FormGroup;
-  userForm: FormGroup;
-  private userCount=1;
-
+  private userCount = 1;
+  private phaseNumber: number[];
+  phases: FormArray;
   file: File;
-  @ViewChild('fileInput', { static: false })fileInput: ElementRef;
+
+  @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
   constructor(
     private plat: Platform,
     private fb: FormBuilder,
     private actionSheetController: ActionSheetController,
     private modal: ModalController
-    ) { }
+  ) {}
 
   ngOnInit() {
+    this.phaseNumber = Array(2)
+      .fill(0)
+      .map((x, i) => i);
     this.workflowForm = this.fb.group({
-      workflowName: ['',[Validators.required]],
-      workflowDescription:['', [Validators.required]],
+      workflowName: ['', [Validators.required]],
+      workflowDescription: ['', [Validators.required]],
+      phases: this.fb.array([
+        this.fb.group({
+          user1: new FormControl('', [Validators.email, Validators.required]),
+        }),
+      ]),
     });
+    // console.log(this.workflowForm.controls.phases['controls'][0]);
+  }
 
-    this.userForm = this.fb.group({
-      user1: ['', [Validators.email, Validators.required]],
+  addUser(form: FormGroup) {
+    this.userCount = this.userCount + 1;
+    form.addControl(
+      'user' + this.userCount,
+      new FormControl('', [Validators.email, Validators.required])
+    );
+  }
+
+  removeUser(form: FormGroup, control) {
+    form.removeControl(control.key);
+  }
+
+  createPhase(): FormGroup {
+    return this.fb.group({
+      user1: new FormControl('', [Validators.email, Validators.required]),
     });
   }
 
-  addUser(){
-    this.userCount = this.userCount +1;
-    this.userForm.addControl('user'+ this.userCount, new FormControl('',[Validators.email,Validators.required]));
-  }
-
-
-
-  removeUser(control){
-    this.userForm.removeControl(control.key);
+  addPhase(form: FormGroup) {
+    console.log('here');
+    this.phaseNumber.push(0);
+    let phase = this.workflowForm.get('phases') as FormArray;
+    phase.push(this.createPhase());
   }
 
   async selectImageSource() {
@@ -74,11 +105,10 @@ export class AddWorkflowComponent implements OnInit {
     console.log('file', this.file);
   }
 
-  submit(){
+  submit() {
     this.modal.dismiss({
-      users:  this.userForm.value,
       document: this.workflowForm.value,
-      file: this.file
+      file: this.file,
     });
   }
 }
