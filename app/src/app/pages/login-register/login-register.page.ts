@@ -127,7 +127,7 @@ export class LoginRegisterPage implements OnInit {
       password: userdata.password
     };
 
-
+    await this.loadingRegister();
     this.userAPIService.register(user, this.file, (response)=>{
         if(response.status === 'success')
         {

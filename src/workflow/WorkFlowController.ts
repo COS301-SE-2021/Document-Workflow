@@ -5,12 +5,14 @@ import { UserI } from "./../user/User";
 import workFlowService from "./WorkFlowService";
 import {WorkFlowI} from "./WorkFlow"
 import WorkFlowService from "./WorkFlowService";
+import UserController from "./../user/UserController";
+import Authenticator from "../Authenticate";
 
 @autoInjectable()
 export default class WorkFlowController{
     router: Router;
 
-    constructor(private workflowService: WorkFlowService) {
+    constructor(private workflowService: WorkFlowService, private authenticator: Authenticator) {
         this.router = new Router();
     }
 
@@ -32,7 +34,7 @@ export default class WorkFlowController{
 
     routes() {
 
-        this.router.post("",async (req, res) => {
+        this.router.post("", this.authenticator.Authenticate, async (req, res) => {
             try {
                 res.status(200).json(await this.createWorkFlow(req));
             } catch(err){
