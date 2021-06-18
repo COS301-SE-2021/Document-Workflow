@@ -22,7 +22,7 @@ export class AddWorkflowComponent implements OnInit {
     private plat: Platform,
     private fb: FormBuilder,
     private actionSheetController: ActionSheetController,
-    private toastCtrlr: ToastController
+    private toastCtrlr: ToastController,
     private modal: ModalController
     ) { }
 
