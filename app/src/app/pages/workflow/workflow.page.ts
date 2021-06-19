@@ -41,7 +41,6 @@ export class WorkflowPage implements OnInit {
 
   ngOnInit() {
 
-    console.log(localStorage.getItem('token'));
     this.userApiService.checkIfAuthorized().subscribe((response) => {
       console.log("Successfully authorized user");
     }, (error) => {
@@ -95,14 +94,22 @@ export class WorkflowPage implements OnInit {
       // const users = (await data).data['users'];
       const documents = (await data).data['document'];
       const file = (await data).data['file'];
-      const users = documents.phases;
-
+      let phases = '';
+      console.log(documents.phases);
+      for(let i=0; i<documents.phases.length; ++i) //Sending arrays of arrays does not work well in angular so this workaround will have to do.
+      {
+        let temp = '[';
+        for(const [key, value] of Object.entries(documents.phases[i]))
+          temp+=value + ' ';
+        phases += temp.substr(0, temp.length-1) +']'; //dont want the trailing space
+      }
+      console.log(phases);
       const workflowData = {
         name: documents.workflowName,
         description: documents.workflowDescription
       };
-      this.workFlowService.createWorkflow(workflowData, users, file, (response) => {
-        if (response === 'success') {
+      this.workFlowService.createWorkflow(workflowData, phases, file, (response) => {
+        if (response.status === 'success') {
           this.userApiService.displayPopOver('Congrats', 'Workflow has been created');
         } else {
           console.log(response);

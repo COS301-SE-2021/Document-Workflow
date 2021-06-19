@@ -26,16 +26,17 @@ export class WorkFlowService {
   constructor(private http: HttpClient) {}
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  public async createWorkflow(workflow_info, users, document, callback): Promise<any>{
+  public async createWorkflow(workflow_info, phases, document, callback): Promise<any>{
 
     const formData = new FormData();
     formData.append('name', workflow_info.name);
     formData.append('description', workflow_info.description);
     formData.append('document', document);
+    formData.append('phases', phases);
 
-    Object.keys(users).forEach(key =>{
-      formData.append('members', users[key]);
-    });
+    //Object.keys(users).forEach(key =>{
+    //  formData.append('members', users[key]);
+    //});
 
     const token = localStorage.getItem('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
