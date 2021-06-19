@@ -26,6 +26,7 @@ export class WorkflowPage implements OnInit {
   documents: documentImage[] = [];
   ownerEmail: string;
   user: User;
+
   // eslint-disable-next-line @typescript-eslint/member-ordering
 
 
@@ -42,8 +43,6 @@ export class WorkflowPage implements OnInit {
   }
 
   async ngOnInit() {
-
-    console.log(this.user)
     const load = await this.loadctrl.create({
       message: 'Hang in there... we are almost done',
       duration: 5000,
@@ -57,8 +56,22 @@ export class WorkflowPage implements OnInit {
       console.log(error);
       this.router.navigate(['/login']);
     });
+    await this.getUser();
     this.loadWorkFlows();
     await load.dismiss();
+  }
+
+  async getUser(){
+     this.userApiService.getUserDetails(async (response)=>{
+      if(response){
+        console.log(response);
+        this.user = response.data;
+        this.ownerEmail = this.user.email;
+        console.log(this.ownerEmail);
+      } else{
+        this.userApiService.displayPopOver('Error', 'Cannot find user')
+      }
+    })
   }
 
   async deleteWorkFlow(id: string){
@@ -114,7 +127,33 @@ export class WorkflowPage implements OnInit {
   }
 
   async editWorkflow(id_ : string){
+    const editModal = await this.modals.create({
+      component: EditWorkflowComponent,
+      componentProps:{
+        workflowID: id_
+      }
+    });
 
+    (await editModal).present();
+
+    (await editModal).onDidDismiss().then(async (data)=>{
+      const documents = (await data).data['document'];
+      // const file = (await data).data['file'];
+      let phases = '';
+      console.log(documents.phases);
+      for(let i=0; i<documents.phases.length; ++i) //Sending arrays of arrays does not work well in angular so this workaround will have to do.
+      {
+        let temp = '[';
+        for(const [key, value] of Object.entries(documents.phases[i]))
+          temp+=value + ' ';
+        phases += temp.substr(0, temp.length-1) +']'; //dont want the trailing space
+      }
+      console.log(phases);
+      const workflowData = {
+        name: documents.workflowName,
+        description: documents.workflowDescription
+      };
+    })
   }
 
   async addWorkflow() {
@@ -167,6 +206,10 @@ export class WorkflowPage implements OnInit {
   logout(){
     this.userApiService.logout();
     this.router.navigate(['login']);
+  }
+
+  toProfilepage(){
+    this.router.navigate(['userProfile']);
   }
 }
 

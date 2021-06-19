@@ -1,12 +1,6 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import {
-  FormArray,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-  AbstractControl
-} from '@angular/forms';
+import { Component, ElementRef, OnInit, ViewChild, Input } from '@angular/core';
+import { FormArray, FormBuilder, FormControl } from '@angular/forms';
+import { FormGroup, Validators } from '@angular/forms';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import {
   ActionSheetController,
@@ -21,13 +15,15 @@ import { DocumentViewPageRoutingModule } from 'src/app/pages/document-view/docum
   templateUrl: './edit-workflow.component.html',
   styleUrls: ['./edit-workflow.component.scss'],
 })
-export class AddWorkflowComponent implements OnInit {
+export class EditWorkflowComponent implements OnInit {
   workflowForm: FormGroup;
   private userCount = 1;
   private phaseNumber: number[];
   phases: FormArray;
   file: File;
   addFile: boolean;
+
+  @Input() workflowID: string;
 
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
   constructor(
@@ -39,9 +35,8 @@ export class AddWorkflowComponent implements OnInit {
 
   ngOnInit() {
     this.addFile = false;
-    this.phaseNumber = Array(1)
-      .fill(0)
-      .map((x, i) => i);
+    this.phaseNumber = Array(1).fill(0).map((x, i) => i);
+
     this.workflowForm = this.fb.group({
       workflowName: ['', [Validators.required]],
       workflowDescription: ['', [Validators.required]],
@@ -67,8 +62,10 @@ export class AddWorkflowComponent implements OnInit {
   }
 
   createPhase(): FormGroup {
+    this.userCount = this.userCount + 1;
+    let bobs ='user' +this.userCount;
     return this.fb.group({
-      user1: new FormControl('', [Validators.email, Validators.required]),
+      bobs: new FormControl('', [Validators.email, Validators.required]),
     });
   }
 
@@ -78,7 +75,7 @@ export class AddWorkflowComponent implements OnInit {
     phase.push(this.createPhase());
   }
 
-  removePhase( i: number){
+  removePhase(i: number) {
     this.phaseNumber.pop();
     let phase = this.workflowForm.get('phases') as FormArray;
     phase.removeAt(i);
@@ -109,7 +106,6 @@ export class AddWorkflowComponent implements OnInit {
     this.file = target.files[0];
 
     console.log('file', this.file);
-
   }
 
   submit() {
@@ -117,6 +113,5 @@ export class AddWorkflowComponent implements OnInit {
       document: this.workflowForm.value,
       file: this.file,
     });
-
   }
 }

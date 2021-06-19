@@ -47,9 +47,7 @@
                 <ion-fab-button (click)="viewWorkFlow(doc.document_id, doc.name)">
                   <ion-icon name="arrow-redo-outline"></ion-icon>
                 </ion-fab-button>
-
-<!-- *ngIf="doc.owner_email === user.email" -->
-                <ion-fab-button >
+                <ion-fab-button *ngIf="doc.owner_email === ownerEmail">
                   <ion-icon name="trash" (click)="deleteWorkFlow(doc._id)"></ion-icon>
                 </ion-fab-button>
               </ion-fab-list>
@@ -101,7 +99,7 @@
 
 <ion-footer>
   <ion-tab-bar>
-    <ion-tab-button>
+    <ion-tab-button (click)="toProfilepage()">
       <ion-label>profile</ion-label>
       <ion-icon name="person-circle-outline"></ion-icon>
     </ion-tab-button>
