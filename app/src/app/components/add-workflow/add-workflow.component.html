@@ -22,19 +22,13 @@
         <ion-card-content>
           <form [formGroup]="workflowForm.controls.phases['controls'][i]">
             <ion-item *ngFor="let control of workflowForm.controls.phases['controls'][i].controls | keyvalue">
-              <ion-card>
-                <ion-card-header>
                   <ion-card-title>Add users</ion-card-title>
-                </ion-card-header>
-                <ion-card-content>
                   <ion-input type="text" [formControlName]="control.key"></ion-input>
                   <ion-button expand="full" color="light"
                     (click)="addUser(workflowForm.controls.phases['controls'][i])">Add
-                    User</ion-button>
+                    User   </ion-button>
                   <ion-icon name="close-circle-outline"
                     (click)="removeUser(workflowForm.controls.phases['controls'][i], control)"></ion-icon>
-                </ion-card-content>
-              </ion-card>
             </ion-item>
           </form>
           <ion-button expand="block" color="primary" fill="outline"
