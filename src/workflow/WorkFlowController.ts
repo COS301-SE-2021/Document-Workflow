@@ -62,6 +62,7 @@ export default class WorkFlowController{
             try {
                 res.status(200).json(await this.deleteWorkFlow(req));
             } catch(err){
+                console.log(err);
                 res.status(400).json({status:"error", data:{}, message:err});
             }
         });
