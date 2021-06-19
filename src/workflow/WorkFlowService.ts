@@ -137,9 +137,15 @@ export default class WorkFlowService{
     };
 
     async deleteWorkFlow(req) {
+
         try {
             let workflow_id = req.body.id;
             const workflow = await this.workflowRepository.getWorkFlow(req.body.id);
+            if(workflow == null)
+                return {status: "failed", data: {}, message: "Workflow does not exist"};
+            if(workflow.owner_email !== req.user.email)
+                return {status:"failed", data: {}, message: "Insufficient rights to delete"};
+
             await this.documentService.deleteDocument(workflow_id, workflow.document_id);
             await this.removeOwnedWorkFlowId(workflow.owner_email, workflow_id);
             const phases = workflow.phases;
