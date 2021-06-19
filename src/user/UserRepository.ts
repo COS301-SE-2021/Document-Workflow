@@ -22,7 +22,7 @@ export default class UserRepository {
         try{
             return await usr.save();
         } catch (err) {
-            throw err;
+            throw {status: "failed", data: {}, message:"User email already exists"};
         }
     }
 

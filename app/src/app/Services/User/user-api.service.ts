@@ -52,6 +52,9 @@ export class UserAPIService {
         callback(data);
       }
       else callback({status:'error', message: 'Cannot connect to Server'});
+    }, (error)=>{
+        console.log(error);
+       this.displayPopOver("Error", "An unexpected error occurred, please try again later");
     });
   }
 

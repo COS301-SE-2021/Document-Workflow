@@ -121,7 +121,9 @@ export default class UserController{
             try {
                 res.status(201).json(await this.registerUserRoute(req));
             } catch(err){
-                res.status(400).json(err);
+                console.log("Could not create new user");
+                console.log(err);
+                res.status(200).json(err);
             }
         });
         /*

@@ -139,10 +139,10 @@ export class LoginRegisterPage implements OnInit {
           this.router.navigate(['login']);
         }
         else {
-          this.userAPIService.displayPopOver('Failed to make a new account:','response.message');
+          this.userAPIService.displayPopOver('Failed to make a new account:',response.message);
         }
-        this.loadCtrl.dismiss();
     });
+    await this.loadCtrl.dismiss();
   }
 
   changeOver(): boolean {
