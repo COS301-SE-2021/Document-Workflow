@@ -85,9 +85,7 @@ export default class WorkFlowService{
             for (let email of users) {
                 const users = await this.usersRepository.getUsers({email: email});
                 let user = users[0];
-                console.log(user.workflows);
                 user.workflows.push(workflow_id);
-                console.log(user.workflows);
                 await this.usersRepository.putUser(user);
             }
         }

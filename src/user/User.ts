@@ -21,7 +21,7 @@ export interface UserI{
  * of what our user entries in the database look like. It also validates whether or not a user's email
  * and password are valid.
  * A password is valid iff it contains an uppercase,lowercase and special character as well as being 8 characters long.
- * //TODO: add signature to this list.
+ *
  */
 const userSchema = new Schema<UserI>({
     name: {type: String, required: true},
