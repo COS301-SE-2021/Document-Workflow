@@ -55,7 +55,7 @@ export class AddWorkflowComponent implements OnInit {
     // console.log(this.workflowForm.controls.phases['controls'][0]);
   }
 
-  addUser(form: FormGroup, j: number) {
+  addUser(form: FormGroup) {
     this.userCount = this.userCount + 1;
     form.addControl(
       'user' + this.userCount,
