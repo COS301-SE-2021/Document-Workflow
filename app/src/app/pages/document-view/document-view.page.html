@@ -17,6 +17,18 @@
     >
     </pdf-viewer>
 
+    <ion-fab vertical="top" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="download()">
+        <ion-icon name="download"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+
+    <ion-fab vertical="top" horizontal="start" slot="fixed">
+      <ion-fab-button (click)="back()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
       <ion-fab-button>
         <ion-icon name="search-outline"></ion-icon>
@@ -33,7 +45,7 @@
 
     <ion-fab vertical="bottom" horizontal="center" slot="fixed">
         <ion-fab-button (click)="sign()">
-
+          <ion-icon name="create"></ion-icon>
         </ion-fab-button>
     </ion-fab>
 

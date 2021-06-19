@@ -41,14 +41,14 @@
                 <ion-icon name="arrow-down-outline"></ion-icon>
               </ion-fab-button>
               <ion-fab-list side="bottom">
-                <ion-fab-button (click)="editDoc(doc.document_id)">
+                <ion-fab-button (click)="editWorkflow(doc._id)">
                   <ion-icon name="construct-outline"></ion-icon>
                 </ion-fab-button>
                 <ion-fab-button (click)="viewWorkFlow(doc.document_id, doc.name)">
                   <ion-icon name="arrow-redo-outline"></ion-icon>
                 </ion-fab-button>
                 <ion-fab-button *ngIf="true">
-                  <ion-icon name="trash" (click)="deleteWorkFlow(doc.document_id)"></ion-icon>
+                  <ion-icon name="trash" (click)="deleteWorkFlow(doc._id)"></ion-icon>
                 </ion-fab-button>
               </ion-fab-list>
             </ion-fab>

@@ -8,9 +8,10 @@ import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { ModalController, NavParams, Platform } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DocumentAPIService } from 'src/app/Services/Document/document-api.service';
 import { async } from '@angular/core/testing';
+import { ConfirmSignaturesComponent } from 'src/app/components/confirm-signatures/confirm-signatures.component';
 
 
 @Component({
@@ -32,7 +33,8 @@ export class DocumentViewPage implements OnInit {
     private modalCtrl: ModalController,
     private navpar: NavParams,
     private route: ActivatedRoute,
-    private docApi: DocumentAPIService
+    private docApi: DocumentAPIService,
+    private router: Router
   ) {}
 
   async ngOnInit() {
@@ -46,23 +48,31 @@ export class DocumentViewPage implements OnInit {
     await (this.getDocument(this.id));
   }
 
-  download(url: string, title: string) {
+  download() {
+    let Data = document.getElementById('canvas')!;
+    console.log(Data)
+    // // Canvas Options
+    //   html2canvas(Data).then(canvas => {
+    //       let fileWidth = 210;
+    //       let fileHeight = canvas.height * fileWidth / canvas.width;
 
-  }
-  async writeMyFile(fileData) {
-    console.log(fileData);
-    await Filesystem.writeFile({
-      path: '/temp.pdf',
-      data :  fileData,
-      directory: Directory.Documents,
+    //       const contentDataURL = canvas.toDataURL('image/png')
 
-    });
-    console.log('herre');
+
+    //       let PDF = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4',});
+    //       let topPosition = 10;
+    //       let leftPosition = 0;
+    //       PDF.addImage(contentDataURL, 'PNG', leftPosition, topPosition, fileWidth, fileHeight)
+    //       PDF.save('Graph.pdf');
+    //   });
   }
+
+  back(){
+    this.router.navigate(['home']);
+  }
+
 
   getDocument(id: string){
-    console.log("ABOUT TO FETCH A DOCUMENt");
-    console.log(id);
     this.docApi.getDocument(id, (response)=>{
       if (response){
         console.log(response);
@@ -79,10 +89,8 @@ export class DocumentViewPage implements OnInit {
 
   async sign(){
     const sign = this.modalCtrl.create({
-      component: AddSignatureComponent
+      component: ConfirmSignaturesComponent
     });
-    // const { confirm } = (await sign).onWillDismiss();
-    // console.log(data);
 
    (await sign).present();
 

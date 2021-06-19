@@ -82,17 +82,16 @@ export class WorkflowPage implements OnInit {
 
   async loadWorkFlows() {
     this.userApiService.getAllWorkOwnedFlows((response) => {
-      console.log("Got owned workflows");
-      console.log(response);
       if (response.status === 'success') {
         for (let i = 0; i < response.data.length; i++) {
           let tmpDoc: documentImage;
           tmpDoc = response.data[i];
-          this.documents.push(tmpDoc);
-          console.log('document' + tmpDoc);
+          if(tmpDoc != null){
+            this.documents.push(tmpDoc);
+          }
         }
       } else {
-        alert('workflow not found');
+        this.userApiService.displayPopOver('Error', 'unexpected error occured');
       }
     });
     this.userApiService.getAllWorkFlows((response) => {
@@ -102,16 +101,19 @@ export class WorkflowPage implements OnInit {
         for (let i = 0; i < response.data.length; i++) {
           let tmpDoc: documentImage;
           tmpDoc = response.data[i];
-          this.documents.push(tmpDoc);
+          if(tmpDoc != null){
+            this.documents.push(tmpDoc);
+          }
         }
       } else {
-        alert('workflow not found');
+        this.userApiService.displayPopOver('Error', 'unexpected error occured');
       }
     });
-    console.log('all doc');
-    console.log(this.documents);
   }
 
+  async editWorkflow(id_ : string){
+
+  }
 
   async addWorkflow() {
     const addModal = await this.modals.create({
@@ -141,13 +143,15 @@ export class WorkflowPage implements OnInit {
       };
       this.workFlowService.createWorkflow(workflowData, phases, file, (response) => {
         if (response.status === 'success') {
-          this.userApiService.displayPopOver('Congrats', 'Workflow has been created');
+          this.userApiService.displayPopOver('Success', 'Workflow has been created');
         } else {
           console.log(response);
           this.userApiService.displayPopOver('Unexpected failure', 'Workflow has not been created');
         }
+        location.reload();
       });
     });
+
   }
 
   viewWorkFlow(id: string, name: string) {
