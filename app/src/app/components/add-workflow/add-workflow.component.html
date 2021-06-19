@@ -18,15 +18,19 @@
       <ion-card>
         <ion-card-header>
           <ion-card-title>Phase {{i+1}}</ion-card-title>
+          <ion-fab vertical="top" horizontal="end" >
+            <ion-fab-button mini (click)="addUser(workflowForm.controls.phases['controls'][i])">
+              <ion-icon  name="add-circle-outline"></ion-icon>
+            </ion-fab-button>
+          </ion-fab>
         </ion-card-header>
         <ion-card-content>
           <form [formGroup]="workflowForm.controls.phases['controls'][i]">
             <ion-item *ngFor="let control of workflowForm.controls.phases['controls'][i].controls | keyvalue; let j = index">
+                <ion-card-header>
                   <ion-card-title>Add users</ion-card-title>
+                </ion-card-header>
                   <ion-input type="text" [formControlName]="control.key"></ion-input>
-                  <ion-button expand="full" color="light"
-                    (click)="addUser(workflowForm.controls.phases['controls'][i], j)">Add
-                    User   </ion-button>
                   <ion-icon name="close-circle-outline"
                     (click)="removeUser(workflowForm.controls.phases['controls'][i], control)"></ion-icon>
             </ion-item>
@@ -52,3 +56,7 @@
       workflow</ion-button>
   </form>
 </ion-content>
+
+<!-- <ion-button expand="full" color="light"
+(click)="addUser(workflowForm.controls.phases['controls'][i], j)">Add
+User   </ion-button> -->

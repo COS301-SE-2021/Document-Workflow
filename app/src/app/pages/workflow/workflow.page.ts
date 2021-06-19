@@ -81,20 +81,20 @@ export class WorkflowPage implements OnInit {
   }
 
   async loadWorkFlows() {
-    // this.userApiService.getAllWorkOwnedFlows((response) => {
-    //   console.log("Got owned workflows");
-    //   console.log(response);
-    //   if (response.status === 'success') {
-    //     for (let i = 0; i < response.data.length; i++) {
-    //       let tmpDoc: documentImage;
-    //       tmpDoc = response.data[i];
-    //       this.documents.push(tmpDoc);
-    //       console.log('document' + tmpDoc);
-    //     }
-    //   } else {
-    //     alert('workflow not found');
-    //   }
-    // });
+    this.userApiService.getAllWorkOwnedFlows((response) => {
+      console.log("Got owned workflows");
+      console.log(response);
+      if (response.status === 'success') {
+        for (let i = 0; i < response.data.length; i++) {
+          let tmpDoc: documentImage;
+          tmpDoc = response.data[i];
+          this.documents.push(tmpDoc);
+          console.log('document' + tmpDoc);
+        }
+      } else {
+        alert('workflow not found');
+      }
+    });
     this.userApiService.getAllWorkFlows((response) => {
       console.log("Got normal workflows");
       console.log(response);
