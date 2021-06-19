@@ -136,27 +136,30 @@ export default class WorkFlowService{
     };
 
     async deleteWorkFlow(req) {
-
+        console.log("Attempting to delete workflow");
+        console.log(req.body);
         try {
             let workflow_id = req.body.id;
             const workflow = await this.workflowRepository.getWorkFlow(req.body.id);
-            if(workflow == null)
+            console.log(workflow);
+            if(workflow === null)
                 return {status: "failed", data: {}, message: "Workflow does not exist"};
             if(workflow.owner_email !== req.user.email)
                 return {status:"failed", data: {}, message: "Insufficient rights to delete"};
 
             await this.documentService.deleteDocument(workflow_id, workflow.document_id);
+            console.log("Document and metadata deleted");
             await this.removeOwnedWorkFlowId(workflow.owner_email, workflow_id);
             const phases = workflow.phases;
             for(let i=0; i<phases.length; ++i){
                 const phase = phases[i];
-                for(let k=0; k<phases.length; ++k)
+                for(let k=0; k<phase.length; ++k)
                     await this.removeWorkFlowId(phase[k], workflow_id);
             }
 
         }
         catch(e){
-            throw "An error occurred";
+            throw e;
         }
 
         return {status: "success", data:{}, message:""};

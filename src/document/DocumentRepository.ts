@@ -82,7 +82,9 @@ export default class DocumentRepository {
 
     async deleteDocument(id){
         try {
-            Document.deleteOne({_id: id});
+            const doc = await Document.findById(id);
+            if(!doc === null)
+                await Document.deleteOne({_id: id});
         }
         catch(err){
             throw 'Could not delete fileMetadata';

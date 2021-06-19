@@ -37,7 +37,7 @@ export default class DocumentService {
     async deleteDocument(workflow_id, document_id){
         console.log("Deleting document from CLoud server");
         await this.documentRepository.deleteDocumentFromS3(workflow_id);
-        console.log("deleting document from metadata database");
+        console.log("deleting document from metadata database ", document_id);
         await this.documentRepository.deleteDocument(document_id);
     }
 
