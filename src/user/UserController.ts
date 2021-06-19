@@ -5,6 +5,8 @@ import User from "./User";
 import Authentication from "../auth/Authentication";
 import { sanitize } from "mongo-sanitize";
 import RequestError from "../error/RequestError";
+import ServerError from "../error/ServerError";
+import AuthenticationError from "../error/AuthenticationError";
 
 @autoInjectable()
 export default class UserController{
@@ -15,7 +17,13 @@ export default class UserController{
     }
 
     async auth(req, res, next) {
-        await this.authentication.auth(req,res,next);
+        try {
+            await this.authentication.auth(req,res,next);
+        }
+        catch(err){
+            throw err;
+        }
+
     }
 
     async sanitize(req, res, next){
@@ -31,7 +39,7 @@ export default class UserController{
         try{
             return await this.userService.getAllUsers();
         } catch(err) {
-            throw err;
+            throw new ServerError(err.toString());
         }
     }
 
@@ -39,7 +47,7 @@ export default class UserController{
         try{
             return await this.userService.getUserById(request);
         }catch(err) {
-            throw err;
+            throw new ServerError(err.toString());
         }
     }
 
@@ -47,17 +55,16 @@ export default class UserController{
         try{
             return await this.userService.getUserByEmail(request);
         }catch(err) {
-            throw err;
+            throw new ServerError(err.toString());
         }
     }
 
-    async registerUserRoute(request) :Promise<User>{
+    async registerUserRoute(request): Promise<User>{
         try{
             return await this.userService.registerUser(request)
         }
-        catch(err)
-        {
-            throw err;
+        catch(err){
+            throw new ServerError(err.toString());
         }
     }
 
@@ -66,18 +73,16 @@ export default class UserController{
             return await this.userService.verifyUser(request);
         }
         catch(err){
-            throw err;
+            throw new ServerError(err.toString());
         }
     }
 
     async loginUserRoute(request): Promise<User> {
-
         try {
             return await this.userService.loginUser(request);
         }
         catch(err){
-            console.log(err);
-            throw err;
+            throw new ServerError(err.toString());
         }
     }
 
@@ -86,7 +91,7 @@ export default class UserController{
             return await this.userService.logoutUser(request);
         }
         catch(err){
-            throw err;
+            throw new ServerError(err.toString());
         }
     }
 
@@ -94,7 +99,7 @@ export default class UserController{
         try{
             return await this.userService.deleteUser(request);
         }catch(err){
-            throw err;
+            throw new ServerError(err.toString());
         }
     }
 
@@ -103,17 +108,38 @@ export default class UserController{
             return await this.userService.updateUser(request);
         }
         catch(err){
-            throw err;
+            throw new ServerError(err.toString());
         }
 
+    }
+
+    handleErrors(err: Error, res){
+        if(err instanceof RequestError){
+            res.status(400).send(err.message);
+        }
+        else if(err instanceof AuthenticationError){
+            res.status(401).send(err.message);
+        }
+        else{
+            console.error(err);
+            res.status(500).end();
+        }
     }
 
     routes() {
         this.router.get("", this.auth, async (req, res) => {
             try {
-                res.status(200).json(await this.getUsersRoute());
+                const users = await this.getUsersRoute();
+                if(users) res.status(200).json(users);
+                else res.status(404).send();
             } catch(err){
-                res.status(400).json(err);
+                if(err instanceof RequestError){
+                    res.status(400).send(err.message);
+                }
+                else{
+                    console.error(err);
+                    res.status(500).end();
+                }
             }
         });
 
@@ -121,88 +147,78 @@ export default class UserController{
             try {
                 res.status(200).json(await this.verifyUserRoute(req));
             } catch(err){
-                res.status(400).json(err);
+                this.handleErrors(err,res);
             }
         });
 
         this.router.get("/:id", this.auth , async (req, res) => {
             try {
-                res.status(200).json(await this.getUserByIdRoute(req));
+                const user = await this.getUserByIdRoute(req);
+                if(user) res.status(200).json(user);
+                else res.status(404).send("Could not find User");
             } catch(err){
-                if(err instanceof URIError){
-                    res.status(400).json("id field is required");
-                } else {
-                    res.status(400).json(err);
-                }
-
+                this.handleErrors(err,res);
             }
         });
 
         this.router.get("/:email", async (req, res) => {
             try {
-                res.status(200).json(await this.getUserByEmailRoute(req));
+                const user = await this.getUserByEmailRoute(req);
+                if(user) res.status(200).json(user);
+                else res.status(404).send("Could not find User");
             } catch(err){
-                if(err instanceof URIError){
-                    res.status(400).json("id field is required");
-                } else {
-                    res.status(400).json(err);
-                }
-
+                this.handleErrors(err,res);
             }
         });
 
         this.router.post("/login" , this.sanitize, async (req,res) => {
             try {
-                let token = await this.loginUserRoute(req);
-                if(token){
-                    res.status(200).json(
-                        {status: "Success", data:{}, message: token}
-                    )
-                } else {
-                    res.status(400).send("Could not log in user");
-                }
-            } catch(err){ //Lets assume that we throw the error message up to here.
-                res.status(400).json({status: "Failed", data:{}, message: err});
+                const token = await this.loginUserRoute(req);
+                if(token) res.status(200).json({status: "Success", data:{}, message: token})
+                else res.status(400).send("Could not log in user");
+            } catch(err){
+                this.handleErrors(err,res);
             }
         });
 
         this.router.post("/logout", this.auth, async (req,res) => {
             try{
-                await this.logoutUserRoute(req);
-                res.status(200).send();
+                const user = await this.logoutUserRoute(req);
+                if(user) res.status(200).send("Successfully logged out");
+                else res.status(400).send("User could not be logged out");
             }
             catch(err){
-                res.status(500).json(err).send();
+                this.handleErrors(err,res);
             }
         });
 
         this.router.post("/register", this.sanitize, async (req,res) => {
             try {
-                //returns JWT if successful:
-                res.status(201).json({message: await this.registerUserRoute(req)});
+                const user = await this.registerUserRoute(req);
+                if(user) res.status(201).json(user);
+                else res.status(400).send("Could not register User");
             } catch(err){
-                res.status(400).json(err);
+                this.handleErrors(err,res);
             }
         });
 
         this.router.put("/:id", this.sanitize, this.auth , async (req, res) => {
             try {
-                res.status(200).json(await this.updateUserRoute(req));
+                const user = await this.updateUserRoute(req);
+                if(user) res.status(200).json(user);
+                else res.status(400).send("Could not update User");
             } catch(err){
-                if(err instanceof RequestError){
-                    res.status(400).json("id field is required");
-                } else {
-                    res.status(400).json(err);
-                }
-
+                this.handleErrors(err,res);
             }
         });
 
         this.router.delete("", this.auth, async (req, res) => {
             try {
-                res.status(203).json(await this.deleteUserRoute(req)).send();
+                const user = await this.deleteUserRoute(req);
+                if(user) res.status(203).json(user);
+                else res.status(404).send("User does not exist");
             } catch(err){
-                res.status(400);
+                this.handleErrors(err,res);
             }
         });
 
