@@ -24,6 +24,7 @@ import { ConfirmDeleteWorkflowComponent } from 'src/app/components/confirm-delet
 })
 export class WorkflowPage implements OnInit {
   documents: documentImage[] = [];
+  ownerEmail: string;
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   @Input() user: User;
@@ -59,8 +60,8 @@ export class WorkflowPage implements OnInit {
 
     (await deleteMod).present();
     (await deleteMod).onDidDismiss().then(async (data) => {
-      const hello = (await data).data['confirm'];
-      if (hello){
+      const result = (await data).data['confirm'];
+      if (result){
         //then delete
         this.userApiService.displayPopOver("Deletion of workflow", 'Workflow has been successfully deleted');
       }else{
@@ -70,19 +71,20 @@ export class WorkflowPage implements OnInit {
   }
 
   async loadWorkFlows() {
-    this.userApiService.getAllWorkOwnedFlows((response) => {
-      console.log("Got owned workflows");
-      console.log(response);
-      if (response.status === 'success') {
-        for (let i = 0; i < response.data.length; i++) {
-          let tmpDoc: documentImage;
-          tmpDoc = response.data[i];
-          this.documents.push(tmpDoc);
-        }
-      } else {
-        alert('workflow not found');
-      }
-    });
+    // this.userApiService.getAllWorkOwnedFlows((response) => {
+    //   console.log("Got owned workflows");
+    //   console.log(response);
+    //   if (response.status === 'success') {
+    //     for (let i = 0; i < response.data.length; i++) {
+    //       let tmpDoc: documentImage;
+    //       tmpDoc = response.data[i];
+    //       this.documents.push(tmpDoc);
+    //       console.log('document' + tmpDoc);
+    //     }
+    //   } else {
+    //     alert('workflow not found');
+    //   }
+    // });
     this.userApiService.getAllWorkFlows((response) => {
       console.log("Got normal workflows");
       console.log(response);
@@ -96,6 +98,7 @@ export class WorkflowPage implements OnInit {
         alert('workflow not found');
       }
     });
+    console.log('all doc');
     console.log(this.documents);
   }
 

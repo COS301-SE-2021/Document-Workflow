@@ -54,8 +54,8 @@ export class LoginRegisterPage implements OnInit {
 
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
-      loginEmail: ['bstroberg123@gmail.com', [Validators.required, Validators.email]],
-      loginPassword: ['submarine', [Validators.required, Validators.minLength(8)]],
+      loginEmail: ['johnaldweasely2@gmail.com', [Validators.required, Validators.email]],
+      loginPassword: ['!Password123', [Validators.required, Validators.minLength(8)]],
     });
     const formOptions: AbstractControlOptions = {
       validators: match('password', 'confirmPassword'),
@@ -88,13 +88,15 @@ export class LoginRegisterPage implements OnInit {
       email: this.loginForm.value.loginEmail,
       password : this.loginForm.value.loginPassword
     };
+    console.log(loginData);
     this.userAPIService.login(loginData, (response)=>{
         if(response.status === 'success'){
           localStorage.setItem('token', response.data.token);
-          alert('Login Successful');
+          this.userAPIService.displayPopOver('Success', "login was successful");
           this.router.navigate(['home']);
         }
         else{
+          console.log(response);
           this.userAPIService.displayPopOver('Failure in logging in', 'Email or password is incorrect')
         }
     });
@@ -133,11 +135,11 @@ export class LoginRegisterPage implements OnInit {
     this.userAPIService.register(user, this.file, (response)=>{
         if(response.status === 'success')
         {
-          alert('Successfully created new user account, check your email for account verification');
-          this.router.navigate(['home']);
+          this.userAPIService.displayPopOver('Successfully created new user account','check your email for account verification')
+          this.router.navigate(['login']);
         }
         else {
-          alert('Failed to make a new account: ' + response.message);
+          this.userAPIService.displayPopOver('Failed to make a new account:','response.message');
         }
         this.loadCtrl.dismiss();
     });
@@ -176,17 +178,17 @@ export class LoginRegisterPage implements OnInit {
       });
     }
 
-    if (!this.plat.is('hybrid')) {
-      console.log('here');
-      buttons.push({
-          text: 'Edit Signature',
-          icon: 'edit',
-          handler: () => {
-            this.router.navigate(['addSignature']);
-          },
-        }
-      );
-    }
+    // if (!this.plat.is('hybrid')) {
+    //   console.log('here');
+    //   buttons.push({
+    //       text: 'Edit Signature',
+    //       icon: 'edit',
+    //       handler: () => {
+    //         this.router.navigate(['addSignature']);
+    //       },
+    //     }
+    //   );
+    // }
 
     const actionSheet = await this.actionSheetController.create({
       header: 'Select Image Source',

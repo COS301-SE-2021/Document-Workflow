@@ -164,6 +164,7 @@ export default class UserService {
             throw new Error("Could not log in");
         }
         let user = await this.userRepository.getUser({"email": req.body.email});
+        console.log(user);
         if(user == null)
             throw new Error("Email or password incorrect");
         if(user.validated){
@@ -211,7 +212,5 @@ export default class UserService {
 
         return {status:"success", data: workflows, message:""};
     }
-
-
 }
 

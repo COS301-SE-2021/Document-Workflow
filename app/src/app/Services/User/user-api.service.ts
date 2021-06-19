@@ -49,7 +49,6 @@ export class UserAPIService {
     formData.append('signature', file);
     this.http.post(UserAPIService.url + '/users', formData).subscribe(data =>{ //TODO: change url
       if(data) {
-
         callback(data);
       }
       else callback({status:'error', message: 'Cannot connect to Server'});
@@ -123,5 +122,7 @@ export class UserAPIService {
     console.log( a );
    }
 
+   public getUser(){
 
+   }
 }
