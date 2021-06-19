@@ -154,7 +154,8 @@ export default class WorkFlowService{
             for(let i=0; i<phases.length; ++i){
                 const phase = phases[i];
                 for(let k=0; k<phase.length; ++k)
-                    await this.removeWorkFlowId(phase[k], workflow_id);
+                    if(phase[k] != workflow.owner_email)
+                        await this.removeWorkFlowId(phase[k], workflow_id);
             }
             console.log("Workflow ID removed from all participants");
             await this.workflowRepository.deleteWorkFlow(workflow_id);
@@ -175,8 +176,8 @@ export default class WorkFlowService{
 
     async removeWorkFlowId(email, id){
         let user = await this.usersRepository.getUser({email:email});
-        const index = user.workflows.indexOf(id);
-        user.workflows.splice(index, 1);
+        const index = user.owned_workflows.indexOf(id);
+        user.owned_workflows.splice(index, 1);
         await this.usersRepository.putUser(user);
     }
 }
