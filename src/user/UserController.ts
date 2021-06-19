@@ -74,6 +74,15 @@ export default class UserController{
         }
     }
 
+    private async getUserDetails(req) {
+        try{
+            return await this.userService.getUserDetails(req);
+        }
+        catch(err){
+            throw err;
+        }
+    }
+
     private async retrieveOwnedWorkFlows(req):Promise<any> {
         try{
             return await this.userService.retrieveOwnedWorkFlows(req);
@@ -156,6 +165,14 @@ export default class UserController{
             }
         });
 
+        this.router.post("/getDetails", this.Authenticate, async (req,res) => {
+            try {
+                res.status(200).json(await this.getUserDetails(req));
+            } catch(err){
+                res.status(400).json({status: "failed", data:{}, message: err.message});
+            }
+        });
+
         this.router.get("/verify", async(req,res) =>{
             try {
                 res.status(200).json(await this.verifyUserRoute(req));
@@ -178,14 +195,12 @@ export default class UserController{
         });
 
 
-
         this.router.post("/authenticate", this.Authenticate, async (req,res) =>{ //This route is used by the front end to forbid access to certain pages.
             res.status(200).json({status:"success", data:{}, message:""});
         });
 
         return this.router;
     }
-
 
 
 }

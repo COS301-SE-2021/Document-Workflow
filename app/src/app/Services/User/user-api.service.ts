@@ -73,7 +73,7 @@ export class UserAPIService {
     }
   }
 
-  public getAllWorkOwnedFlows(callback) {
+  public getAllWorkOwnedFlows(callback) { //TODO: change this function name. Made it when I was tired.
     console.log('Getting all owned workflows');
     const formData = new FormData();
     //formData.append('email', email);

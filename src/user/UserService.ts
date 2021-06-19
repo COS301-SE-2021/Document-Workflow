@@ -212,5 +212,24 @@ export default class UserService {
 
         return {status:"success", data: workflows, message:""};
     }
+
+    async getUserDetails(req) {
+        try{
+            let user = await this.userRepository.getUser({email: req.user.email});
+            const data = {
+                name: user.name,
+                surname: user.surname,
+                initials: user.initials,
+                email: user.email,
+                signature: user.signature,
+                owned_workflows: user.owned_workflows,
+                workflows: user.workflows
+            };
+            return {status: "success", data: data, message:""};
+        }
+        catch(err){
+            throw "Could not fetch user details";
+        }
+    }
 }
 
