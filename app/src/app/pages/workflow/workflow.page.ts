@@ -64,10 +64,8 @@ export class WorkflowPage implements OnInit {
   async getUser(){
      this.userApiService.getUserDetails(async (response)=>{
       if(response){
-        console.log(response);
         this.user = response.data;
         this.ownerEmail = this.user.email;
-        console.log(this.ownerEmail);
       } else{
         this.userApiService.displayPopOver('Error', 'Cannot find user')
       }

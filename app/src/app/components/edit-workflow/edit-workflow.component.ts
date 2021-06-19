@@ -9,7 +9,8 @@ import {
 } from '@ionic/angular';
 
 import { DocumentViewPageRoutingModule } from 'src/app/pages/document-view/document-view-routing.module';
-
+import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
+import { ReactiveFormsModule } from '@angular/forms';
 @Component({
   selector: 'app-edit-workflow',
   templateUrl: './edit-workflow.component.html',
@@ -22,6 +23,7 @@ export class EditWorkflowComponent implements OnInit {
   phases: FormArray;
   file: File;
   addFile: boolean;
+  ready = false;
 
   @Input() workflowID: string;
 
@@ -30,21 +32,35 @@ export class EditWorkflowComponent implements OnInit {
     private plat: Platform,
     private fb: FormBuilder,
     private actionSheetController: ActionSheetController,
-    private modal: ModalController
+    private modal: ModalController,
+    private workflowServices: WorkFlowService
   ) {}
 
-  ngOnInit() {
-    this.addFile = false;
-    this.phaseNumber = Array(1).fill(0).map((x, i) => i);
+  async ngOnInit() {
+    await this.workflowServices.getWorkFlowData(this.workflowID, async  (response) => {
+      if (response) {
 
-    this.workflowForm = this.fb.group({
-      workflowName: ['', [Validators.required]],
-      workflowDescription: ['', [Validators.required]],
-      phases: this.fb.array([
-        this.fb.group({
-          user1: new FormControl('', [Validators.email, Validators.required]),
-        }),
-      ]),
+       let data = await response.data;
+        console.log(data);
+        this.phaseNumber = Array(1)
+          .fill(0)
+          .map((x, i) => i);
+
+        this.workflowForm = this.fb.group({
+          workflowName: [data.name, [Validators.required]],
+          workflowDescription: ['', [Validators.required]],
+          phases: this.fb.array([
+            this.fb.group({
+              user1: new FormControl('', [
+                Validators.email,
+                Validators.required,
+              ]),
+            }),
+          ]),
+        });
+        this.ready = true;
+      } else {
+      }
     });
     // console.log(this.workflowForm.controls.phases['controls'][0]);
   }
@@ -63,7 +79,7 @@ export class EditWorkflowComponent implements OnInit {
 
   createPhase(): FormGroup {
     this.userCount = this.userCount + 1;
-    let bobs ='user' +this.userCount;
+    let bobs = 'user' + this.userCount;
     return this.fb.group({
       bobs: new FormControl('', [Validators.email, Validators.required]),
     });
@@ -106,6 +122,15 @@ export class EditWorkflowComponent implements OnInit {
     this.file = target.files[0];
 
     console.log('file', this.file);
+  }
+
+  async getData() {
+    this.workflowServices.getWorkFlowData(this.workflowID, (response) => {
+      if (response) {
+        console.log(response.data);
+      } else {
+      }
+    });
   }
 
   submit() {
