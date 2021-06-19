@@ -21,11 +21,11 @@
         </ion-card-header>
         <ion-card-content>
           <form [formGroup]="workflowForm.controls.phases['controls'][i]">
-            <ion-item *ngFor="let control of workflowForm.controls.phases['controls'][i].controls | keyvalue">
+            <ion-item *ngFor="let control of workflowForm.controls.phases['controls'][i].controls | keyvalue; let j = index">
                   <ion-card-title>Add users</ion-card-title>
                   <ion-input type="text" [formControlName]="control.key"></ion-input>
                   <ion-button expand="full" color="light"
-                    (click)="addUser(workflowForm.controls.phases['controls'][i])">Add
+                    (click)="addUser(workflowForm.controls.phases['controls'][i], j)">Add
                     User   </ion-button>
                   <ion-icon name="close-circle-outline"
                     (click)="removeUser(workflowForm.controls.phases['controls'][i], control)"></ion-icon>
@@ -48,7 +48,7 @@
       <ion-button (click)="selectImageSource()">Add</ion-button>
     </ion-item>
 
-    <ion-button expand="block" color="primary" fill="outline" [disabled]="!workflowForm.valid || addFile" type="submit">Add
+    <ion-button expand="block" color="primary" fill="outline" [disabled]="!workflowForm.valid" type="submit">Add
       workflow</ion-button>
   </form>
 </ion-content>

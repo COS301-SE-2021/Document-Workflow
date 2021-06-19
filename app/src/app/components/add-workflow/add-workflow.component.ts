@@ -58,7 +58,7 @@ export class AddWorkflowComponent implements OnInit {
   addUser(form: FormGroup, j: number) {
     this.userCount = this.userCount + 1;
     form.addControl(
-      'user' + j,
+      'user' + this.userCount,
       new FormControl('', [Validators.email, Validators.required])
     );
   }
@@ -110,7 +110,7 @@ export class AddWorkflowComponent implements OnInit {
     this.file = target.files[0];
 
     console.log('file', this.file);
-    this.addFile = true;
+
   }
 
   submit() {
