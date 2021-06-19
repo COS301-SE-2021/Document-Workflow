@@ -69,6 +69,8 @@ export class UserAPIService {
         if (data) {
           callback(data);
         } else callback({status: 'error', message: 'Cannot connect to Server'});
+      }, (error)=>{
+        this.displayPopOver('Error user-api-services - login', error);
       });
     }
     catch(e){
@@ -90,7 +92,7 @@ export class UserAPIService {
           callback(data);
         } else callback({status: 'error', message: 'Cannot connect to Server'});
         }, (error) =>{
-        console.log(error);
+          this.displayPopOver('Error user-api-services - getAllWorkOwnedFlows', error);
       });
   }
 
@@ -107,6 +109,7 @@ export class UserAPIService {
           callback(data);
         } else callback({status: 'error', message: 'Cannot connect to Server'});
       }, error =>{
+        this.displayPopOver('Error user-api-services - getAllWorkFlows', error);
       });
     }
 
@@ -137,10 +140,12 @@ export class UserAPIService {
          callback(data);
        } else callback({status: 'error', message: 'Cannot connect to Server'});
      }, error =>{
+      this.displayPopOver('Error user-api-services - getUserDetails', error);
      });
    }
 
-   public getUser(){
-
+   logout(){
+     localStorage.removeItem('token')
    }
+
 }

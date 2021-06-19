@@ -12,7 +12,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DocumentAPIService } from 'src/app/Services/Document/document-api.service';
 import { async } from '@angular/core/testing';
 import { ConfirmSignaturesComponent } from 'src/app/components/confirm-signatures/confirm-signatures.component';
-
+import jsPDF from 'jspdf'
+import html2canvas from 'html2canvas'
 
 @Component({
   selector: 'app-document-view',
@@ -49,22 +50,17 @@ export class DocumentViewPage implements OnInit {
   }
 
   download() {
-    let Data = document.getElementById('canvas')!;
-    console.log(Data)
-    // // Canvas Options
-    //   html2canvas(Data).then(canvas => {
-    //       let fileWidth = 210;
-    //       let fileHeight = canvas.height * fileWidth / canvas.width;
-
-    //       const contentDataURL = canvas.toDataURL('image/png')
+    const blob = new Blob([this.srcFile], {type: 'application/pdf'});
+    const objUrl = URL.createObjectURL(blob);
 
 
-    //       let PDF = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4',});
-    //       let topPosition = 10;
-    //       let leftPosition = 0;
-    //       PDF.addImage(contentDataURL, 'PNG', leftPosition, topPosition, fileWidth, fileHeight)
-    //       PDF.save('Graph.pdf');
-    //   });
+    var link = document.createElement('a');
+    link.href = objUrl;
+    link.download = this.docName;
+    document.body.appendChild(link);
+
+    link.click();
+    link.remove();
   }
 
   back(){

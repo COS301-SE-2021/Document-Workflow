@@ -25,9 +25,9 @@ import { ConfirmDeleteWorkflowComponent } from 'src/app/components/confirm-delet
 export class WorkflowPage implements OnInit {
   documents: documentImage[] = [];
   ownerEmail: string;
-
+  user: User;
   // eslint-disable-next-line @typescript-eslint/member-ordering
-  @Input() user: User;
+
 
   constructor(
     private docService: DocumentAPIService,
@@ -42,6 +42,8 @@ export class WorkflowPage implements OnInit {
   }
 
   async ngOnInit() {
+
+    console.log(this.user)
     const load = await this.loadctrl.create({
       message: 'Hang in there... we are almost done',
       duration: 5000,
@@ -160,6 +162,11 @@ export class WorkflowPage implements OnInit {
       id,
       documentname: name
     }]);
+  }
+
+  logout(){
+    this.userApiService.logout();
+    this.router.navigate(['login']);
   }
 }
 
