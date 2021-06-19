@@ -20,15 +20,13 @@ export default class WorkFlowService{
      * @param req
      */
     async createWorkFlow(req) :Promise<any>{
-        console.log(req);
 
-        //Before we can create any workflow, we will have to do some validation
-        if(req.body.members == undefined)
-            req.body.members = [];
-        if(typeof(req.body.members) == 'string')
-            req.body.members = [req.body.members]
-        let users_exist = await this.checkUsersExist(req.body.members)
+        const phases = this.stringIntoPhasesArray(req.body.phases);
+        req.body.phases = phases;
+        console.log(req.body.phases);
+        console.log(phases);
 
+        await this.checkUsersExist(phases);
         //Now that validation is complete we can create the workflow
         try{
             const workflow : WorkFlowI = {
@@ -38,7 +36,7 @@ export default class WorkFlowService{
                 owner_email: req.user.email,
                 document_id: null,
                 document_path: req.files.document.name,
-                members: req.body.members
+                phases: req.body.phases
             }
             let workflow_id = await this.workflowRepository.postWorkFlow(workflow);
             let document_id = await this.documentService.uploadDocument(req.files.document, workflow_id);
@@ -54,41 +52,47 @@ export default class WorkFlowService{
 
             console.log("Workflow successfully updated, adding id to the members of the workflow");
             await this.addWorkFlowIdToOwnedWorkflows(req.user.email, workflow_id);
-            return "New workflow successfully created";
+            await this.addWorkFlowIdToUsersWorkflows(req.body.phases, workflow_id);
+            return {status:'success', data:{}, message:''};
         }
         catch(err) {
+            console.log(err);
             throw err;
         }
     }
 
     //---------------------------------------Create Workflow Helper functions----------------------------------
 
-    async checkUsersExist(users):Promise<boolean>{
+    async checkUsersExist(phases):Promise<boolean>{
         console.log("Checking if users exist");
-        if(users.length == 0)
+        if(phases.length == 0)
             return true;
-        for (let email of users)
-        {
-            const result = await this.usersRepository.getUsers({email: email});
-            if(result.length == 0) {
-                console.log("User " + email + " does not exist")
-                throw "User " + email + " does not exist";
+        for(let i =0; i<phases.length; ++i) {
+            let users = phases[i];
+            for (let email of users) {
+                const result = await this.usersRepository.getUsers({email: email});
+                if (result.length == 0) {
+                    console.log("User " + email + " does not exist")
+                    throw "User " + email + " does not exist";
+                }
             }
         }
 
         return true;
     }
 
-    async addWorkFlowIdToUsersWorkflows(users, workflow_id):Promise<void>
+    async addWorkFlowIdToUsersWorkflows(phases, workflow_id):Promise<void>
     {
-        for (let email of users)
-        {
-            const users = await this.usersRepository.getUsers({email: email});
-            let user = users[0];
-            console.log(user.workflows);
-            user.workflows.push(workflow_id);
-            console.log(user.workflows);
-            await this.usersRepository.putUser(user);
+        for(let i=0; i<phases.length; ++i) {
+            let users = phases[i];
+            for (let email of users) {
+                const users = await this.usersRepository.getUsers({email: email});
+                let user = users[0];
+                console.log(user.workflows);
+                user.workflows.push(workflow_id);
+                console.log(user.workflows);
+                await this.usersRepository.putUser(user);
+            }
         }
     }
 
@@ -114,9 +118,24 @@ export default class WorkFlowService{
             name: workflow.name,
             owner_email: workflow.owner_email,
             document_path: workflow.document_path,
-            members: workflow.members
+            phases: workflow.phases
         };
 
         return {status:"success", data: data, message:""};
     }
+
+    private stringIntoPhasesArray(str: string): any[]{
+
+        let arr = str.split(']');
+        let result = [];
+
+        for(let i=0; i<arr.length-1; ++i)
+        {
+            let sub_array= (arr[i].replace('[','').split(' '));
+            if(sub_array.length !=0)
+                result.push(sub_array);
+        }
+
+        return result;
+    };
 }
