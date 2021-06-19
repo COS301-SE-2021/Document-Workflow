@@ -157,20 +157,6 @@ export class LoginRegisterPage implements OnInit {
 
   async selectImageSource() {
     const buttons = [
-      // {
-      //   text: 'Take Photo',
-      //   icon: 'camera',
-      //   handler: () => {
-      //     this.addSignature(CameraSource.Camera);
-      //   },
-      // },
-      // {
-      //   text: 'Choose from photo library',
-      //   icon: 'image',
-      //   handler: () => {
-      //     this.addSignature(CameraSource.Photos);
-      //   },
-      // },
       {
         text: 'Draw your signature',
         icon: 'create',
