@@ -49,7 +49,7 @@ export default class WorkFlowService{
 
             console.log("Workflow successfully updated, adding id to the members of the workflow");
             await this.addWorkFlowIdToOwnedWorkflows(req.user.email, workflow_id);
-            await this.addWorkFlowIdToUsersWorkflows(req.body.phases, workflow_id);
+            await this.addWorkFlowIdToUsersWorkflows(req.body.phases, workflow_id, req.user.email);
             return {status:'success', data:{}, message:''};
         }
         catch(err) {
@@ -78,14 +78,15 @@ export default class WorkFlowService{
         return true;
     }
 
-    async addWorkFlowIdToUsersWorkflows(phases, workflow_id):Promise<void>
+    async addWorkFlowIdToUsersWorkflows(phases, workflow_id, owner_email):Promise<void>
     {
         for(let i=0; i<phases.length; ++i) {
             let users = phases[i];
             for (let email of users) {
                 const users = await this.usersRepository.getUsers({email: email});
                 let user = users[0];
-                user.workflows.push(workflow_id);
+                if(user.email != owner_email && !user.workflows.include(workflow_id))
+                    user.workflows.push(workflow_id);
                 await this.usersRepository.putUser(user);
             }
         }
