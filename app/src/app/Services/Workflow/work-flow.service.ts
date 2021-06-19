@@ -50,4 +50,22 @@ export class WorkFlowService {
     }, error =>{
     });
   }
+
+  public async deleteWorkFlow(workflow_id, callback){
+    const formData = new FormData();
+    formData.append('id', workflow_id);
+
+    const token = localStorage.getItem('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: ('Bearer ' + token)
+    });
+
+    this.http.post(WorkFlowService.url + '/workflows/delete', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
+      if (data) {
+        callback(data);
+      } else callback({status: 'error', message: 'Cannot connect to Server'});
+    }, error =>{
+        alert("An unexpected error occurred");
+    });
+  }
 }

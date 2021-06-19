@@ -62,8 +62,12 @@ export class WorkflowPage implements OnInit {
     (await deleteMod).onDidDismiss().then(async (data) => {
       const result = (await data).data['confirm'];
       if (result){
-        //then delete
-        this.userApiService.displayPopOver("Deletion of workflow", 'Workflow has been successfully deleted');
+        alert("ID is " + id);
+        this.workFlowService.deleteWorkFlow(id, (response) =>{
+          console.log(response);
+          this.userApiService.displayPopOver("Deletion of workflow", 'Workflow has been successfully deleted');
+        });
+
       }else{
         //not delete
       }

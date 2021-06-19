@@ -122,6 +122,21 @@ export class UserAPIService {
     console.log( a );
    }
 
+   async getUserDetails(callback){
+     const formData = new FormData();
+     const token = localStorage.getItem('token');
+     const httpHeaders: HttpHeaders = new HttpHeaders({
+       Authorization: ('Bearer ' + token)
+     });
+
+     this.http.post(UserAPIService.url + '/users/getDetails', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
+       if (data) {
+         callback(data);
+       } else callback({status: 'error', message: 'Cannot connect to Server'});
+     }, error =>{
+     });
+   }
+
    public getUser(){
 
    }
