@@ -32,6 +32,14 @@ export default class WorkFlowController{
         }
     }
 
+    private async deleteWorkFlow(req) {
+        try{
+            return await this.workflowService.deleteWorkFlow(req);
+        } catch(err) {
+            throw err;
+        }
+    }
+
     routes() {
 
         this.router.post("", this.authenticator.Authenticate, async (req, res) => {
@@ -42,7 +50,7 @@ export default class WorkFlowController{
             }
         });
 
-        this.router.post("/getDetails", async (req,res) =>{
+        this.router.post("/getDetails", this.authenticator.Authenticate, async (req,res) =>{
             try {
                 res.status(200).json(await this.getWorkFlowDetails(req));
             } catch(err){
@@ -50,8 +58,15 @@ export default class WorkFlowController{
             }
         });
 
+        this.router.post("/delete",this.authenticator.Authenticate, async(req,res)=>{
+            try {
+                res.status(200).json(await this.deleteWorkFlow(req));
+            } catch(err){
+                res.status(400).json({status:"error", data:{}, message:err});
+            }
+        });
+
         return this.router;
     }
-
 
 }

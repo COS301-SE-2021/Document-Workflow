@@ -73,7 +73,7 @@ export default class DocumentController{
                 res.status(200).json({status:"error", data:{}, message:err});
             }
         });
-
+        /*
         this.router.post('/delete', async(req,res)=>{
             try {
                 res.status(200).json(await this.testDeleteDocument(req));
@@ -81,7 +81,7 @@ export default class DocumentController{
                 console.log(err);
                 res.status(200).json({status:"error", data:{}, message:err});
             }
-        })
+        })*/
 
         return this.router;
     }

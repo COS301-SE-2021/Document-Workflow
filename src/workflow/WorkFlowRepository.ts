@@ -56,6 +56,15 @@ export default class WorkFlowRepository{
         }
     }
 
+    async deleteWorkFlow(id:string){
+        try{
+            WorkFlow.deleteOne({_id: id});
+        }
+        catch(err){
+            throw err;
+        }
+    }
+
     async getWorkFlow(id:string):Promise<WorkFlowI>{
         try{
             return await WorkFlow.findById(id);

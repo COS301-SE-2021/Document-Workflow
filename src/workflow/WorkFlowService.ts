@@ -7,14 +7,11 @@ import UserRepository from "../user/UserRepository";
 @injectable()
 export default class WorkFlowService{
 
-    //TODO: test that this works with the dependence injection
-    constructor(private workflowRepository: WorkFlowRepository, private documentService: DocumentService, private usersRepository: UserRepository)
-    {
-
+    constructor(private workflowRepository: WorkFlowRepository, private documentService: DocumentService, private usersRepository: UserRepository) {
     }
 
     /**
-     * We first create the workflowso that its ID can be generated. We then store the document
+     * We first create the workflow so that its ID can be generated. We then store the document
      * which requires its parent workflow id. Once we get the document id back we update our workflow.
      * Members is just an array of email addresses.
      * @param req
@@ -138,4 +135,37 @@ export default class WorkFlowService{
 
         return result;
     };
+
+    async deleteWorkFlow(req) {
+        try {
+            let workflow_id = req.body.id;
+            const workflow = await this.workflowRepository.getWorkFlow(req.body.id);
+            await this.documentService.deleteDocument(workflow_id, workflow.document_id);
+            await this.removeOwnedWorkFlowId(workflow.owner_email, workflow_id);
+            const phases = workflow.phases;
+            for(let i=0; i<phases.length; ++i){
+                const phase = phases[i];
+                for(let k=0; k<phases.length; ++k)
+                    await this.removeWorkFlowId(phase[k], workflow_id);
+            }
+
+        }
+        catch(e){
+            throw "An error occurred";
+        }
+
+        return {status: "success", data:{}, message:""};
+    }
+
+    async removeOwnedWorkFlowId(email, id){
+        let user = await this.usersRepository.getUser({email:email});
+        const index = user.owned_workflows.indexOf(id);
+        user.owned_workflows.splice(index, 1);
+    }
+
+    async removeWorkFlowId(email, id){
+        let user = await this.usersRepository.getUser({email:email});
+        const index = user.workflows.indexOf(id);
+        user.workflows.splice(index, 1);
+    }
 }
