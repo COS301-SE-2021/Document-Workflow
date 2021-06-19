@@ -41,8 +41,14 @@ export class WorkflowPage implements OnInit {
   ) {
   }
 
-  ngOnInit() {
-    console.log(localStorage.getItem('token'));
+  async ngOnInit() {
+    const load = await this.loadctrl.create({
+      message: 'Hang in there... we are almost done',
+      duration: 5000,
+      showBackdrop: false,
+      spinner: 'bubbles'
+    });
+    await load.present();
     this.userApiService.checkIfAuthorized().subscribe((response) => {
       console.log("Successfully authorized user");
     }, (error) => {
@@ -50,7 +56,7 @@ export class WorkflowPage implements OnInit {
       this.router.navigate(['/login']);
     });
     this.loadWorkFlows();
-
+    await load.dismiss();
   }
 
   async deleteWorkFlow(id: string){
