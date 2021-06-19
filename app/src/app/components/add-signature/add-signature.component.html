@@ -6,5 +6,27 @@
 
 <ion-content>
   <h3>Create your signature</h3>
-  <ion-button expand="block" color="primary" [disabled]="!signForm.valid" (click)="addSign()" type="submit">Edit Signature</ion-button>
+<!--  <ion-button expand="block" color="primary" [disabled]="!signForm.valid" (click)="addSign()" type="submit">Edit Signature</ion-button>-->
+<!--    <ion-button expand="block" color="primary" [disabled]="isCanvasBlank()" (click)="save()" type="submit">Edit Signature</ion-button>-->
+       <ion-grid>
+         <ion-row>
+           <ion-col col-6>
+<!--             CANNOT SAVE EMPTY SIGNATURE-->
+              <ion-button color="light" expand="full" [disabled]="isCanvasBlank()" (click)="save()"> Save</ion-button>
+           </ion-col>
+           <ion-col col-6>
+             <ion-button color="light" expand="full" (click)="undo()"> Undo</ion-button>
+           </ion-col>
+           <ion-col col-6>
+             <ion-button color="light" expand="full" (click)="clear()"> Clear</ion-button>
+           </ion-col>
+         </ion-row>
+       </ion-grid>
+<!--        <ion-button color="light" expand="full" (click)="drawComplete()"> Save</ion-button>-->
+
+      <canvas class="signature-pad-canvas" #canvas width="200" height="400" style="touch-action: none;"></canvas>
+<!--      CANNOT COMPLETE WITHOUT SAVING THE SIGNTURE-->
+      <ion-button color="light" expand="full" [disabled]="isCanvasBlank()" (click)="done()"> Done</ion-button>
+
 </ion-content>
+

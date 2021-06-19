@@ -23,11 +23,9 @@ import { ActionSheetController, Platform } from '@ionic/angular';
 
 //import for the loading controller
 import {LoadingController} from '@ionic/angular';
-import { Plugins } from 'protractor/built/plugins';
-import {DocumentAPIService} from './../../Services/Document/document-api.service';
 import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
 import { ResetPasswordComponent } from 'src/app/components/reset-password/reset-password.component';
-import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
+
 
 @Component({
   selector: 'app-login-register',
@@ -39,6 +37,7 @@ export class LoginRegisterPage implements OnInit {
   registerForm: FormGroup;
   file: File;
   registerButton: boolean; //for the toggle to change modes
+
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   @ViewChild('fileInput', { static: false })fileInput: ElementRef;
@@ -55,7 +54,7 @@ export class LoginRegisterPage implements OnInit {
 
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
-      loginEmail: ['u17015741@tuks.co.za', [Validators.required, Validators.email]],
+      loginEmail: ['bstroberg123@gmail.com', [Validators.required, Validators.email]],
       loginPassword: ['submarine', [Validators.required, Validators.minLength(8)]],
     });
     const formOptions: AbstractControlOptions = {
@@ -95,7 +94,9 @@ export class LoginRegisterPage implements OnInit {
           alert('Login Successful');
           this.router.navigate(['home']);
         }
-        else{alert(response.message);}
+        else{
+          this.userAPIService.displayPopOver('Failure in logging in', 'Email or password is incorrect')
+        }
     });
   }
 
@@ -107,6 +108,8 @@ export class LoginRegisterPage implements OnInit {
 
 
   async register(): Promise<void> {
+
+    this.loadingRegister();
     const userdata = this.registerForm.value;
     console.log('Printing file:');
     console.log(this.file);
@@ -155,20 +158,6 @@ export class LoginRegisterPage implements OnInit {
   async selectImageSource() {
     const buttons = [
       {
-        text: 'Take Photo',
-        icon: 'camera',
-        handler: () => {
-          this.addSignature(CameraSource.Camera);
-        },
-      },
-      {
-        text: 'Choose from photo library',
-        icon: 'image',
-        handler: () => {
-          this.addSignature(CameraSource.Photos);
-        },
-      },
-      {
         text: 'Draw your signature',
         icon: 'create',
         handler:()=>{
@@ -178,7 +167,6 @@ export class LoginRegisterPage implements OnInit {
     ];
 
     if (!this.plat.is('hybrid')) {
-      console.log('here');
       buttons.push({
         text: 'Choose a File',
         icon: 'attach',
@@ -186,6 +174,18 @@ export class LoginRegisterPage implements OnInit {
           this.fileInput.nativeElement.click();
         },
       });
+    }
+
+    if (!this.plat.is('hybrid')) {
+      console.log('here');
+      buttons.push({
+          text: 'Edit Signature',
+          icon: 'edit',
+          handler: () => {
+            this.router.navigate(['addSignature']);
+          },
+        }
+      );
     }
 
     const actionSheet = await this.actionSheetController.create({
@@ -212,7 +212,8 @@ export class LoginRegisterPage implements OnInit {
     (await mod).present();
 
     (await mod).onDidDismiss().then(async (data) => {
-      // data goes in here, workflow page.ts as an example
+      this.registerButton = (await data).data.registerButton,
+      this.file = (await data).data.signature
     });
   }
 
