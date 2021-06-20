@@ -50,19 +50,39 @@ export class EditWorkflowComponent implements OnInit {
           workflowName: [data.name, [Validators.required]],
           workflowDescription: ['', [Validators.required]],
           phases: this.fb.array([
-            this.fb.group({
-              user1: new FormControl('', [
-                Validators.email,
-                Validators.required,
-              ]),
-            }),
+
           ]),
         });
+        this.fillForms(data);
         this.ready = true;
       } else {
       }
     });
     // console.log(this.workflowForm.controls.phases['controls'][0]);
+  }
+
+  fillForms(data){
+    if(data){
+      for(let b of data.phases){
+        if(b.indexOf(',') != -1){
+          let a = b.toString().split(',');
+          console.log(a);
+        }else{
+          console.log(b.toString());
+          this.phaseNumber.push(0);
+          let phase = this.workflowForm.get('phases') as FormArray;
+          phase.push(this.createPhaseInit(b.toString()));
+        }
+      }
+    }
+  }
+
+
+  createPhaseInit(email: string){
+    this.userCount = this.userCount + 1;
+    return this.fb.group({
+      user1: new FormControl(email, [Validators.email, Validators.required]),
+    });
   }
 
   addUser(form: FormGroup) {
@@ -81,7 +101,7 @@ export class EditWorkflowComponent implements OnInit {
     this.userCount = this.userCount + 1;
     let bobs = 'user' + this.userCount;
     return this.fb.group({
-      bobs: new FormControl('', [Validators.email, Validators.required]),
+      user1: new FormControl('', [Validators.email, Validators.required]),
     });
   }
 

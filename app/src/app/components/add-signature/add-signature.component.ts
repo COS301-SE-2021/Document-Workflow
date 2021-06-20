@@ -15,8 +15,8 @@ export class AddSignatureComponent implements OnInit, AfterViewInit {
   @ViewChild('canvas', { static: true }) signaturePadElement;
   signForm: FormGroup;
   signaturePad: any;
-  canvasWidth: 300;
-  canvasHeight: 200;
+  canvasWidth: 150;
+  canvasHeight: 150;
   public saveSign: string;
   constructor(
     private elementRef: ElementRef,
@@ -38,7 +38,7 @@ export class AddSignatureComponent implements OnInit, AfterViewInit {
   {
     const canvas: any = this.elementRef.nativeElement.querySelector('canvas');
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight - 140;
+    canvas.height = window.innerHeight - 500;
     if (this.signaturePad) {
       this.signaturePad.clear(); // Clear the pad on init
     }
@@ -61,7 +61,7 @@ export class AddSignatureComponent implements OnInit, AfterViewInit {
     this.modalCtrl.dismiss({
       "signature": this.saveSign,
       "registerBtn" : false
-    });
+  });
     // // this.navCtrl.navigateBack('/login');
     // this.modalCtrl.create({
     //   component: LoginRegisterPage

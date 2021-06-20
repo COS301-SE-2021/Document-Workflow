@@ -145,7 +145,7 @@ export class UserAPIService {
    }
 
    logout(){
-     localStorage.removeItem('token')
+     localStorage.removeItem('token');
    }
 
 }

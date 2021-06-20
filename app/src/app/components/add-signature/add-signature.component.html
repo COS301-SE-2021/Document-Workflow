@@ -24,7 +24,7 @@
        </ion-grid>
 <!--        <ion-button color="light" expand="full" (click)="drawComplete()"> Save</ion-button>-->
 
-      <canvas class="signature-pad-canvas" #canvas width="200" height="400" style="touch-action: none;"></canvas>
+      <canvas class="signature-pad-canvas" #canvas width="150" height="150" style="touch-action: none;"></canvas>
 <!--      CANNOT COMPLETE WITHOUT SAVING THE SIGNTURE-->
       <ion-button color="light" expand="full" [disabled]="isCanvasBlank()" (click)="done()"> Done</ion-button>
 

@@ -201,7 +201,8 @@ export class LoginRegisterPage implements OnInit {
 
     (await mod).onDidDismiss().then(async (data) => {
       this.registerButton = (await data).data.registerButton,
-      this.file = (await data).data.signature
+      this.file = (await data).data.signature;
+      console.log(this.file);
     });
   }
 
