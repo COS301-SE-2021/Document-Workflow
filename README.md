@@ -38,6 +38,7 @@
 # Documentation
 ## Software Requirements Specification
 ### [Software Requirement Specifications](https://www.overleaf.com/read/wdkdstnqdrbq)
+### [Architectural Requirements Document](https://www.overleaf.com/read/ysxrgzkpvwwy)
 ### Previous Versions
 
 ## Technology Frameworks
