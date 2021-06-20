@@ -91,7 +91,6 @@ export class WorkflowPage implements OnInit {
     (await deleteMod).onDidDismiss().then(async (data) => {
       const result = (await data).data['confirm'];
       if (result){
-        alert("ID is " + id);
         this.workFlowService.deleteWorkFlow(id, (response) =>{
           console.log(response);
           this.userApiService.displayPopOver("Deletion of workflow", 'Workflow has been successfully deleted');
@@ -193,11 +192,11 @@ export class WorkflowPage implements OnInit {
       this.workFlowService.createWorkflow(workflowData, phases, file, (response) => {
         if (response.status === 'success') {
           this.userApiService.displayPopOver('Success', 'Workflow has been created');
+          location.reload();
         } else {
           console.log(response);
-          this.userApiService.displayPopOver('Unexpected failure', 'Workflow has not been created');
+          this.userApiService.displayPopOver('Workflow could not be created', response.message);
         }
-        location.reload();
       });
     });
 
