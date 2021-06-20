@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { autoInjectable, injectable } from "tsyringe";
+import { injectable } from "tsyringe";
 import UserService from "./UserService";
 import { UserProps } from "./User";
 import { sanitize } from "mongo-sanitize";
@@ -20,7 +20,7 @@ export default class UserController{
         try{
         const token = req.header("Authorization").replace("Bearer ", "");
         const decoded = jwt.verify(token, process.env.SECRET);
-        req.user = {email: decoded._id, 'tokens.token': token};
+        req.user = {id: decoded.id, email: decoded.email, token: token};
         next();
         }
         catch(err){
@@ -125,6 +125,9 @@ export default class UserController{
         }
         else if(err instanceof ServerError){
             res.status(500).send(err.message);
+        }
+        else if(err instanceof jwt.TokenExpiredError){
+            res.status(401).send(err.message);
         }
         else{
             console.error(err);

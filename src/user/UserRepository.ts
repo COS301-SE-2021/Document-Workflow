@@ -1,7 +1,5 @@
-import { Token, User, UserDoc, UserProps } from "./User";
+import { User, UserDoc, UserProps } from "./User";
 import { Types } from "mongoose";
-import { doc } from "prettier";
-import concat = doc.builders.concat;
 
 export default class UserRepository {
 
@@ -37,7 +35,7 @@ export default class UserRepository {
      * @throws Error when the user object is not found
      * @param Usr The user object to be modified
      */
-    async putUser(Usr: UserProps): Promise<UserProps> {
+    /*async putUser(Usr: UserProps): Promise<UserProps> {
         const usr: UserDoc = await User.findOne({id: Usr._id});
         if(usr){
             try{
@@ -54,14 +52,21 @@ export default class UserRepository {
                 usr.workflows = Usr.workflows;
                 return await usr.save();
             }
-            // try{
-            //     return await User.findOneAndUpdate({_id: usr._id}, {$set: Usr as any}, {useFindAndModify: false});
-            // }
             catch(err){
                 throw new Error(err);
             }
         }else{
             throw new Error("Could not find User");
+        }
+    }*/
+
+    async putUser(Usr: UserDoc): Promise<UserProps>{
+        try{
+            return await Usr.save();
+        }
+        catch(err){
+            console.error(err);
+            throw new Error(err);
         }
     }
 
@@ -109,7 +114,7 @@ export default class UserRepository {
      * @throws Error if findOne breaks somehow
      * @param filter An object containing the search criteria
      */
-    async getUser(filter): Promise<UserProps> {
+    async getUser(filter): Promise<UserDoc> {
         try {
             return await User.findOne(filter);
         } catch(err) {
