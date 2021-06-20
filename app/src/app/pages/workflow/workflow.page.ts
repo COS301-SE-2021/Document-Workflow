@@ -50,12 +50,22 @@ export class WorkflowPage implements OnInit {
       spinner: 'bubbles'
     });
     await load.present();
-    this.userApiService.checkIfAuthorized().subscribe((response) => {
-      console.log("Successfully authorized user");
-    }, (error) => {
-      console.log(error);
-      this.router.navigate(['/login']);
-    });
+    if(localStorage.getItem('token') === null) {
+      await this.router.navigate(['/login']);
+      await load.dismiss();
+      return;
+    }
+    else
+    {
+      this.userApiService.checkIfAuthorized().subscribe((response) => {
+        console.log("Successfully authorized user");
+      }, async (error) => {
+        console.log(error);
+        await this.router.navigate(['/login']);
+        await load.dismiss();
+        return;
+      });
+    }
     await this.getUser();
     this.loadWorkFlows();
     await load.dismiss();
