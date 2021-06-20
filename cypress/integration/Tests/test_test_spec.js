@@ -59,7 +59,7 @@ describe('Logging in',()=>{
     it('Tries to log in with a to small password( char < 9)',()=>{
       cy.get('#loginEmail').type('brenton.stroberg@yahoo.co.za')
       cy.get('#loginPassword').type('Password')
-      // cy.get('#login').click()
+      !cy.get('#login').click()
       // cy.url().should('eq','')
     })
 
@@ -78,6 +78,7 @@ describe('Navigation when user is logged in', ()=>{
     cy.get('#loginEmail').type('brenton.stroberg@yahoo.co.za')
     cy.get('#loginPassword').type('Password#1')
     cy.get('#login').click()
+    cy.wait(1000)
 })
 
   it('navigating to profile page', () =>{
