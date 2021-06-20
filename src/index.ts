@@ -5,7 +5,7 @@ import { container } from "tsyringe";
 import * as dotenv from 'dotenv';
 import DocumentController from "./document/DocumentController";
 import UserController from "./user/UserController";
-//import WorkFlowController from "./workflow/WorkFlowController";
+import WorkFlowController from "./workflow/WorkFlowController";
 dotenv.config();
 
 const fileUpload = require('express-fileupload');
@@ -26,6 +26,6 @@ app.use((req, res, next) => {
 
 app.use("/api/documents", container.resolve(DocumentController).routes());
 app.use("/api/users", container.resolve(UserController).routes());
-//app.use("/api/workflows", container.resolve(WorkFlowController).routes());
+app.use("/api/workflows", container.resolve(WorkFlowController).routes());
 export default app;
 

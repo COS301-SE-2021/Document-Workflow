@@ -13,7 +13,7 @@ export default class UserRepository {
             const user = new User(Usr);
             return await user.save();
         } catch (err) {
-            throw new Error(err);
+            throw {status: "failed", data: {}, message:"User email already exists"};
         }
     }
 
@@ -35,31 +35,6 @@ export default class UserRepository {
      * @throws Error when the user object is not found
      * @param Usr The user object to be modified
      */
-    /*async putUser(Usr: UserProps): Promise<UserProps> {
-        const usr: UserDoc = await User.findOne({id: Usr._id});
-        if(usr){
-            try{
-                usr.name = Usr.name;
-                usr.surname = Usr.surname;
-                usr.initials = Usr.initials;
-                usr.email = Usr.email;
-                usr.password = Usr.password;
-                usr.signature = Usr.signature as any;
-                usr.validated = Usr.validated;
-                usr.tokenDate = Usr.tokenDate;
-                usr.tokens = Usr.tokens as any;
-                usr.owned_workflows = Usr.owned_workflows;
-                usr.workflows = Usr.workflows;
-                return await usr.save();
-            }
-            catch(err){
-                throw new Error(err);
-            }
-        }else{
-            throw new Error("Could not find User");
-        }
-    }*/
-
     async putUser(Usr: UserDoc): Promise<UserProps>{
         try{
             return await Usr.save();

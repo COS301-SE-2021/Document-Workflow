@@ -2,16 +2,16 @@ import { Document, Schema, model } from "mongoose";
 
 export default interface WorkFlow extends Document{
     name: string,
-    owner_id: string,
     owner_email: string,
     document_id: string,
     document_path: string,
+    description: string,
     phases: [[string]]
 }
 
 const workflowSchema = new Schema<WorkFlow>({
     name: {type: String, required: true},
-    owner_id: {type:String},
+    description: {type: String, default:""},
     owner_email: {type:String, required: true},
     document_id: {type:String},
     document_path: {type:String, required:true},

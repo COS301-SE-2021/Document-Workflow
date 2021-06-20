@@ -2,25 +2,43 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
-import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+import { IonicModule, IonicRouteStrategy, NavController, NavParams } from '@ionic/angular';
 import { IonicStorageModule } from '@ionic/storage-angular';
-import { Browser } from '@capacitor/browser'
+
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
-import { LoginRegisterComponent } from './login-register/login-register.component';
-import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
 
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { ViewAllWorkflowsComponent } from './view-all-workflows/view-all-workflows.component';
 
+// import {SignaturePadModule} from 'angular2-signaturepad';
+import { HttpClientModule } from '@angular/common/http';
+
+//pdf viewer
+import { PdfViewerModule } from 'ng2-pdf-viewer';
+
+//Components
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { UpdateUserComponent } from './components/update-user/update-user.component';
+import { AddWorkflowComponent } from './components/add-workflow/add-workflow.component';
+import { AddSignatureComponent } from './components/add-signature/add-signature.component';
+import { EditWorkflowComponent } from './components/edit-workflow/edit-workflow.component';
+import { AddCommentComponent } from './components/add-comment/add-comment.component';
+import { ConfirmSignaturesComponent } from './components/confirm-signatures/confirm-signatures.component';
+import { UserNotificationsComponent } from './components/user-notifications/user-notifications.component';
+import { ConfirmDeleteWorkflowComponent } from './components/confirm-delete-workflow/confirm-delete-workflow.component';
 @NgModule({
   declarations: [
     AppComponent,
-    LoginRegisterComponent,
-    ViewWorkflowComponent,
-    ViewAllWorkflowsComponent
+    ResetPasswordComponent,
+    AddWorkflowComponent,
+    UpdateUserComponent,
+    AddSignatureComponent,
+    EditWorkflowComponent,
+    AddCommentComponent,
+    ConfirmSignaturesComponent,
+    UserNotificationsComponent,
+    ConfirmDeleteWorkflowComponent
   ],
   entryComponents: [],
   imports: [
@@ -32,12 +50,14 @@ import { ViewAllWorkflowsComponent } from './view-all-workflows/view-all-workflo
     FormsModule,
     IonicStorageModule.forRoot(),
     HttpClientModule,
+    PdfViewerModule,
   ],
   providers: [
     {
       provide: RouteReuseStrategy,
       useClass: IonicRouteStrategy,
-    }
+    },
+    NavParams
   ],
   bootstrap: [AppComponent],
 })

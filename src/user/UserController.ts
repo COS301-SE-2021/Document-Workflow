@@ -47,7 +47,7 @@ export default class UserController{
 
     async getUserByIdRoute(request): Promise<UserProps> {
         try{
-            return await this.userService.getUserById(request);
+            return await this.userService.getUser(request);
         }catch(err) {
             throw new ServerError(err.toString());
         }
@@ -85,6 +85,24 @@ export default class UserController{
         }
         catch(err){
             console.error(err);
+            throw err;
+        }
+    }
+
+    private async getUserDetails(req) {
+        try{
+            return await this.userService.getUserDetails(req);
+        }
+        catch(err){
+            throw err;
+        }
+    }
+
+    private async retrieveOwnedWorkFlows(req):Promise<any> {
+        try{
+            return await this.userService.retrieveOwnedWorkFlows(req);
+        }
+        catch(err) {
             throw err;
         }
     }
@@ -154,9 +172,17 @@ export default class UserController{
 
         this.router.get("/verify", this.sanitize, async(req,res) =>{
             try {
-                res.status(200).json(await this.verifyUserRoute(req));
+                res.status(200).send(await this.verifyUserRoute(req));
             } catch(err){
                 this.handleErrors(err,res);
+            }
+        });
+
+        this.router.post("/getDetails", this.auth, async (req,res) => {
+            try {
+                res.status(200).json(await this.getUserDetails(req));
+            } catch(err){
+                res.status(400).json({status: "failed", data:{}, message: err.message});
             }
         });
 
@@ -209,6 +235,10 @@ export default class UserController{
             } catch(err){
                 this.handleErrors(err,res);
             }
+        });
+
+        this.router.post("/authenticate", this.Authenticate, async (req,res) =>{ //This route is used by the front end to forbid access to certain pages.
+            res.status(200).json({status:"success", data:{}, message:""});
         });
 
         this.router.put("/:id", this.sanitize, this.auth , async (req, res) => {

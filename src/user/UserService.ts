@@ -7,11 +7,11 @@ import AuthenticationError from "../error/AuthenticationError";
 import RequestError from "../error/RequestError";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
+import WorkFlowRepository from "../workflow/WorkFlowRepository";
 
 @injectable()
 export default class UserService {
-    constructor(private userRepository: UserRepository) {}
-
+    constructor(private userRepository: UserRepository, private workFlowRepository: WorkFlowRepository) {}
     async authenticateUser(password, usr: UserProps) {
         const result = await bcrypt.compare(password, await usr.password);
         if(result){
@@ -185,6 +185,33 @@ export default class UserService {
         }
     }
 
+    async retrieveOwnedWorkFlows(req): Promise<any> {
+        console.log("Retrieving owned workflows")
+        const user = await this.userRepository.getUser({email: req.user.email});
+
+        let workflows = [];
+        for(let id of user.owned_workflows)
+        {
+            workflows.push(await this.workFlowRepository.getWorkFlow(id));
+        }
+
+        return {status:"success", data: workflows, message:""};
+    }
+
+    async retrieveWorkFlows(req):Promise<any> {
+        console.log("Retrieving workflows")
+
+        const user = await this.userRepository.getUser({email: req.user.email});
+
+        let workflows = [];
+        for(let id of user.workflows)
+        {
+            workflows.push(await this.workFlowRepository.getWorkFlow(id));
+        }
+
+        return {status:"success", data: workflows, message:""};
+    }
+
     async deleteUser(req): Promise<UserProps> {
         if (!req.params.id) {
             throw new RequestError("Missing Parameter");
@@ -200,6 +227,52 @@ export default class UserService {
             throw new RequestError("Could not remove user");
         }
 
+    }
+
+    encryptSignature(buffer){
+        let cipher,
+            result,
+            iv;
+
+        iv = crypto.randomBytes(16);
+        cipher = crypto.createCipheriv(process.env.ALGORITHM,process.env.SECRET, iv);
+        result = Buffer.concat([iv, cipher.update(buffer), cipher.final()]);
+
+        return result;
+    }
+
+    async getUserDetails(req) {
+        try{
+            let user = await this.userRepository.getUser({email: req.user.email});
+            const data = {
+                name: user.name,
+                surname: user.surname,
+                initials: user.initials,
+                email: user.email,
+                signature:user.signature.toString(),
+                owned_workflows: user.owned_workflows,
+                workflows: user.workflows
+            };
+            return {status: "success", data: data, message:""};
+        }
+        catch(err){
+            console.log(err);
+            throw "Could not fetch user details";
+        }
+    }
+
+    decryptSignature(buffer){
+        let decipher,
+            result,
+            iv;
+
+        iv = buffer.slice(0, 16);
+
+        buffer = buffer.slice(16);
+        decipher = crypto.createDecipheriv(process.env.ALGORITHM,process.env.SECRET, iv);
+        result = Buffer.concat([decipher.update(buffer), decipher.final()]);
+
+        return result;
     }
 
     async updateUser(req): Promise<UserProps> {

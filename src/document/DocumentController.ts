@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { autoInjectable } from "tsyringe";
 import DocumentService from "./DocumentService";
+import fs from "fs";
 import Document from "./Document";
 import jwt from "jsonwebtoken";
 import ServerError from "../error/ServerError";
@@ -41,6 +42,16 @@ export default class DocumentController{
         }
     }
 
+    private async testDeleteDocument(req) {
+        try{
+            await this.documentService.deleteDocument(req.body.workflow_id, req.body.document_id);
+        }
+        catch(err){
+            console.log(err);
+            throw err;
+        }
+    }
+
     async retrieveDocumentRoute(request): Promise<Document> {
         try {
             return await this.documentService.retrieveDocument(request);
@@ -73,6 +84,15 @@ export default class DocumentController{
                 res.status(400).json(err);
             }
         });
+        /*
+        this.router.post('/delete', async(req,res)=>{
+            try {
+                res.status(200).json(await this.testDeleteDocument(req));
+            } catch(err){
+                console.log(err);
+                res.status(200).json({status:"error", data:{}, message:err});
+            }
+        })*/
 
         return this.router;
     }
