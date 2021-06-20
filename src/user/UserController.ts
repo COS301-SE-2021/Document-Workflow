@@ -1,32 +1,34 @@
 import { Router } from "express";
-import { autoInjectable } from "tsyringe";
+import { autoInjectable, injectable } from "tsyringe";
 import UserService from "./UserService";
-import User from "./User";
-import Authentication from "../auth/Authentication";
+import { UserProps } from "./User";
 import { sanitize } from "mongo-sanitize";
 import RequestError from "../error/RequestError";
 import ServerError from "../error/ServerError";
 import AuthenticationError from "../error/AuthenticationError";
+import jwt from "jsonwebtoken";
 
-@autoInjectable()
+@injectable()
 export default class UserController{
     private readonly router: Router;
 
-    constructor(private userService: UserService, private authentication: Authentication) {
+    constructor(private userService: UserService) {
         this.router = new Router();
     }
 
-    async auth(req, res, next) {
-        try {
-            await this.authentication.auth(req,res,next);
+    async auth(req,res,next){
+        try{
+        const token = req.header("Authorization").replace("Bearer ", "");
+        const decoded = jwt.verify(token, process.env.SECRET);
+        req.user = {email: decoded._id, 'tokens.token': token};
+        next();
         }
         catch(err){
-            throw err;
+            console.error(err);
         }
-
     }
 
-    async sanitize(req, res, next){
+    async sanitize(req, res, next): Promise<void>{
         if(req.body) sanitize(req.body);
         if(req.token) sanitize(req.token);
         if(req.params) sanitize(req.params);
@@ -35,7 +37,7 @@ export default class UserController{
         next();
     }
 
-    async getUsersRoute(): Promise<User[]> {
+    async getUsersRoute(): Promise<UserProps[]> {
         try{
             return await this.userService.getAllUsers();
         } catch(err) {
@@ -43,7 +45,7 @@ export default class UserController{
         }
     }
 
-    async getUserByIdRoute(request): Promise<User> {
+    async getUserByIdRoute(request): Promise<UserProps> {
         try{
             return await this.userService.getUserById(request);
         }catch(err) {
@@ -51,7 +53,7 @@ export default class UserController{
         }
     }
 
-    async getUserByEmailRoute(request): Promise<User> {
+    async getUserByEmailRoute(request): Promise<UserProps> {
         try{
             return await this.userService.getUserByEmail(request);
         }catch(err) {
@@ -59,7 +61,7 @@ export default class UserController{
         }
     }
 
-    async registerUserRoute(request): Promise<User>{
+    async registerUserRoute(request): Promise<UserProps>{
         try{
             return await this.userService.registerUser(request)
         }
@@ -68,7 +70,7 @@ export default class UserController{
         }
     }
 
-    async verifyUserRoute(request): Promise<User>{
+    async verifyUserRoute(request): Promise<UserProps>{
         try {
             return await this.userService.verifyUser(request);
         }
@@ -77,16 +79,17 @@ export default class UserController{
         }
     }
 
-    async loginUserRoute(request): Promise<User> {
+    async loginUserRoute(request): Promise<UserProps> {
         try {
             return await this.userService.loginUser(request);
         }
         catch(err){
-            throw new ServerError(err.toString());
+            console.error(err);
+            throw err;
         }
     }
 
-    async logoutUserRoute(request): Promise<User> {
+    async logoutUserRoute(request): Promise<UserProps> {
         try{
             return await this.userService.logoutUser(request);
         }
@@ -95,7 +98,7 @@ export default class UserController{
         }
     }
 
-    async deleteUserRoute(request): Promise<User> {
+    async deleteUserRoute(request): Promise<UserProps> {
         try{
             return await this.userService.deleteUser(request);
         }catch(err){
@@ -103,7 +106,7 @@ export default class UserController{
         }
     }
 
-    async updateUserRoute(request): Promise<User> {
+    async updateUserRoute(request): Promise<UserProps> {
         try{
             return await this.userService.updateUser(request);
         }
@@ -120,9 +123,12 @@ export default class UserController{
         else if(err instanceof AuthenticationError){
             res.status(401).send(err.message);
         }
+        else if(err instanceof ServerError){
+            res.status(500).send(err.message);
+        }
         else{
             console.error(err);
-            res.status(500).end();
+            res.status(500).send(err.message);
         }
     }
 
@@ -171,7 +177,7 @@ export default class UserController{
             }
         });
 
-        this.router.post("/login" , this.sanitize, async (req,res) => {
+        this.router.post("/login" , async (req,res) => {
             try {
                 const token = await this.loginUserRoute(req);
                 if(token) res.status(200).json({status: "Success", data:{}, message: token})
@@ -192,7 +198,7 @@ export default class UserController{
             }
         });
 
-        this.router.post("/register", this.sanitize, async (req,res) => {
+        this.router.post("/register", async (req,res) => {
             try {
                 const user = await this.registerUserRoute(req);
                 if(user) res.status(201).json(user);

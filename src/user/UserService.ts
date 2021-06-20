@@ -1,102 +1,134 @@
 import { injectable } from "tsyringe";
 import UserRepository from "./UserRepository";
-import User from "./User";
+import { UserProps, Token } from "./User";
 import nodemailer from 'nodemailer';
 import jwt from "jsonwebtoken";
 import AuthenticationError from "../error/AuthenticationError";
 import RequestError from "../error/RequestError";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 
 @injectable()
 export default class UserService {
     constructor(private userRepository: UserRepository) {}
 
-    async authenticateUser(password, hash, id) {
-        bcrypt.compare(password, hash)
-            .then((result) =>{
-                if(result) return jwt.sign({id: id}, process.env.SECRET, {expiresIn: '15 seconds'});
-                else throw new AuthenticationError("Password or Email Incorrect");
-            })
-            .catch((err) => {
-                throw err;
-            });
+    async authenticateUser(password, usr: UserProps) {
+        try{
+            const result = await bcrypt.compare(password, usr.password);
+            if(result){
+                return this.generateToken(usr.email, usr._id);
+            }
+        }
+        catch(err){
+            console.error(err);
+            throw new AuthenticationError(err);
+        }
+        // await bcrypt.compare(password, usr.password)
+        //     .then((result) => {
+        //         if(result) {
+        //             return this.generateToken(usr.email, usr._id);
+        //         }
+        //         else throw new AuthenticationError("Password or Email Incorrect");
+        //     })
+        //     .catch((err) => {
+        //         console.error(err);
+        //         throw new AuthenticationError("Could not authenticate user");
+        //     });
     }
 
-    async getUser(request): Promise<User> {
+    generateToken(email, id): string{
+        return jwt.sign({id: id, email: email}, process.env.SECRET, {expiresIn: "5m"});
+    }
+
+    async getUser(request): Promise<UserProps> {
         if(!request.params){
-            throw new Error("Search criteria required");
+            throw new RequestError("Search criteria required");
         }
         try {
             return await this.userRepository.getUser(request.params);
         } catch (err) {
-            throw err;
+            console.error(err);
+            throw new RequestError("Could not get user");
         }
     }
 
-    async getUserById(request): Promise<User> {
+    async getUserById(request): Promise<UserProps> {
         if(!request.params.id){
             throw new Error("Search criteria required");
         }
         try {
             return await this.userRepository.getUser({id: request.params.id});
         } catch (err) {
-            throw err;
+            console.error(err);
+            throw new RequestError("Could not get user");
         }
     }
 
-    async getUserByEmail(request): Promise<User> {
+    async getUserByEmail(request): Promise<UserProps> {
         if(!request.params.email){
             throw new Error("Search criteria required");
         }
         try {
             return await this.userRepository.getUser({email: request.params.email});
         } catch (err) {
-            throw err;
+            console.error(err);
+            throw new RequestError("Could not get user");
         }
     }
 
-    async getAllUsers(): Promise<User[]> {
+    async getAllUsers(): Promise<UserProps[]> {
         try {
             return await this.userRepository.getUsers({});
         } catch (err) {
-            throw err;
+            console.error(err);
+            throw new RequestError("Could not get users");
         }
     }
 
-    async registerUser(req): Promise<User> {
+    async registerUser(req): Promise<UserProps> {
         if (req.body.length === 0 || !req.body || !req.files.signature.data) {
-            throw {message: "Missing required information to register user"};
+            throw new RequestError("Missing required information to register user");
         }
         try {
-            const usr: User = req.body;
-            const response = await this.userRepository.postUser(usr);
-            if(response){
-                const hash = response.password;
-                await Promise.all([
-                    this.sendVerificationEmail(usr.email, usr.validateCode),
-                    this.authenticateUser(usr.password, hash, response._id)
-                ]);
-                return response;
+            const usr: UserProps = req.body;
+            usr.signature = req.files.signature.data;
+            usr.validateCode = crypto.randomBytes(64).toString('hex');
+            usr.password = await bcrypt.hash(usr.password, parseInt(process.env.SALT_ROUNDS))
+                .then(function(hash){
+                    return hash;
+                })
+                .catch(err => {
+                    throw new Error(err);
+                });
+            //const user: UserProps = await this.userRepository.postUser(usr);
+            const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
+            usr.tokens = [token];
+            const user: UserProps = await this.userRepository.postUser(usr);
+            //const response = await this.userRepository.putUser(usr);
+            if(user){
+                await this.sendVerificationEmail(usr.email, usr.validateCode)//,
+                return user;
             }
         } catch (err) {
-            throw err;
+            console.error(err);
+            throw new RequestError("Could not register user");
         }
     }
 
     async verifyUser(req): Promise<any> {
         const redirect_url = "http://localhost:3000/login-register";
         if(!req.query.email || !req.query.verificationCode){
-            throw "Missing required query";
+            throw new RequestError("Missing required properties");
         }
         const query = req.query;
 
-        let user = await this.userRepository.getUser({"email": query.email});
-        if (user.validateCode === query.verificationCode) {
+        const user = await this.userRepository.getUser({"email": query.email});
+        if (user && user.validateCode === query.verificationCode) {
             user.validated = true;
             await this.userRepository.putUser(user);
             return ('<html lang="en">Successfully verified. Click<a href= ' + redirect_url + '> here</a> to return to login</html>');
         } else {
-            throw "Validation Codes do not match";
+            throw new AuthenticationError("Could not Validate User Email");
         }
     }
 
@@ -134,40 +166,59 @@ export default class UserService {
         if(!req.body.email || !req.body.password){
             throw new Error("Could not log in");
         }
-        let user = await this.userRepository.getUser({"email": req.body.email})
+        const user = await this.userRepository.getUser({"email": req.body.email});
         if(user.validated){
-            return await this.authenticateUser(req.body.password, user.password, user._id);
+            return await this.authenticateUser(req.body.password, user);
         } else {
             throw new AuthenticationError("User must be validated");
         }
     }
 
-    async logoutUser(req): Promise<User> {
+    async logoutUser(req): Promise<UserProps> {
         if(!req.user.tokens || !req.token){
             throw new RequestError("Missing required properties");
         }
-        //Delete current token in usage from user:
         req.user.tokens = req.user.tokens.filter(token => {return token.token !== req.token});
-        return await req.user.save();
+        try {
+            return await req.user.save();
+        }
+        catch(err){
+            console.error(err);
+            throw new RequestError("Could not log out user");
+        }
     }
 
-    async deleteUser(req): Promise<User> {
+    async deleteUser(req): Promise<UserProps> {
         if (!req.params.id) {
             throw new RequestError("Missing Parameter");
         }
         if(!await this.userRepository.getUser(req.params.id)){
             throw new RequestError("User does not exist");
         }
-        return await this.userRepository.deleteUser(req.params.id);
+        try{
+            return await this.userRepository.deleteUser(req.params.id);
+        }
+        catch(err){
+            console.error(err);
+            throw new RequestError("Could not remove user");
+        }
+
     }
 
-    async updateUser(req): Promise<User> {
+    async updateUser(req): Promise<UserProps> {
         if(!req.body || !req.params.id){
             throw new RequestError("Missing Parameters");
         }
         if(!await this.userRepository.getUser({_id: req.params.id})){
             throw new RequestError("User does not exist");
         }
-        return await this.userRepository.putUser(req.body);
+        try{
+            return await this.userRepository.putUser(req.body);
+        }
+        catch(err){
+            console.error(err);
+            throw new RequestError("Could not update User");
+        }
+
     }
 }

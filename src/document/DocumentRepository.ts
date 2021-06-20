@@ -1,6 +1,7 @@
-import Document, { DocumentI } from "./Document";
+import Document, { DocumentModel } from "./Document";
 import * as AWS from 'aws-sdk';
-
+import { Types } from "mongoose";
+import ServerError from "../error/ServerError";
 
 const s3 = new AWS.S3({
     region: process.env.AWS_REGION,
@@ -10,67 +11,46 @@ const s3 = new AWS.S3({
 
 export default class DocumentRepository {
 
-
-    /**
-     *
-     * @param document
-     * @param workflow_id
-     */
-    async postDocument(document, workflow_id): Promise<void> {
-        const file = document;
-        console.log("Creating the document metadata")
-        let doc = null;
-        try {
-                doc = new Document({
-                workflow_id: workflow_id,
-                doc_name: file.name,
-                mimetype: file.mimetype,
-                encoding: file.encoding,
-                size: file.size,
-                document_path: workflow_id + file.name
-            });
+    async postDocument(doc: Document, file: File): Promise<Document> {
+        try{
+            await doc.validate();
+            await doc.save();
         }
         catch(err) {
-            console.log(err)
-            throw err;
+            throw new Error("Could not save Document data");
         }
 
-        console.log("Saving the document metadata");
-        try{
-            await doc.save();
-        } catch (err) {
-            throw "Could not access database";
-        }
-
-        console.log("Uploading the file to AWS")
         const uploadParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
-            Body: file.data,
-            Key: workflow_id +"/"+ file.name
+            Body: file,
+            Key: doc.workflow_id +"/"+ file.name
         }
 
-        console.log(uploadParams);
-        s3.upload(uploadParams, (err, data) =>{
-            if(err)
-            {
-                console.log(err)
-                throw "Error establishing connection to the cloud file server";
+        s3.upload(uploadParams, (err, data) => {
+            if(err) {
+                throw new Error("Error establishing connection to the cloud file server");
             }
             else console.log(data);
 
         });
-        return doc._id;
+        return doc;
     }
 
-    async getDocument(key) : Promise<any>{
-
-    }
-
-    async getDocuments(filter): Promise<DocumentI[]> {
+    async getDocument(id: Types.ObjectId): Promise<Document> {
         try {
-            return await Document.find(filter);
-        } catch(err) {
-            throw err;
+            return await DocumentModel.findOne(id);
+        }
+        catch(err){
+            throw new Error("Could not find Document");
+        }
+    }
+
+    async getDocuments(): Promise<Document[]> {
+        try {
+            return await DocumentModel.find({});
+        }
+        catch(err) {
+            throw new Error("Could not find Documents");
         }
     }
 }

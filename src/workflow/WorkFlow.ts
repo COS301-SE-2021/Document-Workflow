@@ -1,22 +1,25 @@
-import mongoose from "mongoose";
+import { Document, Schema, model } from "mongoose";
 
-export interface WorkFlowI{
-    _id: string,
+export default interface WorkFlow extends Document{
     name: string,
     owner_id: string,
     owner_email: string,
     document_id: string,
     document_path: string,
-    members: [string]
+    phases: [[string]]
 }
 
-const workflowSchema = new mongoose.Schema<WorkFlowI>({
-    owner_id: {type:String},
+const workflowSchema = new Schema<WorkFlow>({
     name: {type: String, required: true},
+    owner_id: {type:String},
     owner_email: {type:String, required: true},
     document_id: {type:String},
     document_path: {type:String, required:true},
-    members: {type: [String], required:true}
+    phases: {type: [[String]], required:true}
 });
 
-export default mongoose.model<WorkFlowI>('WorkFlow', workflowSchema)
+workflowSchema.pre("save", async function(next) {
+
+})
+
+export const WorkFlowModel = model<WorkFlow>('WorkFlowModel', workflowSchema);

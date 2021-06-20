@@ -1,57 +1,43 @@
 import { injectable } from "tsyringe";
 import DocumentRepository from "./DocumentRepository";
-import { DocumentI } from "./Document";
+import Document from "./Document";
+import RequestError from "../error/RequestError";
 
 @injectable()
 export default class DocumentService {
-    documentRepository: DocumentRepository;
 
-    constructor(documentRepository: DocumentRepository) {
-        this.documentRepository = documentRepository;
-    }
+    constructor(private documentRepository: DocumentRepository) {}
 
-    async getDocuments(): Promise<DocumentI[]> {
+    async getDocuments(): Promise<Document[]> {
         try{
-            return await this.documentRepository.getDocuments({});
+            return await this.documentRepository.getDocuments();
         }catch(err){
-            throw err;
+            throw new RequestError("Could not retrieve documents");
         }
     }
 
-    /**
-     *
-     * @param document
-     * @param workflow_id
-     */
-    async uploadDocument(document, workflow_id) : Promise<any>{
+    async uploadDocument(req): Promise<Document>{
+        if(!req.body || !req.files){
+            throw new RequestError("Missing required properties");
+        }
         try{
-            return await this.documentRepository.postDocument(document, workflow_id);
+            return await this.documentRepository.postDocument(req.body, req.files.file);
         }
-        catch(err)
-        {
-            throw err
+        catch(err) {
+            throw new RequestError("Could not store document");
         }
     }
 
-    /*
-    async uploadDocument(request) :Promise<any>{
-        console.log("Received a request to upload a document")
-        console.log(request.body)
-        console.log(request.files)
-        if(!request.files || Object.keys(request.files).length === 0) {
-            throw "No files sent";
-        } else {
-            try {
-                await this.documentRepository.postDocument(request)
-                return "File Successfully uploaded";
-            } catch (err) {
-                throw err;
-            }
+    async retrieveDocument(req): Promise<Document> {
+        if(!req.body.id){
+            throw new RequestError("Missing required properties");
         }
-    }
-    */
-
-    async retrieveDocument(req) : Promise<any> {
+        try {
+            return await this.documentRepository.getDocument(req.body.id);
+        }
+        catch(err){
+            throw new RequestError("Could not retrieve document");
+        }
 
     }
 }

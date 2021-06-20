@@ -1,81 +1,132 @@
-import User, { UserModel } from "./User";
+import { Token, User, UserDoc, UserProps } from "./User";
 import { Types } from "mongoose";
+import { doc } from "prettier";
+import concat = doc.builders.concat;
 
 export default class UserRepository {
 
     /**
-     * @returns Promise<any> The newly created user.
+     * @returns Promise<User> The newly created user.
      * @throws Error
      * @param Usr: An object containing all the information to create a new user.
      */
-    async postUser(Usr: User): Promise<User> {
-        const usr = new UserModel({
-            name: Usr.name,
-            surname: Usr.surname,
-            initials: Usr.initials,
-            email: Usr.email,
-            password: Usr.password,
-            validated: Usr.validated
-        });
+    async postUser(Usr: UserProps): Promise<UserProps> {
         try{
-            return await usr.save();
+            const user = new User(Usr);
+            return await user.save();
         } catch (err) {
-            throw err;
+            throw new Error(err);
         }
     }
 
-
     /**
-     * @returns Promise<any> A list of the found users.
+     * @returns Promise<User[]> A list of the found users.
      * @throws Error If something goes horribly wrong
      * @param filter An object containing the search criteria
      */
-    async getUsers(filter): Promise<User[]> {
+    async getUsers(filter): Promise<UserProps[]> {
         try {
-            return await UserModel.find(filter);
+            return await User.find(filter);
         } catch (err) {
           throw new Error(err);
         }
     }
 
     /**
-     * @returns Promise<any> The user object after it has been changed
+     * @returns Promise<User> The user object after it has been changed
      * @throws Error when the user object is not found
      * @param Usr The user object to be modified
      */
-    async putUser(Usr: User): Promise<User> {
-            const usr = await UserModel.findOne({id: Usr._id});
-            if(usr){
-                await Usr.validate();
-                return await Usr.save();
-            } else {
-                throw new Error("Could not update user");
+    async putUser(Usr: UserProps): Promise<UserProps> {
+        const usr: UserDoc = await User.findOne({id: Usr._id});
+        if(usr){
+            try{
+                usr.name = Usr.name;
+                usr.surname = Usr.surname;
+                usr.initials = Usr.initials;
+                usr.email = Usr.email;
+                usr.password = Usr.password;
+                usr.signature = Usr.signature as any;
+                usr.validated = Usr.validated;
+                usr.tokenDate = Usr.tokenDate;
+                usr.tokens = Usr.tokens as any;
+                usr.owned_workflows = Usr.owned_workflows;
+                usr.workflows = Usr.workflows;
+                return await usr.save();
             }
+            // try{
+            //     return await User.findOneAndUpdate({_id: usr._id}, {$set: Usr as any}, {useFindAndModify: false});
+            // }
+            catch(err){
+                throw new Error(err);
+            }
+        }else{
+            throw new Error("Could not find User");
+        }
     }
 
+    async addToken(Usr: UserProps){
+        try{
+            return await User.updateOne({_id: Usr._id}, {tokens: Usr.tokens as any})
+        }
+        catch(err){
+            throw new Error(err);
+        }
+    }
+
+    /*async putSignature(user: UserProps): Promise<UserProps>{
+        const usr: UserDoc = await User.findOne({id: user._id});
+        if(usr){
+            try{
+                usr.signature = user.signature;
+                return await usr.save();
+            }
+            catch(err){
+                throw new Error(err);
+            }
+        }else{
+            throw new Error("Could not find User");
+        }
+    }
+
+    async addToken(user: UserProps): Promise<UserProps>{
+        const usr: UserDoc = await User.findOne({id: user._id});
+        if(usr){
+            try{
+                usr.signature = user.signature;
+                return await usr.save();
+            }
+            catch(err){
+                throw new Error(err);
+            }
+        }else{
+            throw new Error("Could not find User");
+        }
+    }*/
+
     /**
-     * @returns Promise<any> The user object if it was found
+     * @returns Promise<User> The user object if it was found
      * @throws Error if findOne breaks somehow
      * @param filter An object containing the search criteria
      */
-    async getUser(filter): Promise<User> {
+    async getUser(filter): Promise<UserProps> {
         try {
-            return await UserModel.findOne(filter);
+            return await User.findOne(filter);
         } catch(err) {
-            throw err;
+            throw new Error(err);
         }
     }
 
     /**
-     * @returns Promise<any> The deleted user
+     * @returns Promise<User> The deleted user
      * @throws Error If the user could not be deleted
      * @param id The id of the user that is to be deleted
      */
-    async deleteUser(id: Types._ObjectId): Promise<User> {
+    async deleteUser(id: Types._ObjectId): Promise<UserProps> {
         try{
-            return await UserModel.findOneAndDelete({_id: id});
+            return await User.findOneAndDelete({_id: id});
         } catch (err){
-            throw err;
+            throw new Error(err);
         }
     }
 }

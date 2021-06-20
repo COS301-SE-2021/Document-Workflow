@@ -1,43 +1,47 @@
 import { Router } from "express";
 import { autoInjectable } from "tsyringe";
 import DocumentService from "./DocumentService";
-import { DocumentI } from "./Document";
+import Document from "./Document";
+import Authentication from "../auth/Authentication";
+import ServerError from "../error/ServerError";
 
 @autoInjectable()
 export default class DocumentController{
-    documentService: DocumentService;
     router: Router;
 
-    constructor(documentService: DocumentService) {
-        this.documentService = documentService;
+    constructor(private documentService: DocumentService, private authentication: Authentication) {
         this.router = new Router();
     }
 
-    async getDocumentsRoute(): Promise<DocumentI[]> {
+    async auth(req, res, next) {
+        await this.authentication.auth(req,res,next);
+    }
+
+    async getDocumentsRoute(): Promise<Document[]> {
         try{
             return await this.documentService.getDocuments();
         } catch(err) {
-            throw err;
+            throw new ServerError(err.toString());
         }
     }
-    /*
-    async uploadDocumentRoute(request) {
+
+    async uploadDocumentRoute(request): Promise<Document> {
         try {
             return await this.documentService.uploadDocument(request);
         } catch (err) {
-            throw err;
-        }
-    }*/
-
-    async retrieveDocumentRoute(request) :Promise<any>{
-        try {
-            return await this.documentService.retrieveDocument(request);
-        } catch (err) {
-            throw err;
+            throw new ServerError(err.toString());
         }
     }
 
-    routes() { //TODO: get rid of this later on since it isn't as secure as a post request.
+    async retrieveDocumentRoute(request): Promise<Document> {
+        try {
+            return await this.documentService.retrieveDocument(request);
+        } catch (err) {
+            throw new ServerError(err.toString());
+        }
+    }
+
+    routes() {
         this.router.get("", async (req, res) => {
             try {
                 res.status(200).json(await this.getDocumentsRoute());
@@ -46,15 +50,15 @@ export default class DocumentController{
             }
         });
 
-        /*this.router.post("", async (req,res) => {
+        this.router.post("",  async (req,res) => {
             try {
                 res.status(200).json(await this.uploadDocumentRoute(req));
             } catch(err){
                 res.status(400).json(err);
             }
-        });*/
+        });
 
-        this.router.post('/retrieve', async (req,res)=>{
+        this.router.post('/retrieve', this.auth, async (req,res)=>{
             try {
                 res.status(200).json(await this.retrieveDocumentRoute(req));
             } catch(err){

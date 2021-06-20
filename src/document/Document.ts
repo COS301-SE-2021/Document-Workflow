@@ -1,6 +1,6 @@
-import { Schema, model } from 'mongoose';
+import mongoose, { Schema, model } from 'mongoose';
 
-export interface DocumentI {
+export default interface Document extends mongoose.Document{
     workflow_id: string;
     doc_name: string;
     mimetype: string;
@@ -9,7 +9,7 @@ export interface DocumentI {
     document_path: string;
 }
 
-const documentSchema = new Schema<DocumentI>({
+const documentSchema = new Schema<Document>({
     workflow_id: {type: String, required:true},
     doc_name: { type: String, required: true},
     mimetype: { type: String, required: true },
@@ -18,4 +18,4 @@ const documentSchema = new Schema<DocumentI>({
     document_path: {type:String, required: true}
 });
 
-export default model<DocumentI>("Document", documentSchema);
+export const DocumentModel = model<Document>("Document", documentSchema);
