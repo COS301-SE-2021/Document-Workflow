@@ -13,31 +13,26 @@ export default class UserService {
     constructor(private userRepository: UserRepository) {}
 
     async authenticateUser(password, usr: UserProps) {
-        try{
-            const result = await bcrypt.compare(password, usr.password);
-            if(result){
-                return this.generateToken(usr.email, usr._id);
-            }
+        const result = await bcrypt.compare(password, await usr.password);
+        if(result){
+            return this.generateToken(usr.email, usr._id);
+        }else{
+            throw new AuthenticationError("Password or Email is incorrect");
         }
-        catch(err){
-            console.error(err);
-            throw new AuthenticationError(err);
-        }
-        // await bcrypt.compare(password, usr.password)
-        //     .then((result) => {
-        //         if(result) {
-        //             return this.generateToken(usr.email, usr._id);
-        //         }
-        //         else throw new AuthenticationError("Password or Email Incorrect");
-        //     })
-        //     .catch((err) => {
-        //         console.error(err);
-        //         throw new AuthenticationError("Could not authenticate user");
-        //     });
+    }
+
+    async getHashedPassword(password: string){
+        return await bcrypt.hash(password, parseInt(process.env.SALT_ROUNDS))
+            .then(function(hash){
+                return hash;
+            })
+            .catch(err => {
+                throw new Error(err);
+            });
     }
 
     generateToken(email, id): string{
-        return jwt.sign({id: id, email: email}, process.env.SECRET, {expiresIn: "5m"});
+        return jwt.sign({id: id, email: email}, process.env.SECRET, {expiresIn: "1 hour"});
     }
 
     async getUser(request): Promise<UserProps> {
@@ -93,13 +88,7 @@ export default class UserService {
             const usr: UserProps = req.body;
             usr.signature = req.files.signature.data;
             usr.validateCode = crypto.randomBytes(64).toString('hex');
-            usr.password = await bcrypt.hash(usr.password, parseInt(process.env.SALT_ROUNDS))
-                .then(function(hash){
-                    return hash;
-                })
-                .catch(err => {
-                    throw new Error(err);
-                });
+            usr.password = await this.getHashedPassword(usr.password);
             //const user: UserProps = await this.userRepository.postUser(usr);
             const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
             usr.tokens = [token];
@@ -168,19 +157,27 @@ export default class UserService {
         }
         const user = await this.userRepository.getUser({"email": req.body.email});
         if(user.validated){
-            return await this.authenticateUser(req.body.password, user);
+            try{
+                return await this.authenticateUser(req.body.password, user);
+            }
+            catch(err){
+                throw new AuthenticationError(err.message);
+            }
         } else {
             throw new AuthenticationError("User must be validated");
         }
     }
 
     async logoutUser(req): Promise<UserProps> {
-        if(!req.user.tokens || !req.token){
+        if(!req.user){
             throw new RequestError("Missing required properties");
         }
-        req.user.tokens = req.user.tokens.filter(token => {return token.token !== req.token});
+        const user = await this.userRepository.getUser({email: req.user.email});
+        const tokens: Token[] = req.user.tokens;
+        tokens.filter(token => {return token.token !== req.user.token});
+        user.tokens = tokens as any;
         try {
-            return await req.user.save();
+            return await this.userRepository.putUser(user);
         }
         catch(err){
             console.error(err);
