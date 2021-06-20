@@ -1,7 +1,6 @@
 import Document, { DocumentModel } from "./Document";
 import * as AWS from 'aws-sdk';
 import { Types } from "mongoose";
-import ServerError from "../error/ServerError";
 
 const s3 = new AWS.S3({
     region: process.env.AWS_REGION,
@@ -13,8 +12,8 @@ export default class DocumentRepository {
 
     async postDocument(doc: Document, file: File): Promise<Document> {
         try{
-            await doc.validate();
-            await doc.save();
+            const newDoc = new DocumentModel(doc);
+            await newDoc.save();
         }
         catch(err) {
             throw new Error("Could not save Document data");
