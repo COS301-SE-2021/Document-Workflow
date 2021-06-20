@@ -48,9 +48,9 @@
 ### Database: MongoDB 
 
 ## Testing 
-### Mocha
-### Chai
-### Mockingoose
+### Jest
+### Supertest
+### Karma
 
 
 
