@@ -4,16 +4,14 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="user">
+<ion-content *ngIf="ready">
   <form [formGroup]="userForm" (ngSubmit)="submit()">
     <ion-grid>
       <ion-row>
 
         <ion-col size="12" style="justify-content: center; display: block;  text-align: center">
           <div height="150px" width="150px">
-            <pdf-viewer id="pdf" class="modal-fullscreen" [src]="srcFile" [render-text]="true" [original-size]="false"
-              [autoresize]="true" style="display: block;">
-            </pdf-viewer>
+           <img [src]="srcFile" height="150px" width='200px'>
           </div>
         </ion-col>
       </ion-row>
