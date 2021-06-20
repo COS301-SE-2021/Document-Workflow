@@ -55,12 +55,7 @@ export class UserProfilePage implements OnInit {
           confirmPassword: ['',[Validators.nullValidator]],
         }, formOptions);
 
-        // const a  = new Uint8Array( response.data.signature.data);
-        console.log(response.data.signature.data);
-        const blob = new Blob([response.data.signature.data], {type:"image/png"});
-        console.log(blob);
-        this.srcFile  = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(blob));
-        console.log(this.srcFile)
+        this.srcFile ="data:image/png;base64," + response.data.signature;
         this.ready = true;
       }
     });

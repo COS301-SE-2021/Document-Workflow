@@ -227,13 +227,14 @@ export default class UserService {
                 surname: user.surname,
                 initials: user.initials,
                 email: user.email,
-                signature: user.signature,
+                signature:user.signature.toString(),
                 owned_workflows: user.owned_workflows,
                 workflows: user.workflows
             };
             return {status: "success", data: data, message:""};
         }
         catch(err){
+            console.log(err);
             throw "Could not fetch user details";
         }
     }
