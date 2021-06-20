@@ -103,8 +103,7 @@ export class LoginRegisterPage implements OnInit {
   }
 
   fileUnspecified(): void{
-    //For Brent for if the signasture doesnt exists
-    this.userAPIService.displayPopOver('Missing signature', 'Please add a signature')
+    this.userAPIService.displayPopOver('Missing signature', 'Please add a signature');
   }
 
 

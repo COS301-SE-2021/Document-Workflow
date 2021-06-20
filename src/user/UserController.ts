@@ -177,7 +177,7 @@ export default class UserController{
 
         this.router.get("/verify", async(req,res) =>{
             try {
-                res.status(200).json(await this.verifyUserRoute(req));
+                res.status(200).send(await this.verifyUserRoute(req));
             } catch(err){
                 res.status(400).json(err);
             }

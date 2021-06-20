@@ -170,6 +170,8 @@ export default class WorkFlowService{
     async removeOwnedWorkFlowId(email, id){
         let user = await this.usersRepository.getUser({email:email});
         const index = user.owned_workflows.indexOf(id);
+        if(index === -1)
+            return;
         user.owned_workflows.splice(index, 1);
         await this.usersRepository.putUser(user);
     }
@@ -177,6 +179,8 @@ export default class WorkFlowService{
     async removeWorkFlowId(email, id){
         let user = await this.usersRepository.getUser({email:email});
         const index = user.workflows.indexOf(id);
+        if(index === -1)
+            return;
         user.workflows.splice(index, 1);
         await this.usersRepository.putUser(user);
     }
