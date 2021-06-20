@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, HostListener, ElementRef, AfterViewInit }
 import SignaturePad from 'signature_pad';
 // import { Base64ToGallery } from '@ionic-native/base64-to-gallery/ngx';
 import {FormGroup} from '@angular/forms';
-import { NavController, ModalController } from '@ionic/angular';
+import { NavController, ModalController,ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import {LoginRegisterPage} from '../../pages/login-register/login-register.page';
 
@@ -22,7 +22,8 @@ export class AddSignatureComponent implements OnInit, AfterViewInit {
     private elementRef: ElementRef,
     public navCtrl: NavController,
     private router: Router,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private toastCtrlr: ToastController
   ) { }
 
   @HostListener('window:resize', ['$event'])
@@ -55,14 +56,26 @@ export class AddSignatureComponent implements OnInit, AfterViewInit {
     console.log(this.saveSign);
     // this.navCtrl.push(LoginRegisterPage,{saveSign: this.saveSign});
   }
-  done()
-  {
+  async done() {
     // this.navCtrl.navigateBack('/login');
     this.modalCtrl.create({
       component: LoginRegisterPage
     }).then((modal) => {
       modal.present();
     });
+
+    const signCreated = await this.toastCtrlr.create({
+      message: 'Signature Created!',
+      color: 'dark',
+      duration: 3000,
+      position: 'top',
+    });
+
+    await signCreated.present();
+
+    setTimeout(() => {
+      signCreated.dismiss();
+    }, 3000);
   }
 
   isCanvasBlank(): boolean {

@@ -184,18 +184,6 @@ export class LoginRegisterPage implements OnInit {
       });
     }
 
-    if (!this.plat.is('hybrid')) {
-      console.log('here');
-      buttons.push({
-          text: 'Edit Signature',
-          icon: 'edit',
-          handler: () => {
-            this.router.navigate(['addSignature']);
-          },
-        }
-      );
-    }
-
     const actionSheet = await this.actionSheetController.create({
       header: 'Select Image Source',
       buttons,

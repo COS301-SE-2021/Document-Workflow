@@ -21,4 +21,8 @@ describe('AddSignatureComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+  // ToDO: Add More Unit Testing
+  it('testing isCanvaBlank function', () => {
+    expect(component.isCanvasBlank()).toBe('false');
+  });
 });
