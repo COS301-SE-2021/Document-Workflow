@@ -237,5 +237,31 @@ export default class UserService {
             throw "Could not fetch user details";
         }
     }
+
+    encryptSignature(buffer){
+        let cipher,
+            result,
+            iv;
+
+        iv = crypto.randomBytes(16);
+        cipher = crypto.createCipheriv(process.env.ALGORITHM,process.env.SECRET, iv);
+        result = Buffer.concat([iv, cipher.update(buffer), cipher.final()]);
+
+        return result;
+    }
+
+    decryptSignature(buffer){
+        let decipher,
+            result,
+            iv;
+
+        iv = buffer.slice(0, 16);
+
+        buffer = buffer.slice(16);
+        decipher = crypto.createDecipheriv(process.env.ALGORITHM,process.env.SECRET, iv);
+        result = Buffer.concat([decipher.update(buffer), decipher.final()]);
+
+        return result;
+    }
 }
 
