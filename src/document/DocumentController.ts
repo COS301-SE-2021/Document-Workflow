@@ -2,19 +2,27 @@ import { Router } from "express";
 import { autoInjectable } from "tsyringe";
 import DocumentService from "./DocumentService";
 import Document from "./Document";
-import Authentication from "../auth/Authentication";
+import jwt from "jsonwebtoken";
 import ServerError from "../error/ServerError";
 
 @autoInjectable()
 export default class DocumentController{
     router: Router;
 
-    constructor(private documentService: DocumentService, private authentication: Authentication) {
+    constructor(private documentService: DocumentService) {
         this.router = new Router();
     }
 
-    async auth(req, res, next) {
-        await this.authentication.auth(req,res,next);
+    async auth(req,res,next){
+        try{
+            const token = req.header("Authorization").replace("Bearer ", "");
+            const decoded = jwt.verify(token, process.env.SECRET);
+            req.user = {id: decoded.id, email: decoded.email, token: token};
+            next();
+        }
+        catch(err){
+            console.error(err);
+        }
     }
 
     async getDocumentsRoute(): Promise<Document[]> {

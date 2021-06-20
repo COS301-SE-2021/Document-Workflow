@@ -12,7 +12,7 @@ export default interface Document extends mongoose.Document{
 const documentSchema = new Schema<Document>({
     workflow_id: {type: String, required:true},
     doc_name: { type: String, required: true},
-    mimetype: { type: String, required: true },
+    mimetype: { type: String, required: true},
     encoding: {type: String, required: true},
     size: {type: Number, required: true},
     document_path: {type:String, required: true}
