@@ -197,12 +197,13 @@ export class LoginRegisterPage implements OnInit {
       component: AddSignatureComponent
     });
 
-    (await mod).present();
+    await (await mod).present();
 
     (await mod).onDidDismiss().then(async (data) => {
       this.registerButton = (await data).data.registerButton,
       this.file = (await data).data.signature;
-      console.log(this.file);
+      console.log(typeof(this.file));
+      //console.log(this.file);
     });
   }
 
@@ -215,18 +216,6 @@ export class LoginRegisterPage implements OnInit {
 
     (await mod).onDidDismiss();
   }
-
-  async addSignature(source: CameraSource) {
-    const image = await Camera.getPhoto({
-      quality: 60,
-      allowEditing: true,
-      resultType: CameraResultType.Base64,
-      source
-    });
-
-    console.log('image: ', image);
-  }
-
 
 //  Loading Control for Register buttons
   async loadingRegister()

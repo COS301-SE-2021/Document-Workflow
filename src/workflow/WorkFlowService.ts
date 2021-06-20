@@ -70,7 +70,7 @@ export default class WorkFlowService{
                 const result = await this.usersRepository.getUsers({email: email});
                 if (result.length == 0) {
                     console.log("User " + email + " does not exist")
-                    throw "User " + email + " does not exist";
+                    throw {status: "error", data:{}, message:"User " + email + " does not exist"};
                 }
             }
         }
@@ -114,9 +114,9 @@ export default class WorkFlowService{
             name: workflow.name,
             owner_email: workflow.owner_email,
             document_path: workflow.document_path,
+            description: workflow.description,
             phases: workflow.phases
         };
-
         return {status:"success", data: data, message:""};
     }
 
@@ -154,7 +154,7 @@ export default class WorkFlowService{
             for(let i=0; i<phases.length; ++i){
                 const phase = phases[i];
                 for(let k=0; k<phase.length; ++k)
-                    if(phase[k] != workflow.owner_email)
+                    if(phase[k] !== workflow.owner_email)
                         await this.removeWorkFlowId(phase[k], workflow_id);
             }
             console.log("Workflow ID removed from all participants");
@@ -176,8 +176,8 @@ export default class WorkFlowService{
 
     async removeWorkFlowId(email, id){
         let user = await this.usersRepository.getUser({email:email});
-        const index = user.owned_workflows.indexOf(id);
-        user.owned_workflows.splice(index, 1);
+        const index = user.workflows.indexOf(id);
+        user.workflows.splice(index, 1);
         await this.usersRepository.putUser(user);
     }
 }

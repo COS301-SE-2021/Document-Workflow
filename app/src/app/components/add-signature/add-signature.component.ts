@@ -52,7 +52,9 @@ export class AddSignatureComponent implements OnInit, AfterViewInit {
 
   save() {
     this.saveSign = this.signaturePad.toDataURL();
-    console.log(this.saveSign);
+    console.log(this.signaturePad.toDataURL());
+    this.download(this.saveSign, "Signature");
+    //console.log(this.saveSign);
     // this.navCtrl.push(LoginRegisterPage,{saveSign: this.saveSign});
   }
 
@@ -60,7 +62,7 @@ export class AddSignatureComponent implements OnInit, AfterViewInit {
   {
     this.modalCtrl.dismiss({
       "signature": this.saveSign,
-      "registerBtn" : false
+      //"registerBtn" : false
   });
     // // this.navCtrl.navigateBack('/login');
     // this.modalCtrl.create({
@@ -68,6 +70,44 @@ export class AddSignatureComponent implements OnInit, AfterViewInit {
     // }).then((modal) => {
     //   modal.present();
     // });
+  }
+
+  download(data, filename) {
+    const file = this.dataURItoBlob(data);
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+      window.navigator.msSaveOrOpenBlob(file, "Signature");
+    else { // Others
+      var a = document.createElement("a"),
+        url = URL.createObjectURL(file);
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function() {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }, 0);
+    }
+  }
+
+  dataURItoBlob(dataURI) {
+    // convert base64 to raw binary data held in a string
+    // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
+    var byteString = atob(dataURI.split(',')[1]);
+
+    // separate out the mime component
+    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+    // write the bytes of the string to an ArrayBuffer
+    var ab = new ArrayBuffer(byteString.length);
+    var ia = new Uint8Array(ab);
+    for (var i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+
+    return new Blob([ab], {type: mimeString});
+
+
   }
 
   isCanvasBlank(): boolean {
