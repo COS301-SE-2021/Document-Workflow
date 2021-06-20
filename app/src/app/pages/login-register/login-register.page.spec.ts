@@ -17,12 +17,18 @@ describe('LoginRegisterPage', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));
-
+  afterEach(() => {
+    fixture.destroy();
+  });
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
   it('should change register button',()=>{
     expect(component.changeOver()).toBe(true);
+  });
+  it('Register form invalid when empty', () => {
+    console.log('component.loginRegisterForm.form', component.registerForm);
+    expect(component.registerForm.valid).toBeFalsy();
   });
 });

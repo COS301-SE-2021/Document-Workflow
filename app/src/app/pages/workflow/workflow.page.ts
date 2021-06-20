@@ -23,6 +23,7 @@ import { ConfirmDeleteWorkflowComponent } from 'src/app/components/confirm-delet
   styleUrls: ['./workflow.page.scss'],
 })
 export class WorkflowPage implements OnInit {
+  public title = 'Home Page';
   documents: documentImage[] = [];
   ownerEmail: string;
   user: User;
@@ -103,6 +104,9 @@ export class WorkflowPage implements OnInit {
     });
   }
 
+    changeTitle(title) {
+    this.title = title;
+  }
   async loadWorkFlows() {
     this.userApiService.getAllWorkOwnedFlows((response) => {
       if (response.status === 'success') {
@@ -172,7 +176,6 @@ export class WorkflowPage implements OnInit {
     (await addModal).present();
 
     (await addModal).onDidDismiss().then(async (data) => {
-
       // const users = (await data).data['users'];
       const documents = (await data).data['document'];
       const file = (await data).data['file'];
