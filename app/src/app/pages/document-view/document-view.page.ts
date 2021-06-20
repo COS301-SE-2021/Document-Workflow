@@ -12,8 +12,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DocumentAPIService } from 'src/app/Services/Document/document-api.service';
 import { async } from '@angular/core/testing';
 import { ConfirmSignaturesComponent } from 'src/app/components/confirm-signatures/confirm-signatures.component';
-import jsPDF from 'jspdf'
-import html2canvas from 'html2canvas'
 
 @Component({
   selector: 'app-document-view',
@@ -21,7 +19,6 @@ import html2canvas from 'html2canvas'
   styleUrls: ['./document-view.page.scss'],
 })
 export class DocumentViewPage implements OnInit {
-  docPDF = null;
   srcFile: any;
   rotated: number;
   setZoom: any;
@@ -71,10 +68,7 @@ export class DocumentViewPage implements OnInit {
   getDocument(id: string){
     this.docApi.getDocument(id, (response)=>{
       if (response){
-        console.log(response);
-        console.log(response.data.filedata);
         const buff = response.data.filedata.Body.data; //wut
-        console.log(buff);
         const a  = new Uint8Array( buff);
         this.srcFile = a;
       }else{

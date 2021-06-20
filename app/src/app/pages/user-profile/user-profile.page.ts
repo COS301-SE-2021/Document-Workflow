@@ -8,6 +8,7 @@ import { match } from './../../Services/match.validator';
 import { ReactiveFormsModule } from '@angular/forms';
 
 
+
 @Component({
   selector: 'app-user-profile',
   templateUrl: './user-profile.page.html',
@@ -17,7 +18,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 export class UserProfilePage implements OnInit {
   user: User;
   userForm: FormGroup;
-
+  srcFile: any;
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -26,6 +27,10 @@ export class UserProfilePage implements OnInit {
 
   async ngOnInit() {
     await (this.getUser());
+  }
+
+  ngOnDestroy(): void {
+  // URL.revokeObjectURL();
   }
 
   async getUser(){
@@ -44,8 +49,12 @@ export class UserProfilePage implements OnInit {
           password: ['',[Validators.nullValidator]],
           confirmPassword: ['',[Validators.nullValidator]],
         }, formOptions);
+
+        const a  = new Uint8Array( response.data.signature.data);
+        console.log(a);
+        this.srcFile = a;
       }
-    })
+    });
   }
 
   submit(){
