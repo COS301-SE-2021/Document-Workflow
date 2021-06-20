@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ɵɵsanitizeUrlOrResourceUrl } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { AbstractControlOptions, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { User, UserAPIService } from '../../Services/User/user-api.service';
 import { match } from './../../Services/match.validator';
 import { ReactiveFormsModule } from '@angular/forms';
+import { DomSanitizer } from '@angular/platform-browser';
 
 
 
@@ -19,10 +20,12 @@ export class UserProfilePage implements OnInit {
   user: User;
   userForm: FormGroup;
   srcFile: any;
+  ready: boolean;
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private userService: UserAPIService
+    private userService: UserAPIService,
+    private sanitizer: DomSanitizer
     ) { }
 
   async ngOnInit() {
@@ -33,7 +36,9 @@ export class UserProfilePage implements OnInit {
   // URL.revokeObjectURL();
   }
 
+
   async getUser(){
+    this.ready = false;
     await this.userService.getUserDetails(async (response)=>{
       if(response){
         await (this.user = response.data);
@@ -50,9 +55,13 @@ export class UserProfilePage implements OnInit {
           confirmPassword: ['',[Validators.nullValidator]],
         }, formOptions);
 
-        const a  = new Uint8Array( response.data.signature.data);
-        console.log(a);
-        this.srcFile = a;
+        // const a  = new Uint8Array( response.data.signature.data);
+        console.log(response.data.signature.data);
+        const blob = new Blob([response.data.signature.data], {type:"image/png"});
+        console.log(blob);
+        this.srcFile  = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(blob));
+        console.log(this.srcFile)
+        this.ready = true;
       }
     });
   }
@@ -66,6 +75,7 @@ export class UserProfilePage implements OnInit {
   }
 
   back(){
+
     this.router.navigate(['home']);
   }
 }
