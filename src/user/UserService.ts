@@ -79,7 +79,7 @@ export default class UserService {
             throw err;
         }
     }
-
+    //TODO: adjust error handling (Delarey has been working on this).
     async registerUser(req): Promise<any> {
         //Validation:
         let signature_base64 = req.files.signature.data.toString('base64');
@@ -93,7 +93,7 @@ export default class UserService {
                     surname: Usr.surname,
                     initials: Usr.initials,
                     email: Usr.email,
-                    password: Usr.password,
+                    password: this.validatePassword(Usr.password),
                     validated: Usr.validated,
                     tokenDate: Usr.tokenDate,
                     validateCode: crypto.randomBytes(64).toString('hex'),
@@ -109,6 +109,12 @@ export default class UserService {
                 throw err;
             }
         }
+    }
+
+    private validatePassword(password): string{
+        if(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/.test(password))
+            return password;
+        else throw {status: "failed", data: {}, message:"Password is not strong enough"};
     }
     
     async verifyUser(req) : Promise<any>{
