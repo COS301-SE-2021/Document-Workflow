@@ -1,8 +1,9 @@
 import { injectable } from "tsyringe";
-import {WorkFlowI} from './WorkFlow';
+import WorkFlow ,{WorkFlowModel} from './WorkFlow';
 import WorkFlowRepository from './WorkFlowRepository';
 import DocumentService from "../document/DocumentService";
 import UserRepository from "../user/UserRepository";
+import { UserDoc } from "../user/User";
 
 @injectable()
 export default class WorkFlowService{
@@ -26,7 +27,7 @@ export default class WorkFlowService{
         await this.checkUsersExist(phases);
         //Now that validation is complete we can create the workflow
         try{
-            const workflow : WorkFlowI = {
+            const workflow = {
                 _id: null,
                 name: req.body.name,
                 description: req.body.description,
@@ -34,14 +35,14 @@ export default class WorkFlowService{
                 document_id: null,
                 document_path: req.files.document.name,
                 phases: req.body.phases
-            }
+            } as WorkFlow;
             let workflow_id = await this.workflowRepository.postWorkFlow(workflow);
-            let document_id = await this.documentService.uploadDocument(req.files.document, workflow_id);
+            let document = await this.documentService.uploadDocument(req.files.document, workflow_id);
             console.log("Workflow created and document uploaded, now updating the workflow");
             let _workflow = await this.workflowRepository.getWorkFlow(workflow_id);
 
             _workflow._id = workflow_id;
-            _workflow.document_id = document_id;
+            _workflow.document_id = document._id;
             _workflow.document_path = workflow_id + "/" + workflow.document_path;
 
             await this.workflowRepository.putWorkFlow(_workflow);
@@ -87,7 +88,7 @@ export default class WorkFlowService{
                 let user = users[0];
                 if(user.email != owner_email && !user.workflows.includes(workflow_id))
                     user.workflows.push(workflow_id);
-                await this.usersRepository.putUser(user);
+                await this.usersRepository.putUser(user as UserDoc);
             }
         }
     }
@@ -99,7 +100,7 @@ export default class WorkFlowService{
         console.log(user.owned_workflows);
         user.owned_workflows.push(workflow_id);
         console.log(user.owned_workflows);
-        await this.usersRepository.putUser(user);
+        await this.usersRepository.putUser(user as UserDoc);
     }
 
 

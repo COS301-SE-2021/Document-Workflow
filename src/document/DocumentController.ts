@@ -34,13 +34,13 @@ export default class DocumentController{
         }
     }
 
-    async uploadDocumentRoute(request): Promise<Document> {
+    /*async uploadDocumentRoute(request): Promise<Document> {
         try {
             return await this.documentService.uploadDocument(request);
         } catch (err) {
             throw new ServerError(err.toString());
         }
-    }
+    }*/
 
     private async testDeleteDocument(req) {
         try{
@@ -69,13 +69,13 @@ export default class DocumentController{
             }
         });
 
-        this.router.post("",  async (req,res) => {
+        /*this.router.post("",  async (req,res) => {
             try {
                 res.status(200).json(await this.uploadDocumentRoute(req));
             } catch(err){
                 res.status(400).json(err);
             }
-        });
+        });*/
 
         this.router.post('/retrieve', this.auth, async (req,res)=>{
             try {
@@ -84,7 +84,7 @@ export default class DocumentController{
                 res.status(400).json(err);
             }
         });
-        /*
+
         this.router.post('/delete', async(req,res)=>{
             try {
                 res.status(200).json(await this.testDeleteDocument(req));
@@ -92,7 +92,7 @@ export default class DocumentController{
                 console.log(err);
                 res.status(200).json({status:"error", data:{}, message:err});
             }
-        })*/
+        });
 
         return this.router;
     }

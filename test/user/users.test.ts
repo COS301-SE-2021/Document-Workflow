@@ -6,6 +6,7 @@ import { UserDoc } from "../../src/user/User";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import AuthenticationError from "../../src/error/AuthenticationError";
+import WorkFlowRepository from "../../src/workflow/WorkFlowRepository";
 dotenv.config();
 
 describe("user unit tests", () => {
@@ -15,7 +16,7 @@ describe("user unit tests", () => {
 
     beforeEach(() => {
         userRepository = new UserRepository();
-        userService = new UserService(userRepository);
+        userService = new UserService(userRepository, new WorkFlowRepository());
         userController = new UserController(userService);
     });
 
@@ -35,7 +36,7 @@ describe("user unit tests", () => {
                 initials: "TT",
                 email: "testy@test.gov",
                 password: "$2a$10$jpqmyXtZ1wF5UEX2Mmu0d.iweFGJXlFfU2jar.5.Cr3bQYuVVvdh2",
-                signature: new Buffer("Buffer string for signature"),
+                signature: "signaturetext",
                 validated: false,
                 validateCode: "db0ecc907a401a027adcd18113a359c1b3341a9a5cb9eedd4478d97942bef065c9cce0d255199cc8846697a65962404e9da27c3ac8e598dd568ec1db85e23c2e",
                 tokens: "",

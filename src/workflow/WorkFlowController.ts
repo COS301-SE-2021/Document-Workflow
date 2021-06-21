@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { autoInjectable } from "tsyringe";
 import UserService from "./../user/UserService";
-import { UserI } from "./../user/User";
+//import User,{ UserModel } from "./../user/User";
 import workFlowService from "./WorkFlowService";
-import {WorkFlowI} from "./WorkFlow"
+import WorkFlow, {WorkFlowModel} from "./WorkFlow"
 import WorkFlowService from "./WorkFlowService";
 import UserController from "./../user/UserController";
 import Authenticator from "../Authenticate";

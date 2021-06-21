@@ -237,7 +237,7 @@ export default class UserController{
             }
         });
 
-        this.router.post("/authenticate", this.Authenticate, async (req,res) =>{ //This route is used by the front end to forbid access to certain pages.
+        this.router.post("/authenticate", this.auth, async (req,res) =>{ //This route is used by the front end to forbid access to certain pages.
             res.status(200).json({status:"success", data:{}, message:""});
         });
 

@@ -1,6 +1,6 @@
 import { injectable } from "tsyringe";
 import DocumentRepository from "./DocumentRepository";
-import Document from "./Document";
+import Document, { DocumentModel } from "./Document";
 import RequestError from "../error/RequestError";
 import fs from 'fs';
 
@@ -17,12 +17,20 @@ export default class DocumentService {
         }
     }
 
-    async uploadDocument(req): Promise<Document>{
-        if(!req.body || !req.files){
-            throw new RequestError("Missing required properties");
-        }
+    async uploadDocument(file: File, workflowId): Promise<Document>{
+        // if(!req.body || !req.files){
+        //     throw new RequestError("Missing required properties");
+        // }
         try{
-            return await this.documentRepository.postDocument(req.body, req.files.file);
+            const doc = new DocumentModel({
+                workflow_id: workflowId,
+                doc_name: file.name,
+                mimetype: file.type,
+                encoding: "",
+                size: file.size,
+                document_path: file.name + '/'
+            })
+            return await this.documentRepository.postDocument(doc, file);
         }
         catch(err) {
             throw new RequestError("Could not store document");

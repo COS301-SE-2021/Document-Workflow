@@ -1,10 +1,10 @@
-import WorkFlow, {WorkFlowI} from "./WorkFlow";
+import WorkFlow, {WorkFlowModel} from "./WorkFlow";
 
 export default class WorkFlowRepository{
 
-    async postWorkFlow(workflow: WorkFlowI) : Promise<any> {
+    async postWorkFlow(workflow: WorkFlow) : Promise<any> {
         console.log("Posting a new workflow");
-        const new_workflow = new WorkFlow({
+        const new_workflow = new WorkFlowModel({
             name: workflow.name,
             description:workflow.description,
             owner_email: workflow.owner_email,
@@ -21,11 +21,11 @@ export default class WorkFlowRepository{
         return new_workflow._id;
     }
 
-    async putWorkFlow(workflow: WorkFlowI) :Promise<void>{
+    async putWorkFlow(workflow: WorkFlow) :Promise<void>{
         try{
-            const _workflow = WorkFlow.findById(workflow._id);
+            const _workflow = WorkFlowModel.findById(workflow._id);
             if(_workflow){ //this is just to avoid creating a new workflow by accident
-                const updated_workflow = await WorkFlow.updateOne({_id:workflow._id},
+                const updated_workflow = await WorkFlowModel.updateOne({_id:workflow._id},
                     {
                         description: workflow.description,
                         name: workflow.name,
@@ -58,16 +58,16 @@ export default class WorkFlowRepository{
 
     async deleteWorkFlow(id:string){
         try{
-            await WorkFlow.deleteOne({_id: id});
+            await WorkFlowModel.deleteOne({_id: id});
         }
         catch(err){
             throw err;
         }
     }
 
-    async getWorkFlow(id:string):Promise<WorkFlowI>{
+    async getWorkFlow(id:string):Promise<WorkFlow>{
         try{
-            return await WorkFlow.findById(id);
+            return await WorkFlowModel.findById(id);
         }
         catch(err){
             throw err;
