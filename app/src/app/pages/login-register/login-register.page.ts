@@ -36,7 +36,7 @@ export class LoginRegisterPage implements OnInit {
   loginForm: FormGroup;
   registerForm: FormGroup;
   file: File;
-  registerButton: boolean; //for the toggle to change modes
+  public registerButton: boolean; //for the toggle to change modes
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   @ViewChild('fileInput', { static: false })fileInput: ElementRef;
@@ -136,17 +136,10 @@ export class LoginRegisterPage implements OnInit {
     });
   }
 
-  changeOver(): boolean {
-    if (this.registerButton) {
-      this.registerButton = false;
-      return false;
-    } else {
-      this.registerButton = true;
-      return true;
-    }
-
+  changeOver($event)
+  {
+    this.registerButton = !this.registerButton;
   }
-
 
   async selectImageSource() {
     const buttons = [

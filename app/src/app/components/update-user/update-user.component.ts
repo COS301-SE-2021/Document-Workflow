@@ -4,7 +4,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { AbstractControlOptions, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { User } from 'src/app/Services/User/user-api.service';
-import {match} from './../../Services/match.validator';
+import {match} from '../../Services/match.validator';
 @Component({
   selector: 'app-update-user',
   templateUrl: './update-user.component.html',

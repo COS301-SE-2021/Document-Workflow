@@ -2,8 +2,9 @@
   <div class="logo"></div>
 
   <ion-item>
-    <ion-label position="stacked">Register</ion-label>
-    <ion-toggle (click)="changeOver()"></ion-toggle>
+    <ion-label position="stacked" *ngIf="!registerButton">Register</ion-label>
+    <ion-label position="stacked" *ngIf="registerButton">Login</ion-label>
+    <ion-toggle (ionChange)="changeOver($event)" [checked]="registerButton"></ion-toggle>
   </ion-item>
 
 
