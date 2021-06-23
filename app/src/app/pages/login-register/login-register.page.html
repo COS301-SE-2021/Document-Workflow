@@ -7,28 +7,22 @@
     <ion-toggle (ionChange)="changeOver($event)" [checked]="registerButton"></ion-toggle>
   </ion-item>
 
-
   <ion-grid>
     <ion-row>
       <ion-col>
-        <div style="height: 100%; display: flex; align-items: center; justify-content: center;">
-          <ion-card name="login" *ngIf="!registerButton">
-            <ion-card-header color="primary">Login</ion-card-header>
+        <div id="loginF">
+          <ion-card id="loginCard" *ngIf="!registerButton">
+            <ion-card-header id="log" color="primary">Login</ion-card-header>
             <ion-card-content>
-              <form [formGroup]="loginForm" (ngSubmit)="login()">
-                <ion-item>
-                  <ion-label position="stacked">Email Address:</ion-label>
-                  <ion-input inputmode="email" formControlName="loginEmail"></ion-input>
-                </ion-item>
-                <ion-item>
-                  <ion-label position="stacked">Password:</ion-label>
-                  <ion-input type="password" formControlName="loginPassword"></ion-input>
-                </ion-item>
+              <form id="form" [formGroup]="loginForm" (ngSubmit)="login()">
+                <ion-label position="stacked">Email Address:</ion-label>
+                <app-input-form placeholder="username@jargon.com"></app-input-form>
+                <ion-label position="stacked">Password:</ion-label>
+                <app-input-form type="password" placeholder="************"></app-input-form>
                 <div text-center>
                   Reset <a routerLink='/resetPassword'>
                     password</a>
                 </div>
-
                 <ion-button padding expand="block" color="primary" fill="outline" [disabled]="!loginForm.valid"
                   type="submit">Login</ion-button>
               </form>
