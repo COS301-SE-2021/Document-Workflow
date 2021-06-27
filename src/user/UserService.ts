@@ -296,5 +296,16 @@ export default class UserService {
 
         return result;
     }
+
+    /**
+     * This function will handle the first part of resetting the password for a user account. We need to prevent CSRF attacks from being possible, thus this
+     * function will be used to generate anti CSRF tokens. Either that or we will send an email to the user's account. Either way, we will probably need CSRF
+     * tokens at some point.
+     * @param req
+     * TODO: research CSRF attacks and how to better prevent them.
+     */
+    async generatePasswordReset(req) {
+        return Promise.resolve(undefined);
+    }
 }
 
