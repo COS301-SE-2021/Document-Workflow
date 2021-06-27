@@ -29,6 +29,20 @@ export class UserProfilePage implements OnInit {
     ) { }
 
   async ngOnInit() {
+    if(localStorage.getItem('token') === null) {
+      await this.router.navigate(['/login']);
+      return;
+    }
+    else
+    {
+      this.userService.checkIfAuthorized().subscribe((response) => {
+        console.log("Successfully authorized user");
+      }, async (error) => {
+        console.log(error);
+        await this.router.navigate(['/login']);
+        return;
+      });
+    }
     await (this.getUser());
   }
 

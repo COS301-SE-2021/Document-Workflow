@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
@@ -199,8 +200,8 @@ export class LoginRegisterPage implements OnInit {
     await (await mod).present();
 
     (await mod).onDidDismiss().then(async (data) => {
-      this.registerButton = (await data).data.registerButton,
-      this.file = (await data).data.signature;
+      this.registerButton = data.data.registerButton,
+      this.file = data.data.signature;
       console.log(typeof(this.file));
       //console.log(this.file);
     });

@@ -12,6 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DocumentAPIService } from 'src/app/Services/Document/document-api.service';
 import { async } from '@angular/core/testing';
 import { ConfirmSignaturesComponent } from 'src/app/components/confirm-signatures/confirm-signatures.component';
+import { UserAPIService } from 'src/app/Services/User/user-api.service';
 
 @Component({
   selector: 'app-document-view',
@@ -32,10 +33,26 @@ export class DocumentViewPage implements OnInit {
     private navpar: NavParams,
     private route: ActivatedRoute,
     private docApi: DocumentAPIService,
-    private router: Router
+    private router: Router,
+    private userApiService: UserAPIService
   ) {}
 
   async ngOnInit() {
+    if(localStorage.getItem('token') === null) {
+      await this.router.navigate(['/login']);
+      return;
+    }
+    else
+    {
+      this.userApiService.checkIfAuthorized().subscribe((response) => {
+        console.log("Successfully authorized user");
+      }, async (error) => {
+        console.log(error);
+        await this.router.navigate(['/login']);
+        return;
+      });
+    }
+
     this.rotated = 0;
     this.setZoom = 'false';
     this.zoomLevel=1;

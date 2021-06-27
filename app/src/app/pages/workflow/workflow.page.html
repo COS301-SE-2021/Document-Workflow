@@ -33,8 +33,8 @@
       <ion-reorder style="width:100%">
         <ion-card style="width:95%; justify-content: center;margin:auto">
           <ion-card-header>
-            <ion-card-title>{{doc.name}}</ion-card-title>
-            <ion-card-subtitle>Owner of workflow: {{doc.owner_email}}
+            <ion-card-title id="workflowName">{{doc.name}}</ion-card-title>
+            <ion-card-subtitle id="workflowOwner">Owner of workflow: {{doc.owner_email}}
             </ion-card-subtitle>
             <ion-fab vertical="top" horizontal="end">
               <ion-fab-button>
@@ -59,7 +59,9 @@
               <ion-list>
                 <ion-title>Description:</ion-title>
                 <ion-item>
-                  {{doc.description}}
+                  <div id='workflowDescription'>
+                    {{doc.description}}
+                  </div>
                 </ion-item>
               </ion-list>
             </ion-item>

@@ -195,7 +195,7 @@ export class WorkflowPage implements OnInit {
       this.workFlowService.createWorkflow(workflowData, phases, file, (response) => {
         if (response.status === 'success') {
           this.userApiService.displayPopOver('Success', 'Workflow has been created');
-          location.reload();
+          this.ngOnInit();
         } else {
           console.log(response);
           this.userApiService.displayPopOver('Workflow could not be created', response.message);
