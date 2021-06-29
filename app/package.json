@@ -27,6 +27,7 @@
     "@capacitor/core": "^3.0.0",
     "@capacitor/filesystem": "^1.0.0",
     "@capacitor/haptics": "1.0.0",
+    "@capacitor/ios": "3.0.2",
     "@capacitor/keyboard": "1.0.0",
     "@ionic-native/file-chooser": "^5.33.1",
     "@ionic-native/file-opener": "^5.33.1",
