@@ -2,6 +2,7 @@ import { injectable } from "tsyringe";
 import DocumentRepository from "./DocumentRepository";
 import { DocumentI } from "./Document";
 import fs from 'fs';
+import {PDFAssembler, BinaryFile} from 'pdfassembler';
 
 @injectable()
 export default class DocumentService {
@@ -83,7 +84,11 @@ export default class DocumentService {
     }
 
     async convertToHTML(req) {
-        return Promise.resolve(undefined);
+        //console.log(req.files.document);
+        //console.log(PDFAssembler);
+        const newpdf = new PDFAssembler(req.files.document);
+        console.log(newpdf)
+        return {status:"success", data: {name: req.files.document.name}, message: ""};
     }
 }
 
