@@ -81,5 +81,9 @@ export default class DocumentService {
             });
         });
     }
+
+    async convertToHTML(req) {
+        return Promise.resolve(undefined);
+    }
 }
 
