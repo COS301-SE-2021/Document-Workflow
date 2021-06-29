@@ -40,11 +40,27 @@ export default class WorkFlowController{
         }
     }
 
+    private async updateWorkFlow(req) {
+        try{
+            return await this.workflowService.updateWorkFlow(req);
+        } catch(err) {
+            throw err;
+        }
+    }
+
     routes() {
 
         this.router.post("", this.authenticator.Authenticate, async (req, res) => {
             try {
                 res.status(200).json(await this.createWorkFlow(req));
+            } catch(err){
+                res.status(200).json(err);
+            }
+        });
+
+        this.router.post("/update", this.authenticator.Authenticate, async(req,res)=>{
+            try {
+                res.status(200).json(await this.updateWorkFlow(req));
             } catch(err){
                 res.status(200).json(err);
             }

@@ -184,4 +184,8 @@ export default class WorkFlowService{
         user.workflows.splice(index, 1);
         await this.usersRepository.putUser(user);
     }
+
+    async updateWorkFlow(req) {
+        return Promise.resolve(undefined);
+    }
 }

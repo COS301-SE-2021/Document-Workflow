@@ -101,6 +101,15 @@ export default class UserController{
         }
     }
 
+    private async generatePasswordReset(req) {
+        try{
+            return await this.userService.generatePasswordReset(req);
+        }
+        catch(err) {
+            throw err;
+        }
+    }
+
     /*
     * error codes:
     * 200 OK request succeeded
@@ -196,6 +205,9 @@ export default class UserController{
             }
         });
 
+        this.router.post("/generate_reset", async(req,res) =>{
+            res.status(200).json(await this.generatePasswordReset(req));
+        });
 
         this.router.post("/authenticate", this.Authenticate, async (req,res) =>{ //This route is used by the front end to forbid access to certain pages.
             res.status(200).json({status:"success", data:{}, message:""});
@@ -203,6 +215,7 @@ export default class UserController{
 
         return this.router;
     }
+
 
 
 }
