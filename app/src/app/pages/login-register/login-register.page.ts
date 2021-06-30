@@ -52,8 +52,8 @@ export class LoginRegisterPage implements OnInit {
 
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
-      loginEmail: ['u17015741@tuks.co.za', [Validators.required, Validators.email]],
-      loginPassword: ['submarine', [Validators.required, Validators.minLength(8)]],
+      loginEmail: ['', [Validators.required, Validators.email]],
+      loginPassword: ['', [Validators.required, Validators.minLength(8)]],
     });
     const formOptions: AbstractControlOptions = {
       validators: match('password', 'confirmPassword'),

@@ -16,9 +16,9 @@
             <ion-card-content>
               <form id="form" [formGroup]="loginForm" (ngSubmit)="login()">
                 <ion-label position="stacked">Email Address:</ion-label>
-                <ion-input inputmode="email" formControlName="loginEmail" placeholder="tim@jargon.com" name="email"></ion-input>
+                <ion-input inputmode="email" formControlName="loginEmail" placeholder="tim@jargon.com" name="loginEmail"></ion-input>
                 <ion-label position="stacked">Password:</ion-label>
-                <ion-input type="password" formControlName="loginPassword"></ion-input>
+                <ion-input type="password" formControlName="loginPassword" placeholder="**************" name="loginPassword"></ion-input>
                 <div text-center>
                   Reset <a routerLink='/resetPassword'>
                     password</a>
@@ -40,7 +40,7 @@
           <ion-card name="register" *ngIf="registerButton">
             <ion-card-header color="primary">Register</ion-card-header>
             <ion-card-content>
-              <form id="formR" [formGroup]="registerForm" (ngSubmit)="register()">
+              <form [formGroup]="registerForm" (ngSubmit)="register()">
                 <ion-item>
                   <ion-label position="stacked">First name:</ion-label>
                   <ion-input inputmode="text" formControlName="Fname" placeholder="Tim" name="Fname"></ion-input>
