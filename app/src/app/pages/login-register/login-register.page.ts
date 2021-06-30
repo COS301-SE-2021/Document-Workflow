@@ -26,6 +26,7 @@ import {LoadingController} from '@ionic/angular';
 import { Plugins } from 'protractor/built/plugins';
 import {DocumentAPIService} from './../../Services/Document/document-api.service';
 import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Component({
   selector: 'app-login-register',
@@ -37,6 +38,7 @@ export class LoginRegisterPage implements OnInit {
   registerForm: FormGroup;
   file: File;
   public registerButton: boolean; //for the toggle to change modes
+  loadG: any;
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   @ViewChild('fileInput', { static: false })fileInput: ElementRef;
@@ -48,6 +50,7 @@ export class LoginRegisterPage implements OnInit {
     private actionSheetController: ActionSheetController,
     private loadCtrl: LoadingController,
     private modal: ModalController,
+
   ) {}
 
   ngOnInit() {
@@ -220,10 +223,9 @@ export class LoginRegisterPage implements OnInit {
 //  Loading Control for Register buttons
   async loadingRegister()
   {
-    const load = await this.loadCtrl.create({
+    this.loadG = await this.loadCtrl.create({
       message: 'Hang in there... we are almost done',
-      duration: 5000,
-      showBackdrop: false,
+      showBackdrop: true,
       spinner: 'bubbles'
     });
 
