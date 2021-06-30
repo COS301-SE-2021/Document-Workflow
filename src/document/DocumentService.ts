@@ -93,22 +93,33 @@ export default class DocumentService {
     }
 
     async convertToDocX(req){
-        var defaultClient = CloudmersiveConvertApiClient.ApiClient.instance;
+        console.log(req.files)
+       /* fs.readFile('Test.pdf', (err,data)=>{
+            if (err) {
+                return console.log(err);
+            }
+            console.log(data);
+        }); */
+
+        const defaultClient = CloudmersiveConvertApiClient.ApiClient.instance;
         // Configure API key authorization: Apikey
-        var Apikey = defaultClient.authentications['Apikey'];
+        const Apikey = defaultClient.authentications['Apikey'];
         Apikey.apiKey = process.env.CLOUDMERSIVE_API_KEY;
         // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
         //Apikey.apiKeyPrefix = 'Token';
-        var apiInstance = new CloudmersiveConvertApiClient.ConvertDocumentApi();
-        var inputFile = req.files.document; // File | Input file to perform the operation on.
-        var callback = function(error, data, response) {
+        const apiInstance = new CloudmersiveConvertApiClient.ConvertDocumentApi();
+        const inputFile = 'Test.pdf';
+
+        console.log("Attempting to convert document to docx");
+        apiInstance.convertDocumentPdfToDocx(inputFile, (error, data, response) => {
+            console.log("response");
             if (error) {
                 console.error(error);
             } else {
                 console.log('API called successfully. Returned data: ' + data);
             }
-        };
-        apiInstance.convertDocumentPdfToDocx(inputFile, callback);
+        });
+
     }
 }
 
