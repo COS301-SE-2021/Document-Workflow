@@ -61,10 +61,10 @@ export class LoginRegisterPage implements OnInit {
 
     this.registerForm = this.formBuilder.group(
       {
-        Fname: ['Timothy', [Validators.required]],
-        Lname: ['Hill', [Validators.required]],
-        initials: ['TH', [Validators.required]],
-        email: ['hill@tim.com', [Validators.required, Validators.email]],
+        Fname: ['', [Validators.required]],
+        Lname: ['', [Validators.required]],
+        initials: ['', [Validators.required]],
+        email: ['', [Validators.required, Validators.email]],
         phone_number: [
           '',
           [
