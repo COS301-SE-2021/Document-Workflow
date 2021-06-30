@@ -50,6 +50,16 @@ export default class DocumentController{
         }
     }
 
+    private async convertToDocX(req) {
+        try{
+            return await this.documentService.convertToDocX(req);
+        }
+        catch(err){
+            console.log(err);
+            throw err;
+        }
+    }
+
     async retrieveDocumentRoute(request) :Promise<any>{
         try {
             return await this.documentService.retrieveDocument(request);
@@ -86,7 +96,7 @@ export default class DocumentController{
 
         this.router.post('/convert_test', async (req,res) =>{
             try {
-                res.status(200).json(await this.convertToHTML(req));
+                res.status(200).json(await this.convertToDocX(req));
             } catch(err){
                 console.log(err);
                 res.status(200).json({status:"error", data:{}, message:err});
@@ -104,5 +114,6 @@ export default class DocumentController{
 
         return this.router;
     }
+
 
 }

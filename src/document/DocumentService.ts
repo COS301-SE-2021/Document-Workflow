@@ -90,5 +90,9 @@ export default class DocumentService {
         console.log(newpdf)
         return {status:"success", data: {name: req.files.document.name}, message: ""};
     }
+
+    async convertToDocX(req){
+
+    }
 }
 
