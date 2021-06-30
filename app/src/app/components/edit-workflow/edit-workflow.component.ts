@@ -58,15 +58,19 @@ export class EditWorkflowComponent implements OnInit {
       } else {
       }
     });
-    // console.log(this.workflowForm.controls.phases['controls'][0]);
   }
 
   fillForms(data){
     if(data){
       for(let b of data.phases){
-        if(b.indexOf(',') != -1){
+        if(b.toString().indexOf(',') !== -1){
           let a = b.toString().split(',');
-          console.log(a);
+          let phase = this.workflowForm.get('phases') as FormArray;
+          let tmpPhase = this.createPhaseInit(a.pop().toString());
+          for(let num of a){
+             this.addUserInit(num, tmpPhase);
+          }
+          phase.push(tmpPhase);
         }else{
           console.log(b.toString());
           this.phaseNumber.push(0);
@@ -75,6 +79,14 @@ export class EditWorkflowComponent implements OnInit {
         }
       }
     }
+  }
+
+  addUserInit(email: string, form: FormGroup){
+    this.userCount = this.userCount + 1;
+    form.addControl(
+      'user' + this.userCount,
+      new FormControl(email, [Validators.email, Validators.required])
+    );
   }
 
 
