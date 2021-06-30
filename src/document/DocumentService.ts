@@ -3,6 +3,7 @@ import DocumentRepository from "./DocumentRepository";
 import { DocumentI } from "./Document";
 import fs from 'fs';
 import {PDFAssembler, BinaryFile} from 'pdfassembler';
+import CloudmersiveConvertApiClient from 'cloudmersive-convert-api-client';
 
 @injectable()
 export default class DocumentService {
@@ -92,7 +93,22 @@ export default class DocumentService {
     }
 
     async convertToDocX(req){
-
+        var defaultClient = CloudmersiveConvertApiClient.ApiClient.instance;
+        // Configure API key authorization: Apikey
+        var Apikey = defaultClient.authentications['Apikey'];
+        Apikey.apiKey = process.env.CLOUDMERSIVE_API_KEY;
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //Apikey.apiKeyPrefix = 'Token';
+        var apiInstance = new CloudmersiveConvertApiClient.ConvertDocumentApi();
+        var inputFile = req.files.document; // File | Input file to perform the operation on.
+        var callback = function(error, data, response) {
+            if (error) {
+                console.error(error);
+            } else {
+                console.log('API called successfully. Returned data: ' + data);
+            }
+        };
+        apiInstance.convertDocumentPdfToDocx(inputFile, callback);
     }
 }
 
