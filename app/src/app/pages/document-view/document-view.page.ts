@@ -83,6 +83,47 @@ export class DocumentViewPage implements OnInit {
     });
   }
 
+  async printBrentIdea(event){
+
+    let xCanvas = document.getElementsByTagName('canvas')[0].style.width;
+    let x = parseInt(xCanvas.substring(0, xCanvas.length-2));
+    let yCanvas = document.getElementsByTagName('canvas')[0].style.height;
+    let y = parseInt(yCanvas.substring(0, yCanvas.length-2));
+    //todo check boundaries
+
+    let yCoord = y + (event.clientY - y ) ;
+    let xCoord = x + (event.clientX - x ) ;
+    console.log('Size:\t X: '+ xCanvas + '\tY:' + yCanvas)
+    console.log('Client:\t X:' +event.clientX +'\tY:'+ event.clientY)
+
+    let pdfBytes = await this.pdfDoc.save();
+    this.pdfDoc = await PDFDocument.load(pdfBytes);
+    const pages = this.pdfDoc.getPages();
+    const firstPage = pages[0];
+    const { width, height } = firstPage.getSize();
+    console.log(width, ' ', height)
+    const helveticaFont = await this.pdfDoc.embedFont(StandardFonts.Helvetica);
+
+
+
+    xCoord =((event.clientX * width)/x);
+    yCoord = height - ((event.clientY * height)/y);
+
+    console.log('X: '+xCoord +'\tY: '+yCoord)
+
+
+    firstPage.drawText('X', {
+      x: xCoord,
+      y: yCoord,
+      size: 25,
+      font: helveticaFont,
+      color: rgb(0.5, 0.2, 0.7),
+      rotate: degrees(0),
+    });
+    pdfBytes = await this.pdfDoc.save();
+    this.srcFile = pdfBytes;
+  }
+
   async printMousePosition(event){
     console.log("X: ", event.clientX, " Y: ", event.clientY);
     let pdfBytes = await this.pdfDoc.save();

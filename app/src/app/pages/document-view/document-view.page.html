@@ -5,7 +5,7 @@
 </ion-header>
 
 <ion-content>
-  <pdf-viewer (click)="printMousePosition($event)" id="pdf" class="modal-fullscreen"
+  <pdf-viewer (click)="printBrentIdea($event)" id="pdf" class="modal-fullscreen"
               [src]= "srcFile"
               [render-text]="true"
               [rotation]="rotated"
@@ -13,7 +13,8 @@
               [autoresize]="true"
               [zoom]="zoomLevel"
               [zoom-scale]="setZoom"
-              style="display: block;"
+              style="display: block; background-color: grey;"
+              #input
   >
   </pdf-viewer>
 
