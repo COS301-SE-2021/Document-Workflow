@@ -229,6 +229,22 @@ export class LoginRegisterPage implements OnInit {
       spinner: 'bubbles'
     });
 
-    await load.present();
+    return await this.loadG.present();
+  }
+
+  //load keeps on pending, until successfully registered
+  @Input() set pending(isPending: boolean) {
+    if (isPending) {
+      this.loadingRegister();
+    } else {
+      this.loadG.dismiss();
+    }
+  }
+
+//if input from not valid dismiss error
+  @Input() set error(error: HttpErrorResponse) {
+    if (error) {
+      this.loadG.dismiss();
+    }
   }
 }
