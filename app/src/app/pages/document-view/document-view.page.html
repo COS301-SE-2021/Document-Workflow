@@ -4,7 +4,7 @@
   </ion-toolbar>
 </ion-header>
 
- <ion-content>
+ <ion-content style="height: 100%;">
 <!--
 
     <pdf-viewer (click)="printMousePosition($event)" id="pdf" class="modal-fullscreen"
@@ -20,8 +20,8 @@
       style="display: block;"
     >
     </pdf-viewer> -->
-  <div *ngIf="ready">
-    <iframe id="pdf" style="width:90%; height:100%" [src]="srcFile"></iframe>
+  <div *ngIf="ready" style="height: 100%;">
+    <iframe id="pdf" style="width:100%; height:100%" [src]="srcFile"></iframe>
   </div>
   <ion-fab vertical="top" horizontal="end" slot="fixed">
     <ion-fab-button (click)="download()">
