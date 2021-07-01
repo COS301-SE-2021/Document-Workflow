@@ -12,6 +12,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DocumentAPIService } from 'src/app/Services/Document/document-api.service';
 import { async } from '@angular/core/testing';
 import { ConfirmSignaturesComponent } from 'src/app/components/confirm-signatures/confirm-signatures.component';
+import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-document-view',
@@ -65,12 +67,29 @@ export class DocumentViewPage implements OnInit {
   }
 
 
-  getDocument(id: string){
-    this.docApi.getDocument(id, (response)=>{
+  async getDocument(id: string){
+    this.docApi.getDocument(id, async (response)=>{
       if (response){
         const buff = response.data.filedata.Body.data; //wut
         const a  = new Uint8Array( buff);
-        this.srcFile = a;
+
+        const pdfDoc = await PDFDocument.load(a);
+        const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+        const pages = pdfDoc.getPages();
+        const firstPage = pages[0];
+        const { width, height } = firstPage.getSize();
+        firstPage.drawText('This text was added with JavaScript!', {
+          x: 5,
+          y: height / 2 + 300,
+          size: 50,
+          font: helveticaFont,
+          color: rgb(0.95, 0.1, 0.1),
+          rotate: degrees(-45),
+        });
+
+        const pdfBytes = await pdfDoc.save();
+        this.srcFile = pdfBytes;
       }else{
 
       }
