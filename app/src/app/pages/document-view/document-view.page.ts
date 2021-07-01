@@ -25,6 +25,7 @@ export class DocumentViewPage implements OnInit {
   rotated: number;
   setZoom: any;
   zoomLevel: number;
+  pdfDoc: PDFDocument;
 
 
   @Input('id') id: string;
@@ -73,10 +74,10 @@ export class DocumentViewPage implements OnInit {
         const buff = response.data.filedata.Body.data; //wut
         const a  = new Uint8Array( buff);
 
-        const pdfDoc = await PDFDocument.load(a);
-        const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+        this.pdfDoc = await PDFDocument.load(a);
+        const helveticaFont = await this.pdfDoc.embedFont(StandardFonts.Helvetica);
 
-        const pages = pdfDoc.getPages();
+        const pages = this.pdfDoc.getPages();
         const firstPage = pages[0];
         const { width, height } = firstPage.getSize();
         firstPage.drawText('This text was added with JavaScript!', {
@@ -88,12 +89,30 @@ export class DocumentViewPage implements OnInit {
           rotate: degrees(-45),
         });
 
-        const pdfBytes = await pdfDoc.save();
+        const pdfBytes = await this.pdfDoc.save();
         this.srcFile = pdfBytes;
       }else{
 
       }
     });
+  }
+
+  async printMousePosition(event){
+    console.log("X: ", event.clientX, " Y: ", event.clientY);
+    const pages = this.pdfDoc.getPages();
+    const firstPage = pages[0];
+    const { width, height } = firstPage.getSize();
+    const helveticaFont = await this.pdfDoc.embedFont(StandardFonts.Helvetica);
+    firstPage.drawText('This text was added with JavaScript!', {
+      x: event.clientX,
+      y: height / 2 + 300,
+      size: 50,
+      font: helveticaFont,
+      color: rgb(0.5, 0.2, 0.7),
+      rotate: degrees(0),
+    });
+    const pdfBytes = await this.pdfDoc.save();
+    this.srcFile = pdfBytes;
   }
 
   async sign(){
