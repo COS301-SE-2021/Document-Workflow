@@ -4,8 +4,12 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+ <ion-content>
+<!--
+
     <pdf-viewer (click)="printMousePosition($event)" id="pdf" class="modal-fullscreen"
+
+   <pdf-viewer id="pdf" class="modal-fullscreen"
       [src]= "srcFile"
       [render-text]="true"
       [rotation]="rotated"
@@ -15,54 +19,56 @@
       [zoom-scale]="setZoom"
       style="display: block;"
     >
-    </pdf-viewer>
+    </pdf-viewer> -->
+  <div *ngIf="ready">
+    <iframe id="pdf" style="width:90%; height:100%" [src]="srcFile"></iframe>
+  </div>
+  <ion-fab vertical="top" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="download()">
+      <ion-icon name="download"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 
-    <ion-fab vertical="top" horizontal="end" slot="fixed">
-      <ion-fab-button (click)="download()">
-        <ion-icon name="download"></ion-icon>
+  <ion-fab vertical="top" horizontal="start" slot="fixed">
+    <ion-fab-button (click)="back()">
+      <ion-icon name="arrow-back"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button>
+      <ion-icon name="search-outline"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="top">
+      <ion-fab-button (click)="zoomIn()">
+        <ion-icon name="add-outline"></ion-icon>
       </ion-fab-button>
-    </ion-fab>
-
-    <ion-fab vertical="top" horizontal="start" slot="fixed">
-      <ion-fab-button (click)="back()">
-        <ion-icon name="arrow-back"></ion-icon>
+      <ion-fab-button (click)="zoomOut()">
+        <ion-icon name="remove-outline"></ion-icon>
       </ion-fab-button>
-    </ion-fab>
+    </ion-fab-list>
+  </ion-fab>
 
-    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button>
-        <ion-icon name="search-outline"></ion-icon>
+  <ion-fab vertical="bottom" horizontal="center" slot="fixed">
+    <ion-fab-button (click)="sign()">
+      <ion-icon name="create"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-fab vertical="bottom" horizontal="start" slot="fixed">
+    <ion-fab-button>
+      <ion-icon name="scan-circle-outline"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="top">
+      <ion-fab-button (click)="setZoomWidth()">
+        <ion-icon name="swap-horizontal-outline"></ion-icon>
       </ion-fab-button>
-      <ion-fab-list side="top">
-        <ion-fab-button (click)="zoomIn()">
-          <ion-icon name="add-outline"></ion-icon>
-        </ion-fab-button>
-        <ion-fab-button (click)="zoomOut()">
-          <ion-icon name="remove-outline"></ion-icon>
-        </ion-fab-button>
-      </ion-fab-list>
-    </ion-fab>
-
-    <ion-fab vertical="bottom" horizontal="center" slot="fixed">
-        <ion-fab-button (click)="sign()">
-          <ion-icon name="create"></ion-icon>
-        </ion-fab-button>
-    </ion-fab>
-
-    <ion-fab vertical="bottom" horizontal="start" slot="fixed">
-      <ion-fab-button>
-        <ion-icon name="scan-circle-outline"></ion-icon>
+      <ion-fab-button (click)="setZoomFit()">
+        <ion-icon name="scan-outline"></ion-icon>
       </ion-fab-button>
-      <ion-fab-list side="top">
-        <ion-fab-button (click)="setZoomWidth()">
-          <ion-icon name="swap-horizontal-outline"></ion-icon>
-        </ion-fab-button>
-        <ion-fab-button (click)="setZoomFit()">
-          <ion-icon name="scan-outline"></ion-icon>
-        </ion-fab-button>
-        <ion-fab-button (click)="setZoomHeight()">
-          <ion-icon name="swap-vertical-outline"></ion-icon>
-        </ion-fab-button>
-      </ion-fab-list>
-    </ion-fab>
+      <ion-fab-button (click)="setZoomHeight()">
+        <ion-icon name="swap-vertical-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
 </ion-content>

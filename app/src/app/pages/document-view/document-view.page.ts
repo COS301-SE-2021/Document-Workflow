@@ -15,6 +15,7 @@ import { ConfirmSignaturesComponent } from 'src/app/components/confirm-signature
 import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import {DomSanitizer} from "@angular/platform-browser";
 
+
 @Component({
   selector: 'app-document-view',
   templateUrl: './document-view.page.html',
@@ -26,6 +27,8 @@ export class DocumentViewPage implements OnInit {
   setZoom: any;
   zoomLevel: number;
   pdfDoc: PDFDocument;
+  ready: boolean;
+
 
 
   @Input('id') id: string;
@@ -35,10 +38,12 @@ export class DocumentViewPage implements OnInit {
     private navpar: NavParams,
     private route: ActivatedRoute,
     private docApi: DocumentAPIService,
-    private router: Router
+    private router: Router,
+    private sanitizer: DomSanitizer
   ) {}
 
   async ngOnInit() {
+    this.ready = false;
     this.rotated = 0;
     this.setZoom = 'false';
     this.zoomLevel=1;
@@ -89,8 +94,16 @@ export class DocumentViewPage implements OnInit {
           rotate: degrees(-45),
         });
 
+
         const pdfBytes = await this.pdfDoc.save();
-        this.srcFile = pdfBytes;
+        console.log(pdfBytes)
+
+        var blob = new Blob([pdfBytes], {type: 'application/pdf;base64'});
+        console.log(blob.arrayBuffer());
+        const obj = URL.createObjectURL(blob);
+        console.log(obj);
+        this.srcFile = this.sanitizer.bypassSecurityTrustResourceUrl(obj);
+        this.ready = true;
       }else{
 
       }
