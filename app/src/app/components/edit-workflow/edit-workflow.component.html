@@ -35,6 +35,15 @@
                 <ion-input type="text" [formControlName]="control.key"></ion-input>
                 <ion-icon name="close-circle-outline"
                   (click)="removeUser(workflowForm.controls.phases['controls'][i], control)"></ion-icon>
+                <br>
+                <ion-item>
+                  <ion-label>Admin</ion-label>
+                  <ion-checkbox></ion-checkbox>
+                </ion-item>
+                <ion-item>
+                  <ion-label>Signer</ion-label>
+                  <ion-checkbox></ion-checkbox>
+                </ion-item>
               </ion-item>
             </form>
             <ion-button expand="block" color="primary" fill="outline" (click)="removePhase(i)">Remove this Phase
@@ -58,3 +67,42 @@
     </form>
   </div>
 </ion-content>
+
+<!-- <ion-grid style="width:90%">
+  <form>
+    <ion-card >
+      <ion-card-content>
+        <ion-item>
+          <ion-row style="width:100%">
+            <ion-col size-sm="4" sizeXs="12" sizeMd="4">
+              Add user:
+            </ion-col>
+            <ion-col size-sm="6" sizeXs="10" sizeMd="6">
+              <ion-input type="text"></ion-input>
+            </ion-col>
+            <ion-col size-sm="2" sizeXs="2" sizeMd="2">
+              <ion-icon name="close-circle-outline"></ion-icon>
+            </ion-col>
+          </ion-row>
+        </ion-item>
+        <ion-item>
+          <ion-label>Privileges: </ion-label>
+          <ion-select>
+            <ion-select-option>
+              <ion-label>Admin </ion-label>
+              <ion-checkbox></ion-checkbox>
+            </ion-select-option>
+            <ion-select-option>
+              <ion-label>Signer </ion-label>
+              <ion-checkbox></ion-checkbox>
+            </ion-select-option>
+            <ion-select-option>
+              <ion-label>Viewer </ion-label>
+              <ion-checkbox></ion-checkbox>
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+  </form>
+</ion-grid> -->

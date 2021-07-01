@@ -55,10 +55,6 @@ const routes: Routes = [
     redirectTo: 'login',
     pathMatch: 'full'
   },
-  {
-    path: 'intro',
-    loadChildren: () => import('./pages/intro/intro.module').then( m => m.IntroPageModule)
-  }
 
 
 
