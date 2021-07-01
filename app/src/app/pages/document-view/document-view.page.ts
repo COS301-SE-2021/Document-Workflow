@@ -15,7 +15,6 @@ import { ConfirmSignaturesComponent } from 'src/app/components/confirm-signature
 import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import {DomSanitizer} from "@angular/platform-browser";
 
-
 @Component({
   selector: 'app-document-view',
   templateUrl: './document-view.page.html',
@@ -27,8 +26,6 @@ export class DocumentViewPage implements OnInit {
   setZoom: any;
   zoomLevel: number;
   pdfDoc: PDFDocument;
-  ready: boolean;
-
 
 
   @Input('id') id: string;
@@ -38,12 +35,10 @@ export class DocumentViewPage implements OnInit {
     private navpar: NavParams,
     private route: ActivatedRoute,
     private docApi: DocumentAPIService,
-    private router: Router,
-    private sanitizer: DomSanitizer
+    private router: Router
   ) {}
 
   async ngOnInit() {
-    this.ready = false;
     this.rotated = 0;
     this.setZoom = 'false';
     this.zoomLevel=1;
@@ -80,52 +75,32 @@ export class DocumentViewPage implements OnInit {
         const a  = new Uint8Array( buff);
 
         this.pdfDoc = await PDFDocument.load(a);
-        const pages = this.pdfDoc.getPages();
-        const firstPage = pages[0];
-        const { width, height } = firstPage.getSize();
-        const helveticaFont = await this.pdfDoc.embedFont(StandardFonts.Helvetica);
-        firstPage.drawText('This text was added with JavaScript!', {
-          x: 60,
-          y: height / 2 + 300,
-          size: 50,
-          font: helveticaFont,
-          color: rgb(0.5, 0.2, 0.7),
-          rotate: degrees(0),
-        });
         const pdfBytes = await this.pdfDoc.save();
         this.srcFile = pdfBytes;
-
-        var blob = new Blob([pdfBytes], {type: 'application/pdf;base64'});
-        console.log(blob.arrayBuffer());
-        const obj = URL.createObjectURL(blob);
-        console.log(obj);
-        this.srcFile = this.sanitizer.bypassSecurityTrustResourceUrl(obj);
-        this.ready = true;
       }else{
 
       }
     });
   }
 
-  test(){
-    console.log("A click was recieved");
-  }
-
   async printMousePosition(event){
     console.log("X: ", event.clientX, " Y: ", event.clientY);
+    let pdfBytes = await this.pdfDoc.save();
+    this.pdfDoc = await PDFDocument.load(pdfBytes);
     const pages = this.pdfDoc.getPages();
     const firstPage = pages[0];
     const { width, height } = firstPage.getSize();
     const helveticaFont = await this.pdfDoc.embedFont(StandardFonts.Helvetica);
+
     firstPage.drawText('This text was added with JavaScript!', {
       x: event.clientX,
-      y: height / 2 + 300,
+      y: height - event.clientY,
       size: 50,
       font: helveticaFont,
       color: rgb(0.5, 0.2, 0.7),
       rotate: degrees(0),
     });
-    const pdfBytes = await this.pdfDoc.save();
+    pdfBytes = await this.pdfDoc.save();
     this.srcFile = pdfBytes;
   }
 
@@ -134,7 +109,7 @@ export class DocumentViewPage implements OnInit {
       component: ConfirmSignaturesComponent
     });
 
-   (await sign).present();
+    (await sign).present();
 
     const data =  (await sign).onDidDismiss();
     if(await (await data).data['confirm']){
