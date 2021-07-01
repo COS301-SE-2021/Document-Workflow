@@ -80,23 +80,20 @@ export class DocumentViewPage implements OnInit {
         const a  = new Uint8Array( buff);
 
         this.pdfDoc = await PDFDocument.load(a);
-        const helveticaFont = await this.pdfDoc.embedFont(StandardFonts.Helvetica);
-
         const pages = this.pdfDoc.getPages();
         const firstPage = pages[0];
         const { width, height } = firstPage.getSize();
+        const helveticaFont = await this.pdfDoc.embedFont(StandardFonts.Helvetica);
         firstPage.drawText('This text was added with JavaScript!', {
-          x: 5,
+          x: 60,
           y: height / 2 + 300,
           size: 50,
           font: helveticaFont,
-          color: rgb(0.95, 0.1, 0.1),
-          rotate: degrees(-45),
+          color: rgb(0.5, 0.2, 0.7),
+          rotate: degrees(0),
         });
-
-
         const pdfBytes = await this.pdfDoc.save();
-        console.log(pdfBytes)
+        this.srcFile = pdfBytes;
 
         var blob = new Blob([pdfBytes], {type: 'application/pdf;base64'});
         console.log(blob.arrayBuffer());
@@ -108,6 +105,10 @@ export class DocumentViewPage implements OnInit {
 
       }
     });
+  }
+
+  test(){
+    console.log("A click was recieved");
   }
 
   async printMousePosition(event){
