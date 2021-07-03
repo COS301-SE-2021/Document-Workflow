@@ -1,25 +1,20 @@
-import { Document, Schema, model } from "mongoose";
+import {
+    createSchema,
+    Type,
+    typedModel,
+    ExtractDoc
+} from "ts-mongoose";
+import { phaseSchema } from "./Phase";
+import { userSchema } from "../user/User";
+import { documentSchema } from "../document/Document";
 
-export default interface WorkFlow extends Document{
-    name: string,
-    owner_email: string,
-    document_id: string,
-    document_path: string,
-    description: string,
-    phases: [[string]]
-}
-
-const workflowSchema = new Schema<WorkFlow>({
-    name: {type: String, required: true},
-    description: {type: String, default:""},
-    owner_email: {type:String, required: true},
-    document_id: {type:String},
-    document_path: {type:String, required:true},
-    phases: {type: [[String]], required:true}
+const workflowSchema = createSchema({
+    name: Type.string({required: true}),
+    ownerId: Type.ref(Type.objectId({required: true})).to("User", userSchema),
+    documentId: Type.ref(Type.objectId({required: true})).to("Document", documentSchema),
+    description: Type.string({required: true}),
+    phases: Type.array({required: true}).of(phaseSchema)
 });
 
-workflowSchema.pre("save", async function(next) {
-
-})
-
-export const WorkFlowModel = model<WorkFlow>('WorkFlowModel', workflowSchema);
+export const WorkFlowModel = typedModel('WorkFlowModel', workflowSchema);
+export type Workflow = ExtractDoc<typeof workflowSchema>;
