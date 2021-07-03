@@ -21,7 +21,15 @@ describe("user integration tests", () => {
 
   describe("/POST", () => {
     describe("/api/users", () => {
-      test("One User inserted", async () => {
+      test("Create new user:", async () => {
+
+        const mockGetRequest = {
+          params: {
+           // id: postResponse._id,
+          },
+        } as unknown as Request;
+
+        //const getResponse = await userController.getUserRoute(mockGetRequest);
         const currentDate = Date.now();
         const mockPostRequest = {
           body: {
@@ -35,15 +43,9 @@ describe("user integration tests", () => {
           },
         } as unknown as Request;
 
-        const postResponse = await userController.postUserRoute(mockPostRequest);
+        //const postResponse = await userController.postUserRoute(mockPostRequest);
 
-        const mockGetRequest = {
-          params: {
-            id: postResponse._id,
-          },
-        } as unknown as Request;
 
-        const getResponse = await userController.getUserRoute(mockGetRequest);
       });
     });
   });

@@ -10,7 +10,7 @@ export default class WorkFlowRepository{
             owner_email: workflow.owner_email,
             document_id: workflow.document_id,
             document_path: workflow.document_path,
-            members: workflow.members
+            phases: workflow.phases
         });
 
         try {
@@ -32,7 +32,7 @@ export default class WorkFlowRepository{
                         owner_email: workflow.owner_email,
                         document_id: workflow.document_id,
                         document_path: workflow.document_path,
-                        members: workflow.members
+                        phases: workflow.phases
                     });
 
                 /*
@@ -50,6 +50,15 @@ export default class WorkFlowRepository{
                 return update_workflow;*/
             }
             else throw "Failed to update workflow";
+        }
+        catch(err){
+            throw err;
+        }
+    }
+
+    async deleteWorkFlow(id:string){
+        try{
+            await WorkFlow.deleteOne({_id: id});
         }
         catch(err){
             throw err;

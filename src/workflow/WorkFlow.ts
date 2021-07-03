@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import { Schema, model } from "mongoose";
 
 export interface WorkFlowI{
 
@@ -8,17 +8,17 @@ export interface WorkFlowI{
     document_id: string,
     document_path: string,
     description: string,
-    members: [string]
+    phases: [[string]]
 }
 
-const workflowSchema = new mongoose.Schema<WorkFlowI>({
+const workflowSchema = new Schema<WorkFlowI>({
 
     name: {type: String, required: true},
     description: {type: String, default:""},
     owner_email: {type:String, required: true},
     document_id: {type:String},
     document_path: {type:String, required:true},
-    members: {type: [String], required:true}
+    phases: {type: [[String]], required:true}
 });
 
-export default mongoose.model<WorkFlowI>('WorkFlow', workflowSchema)
+export default model<WorkFlowI>('WorkFlow', workflowSchema)

@@ -14,7 +14,11 @@ export interface documentImage{
   name: string;
   owner_email: string;
   _v: number;
-  members: User[];
+  phases: phase[];
+}
+
+export interface phase{
+  email: string;
 }
 
 @Injectable({

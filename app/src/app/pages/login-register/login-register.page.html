@@ -20,7 +20,7 @@
                 <ion-label position="stacked">Password:</ion-label>
                 <ion-input type="password" formControlName="loginPassword" placeholder="**************" name="loginPassword"></ion-input>
                 <div text-center>
-                  Reset <a routerLink='/resetPassword'>
+                  Reset <a (click)="displayResetPassword()">
                     password</a>
                 </div>
                 <ion-button padding expand="block" color="primary" fill="outline" [disabled]="!loginForm.valid"

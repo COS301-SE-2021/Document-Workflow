@@ -13,7 +13,7 @@
 
 <ion-menu side="end" menuId="workflowMenu" contentId="workflowMenu">
   <ion-header>
-      <ion-toolbar>Menu</ion-toolbar>
+    <ion-toolbar>Menu</ion-toolbar>
   </ion-header>
   <ion-content>
     <ion-list>
@@ -25,35 +25,36 @@
 
 
 <ion-content style="width:100%">
-<br>
-<ion-reorder-group disabled="true">
+  <br>
+  <ion-reorder-group disabled="true">
 
 
-<div *ngFor="let doc of documents">
-    <ion-reorder style="width:100%">
-      <ion-card style="width:95%; justify-content: center;margin:auto">
-        <ion-card-header>
-          <ion-card-title>{{doc.name}}</ion-card-title>
-          <ion-card-subtitle>Owner of workflow: {{doc.owner_email}}
-          </ion-card-subtitle>
-          <ion-fab vertical="top" horizontal="end">
-            <ion-fab-button>
-              <ion-icon name="arrow-down-outline"></ion-icon>
-            </ion-fab-button>
-            <ion-fab-list side="bottom">
-              <ion-fab-button (click)="editDoc(doc.document_id)">
-                <ion-icon name="construct-outline"></ion-icon>
-              </ion-fab-button>
-              <ion-fab-button (click)="viewWorkFlow(doc.document_id, doc.name)">
-                <ion-icon name="arrow-redo-outline"></ion-icon>
-              </ion-fab-button>
+    <div *ngFor="let doc of documents">
+      <ion-reorder style="width:100%">
+        <ion-card style="width:95%; justify-content: center;margin:auto">
+          <ion-card-header>
+            <ion-card-title>{{doc.name}}</ion-card-title>
+            <ion-card-subtitle>Owner of workflow: {{doc.owner_email}}
+            </ion-card-subtitle>
+            <ion-fab vertical="top" horizontal="end">
               <ion-fab-button>
-                <ion-icon name="eye-off-outline"></ion-icon>
+                <ion-icon name="arrow-down-outline"></ion-icon>
               </ion-fab-button>
-            </ion-fab-list>
-          </ion-fab>
-        </ion-card-header>
-        <ion-card-content>
+              <ion-fab-list side="bottom">
+                <ion-fab-button (click)="editWorkflow(doc._id)">
+                  <ion-icon name="construct-outline"></ion-icon>
+                </ion-fab-button>
+                <ion-fab-button (click)="viewWorkFlow(doc.document_id, doc.name)">
+                  <ion-icon name="arrow-redo-outline"></ion-icon>
+                </ion-fab-button>
+                <ion-fab-button *ngIf="doc.owner_email === ownerEmail">
+                  <ion-icon name="trash" (click)="deleteWorkFlow(doc._id)"></ion-icon>
+                </ion-fab-button>
+              </ion-fab-list>
+            </ion-fab>
+          </ion-card-header>
+          <ion-card-content>
+            <br>
             <ion-item>
               <ion-list>
                 <ion-title>Description:</ion-title>
@@ -64,16 +65,28 @@
             </ion-item>
             <ion-item>
               <ion-list>
-                <ion-title>Members</ion-title>
-                  <ion-item *ngFor="let mem of doc.members">
-                    {{mem.Fname}}
-                  </ion-item>
+                <ion-grid>
+                  <ion-title>Phases</ion-title>
+                  <ion-row>
+                    <div *ngFor="let phase of doc.phases; let i = index">
+                      <ion-col sizeLg="4" sizeMd="6" sizeSm="6" sizeXs="12">
+                        <h2>
+                          Phase {{i+1}}
+                        </h2>
+                        <ion-item>
+                          {{phase}}
+                        </ion-item>
+                      </ion-col>
+                    </div>
+                  </ion-row>
+                </ion-grid>
               </ion-list>
             </ion-item>
-        </ion-card-content>
-      </ion-card>
-    </ion-reorder>
-  </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-reorder>
+      <br>
+    </div>
 
   </ion-reorder-group>
 
@@ -86,11 +99,11 @@
 
 <ion-footer>
   <ion-tab-bar>
-    <ion-tab-button>
+    <ion-tab-button (click)="toProfilepage()">
       <ion-label>profile</ion-label>
       <ion-icon name="person-circle-outline"></ion-icon>
     </ion-tab-button>
-    <ion-tab-button>
+    <ion-tab-button (click)="logout()">
       <ion-label>Log out</ion-label>
       <ion-icon name="log-out-outline"></ion-icon>
     </ion-tab-button>

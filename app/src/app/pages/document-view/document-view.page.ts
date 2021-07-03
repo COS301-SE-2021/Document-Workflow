@@ -8,10 +8,10 @@ import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { ModalController, NavParams, Platform } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DocumentAPIService } from 'src/app/Services/Document/document-api.service';
 import { async } from '@angular/core/testing';
-
+import { ConfirmSignaturesComponent } from 'src/app/components/confirm-signatures/confirm-signatures.component';
 
 @Component({
   selector: 'app-document-view',
@@ -19,7 +19,6 @@ import { async } from '@angular/core/testing';
   styleUrls: ['./document-view.page.scss'],
 })
 export class DocumentViewPage implements OnInit {
-  docPDF = null;
   srcFile: any;
   rotated: number;
   setZoom: any;
@@ -32,7 +31,8 @@ export class DocumentViewPage implements OnInit {
     private modalCtrl: ModalController,
     private navpar: NavParams,
     private route: ActivatedRoute,
-    private docApi: DocumentAPIService
+    private docApi: DocumentAPIService,
+    private router: Router
   ) {}
 
   async ngOnInit() {
@@ -46,29 +46,29 @@ export class DocumentViewPage implements OnInit {
     await (this.getDocument(this.id));
   }
 
-  download(url: string, title: string) {
+  download() {
+    const blob = new Blob([this.srcFile], {type: 'application/pdf'});
+    const objUrl = URL.createObjectURL(blob);
 
-  }
-  async writeMyFile(fileData) {
-    console.log(fileData);
-    await Filesystem.writeFile({
-      path: '/temp.pdf',
-      data :  fileData,
-      directory: Directory.Documents,
 
-    });
-    console.log('herre');
+    var link = document.createElement('a');
+    link.href = objUrl;
+    link.download = this.docName;
+    document.body.appendChild(link);
+
+    link.click();
+    link.remove();
   }
+
+  back(){
+    this.router.navigate(['home']);
+  }
+
 
   getDocument(id: string){
-    console.log("ABOUT TO FETCH A DOCUMENt");
-    console.log(id);
     this.docApi.getDocument(id, (response)=>{
       if (response){
-        console.log(response);
-        console.log(response.data.filedata);
         const buff = response.data.filedata.Body.data; //wut
-        console.log(buff);
         const a  = new Uint8Array( buff);
         this.srcFile = a;
       }else{
@@ -79,10 +79,8 @@ export class DocumentViewPage implements OnInit {
 
   async sign(){
     const sign = this.modalCtrl.create({
-      component: AddSignatureComponent
+      component: ConfirmSignaturesComponent
     });
-    // const { confirm } = (await sign).onWillDismiss();
-    // console.log(data);
 
    (await sign).present();
 

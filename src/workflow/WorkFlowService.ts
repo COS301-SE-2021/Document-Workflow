@@ -7,38 +7,33 @@ import UserRepository from "../user/UserRepository";
 @injectable()
 export default class WorkFlowService{
 
-    //TODO: test that this works with the dependence injection
-    constructor(private workflowRepository: WorkFlowRepository, private documentService: DocumentService, private usersRepository: UserRepository)
-    {
-
+    constructor(private workflowRepository: WorkFlowRepository, private documentService: DocumentService, private usersRepository: UserRepository) {
     }
 
     /**
-     * We first create the workflowso that its ID can be generated. We then store the document
+     * We first create the workflow so that its ID can be generated. We then store the document
      * which requires its parent workflow id. Once we get the document id back we update our workflow.
      * Members is just an array of email addresses.
      * @param req
      */
     async createWorkFlow(req) :Promise<any>{
-        //console.log(req);
 
-        //Before we can create any workflow, we will have to do some validation
-        if(req.body.members == undefined)
-            req.body.members = [];
-        if(typeof(req.body.members) == 'string')
-            req.body.members = [req.body.members]
-        let users_exist = await this.checkUsersExist(req.body.members)
+        const phases = this.stringIntoPhasesArray(req.body.phases);
+        req.body.phases = phases;
+        console.log(req.body.phases);
+        console.log(phases);
 
+        await this.checkUsersExist(phases);
         //Now that validation is complete we can create the workflow
         try{
             const workflow : WorkFlowI = {
                 _id: null,
                 name: req.body.name,
                 description: req.body.description,
-                owner_email: req.body.owner_email,
+                owner_email: req.user.email,
                 document_id: null,
                 document_path: req.files.document.name,
-                members: req.body.members
+                phases: req.body.phases
             }
             let workflow_id = await this.workflowRepository.postWorkFlow(workflow);
             let document_id = await this.documentService.uploadDocument(req.files.document, workflow_id);
@@ -53,43 +48,47 @@ export default class WorkFlowService{
             console.log("------------------------------------------------");
 
             console.log("Workflow successfully updated, adding id to the members of the workflow");
-            await this.addWorkFlowIdToOwnedWorkflows(req.body.owner_email, workflow_id);
-            return "New workflow successfully created";
+            await this.addWorkFlowIdToOwnedWorkflows(req.user.email, workflow_id);
+            await this.addWorkFlowIdToUsersWorkflows(req.body.phases, workflow_id, req.user.email);
+            return {status:'success', data:{}, message:''};
         }
         catch(err) {
+            console.log(err);
             throw err;
         }
     }
 
     //---------------------------------------Create Workflow Helper functions----------------------------------
 
-    async checkUsersExist(users):Promise<boolean>{
+    async checkUsersExist(phases):Promise<boolean>{
         console.log("Checking if users exist");
-        if(users.length == 0)
+        if(phases.length == 0)
             return true;
-        for (let email of users)
-        {
-            //console.log(email);
-            const result = await this.usersRepository.getUsers({email: email});
-            if(result.length == 0) {
-                console.log("User " + email + " does not exist")
-                throw "User " + email + " does not exist";
+        for(let i =0; i<phases.length; ++i) {
+            let users = phases[i];
+            for (let email of users) {
+                const result = await this.usersRepository.getUsers({email: email});
+                if (result.length == 0) {
+                    console.log("User " + email + " does not exist")
+                    throw {status: "error", data:{}, message:"User " + email + " does not exist"};
+                }
             }
         }
 
         return true;
     }
 
-    async addWorkFlowIdToUsersWorkflows(users, workflow_id):Promise<void>
+    async addWorkFlowIdToUsersWorkflows(phases, workflow_id, owner_email):Promise<void>
     {
-        for (let email of users)
-        {
-            const users = await this.usersRepository.getUsers({email: email});
-            let user = users[0];
-            console.log(user.workflows);
-            user.workflows.push(workflow_id);
-            console.log(user.workflows);
-            await this.usersRepository.putUser(user);
+        for(let i=0; i<phases.length; ++i) {
+            let users = phases[i];
+            for (let email of users) {
+                const users = await this.usersRepository.getUsers({email: email});
+                let user = users[0];
+                if(user.email != owner_email && !user.workflows.includes(workflow_id))
+                    user.workflows.push(workflow_id);
+                await this.usersRepository.putUser(user);
+            }
         }
     }
 
@@ -115,9 +114,74 @@ export default class WorkFlowService{
             name: workflow.name,
             owner_email: workflow.owner_email,
             document_path: workflow.document_path,
-            members: workflow.members
+            description: workflow.description,
+            phases: workflow.phases
         };
-
         return {status:"success", data: data, message:""};
+    }
+
+    private stringIntoPhasesArray(str: string): any[]{
+
+        let arr = str.split(']');
+        let result = [];
+
+        for(let i=0; i<arr.length-1; ++i)
+        {
+            let sub_array= (arr[i].replace('[','').split(' '));
+            if(sub_array.length !=0)
+                result.push(sub_array);
+        }
+
+        return result;
+    };
+
+    async deleteWorkFlow(req) {
+        console.log("Attempting to delete workflow");
+        console.log(req.body);
+        try {
+            let workflow_id = req.body.id;
+            const workflow = await this.workflowRepository.getWorkFlow(req.body.id);
+            console.log(workflow);
+            if(workflow === null)
+                return {status: "failed", data: {}, message: "Workflow does not exist"};
+            if(workflow.owner_email !== req.user.email)
+                return {status:"failed", data: {}, message: "Insufficient rights to delete"};
+
+            await this.documentService.deleteDocument(workflow_id, workflow.document_id);
+            console.log("Document and metadata deleted");
+            await this.removeOwnedWorkFlowId(workflow.owner_email, workflow_id);
+            const phases = workflow.phases;
+            for(let i=0; i<phases.length; ++i){
+                const phase = phases[i];
+                for(let k=0; k<phase.length; ++k)
+                    if(phase[k] !== workflow.owner_email)
+                        await this.removeWorkFlowId(phase[k], workflow_id);
+            }
+            console.log("Workflow ID removed from all participants");
+            await this.workflowRepository.deleteWorkFlow(workflow_id);
+        }
+        catch(e){
+            throw e;
+        }
+
+        return {status: "success", data:{}, message:""};
+    }
+
+    async removeOwnedWorkFlowId(email, id){
+        let user = await this.usersRepository.getUser({email:email});
+        const index = user.owned_workflows.indexOf(id);
+        if(index === -1)
+            return;
+        user.owned_workflows.splice(index, 1);
+        await this.usersRepository.putUser(user);
+    }
+
+    async removeWorkFlowId(email, id){
+        let user = await this.usersRepository.getUser({email:email});
+        const index = user.workflows.indexOf(id);
+        if(index === -1)
+            return;
+        user.workflows.splice(index, 1);
+        await this.usersRepository.putUser(user);
     }
 }

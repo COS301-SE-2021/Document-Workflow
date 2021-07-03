@@ -30,6 +30,16 @@ export default class DocumentController{
         }
     }*/
 
+    private async testDeleteDocument(req) {
+        try{
+            await this.documentService.deleteDocument(req.body.workflow_id, req.body.document_id);
+        }
+        catch(err){
+            console.log(err);
+            throw err;
+        }
+    }
+
     async retrieveDocumentRoute(request) :Promise<any>{
         try {
             return await this.documentService.retrieveDocument(request);
@@ -58,17 +68,23 @@ export default class DocumentController{
         this.router.post('/retrieve', async (req,res)=>{
             try {
                 res.status(200).json(await this.retrieveDocumentRoute(req));
-                //const temp_res = await this.retrieveDocumentRoute(req);
-                //const readStream = fs.createReadStream(temp_res.data.filepath);
-                //readStream.pipe(res);
-                //have to remember to delete the temporary file
-
             } catch(err){
                 console.log(err);
                 res.status(200).json({status:"error", data:{}, message:err});
             }
         });
+        /*
+        this.router.post('/delete', async(req,res)=>{
+            try {
+                res.status(200).json(await this.testDeleteDocument(req));
+            } catch(err){
+                console.log(err);
+                res.status(200).json({status:"error", data:{}, message:err});
+            }
+        })*/
 
         return this.router;
     }
+
+
 }

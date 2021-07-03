@@ -27,6 +27,8 @@ import { Plugins } from 'protractor/built/plugins';
 import {DocumentAPIService} from './../../Services/Document/document-api.service';
 import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
 import {HttpErrorResponse} from '@angular/common/http';
+import { ResetPasswordComponent } from 'src/app/components/reset-password/reset-password.component';
+
 
 @Component({
   selector: 'app-login-register',
@@ -50,7 +52,7 @@ export class LoginRegisterPage implements OnInit {
     private actionSheetController: ActionSheetController,
     private loadCtrl: LoadingController,
     private modal: ModalController,
-
+    private pop: PopoverController,
   ) {}
 
   ngOnInit() {
@@ -93,19 +95,26 @@ export class LoginRegisterPage implements OnInit {
     console.log(loginData);
     this.userAPIService.login(loginData, (response)=>{
         if(response.status === 'success'){
-          alert('Login Successful');
+          localStorage.setItem('token', response.data.token);
+          this.userAPIService.displayPopOver('Success', "login was successful");
           this.router.navigate(['home']);
         }
-        else{alert(response.message);}
+        else{
+          console.log(response);
+          this.userAPIService.displayPopOver('Failure in logging in', 'Email or password is incorrect')
+        }
     });
   }
 
   fileUnspecified(): void{
-    //For Brent for if the signasture doesnt exists
-
+    this.userAPIService.displayPopOver('Missing signature', 'Please add a signature');
   }
 
+
+
   async register(): Promise<void> {
+
+    this.loadingRegister();
     const userdata = this.registerForm.value;
     console.log('Printing file:');
     console.log(this.file);
@@ -125,41 +134,27 @@ export class LoginRegisterPage implements OnInit {
       password: userdata.password
     };
 
-
+    await this.loadingRegister();
     this.userAPIService.register(user, this.file, (response)=>{
         if(response.status === 'success')
         {
-          alert('Successfully created new user account, check your email for account verification');
-          this.router.navigate(['home']);
+          this.userAPIService.displayPopOver('Successfully created new user account','check your email for account verification')
+          this.router.navigate(['login']);
         }
         else {
-          alert('Failed to make a new account: ' + response.message);
+          this.userAPIService.displayPopOver('Failed to make a new account:',response.message);
         }
-        this.loadCtrl.dismiss();
     });
+    await this.loadCtrl.dismiss();
   }
 
   changeOver($event)
   {
     this.registerButton = !this.registerButton;
-  }
+    }
 
   async selectImageSource() {
     const buttons = [
-      {
-        text: 'Take Photo',
-        icon: 'camera',
-        handler: () => {
-          this.addSignature(CameraSource.Camera);
-        },
-      },
-      {
-        text: 'Choose from photo library',
-        icon: 'image',
-        handler: () => {
-          this.addSignature(CameraSource.Photos);
-        },
-      },
       {
         text: 'Draw your signature',
         icon: 'create',
@@ -170,7 +165,6 @@ export class LoginRegisterPage implements OnInit {
     ];
 
     if (!this.plat.is('hybrid')) {
-      console.log('here');
       buttons.push({
         text: 'Choose a File',
         icon: 'attach',
@@ -201,11 +195,24 @@ export class LoginRegisterPage implements OnInit {
       component: AddSignatureComponent
     });
 
-    (await mod).present();
+    await (await mod).present();
 
     (await mod).onDidDismiss().then(async (data) => {
-      // data goes in here, workflow page.ts as an example
+      this.registerButton = data.data.registerButton,
+      this.file = data.data.signature;
+      console.log(typeof(this.file));
+      //console.log(this.file);
     });
+  }
+
+  async displayResetPassword(){
+    const mod = this.modal.create({
+      component: ResetPasswordComponent
+    });
+
+    (await mod).present();
+
+    (await mod).onDidDismiss();
   }
 
   async addSignature(source: CameraSource) {

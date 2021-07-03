@@ -1,6 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {resolveFileWithPostfixes} from "@angular/compiler-cli/ngcc/src/utils";
+import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
+import { PopoverController } from '@ionic/angular';
 
 export interface User {
   Fname: string;
@@ -21,8 +23,19 @@ export interface LoginData{
 export class UserAPIService {
   static url =  'http://localhost:3000/api';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private pop: PopoverController
+    ) {}
 
+  public checkIfAuthorized(){//callback){
+    const formData = new FormData();
+    const token = localStorage.getItem('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: ('Bearer ' + token)
+    });
+    return this.http.post(UserAPIService.url + '/users/authenticate', formData, {headers: httpHeaders});
+  }
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   public register(user: User, file: File, callback){
@@ -36,10 +49,12 @@ export class UserAPIService {
     formData.append('signature', file);
     this.http.post(UserAPIService.url + '/users', formData).subscribe(data =>{ //TODO: change url
       if(data) {
-
         callback(data);
       }
       else callback({status:'error', message: 'Cannot connect to Server'});
+    }, (error)=>{
+        console.log(error);
+       this.displayPopOver("Error", "An unexpected error occurred, please try again later");
     });
   }
 
@@ -52,42 +67,85 @@ export class UserAPIService {
     try {
       this.http.post(UserAPIService.url + '/users/login', formData).subscribe(data => { //TODO: change url
         if (data) {
-          console.log('in user-api.service.ts');
-          console.log(data);
           callback(data);
         } else callback({status: 'error', message: 'Cannot connect to Server'});
+      }, (error)=>{
+        this.displayPopOver('Error user-api-services - login', error);
       });
     }
     catch(e){
-      console.log('Caught an http.post error');
-      console.log(e);
+      alert("An unexpected error occured, please try again later");
     }
   }
 
-  public getAllWorkOwnedFlows(email, callback) {
-    const formData = new FormData();
-    formData.append('email', email);
+  public getAllWorkOwnedFlows(callback) { //TODO: change this function name. Made it when I was tired.
     console.log('Getting all owned workflows');
-     this.http.post(UserAPIService.url + '/users/retrieveOwnedWorkflows', formData).subscribe(data =>{ //TODO: change url
-        if(data) {
-          callback(data);
-        }
-        else callback({status:'error', message: 'Cannot connect to Server'});
-     });
-
-  }
-
-  public getAllWorkFlows(email, callback){
     const formData = new FormData();
-    formData.append('email', email);
-    console.log('Getting all normal workflows');
-    this.http.post(UserAPIService.url + '/users/retrieveWorkflows', formData).subscribe(data =>{ //TODO: change url
-      if(data) {
-        callback(data);
-      }
-      else callback({status:'error', message: 'Cannot connect to Server'});
+    //formData.append('email', email);
+    const token = localStorage.getItem('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: ('Bearer ' + token)
     });
 
+      this.http.post(UserAPIService.url + '/users/retrieveOwnedWorkflows', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
+        if (data) {
+          callback(data);
+        } else callback({status: 'error', message: 'Cannot connect to Server'});
+        }, (error) =>{
+          this.displayPopOver('Error user-api-services - getAllWorkOwnedFlows', error);
+      });
   }
+
+  public getAllWorkFlows( callback){
+    const formData = new FormData();
+    console.log('Getting all normal workflows');
+    const token = localStorage.getItem('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: ('Bearer ' + token)
+    });
+
+      this.http.post(UserAPIService.url + '/users/retrieveWorkflows', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
+        if (data) {
+          callback(data);
+        } else callback({status: 'error', message: 'Cannot connect to Server'});
+      }, error =>{
+        this.displayPopOver('Error user-api-services - getAllWorkFlows', error);
+      });
+    }
+
+  //for the pop over
+  async displayPopOver(title: string, message: string){
+    const poper = await this.pop.create({
+      component: UserNotificationsComponent,
+      componentProps:{
+        'title': title,
+        'message': message
+      }
+    });
+    await poper.present();
+
+    const a = await poper.onDidDismiss();
+    console.log( a );
+   }
+
+   async getUserDetails(callback){
+     const formData = new FormData();
+     const token = localStorage.getItem('token');
+     const httpHeaders: HttpHeaders = new HttpHeaders({
+       Authorization: ('Bearer ' + token)
+     });
+
+     this.http.post(UserAPIService.url + '/users/getDetails', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
+       if (data) {
+         callback(data);
+       } else callback({status: 'error', message: 'Cannot connect to Server'});
+     }, error =>{
+      this.displayPopOver('Error user-api-services - getUserDetails', error);
+     });
+   }
+
+   logout(){
+     localStorage.removeItem('token');
+   }
 
 }
