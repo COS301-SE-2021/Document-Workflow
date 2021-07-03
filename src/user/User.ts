@@ -1,4 +1,3 @@
-//import { Schema, model, Document } from "mongoose";
 import {
     createSchema,
     Type,
@@ -6,24 +5,7 @@ import {
     ExtractDoc,
     ExtractProps
 } from "ts-mongoose";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { isStrongPassword, isEmail } from "validator";
-
-/*export default interface User extends Document{
-    name: string
-    surname: string
-    initials: string
-    email: string
-    password: string
-    signature: Buffer
-    validated: Boolean
-    validateCode: string
-    tokenDate: Date
-    tokens: Object[]
-    owned_workflows: Array<string>
-    workflows: Array<string>
-}*/
 
 /**
  * <p>
@@ -37,7 +19,7 @@ const tokenSchema = createSchema({
     token: Type.string({required: true})
 }, { _id: false, _v: false });
 
-const userSchema = createSchema({
+export const userSchema = createSchema({
     name: Type.string({required: true}),
     surname: Type.string({type: String, required: true}),
     initials: Type.string({type: String, required: true}),
@@ -63,10 +45,7 @@ const userSchema = createSchema({
     signature: Type.buffer({required: true }),
     validated: Type.boolean({ default: false }),
     validateCode: Type.string(),
-    tokenDate: Type.date({default: Date.now}),
-    tokens: Type.array().of(tokenSchema),
-    owned_workflows: Type.array().of(Type.string()),
-    workflows: Type.array().of(Type.string())
+    tokens: Type.array().of(tokenSchema)
 });
 
 export const User = typedModel('User', userSchema);
