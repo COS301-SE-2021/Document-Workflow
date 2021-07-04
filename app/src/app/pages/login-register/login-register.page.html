@@ -1,12 +1,11 @@
-<ion-content>
+<ion-item color="primary">
+  <ion-label position="stacked" *ngIf="!registerButton">Register</ion-label>
+  <ion-label position="stacked" *ngIf="registerButton">Login</ion-label>
+  <ion-toggle (ionChange)="changeOver($event)" [checked]="registerButton"></ion-toggle>
+  <ion-title align="center">EPI-USE DOCUMENT WORKFLOW</ion-title>
+</ion-item>
+<ion-content class="background">
   <div class="logo"></div>
-
-  <ion-item>
-    <ion-label position="stacked" *ngIf="!registerButton">Register</ion-label>
-    <ion-label position="stacked" *ngIf="registerButton">Login</ion-label>
-    <ion-toggle (ionChange)="changeOver($event)" [checked]="registerButton"></ion-toggle>
-  </ion-item>
-
   <ion-grid>
     <ion-row>
       <ion-col>
@@ -25,6 +24,8 @@
                 </div>
                 <ion-button padding expand="block" color="primary" fill="outline" [disabled]="!loginForm.valid"
                   type="submit">Login</ion-button>
+
+
               </form>
             </ion-card-content>
           </ion-card>
@@ -79,7 +80,14 @@
                 </ion-item>
                 <ion-button expand="block" color="primary" fill="outline" [disabled]="!registerForm.valid" (click)="loadingRegister()"
                   type="submit">Register</ion-button>
-              </form>
+
+<!--                Register with existing Account Google -->
+                <span>
+                    <ion-button type="button" expand="block" color="secondary">
+                      <ion-icon name="logo-google" slot="start"></ion-icon>
+                      Sign in with Google
+                    </ion-button></span>
+               </form>
             </ion-card-content>
           </ion-card>
         </div>
