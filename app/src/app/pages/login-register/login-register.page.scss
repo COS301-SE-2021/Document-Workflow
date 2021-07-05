@@ -3,7 +3,7 @@ ion-content.background
   //--background: #f2f2f2;
   //--background: url('/app/src/assets/MyPost.jpg')0 0/100% 100% no-repeat;
   //background-position: center;
-  --background: url('https://photo-cdn2.icons8.com/_UA9mTRGxz46sKmQJx-GKX59KELj6aie8YTtnrwig-0/rs:fit:576:576/Z3M6Ly9tb29zZTIv/YXNzZXRzL3NhdGEv/b3JpZ2luYWwvMTEx/L2ZjNmY5ODg5LWE2/ZjAtNGEyZS04ZDk4/LTIxOTZmMGRkYjFm/NS5qcGc.jpg') 0 0/100% 100% no-repeat;
+  --background: url('https://www.epiuse.com/wp-content/uploads/2018/10/bcp.jpg') 0 0/100% 100% no-repeat;
 
 
   #loginF
@@ -25,12 +25,7 @@ ion-content.background
             justify-content: center;
             color: #2dd36f;
           }
-          ion-card #form {
-            margin-top: 13%;
-            padding-left: 25px;
-            padding-right: 25px;
-            --background: url('https://images.unsplash.com/photo-1536431311719-398b6704d4cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1234&q=80') 0 0/100% 100% no-repeat;
-          }
+
         }
 
       }
@@ -39,8 +34,6 @@ ion-content.background
       margin-top: 13%;
       padding-left: 25px;
       padding-right: 25px;
-      --background: url('https://images.unsplash.com/photo-1536431311719-398b6704d4cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1234&q=80') 0 0/100% 100% no-repeat;
-
 
       ion-button {
         margin-top: 33px;
