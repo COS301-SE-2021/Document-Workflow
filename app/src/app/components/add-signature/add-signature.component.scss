@@ -1,0 +1,18 @@
+.hideTextBox
+{
+  display:none;
+}
+.showTextBox{
+  display: block;
+  position: center;
+  width: 230px;
+  height: 50px;
+
+}
+.showTextBox,#textInput
+{
+  --font-size: large;
+  --font-weight-bold: 15px;
+  text-transform: uppercase;
+  text-decoration-style: solid;
+}

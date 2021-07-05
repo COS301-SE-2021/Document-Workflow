@@ -18,6 +18,9 @@ export class AddSignatureComponent implements OnInit, AfterViewInit {
   canvasWidth: 150;
   canvasHeight: 150;
   public saveSign: string;
+  file: File;
+  public textBox: boolean;
+  public registerButton: boolean;
   constructor(
     private elementRef: ElementRef,
     public navCtrl: NavController,
@@ -126,5 +129,24 @@ export class AddSignatureComponent implements OnInit, AfterViewInit {
       data.pop(); // remove the last dot or line
       this.signaturePad.fromData(data);
     }
+  }
+//  use text to generate user's signature
+async text()
+{
+  document.getElementById('textInput').className='showTextBox';
+}
+
+
+  async type(){
+    const mod = this.modalCtrl.create({
+      component: AddSignatureComponent
+    });
+
+    await (await mod).present();
+    (await mod).onDidDismiss().then(async (data) => {
+      this.registerButton = data.data.registerButton;
+      this.file = data.data.signature;
+      console.log(typeof(this.file));
+    });
   }
 }

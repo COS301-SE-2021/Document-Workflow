@@ -11,6 +11,10 @@
        <ion-grid>
          <ion-row>
            <ion-col col-6>
+             <ion-button color="light" expand="full" (click)="text()"> Type Text</ion-button>
+             <div><input class="hideTextBox" type="text" id="textInput" placeholder="Type Here" /></div>
+           </ion-col>
+           <ion-col col-6>
 <!--             CANNOT SAVE EMPTY SIGNATURE-->
               <ion-button color="light" expand="full" [disabled]="isCanvasBlank()" (click)="save()"> Save</ion-button>
            </ion-col>
