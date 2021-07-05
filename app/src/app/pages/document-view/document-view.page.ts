@@ -89,13 +89,13 @@ export class DocumentViewPage implements OnInit {
     });
 
     scroll_div.addEventListener('scroll', (even3)=>{
-      console.log("Scroll: ", window.pageYOffset);
+      console.log("Scroll: ", scroll_div.scrollTop);
     });
 
     let xCanvas = document.getElementsByTagName('canvas')[0].style.width;
     let x = parseInt(xCanvas.substring(0, xCanvas.length - 2));
     let yCanvas = document.getElementsByTagName('canvas')[0].style.height;
-    let y = parseInt(yCanvas.substring(0, yCanvas.length - 2));
+    let y = parseInt(yCanvas.substring(0, yCanvas.length - 2)) + scroll_div.scrollTop;
     //todo check boundaries
     let widthOfScreen =
       document.getElementsByTagName('canvas')[0].parentElement.parentElement
@@ -135,6 +135,9 @@ export class DocumentViewPage implements OnInit {
 
   async printMousePosition(event) {
     console.log('X: ', event.clientX, ' Y: ', event.clientY);
+    let canvas = document.getElementsByTagName("canvas")[0];
+    let scroll_div = document.getElementsByTagName("pdf-viewer")[0].children[0];
+
     let pdfBytes = await this.pdfDoc.save();
     this.pdfDoc = await PDFDocument.load(pdfBytes);
     const pages = this.pdfDoc.getPages();
@@ -144,7 +147,7 @@ export class DocumentViewPage implements OnInit {
 
     firstPage.drawText('This text was added with JavaScript!', {
       x: event.clientX,
-      y: height - event.clientY,
+      y: height - event.clientY - scroll_div.scrollTop,
       size: 50,
       font: helveticaFont,
       color: rgb(0.5, 0.2, 0.7),
