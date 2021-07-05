@@ -6,7 +6,7 @@
 
 <ion-content>
 
-  <pdf-viewer (load)="setupEventListeners()"(click)="printBrentIdea($event)" id="pdf" class="modal-fullscreen"
+  <pdf-viewer (click)="printBrentIdea($event)" id="pdf" class="modal-fullscreen"
               [src]= "srcFile"
               [render-text]="true"
               [rotation]="rotated"
