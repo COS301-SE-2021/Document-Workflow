@@ -5,7 +5,8 @@
 </ion-header>
 
 <ion-content>
-  <pdf-viewer (click)="printBrentIdea($event)" id="pdf" class="modal-fullscreen"
+
+  <pdf-viewer (load)="setupEventListeners()"(click)="printBrentIdea($event)" id="pdf" class="modal-fullscreen"
               [src]= "srcFile"
               [render-text]="true"
               [rotation]="rotated"
@@ -17,6 +18,7 @@
               #input
   >
   </pdf-viewer>
+
 
   <ion-fab vertical="top" horizontal="end" slot="fixed">
     <ion-fab-button (click)="download()">

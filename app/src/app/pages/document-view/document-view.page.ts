@@ -64,6 +64,7 @@ export class DocumentViewPage implements OnInit {
     this.router.navigate(['home']);
   }
 
+
   async getDocument(id: string) {
     this.docApi.getDocument(id, async (response) => {
       if (response) {
@@ -79,6 +80,18 @@ export class DocumentViewPage implements OnInit {
   }
 
   async printBrentIdea(event) {
+
+    let canvas = document.getElementsByTagName("canvas")[0];
+    let scroll_div = document.getElementsByTagName("pdf-viewer")[0].children[0];
+    console.log(scroll_div);
+    canvas.addEventListener('mousemove', function(even3){
+      console.log(even3);
+    });
+
+    scroll_div.addEventListener('scroll', (even3)=>{
+      console.log("Scroll: ", window.pageYOffset);
+    });
+
     let xCanvas = document.getElementsByTagName('canvas')[0].style.width;
     let x = parseInt(xCanvas.substring(0, xCanvas.length - 2));
     let yCanvas = document.getElementsByTagName('canvas')[0].style.height;
