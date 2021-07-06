@@ -18,7 +18,7 @@
            </ion-col>
            <ion-col col-6>
 <!--             CANNOT SAVE EMPTY SIGNATURE-->
-              <ion-button id="saveTxt" color="light" expand="full" [disabled]="isCanvasBlank()" (click)="save()"> Save</ion-button>
+              <ion-button id="saveTxt" color="light" expand="full"  (click)="save()"> Save</ion-button>
            </ion-col>
            <ion-col col-6>
              <ion-button id="undoTxt" color="light" expand="full" (click)="undo()"> Undo</ion-button>
@@ -29,10 +29,10 @@
          </ion-row>
        </ion-grid>
 <!--        <ion-button color="light" expand="full" (click)="drawComplete()"> Save</ion-button>-->
-      <link href="https://fonts.googleapis.com/css?family=Dancing+Script" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css?family=Dancing+Script" style="color: blue" rel="stylesheet">
       <canvas id="signature-pad-canvas" class="signature-pad-canvas" #canvas width="150" height="150" style="touch-action: none;"></canvas>
 <!--      CANNOT COMPLETE WITHOUT SAVING THE SIGNTURE-->
-      <ion-button color="light" expand="full" [disabled]="isCanvasBlank()" (click)="done()"> Done</ion-button>
+      <ion-button id="doneTxt" color="light" expand="full" (click)="done()"> Done</ion-button>
 
 </ion-content>
 

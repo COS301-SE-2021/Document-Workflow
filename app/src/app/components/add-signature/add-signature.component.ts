@@ -145,22 +145,25 @@ async text()
     const saveText = document.getElementById('saveTxt');
     const clearText = document.getElementById('clearTxt');
     const undoText = document.getElementById('undoTxt');
+    const doneText = document.getElementById('doneTxt');
 
-    canvas.width= 150;
-    canvas.height= 150;
+    canvas.width= 480;
+    canvas.height= 350;
     // eslint-disable-next-line prefer-arrow/prefer-arrow-functions
-    context.font = '380px Dancing Script';
+    context.font = '180px Dancing Script';
 
     //Type Here
     typeInput.addEventListener('input',(event)=> {
       context.clearRect(0,0,canvas.width,canvas.height);
-      context.strokeText(((event.target) as HTMLInputElement).value,100,100,200);
+      context.strokeText(((event.target) as HTMLInputElement).value,120,200,300);
     });
 
 //    Saving the Text signature
     saveText.addEventListener('click', (event)=> {
       const signData = canvas.toDataURL('image/png');
-
+      this.signaturePad = signData;
+      this.isCanvasBlank();
+      this.save();
       //  signData to be sent to the server
       alert(signData);
     });
@@ -173,8 +176,13 @@ async text()
 
 //    Undo typed Text
     undoText.addEventListener('click',(event)=>{
-// Todo:Must get previous not similar to clear
+      const data = canvas.toDataURL();
+      this.undo();
     });
 
-//    Todo:Done and SaveImg < ?? BackEnd OR ?? >
+//    Done
+    doneText.addEventListener('click',()=>
+    {
+      this.done();
+    });
 }}
