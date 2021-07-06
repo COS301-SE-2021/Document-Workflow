@@ -15,11 +15,11 @@ export class AddSignatureComponent implements OnInit, AfterViewInit {
   @ViewChild('canvas', { static: true }) signaturePadElement;
   signForm: FormGroup;
   signaturePad: any;
+  textSignature: any;
   canvasWidth: 150;
   canvasHeight: 150;
   public saveSign: string;
   file: File;
-  public textBox: boolean;
   public registerButton: boolean;
   constructor(
     private elementRef: ElementRef,
@@ -42,7 +42,7 @@ export class AddSignatureComponent implements OnInit, AfterViewInit {
     const canvas: any = this.elementRef.nativeElement.querySelector('canvas');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight - 500;
-    if (this.signaturePad) {
+    if (this.signaturePad || this.textSignature) {
       this.signaturePad.clear(); // Clear the pad on init
     }
   }
@@ -134,19 +134,27 @@ export class AddSignatureComponent implements OnInit, AfterViewInit {
 async text()
 {
   document.getElementById('textInput').className='showTextBox';
+  await this.convertTextToSignature();
 }
 
+//  Use canvas to save text
+  convertTextToSignature() {
+    const canvas = document.getElementById('signature-pad-canvas') as HTMLCanvasElement;
+    const context = canvas.getContext('2d');
+    const typeInput = document.getElementById('textInput');
+    const saveText = document.getElementById('saveTxt');
+    const clearText = document.getElementById('clearTxt');
+    const undoText = document.getElementById('undoTxt');
 
-  async type(){
-    const mod = this.modalCtrl.create({
-      component: AddSignatureComponent
+    canvas.width= 150;
+    canvas.height= 150;
+    // eslint-disable-next-line prefer-arrow/prefer-arrow-functions
+    context.font = '380px Dancing Script';
+
+    //Type Here
+    typeInput.addEventListener('input',(event)=> {
+      context.clearRect(0,0,canvas.width,canvas.height);
+      context.strokeText(((event.target) as HTMLInputElement).value,100,100,200);
     });
 
-    await (await mod).present();
-    (await mod).onDidDismiss().then(async (data) => {
-      this.registerButton = data.data.registerButton;
-      this.file = data.data.signature;
-      console.log(typeof(this.file));
-    });
-  }
-}
+}}
