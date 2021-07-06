@@ -157,4 +157,24 @@ async text()
       context.strokeText(((event.target) as HTMLInputElement).value,100,100,200);
     });
 
+//    Saving the Text signature
+    saveText.addEventListener('click', (event)=> {
+      const signData = canvas.toDataURL('image/png');
+
+      //  signData to be sent to the server
+      alert(signData);
+    });
+
+//    Clear Text signature
+    clearText.addEventListener('click', (event)=> {
+      context.clearRect(0,0,canvas.width,canvas.height);
+      ((typeInput) as HTMLInputElement).value = '';
+    });
+
+//    Undo typed Text
+    undoText.addEventListener('click',(event)=>{
+// Todo:Must get previous not similar to clear
+    });
+
+//    Todo:Done and SaveImg < ?? BackEnd OR ?? >
 }}
