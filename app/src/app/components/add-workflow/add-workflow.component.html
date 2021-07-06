@@ -34,12 +34,43 @@
     </ion-slide>
     <ion-slide>
       <ion-card>
+        <ion-card-header>
         <ion-item>
           <ion-label>Reorder phases</ion-label>
           <ion-toggle (click)="reOrderPhases()"></ion-toggle>
         </ion-item>
+      </ion-card-header>
+      <ion-card-content>
         <ion-reorder-group [disabled]="reOrder" (ionItemReorder)="doReorder($event)">
-          <ion-item *ngFor="let phase of workflowForm.controls.phases['controls']; let i = index">
+          <form [formGroup]="phaseForm">
+            <ion-card *ngFor="let phase of phaseForm.controls.phases['controls']; let i = index">
+              <ion-card-header>
+                <ion-card-title>Phase {{i+1}}</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-card>
+                  <ion-card-header>
+                    Add User
+                  </ion-card-header>
+                </ion-card>
+              </ion-card-content>
+            </ion-card>
+          </form>
+        </ion-reorder-group>
+      </ion-card-content>
+
+        <ion-button expand="block" color="primary" fill="outline" (click)="addPhase()">Add Phase </ion-button>
+
+      </ion-card>
+    </ion-slide>
+  </ion-slides>
+</ion-content>
+
+
+<!--
+
+
+  <ion-item *ngFor="let phase of phases.phase['controls']; let i = index">
             <ion-reorder>
               <ion-card>
                 <ion-card-header>
@@ -68,13 +99,4 @@
               </ion-card>
             </ion-reorder>
           </ion-item>
-        </ion-reorder-group>
-        <ion-button expand="block" color="primary" fill="outline" (click)="addPhase()">Add Phase </ion-button>
-      </ion-card>
-    </ion-slide>
-  </ion-slides>
-</ion-content>
-
-<!-- <ion-button expand="full" color="light"
-(click)="addUser(workflowForm.controls.phases['controls'][i], j)">Add
-User   </ion-button> -->
+-->

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ItemReorderEventDetail } from '@ionic/core';
 import {
   FormArray,
   FormBuilder,
@@ -25,9 +26,13 @@ import { DocumentViewPageRoutingModule } from 'src/app/pages/document-view/docum
 })
 export class AddWorkflowComponent implements OnInit {
   workflowForm: FormGroup;
+  phaseForm : FormGroup;
+
+
+
   private userCount = 1;
   private phaseNumber: number[];
-  phases: FormArray;
+
   file: File;
   addFile: boolean;
   reOrder: boolean;
@@ -44,21 +49,25 @@ export class AddWorkflowComponent implements OnInit {
 
   ngOnInit() {
     this.slideToggler = true;
-    this.reOrder = false;
+
     this.addFile = false;
     this.phaseNumber = Array(1)
       .fill(0)
       .map((x, i) => i);
+
     this.workflowForm = this.fb.group({
       workflowName: ['', [Validators.required]],
       workflowDescription: ['', [Validators.required]],
+    });
+
+    this.phaseForm = this.fb.group({
       phases: this.fb.array([
         this.fb.group({
           user1: new FormControl('', [Validators.email, Validators.required]),
         }),
       ]),
     });
-    // console.log(this.workflowForm.controls.phases['controls'][0]);
+    console.log(this.phaseForm.controls.phases)
   }
 
   addUser(form: FormGroup) {
@@ -81,13 +90,13 @@ export class AddWorkflowComponent implements OnInit {
 
   addPhase() {
     this.phaseNumber.push(0);
-    let phase = this.workflowForm.get('phases') as FormArray;
+    let phase = this.phaseForm.get('phases') as FormArray;
     phase.push(this.createPhase());
   }
 
   removePhase(i: number) {
     this.phaseNumber.pop();
-    let phase = this.workflowForm.get('phases') as FormArray;
+    let phase = this.phaseForm.get('phases') as FormArray;
     phase.removeAt(i);
   }
 
@@ -127,8 +136,9 @@ export class AddWorkflowComponent implements OnInit {
     }
   }
 
-  doReorder(event){
-    console.log("here");
+  doReorder(event) {
+    console.log('here');
+    event.detail.complete();
   }
 
   submit() {
