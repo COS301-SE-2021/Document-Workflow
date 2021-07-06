@@ -6,11 +6,12 @@ import {
   FormControl,
   FormGroup,
   Validators,
-  AbstractControl
+  AbstractControl,
 } from '@angular/forms';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import {
   ActionSheetController,
+  IonReorderGroup,
   ModalController,
   Platform,
 } from '@ionic/angular';
@@ -29,7 +30,10 @@ export class AddWorkflowComponent implements OnInit {
   phases: FormArray;
   file: File;
   addFile: boolean;
+  reOrder: boolean;
+  slideToggler: boolean;
 
+  @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
   constructor(
     private plat: Platform,
@@ -39,6 +43,8 @@ export class AddWorkflowComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.slideToggler = true;
+    this.reOrder = false;
     this.addFile = false;
     this.phaseNumber = Array(1)
       .fill(0)
@@ -79,7 +85,7 @@ export class AddWorkflowComponent implements OnInit {
     phase.push(this.createPhase());
   }
 
-  removePhase( i: number){
+  removePhase(i: number) {
     this.phaseNumber.pop();
     let phase = this.workflowForm.get('phases') as FormArray;
     phase.removeAt(i);
@@ -110,7 +116,19 @@ export class AddWorkflowComponent implements OnInit {
     this.file = target.files[0];
 
     console.log('file', this.file);
+  }
 
+  reOrderPhases() {
+    if (this.reorderGroup.disabled) {
+      this.reorderGroup.disabled = false;
+    } else {
+      this.slideToggler = false;
+      this.reorderGroup.disabled = true;
+    }
+  }
+
+  doReorder(event){
+    console.log("here");
   }
 
   submit() {
@@ -118,6 +136,5 @@ export class AddWorkflowComponent implements OnInit {
       document: this.workflowForm.value,
       file: this.file,
     });
-
   }
 }
