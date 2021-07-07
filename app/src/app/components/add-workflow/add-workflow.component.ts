@@ -126,6 +126,9 @@ export class AddWorkflowComponent implements OnInit {
   }
 
   fixOrder(ev: CustomEvent<ItemReorderEventDetail>){
+    let phase = this.workflowForm.get('phases') as FormArray;
+    let a = phase.controls.splice(ev.detail.from,1);
+    phase.controls.splice(ev.detail.to, 0, a[0] );
     ev.detail.complete();
   }
 
