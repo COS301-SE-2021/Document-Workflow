@@ -13,7 +13,8 @@ import { async } from '@angular/core/testing';
 import { ConfirmSignaturesComponent } from 'src/app/components/confirm-signatures/confirm-signatures.component';
 import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { DomSanitizer } from '@angular/platform-browser';
-import WebViewer from '@pdftron/webviewer';
+import WebViewer, {PDFNet} from '@pdftron/webviewer';
+import * as fs from 'fs';
 
 @Component({
   selector: 'app-document-view',
@@ -22,6 +23,7 @@ import WebViewer from '@pdftron/webviewer';
 })
 export class DocumentViewPage implements OnInit, AfterViewInit {
   srcFile: any;
+  srcFileBase64: any;
   rotated: number;
   setZoom: any;
   zoomLevel: number;
@@ -46,16 +48,68 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
       this.id = stuff['id'];
       this.docName = stuff['documentname'];
     });
-    await this.getDocument(this.id);
   }
 
+   toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+
   async ngAfterViewInit(): Promise<void>{
+    this.docApi.getDocument(this.id, async (response) => {
+      if (response) {
+        const buff = response.data.filedata.Body.data;
+        this.srcFileBase64 =response.data.filedata.Body.data;
+        const a = new Uint8Array(buff);
+
+        this.pdfDoc = await PDFDocument.load(a);
+        const pdfBytes = await this.pdfDoc.save();
+        this.srcFile = pdfBytes;
+
+        console.log(this.srcFileBase64);
+        function base64ToBlob(base64) {
+          const binaryString = window.atob(base64);
+          const len = binaryString.length;
+          const bytes = new Uint8Array(len);
+          for (let i = 0; i < len; ++i) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+
+          return new Blob([bytes], { type: 'application/pdf' });
+        };
+
+        WebViewer({
+          path : '../../assets/lib'
+        }, this.viewerRef.nativeElement)
+          .then(instance => {
+
+            // `myBase64String` is your base64 data which can come
+            // from sources such as a server or the filesystem
+            instance.loadDocument(this.srcFile, { filename: 'myfile.pdf' });
+
+            const { docViewer } = instance;
+            docViewer.on('documentLoaded', () => {
+              // perform document operations
+            });
+          });
+
+      } else {
+      }
+    });
+
+
+    /*
+    await this.getDocument(this.id);
     WebViewer({
-      path:'../../assets/lib',
-      initialDoc: 'https://pdftron.s3.amazonaws.com/downloads/pl/webviewer-demo.pdf'
+      path:'',
+      initialDoc: this.srcFile
     }, this.viewerRef.nativeElement).then(instance=>{
 
     });
+    */
+
   }
 
   download() {
@@ -80,6 +134,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
     this.docApi.getDocument(id, async (response) => {
       if (response) {
         const buff = response.data.filedata.Body.data;
+        this.srcFileBase64 =response.data.filedata.Body.data;
         const a = new Uint8Array(buff);
 
         this.pdfDoc = await PDFDocument.load(a);
