@@ -4,9 +4,17 @@
   </ion-toolbar>
 </ion-header>
 
+<style>
+  .webviewer{
+    width: 100%;
+    height: 100vh;
+
+  }
+</style>
+
 <ion-content>
 
-  <pdf-viewer (click)="printMousePosition($event)" id="pdf" class="modal-fullscreen"
+  <!---<pdf-viewer (click)="printMousePosition($event)" id="pdf" class="modal-fullscreen"
               [src]= "srcFile"
               [render-text]="true"
               [rotation]="rotated"
@@ -17,8 +25,10 @@
               style="display: block; background-color: grey;"
               #input
   >
-  </pdf-viewer>
-
+  </pdf-viewer> -->
+  <div class="content" role="main">
+    <div #viewer class="webviewer"></div>
+  </div>
 
   <ion-fab vertical="top" horizontal="end" slot="fixed">
     <ion-fab-button (click)="download()">

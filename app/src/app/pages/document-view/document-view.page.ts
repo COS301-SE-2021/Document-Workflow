@@ -1,7 +1,7 @@
 /* eslint-disable @angular-eslint/no-input-rename */
 /* eslint-disable @typescript-eslint/member-ordering */
 /* eslint-disable @typescript-eslint/dot-notation */
-import { Component, OnInit, Input } from '@angular/core';
+import {Component, OnInit, Input, AfterViewInit, ElementRef, ViewChild} from '@angular/core';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 
 import { ModalController, NavParams, Platform } from '@ionic/angular';
@@ -13,13 +13,14 @@ import { async } from '@angular/core/testing';
 import { ConfirmSignaturesComponent } from 'src/app/components/confirm-signatures/confirm-signatures.component';
 import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { DomSanitizer } from '@angular/platform-browser';
+import WebViewer from '@pdftron/webviewer';
 
 @Component({
   selector: 'app-document-view',
   templateUrl: './document-view.page.html',
   styleUrls: ['./document-view.page.scss'],
 })
-export class DocumentViewPage implements OnInit {
+export class DocumentViewPage implements OnInit, AfterViewInit {
   srcFile: any;
   rotated: number;
   setZoom: any;
@@ -28,6 +29,7 @@ export class DocumentViewPage implements OnInit {
 
   @Input('id') id: string;
   @Input('documentname') docName: string;
+  @ViewChild('viewer') viewerRef: ElementRef;
   constructor(
     private modalCtrl: ModalController,
     private navpar: NavParams,
@@ -45,6 +47,15 @@ export class DocumentViewPage implements OnInit {
       this.docName = stuff['documentname'];
     });
     await this.getDocument(this.id);
+  }
+
+  async ngAfterViewInit(): Promise<void>{
+    WebViewer({
+      path:'../../assets/lib',
+      initialDoc: 'https://pdftron.s3.amazonaws.com/downloads/pl/webviewer-demo.pdf'
+    }, this.viewerRef.nativeElement).then(instance=>{
+
+    });
   }
 
   download() {
@@ -68,7 +79,7 @@ export class DocumentViewPage implements OnInit {
   async getDocument(id: string) {
     this.docApi.getDocument(id, async (response) => {
       if (response) {
-        const buff = response.data.filedata.Body.data; //wut
+        const buff = response.data.filedata.Body.data;
         const a = new Uint8Array(buff);
 
         this.pdfDoc = await PDFDocument.load(a);
@@ -133,6 +144,8 @@ export class DocumentViewPage implements OnInit {
     this.srcFile = pdfBytes;
   }
 
+
+
   async printMousePosition(event) {
     console.log('X: ', event.clientX, ' Y: ', event.clientY);
     let canvas = document.getElementsByTagName("canvas")[0];
@@ -145,7 +158,7 @@ export class DocumentViewPage implements OnInit {
     const { width, height } = firstPage.getSize();
     const helveticaFont = await this.pdfDoc.embedFont(StandardFonts.Helvetica);
 
-    firstPage.drawText('This text was added with JavaScript!', {
+    firstPage.drawText('X', {
       x: event.clientX,
       y: height - event.clientY - scroll_div.scrollTop,
       size: 50,
