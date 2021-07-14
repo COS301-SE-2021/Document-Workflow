@@ -75,6 +75,9 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
             instance.loadDocument(this.srcFile, {filename: this.docName});
 
             const { docViewer, annotManager, CoreControls } = instance;
+            instance.disableElements(['toolbarGroup-Shapes']);
+            instance.disableElements(['toolbarGroup-Edit']);
+            instance.disableElements(['toolbarGroup-Insert']);
 
             // Add header button that will get file data on click
             instance.setHeaderItems(header => {
