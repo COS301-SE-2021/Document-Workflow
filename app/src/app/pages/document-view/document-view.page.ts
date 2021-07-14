@@ -58,40 +58,24 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   });
 
   async ngAfterViewInit(): Promise<void>{
-    this.docApi.getDocument(this.id, async (response) => {
+    await this.docApi.getDocument(this.id, async (response) => {
       if (response) {
-        const buff = response.data.filedata.Body.data;
-        this.srcFileBase64 =response.data.filedata.Body.data;
-        const a = new Uint8Array(buff);
+        this.srcFileBase64 = response.data.filedata.Body.data;
+        const a = new Uint8Array(response.data.filedata.Body.data);
 
         this.pdfDoc = await PDFDocument.load(a);
         const pdfBytes = await this.pdfDoc.save();
         this.srcFile = pdfBytes;
 
-        console.log(this.srcFileBase64);
-        function base64ToBlob(base64) {
-          const binaryString = window.atob(base64);
-          const len = binaryString.length;
-          const bytes = new Uint8Array(len);
-          for (let i = 0; i < len; ++i) {
-            bytes[i] = binaryString.charCodeAt(i);
-          }
-
-          return new Blob([bytes], { type: 'application/pdf' });
-        };
-
         WebViewer({
-          path : '../../assets/lib'
+          path: '../../assets/lib'
         }, this.viewerRef.nativeElement)
           .then(instance => {
 
-            // `myBase64String` is your base64 data which can come
-            // from sources such as a server or the filesystem
-            instance.loadDocument(this.srcFile, { filename: 'myfile.pdf' });
+            instance.loadDocument(this.srcFile, {filename: this.docName});
 
-            const { docViewer } = instance;
+            const {docViewer} = instance;
             docViewer.on('documentLoaded', () => {
-              // perform document operations
             });
           });
 
@@ -131,10 +115,10 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
 
 
   async getDocument(id: string) {
-    this.docApi.getDocument(id, async (response) => {
+    await this.docApi.getDocument(id, async (response) => {
       if (response) {
         const buff = response.data.filedata.Body.data;
-        this.srcFileBase64 =response.data.filedata.Body.data;
+        this.srcFileBase64 = response.data.filedata.Body.data;
         const a = new Uint8Array(buff);
 
         this.pdfDoc = await PDFDocument.load(a);
