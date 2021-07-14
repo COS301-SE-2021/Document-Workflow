@@ -74,7 +74,30 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
 
             instance.loadDocument(this.srcFile, {filename: this.docName});
 
-            const {docViewer} = instance;
+            const { docViewer, annotManager, CoreControls } = instance;
+
+            // Add header button that will get file data on click
+            instance.setHeaderItems(header => {
+              header.push({
+                type: 'actionButton',
+                img: '...',
+                onClick: async () => {
+                  const doc = docViewer.getDocument();
+                  const xfdfString = await annotManager.exportAnnotations();
+                  const saveOptions = CoreControls.SaveOptions;
+                  const options = {
+                    xfdfString,
+                    flags: saveOptions.LINEARIZED,
+                    downloadType: 'pdf'
+                  };
+                  const data = await doc.getFileData(options);
+                  const arr = new Uint8Array(data);
+                  const blob = new Blob([arr], { type: 'application/pdf' });
+
+                  console.log(blob);
+                }
+              });
+            });
             docViewer.on('documentLoaded', () => {
             });
           });
