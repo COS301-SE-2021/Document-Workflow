@@ -41,9 +41,11 @@ export class WorkflowPage implements OnInit {
     private loadctrl: LoadingController,
     private navControl: NavController
   ) {
+    this.title="Home";
   }
 
   async ngOnInit() {
+
     const load = await this.loadctrl.create({
       message: 'Hang in there... we are almost done',
       duration: 5000,

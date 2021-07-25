@@ -4,12 +4,12 @@
 /** Ionic CSS Variables **/
 :root {
   /** primary **/
-  --ion-color-primary: #3880ff;
-  --ion-color-primary-rgb: 56, 128, 255;
+  --ion-color-primary: #002060;
+  --ion-color-primary-rgb: 0,32,96;
   --ion-color-primary-contrast: #ffffff;
-  --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #3171e0;
-  --ion-color-primary-tint: #4c8dff;
+  --ion-color-primary-contrast-rgb: 255,255,255;
+  --ion-color-primary-shade: #001c54;
+  --ion-color-primary-tint: #1a3670;
 
   /** secondary **/
   --ion-color-secondary: #3dc2ff;
@@ -83,12 +83,12 @@
    */
 
   body {
-    --ion-color-primary: #428cff;
-    --ion-color-primary-rgb: 66, 140, 255;
-    --ion-color-primary-contrast: #ffffff;
-    --ion-color-primary-contrast-rgb: 255, 255, 255;
-    --ion-color-primary-shade: #3a7be0;
-    --ion-color-primary-tint: #5598ff;
+    --ion-color-primary: #002060;
+  --ion-color-primary-rgb: 0,32,96;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255,255,255;
+  --ion-color-primary-shade: #001c54;
+  --ion-color-primary-tint: #1a3670;
 
     --ion-color-secondary: #50c8ff;
     --ion-color-secondary-rgb: 80, 200, 255;
@@ -217,7 +217,7 @@
     --ion-color-step-550: #949494;
     --ion-color-step-600: #a0a0a0;
     --ion-color-step-650: #acacac;
-    --ion-color-step-700: #b8b8b8;
+    --ion-color-step-700: #201e1e;
     --ion-color-step-750: #c4c4c4;
     --ion-color-step-800: #d0d0d0;
     --ion-color-step-850: #dbdbdb;
@@ -241,31 +241,31 @@ $color4: #aa021e;
 $color5: #002060;
 
 ion-content {
-  --background: #eee2dc;
+  --background: #d0d0d0 !important;
+
+  ion-fab-button{
+    --background: #002060 !important;
+    --ion-color-base: #002060 !important;
+  }
 }
 
+
+
 ion-card {
-  ion-item {
-    --background: #bab2b5 !important;
-
-  }
-
-  ion-list{
-    --background: #bab2b5 !important;
-      }
-
-  ion-title{
-    --background: #bab2b5 !important;
-  }
-  --background: #bab2b5 !important;
+  --background: white !important;
 }
 
 ion-toolbar{
-  --background: #edc7b7 !important;
+  --background:  #002060 !important;
 
   ion-title{
     --background: #edc7b7 !important;
+    color: white;
   }
+}
+
+ion-list{
+  --background: #bab2b5 !important;
 }
 
 
@@ -273,3 +273,6 @@ ion-button{
   --ion-color-base: #aa021a  !important;
   --border-color: #aa021e  !important;
 }
+
+
+
