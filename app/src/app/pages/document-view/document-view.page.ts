@@ -28,22 +28,21 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   setZoom: any;
   zoomLevel: number;
   pdfDoc: PDFDocument;
+  showAnnotions = true;
 
   @Input('id') id: string;
   @Input('documentname') docName: string;
   @ViewChild('viewer') viewerRef: ElementRef;
+  //TODO: get the name of the person who is editing/viewing the document
   constructor(
     private modalCtrl: ModalController,
     private navpar: NavParams,
     private route: ActivatedRoute,
     private docApi: DocumentAPIService,
-    private router: Router
+    private router: Router,
   ) {}
 
   async ngOnInit() {
-    this.rotated = 0;
-    this.setZoom = 'false';
-    this.zoomLevel = 1;
     await this.route.params.subscribe((stuff) => {
       this.id = stuff['id'];
       this.docName = stuff['documentname'];
@@ -68,11 +67,11 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
         this.srcFile = pdfBytes;
 
         WebViewer({
-          path: '../../assets/lib'
+          path: '../../assets/lib',
+          annotationUser: "Temporary User"
         }, this.viewerRef.nativeElement)
           .then(instance => {
             //Look at the Callout tool of the insert bar as well as the stickers that can be inserted.
-
             instance.loadDocument(this.srcFile, {filename: this.docName});
 
             const { docViewer, annotManager, CoreControls } = instance;
@@ -87,6 +86,12 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
               header.getHeader('toolbarGroup-Annotate').delete('strikeoutToolGroupButton');
               header.getHeader('toolbarGroup-Annotate').delete('squigglyToolGroupButton');
               header.getHeader('toolbarGroup-Annotate').delete('freeTextToolGroupButton');
+
+              header.push({
+                type: 'actionButton',
+                onClick: () =>  { this.toggleAnnotations(annotManager);
+                }
+              })
 
               header.push({
                 type: 'actionButton',
@@ -118,6 +123,22 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
       } else {
       }
     });
+
+  }
+
+
+  toggleAnnotations(annotManager){
+
+    this.showAnnotions = !this.showAnnotions;
+    const annotations = annotManager.getAnnotationsList();
+    if(this.showAnnotions){
+      console.log("Showing annotations");
+      annotManager.showAnnotations(annotations);
+    }
+    else{
+      console.log("Hiding annotations");
+      annotManager.hideAnnotations(annotations);
+    }
 
   }
 
