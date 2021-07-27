@@ -9,12 +9,12 @@ import { HttpClient } from '@angular/common/http';
 import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DocumentAPIService } from 'src/app/Services/Document/document-api.service';
+import {WorkFlowService} from 'src/app/Services/Workflow/work-flow.service';
 import { async } from '@angular/core/testing';
 import { ConfirmSignaturesComponent } from 'src/app/components/confirm-signatures/confirm-signatures.component';
 import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { DomSanitizer } from '@angular/platform-browser';
 import WebViewer, {PDFNet} from '@pdftron/webviewer';
-import * as fs from 'fs';
 
 @Component({
   selector: 'app-document-view',
@@ -40,6 +40,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
     private navpar: NavParams,
     private route: ActivatedRoute,
     private docApi: DocumentAPIService,
+    private workFlowService: WorkFlowService,
     private router: Router,
   ) {}
 
@@ -110,8 +111,12 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
                   const data = await doc.getFileData(options);
                   const arr = new Uint8Array(data);
                   const blob = new Blob([arr], { type: 'application/pdf' });
+                  let file = new File([blob], this.docName,{type:'application/pdf', lastModified:new Date().getTime()});
+                  console.log(file);
+                  this.workFlowService.updateDocument(this.documentId, file, (res) =>{
+                    console.log(res);
+                  });
 
-                  console.log(blob);
                 }
               });
 
