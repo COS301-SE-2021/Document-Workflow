@@ -7,6 +7,7 @@ import {
   Validators,
   AbstractControl
 } from '@angular/forms';
+import { Router } from '@angular/router';
 import {
   ActionSheetController,
   IonReorderGroup,
@@ -14,6 +15,7 @@ import {
   Platform,
 } from '@ionic/angular';
 import { ItemReorderEventDetail } from '@ionic/core';
+import { UserAPIService } from 'src/app/Services/User/user-api.service';
 @Component({
   selector: 'app-add-workflow',
   templateUrl: './add-workflow.page.html',
@@ -35,10 +37,27 @@ export class AddWorkflowPage implements OnInit {
     private plat: Platform,
     private fb: FormBuilder,
     private actionSheetController: ActionSheetController,
-    private modal: ModalController
+    private modal: ModalController,
+    private router: Router,
+    private userApiService: UserAPIService,
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
+    if(localStorage.getItem('token') === null) {
+      await this.router.navigate(['/login']);
+      return;
+    }
+    else
+    {
+      this.userApiService.checkIfAuthorized().subscribe((response) => {
+        console.log("Successfully authorized user");
+      }, async (error) => {
+        console.log(error);
+        await this.router.navigate(['/login']);
+        return;
+      });
+    }
+
     this.reOrder = true;
     this.addFile = false;
     this.phaseNumber = Array(1)

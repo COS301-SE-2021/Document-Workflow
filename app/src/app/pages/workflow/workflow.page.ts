@@ -211,7 +211,7 @@ export class WorkflowPage implements OnInit {
     //     }
     //   });
     // });
-
+    console.log("here");
     this.router.navigate(['addWorkflow']);
   }
 
