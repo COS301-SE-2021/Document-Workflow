@@ -184,4 +184,10 @@ export default class WorkFlowService{
         user.workflows.splice(index, 1);
         await this.usersRepository.putUser(user);
     }
+
+    async updateDocument(req) {
+        console.log(req.files);
+        console.log(req.body.workflowId);
+        return {status: 'success', data:{}, response:''};
+    }
 }
