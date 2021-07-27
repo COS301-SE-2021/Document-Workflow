@@ -8,5 +8,14 @@ ion-item{
 }
 
 ion-card{
-  width:100%;
+  justify-content: center;
+  align-items: center;
+  margin:auto;
+  width:90%;
+  margin-top: 10px;
+}
+
+pdf-viewer {
+  display: block;
+  height: 30vh;
 }

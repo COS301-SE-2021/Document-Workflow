@@ -1,3 +1,4 @@
+import { TypeModifier } from '@angular/compiler/src/output/output_ast';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import {
   FormArray,
@@ -28,8 +29,20 @@ export class AddWorkflowPage implements OnInit {
   private phaseNumber: number[];
   phases: FormArray;
   file: File;
+
+
   addFile: boolean;
+  addName: boolean;
+  addDescription: boolean;
+
   reOrder: boolean;
+
+  srcFile: any;
+  rotated: number;
+  setZoom: any;
+  zoomLevel: number;
+
+  next: boolean;
 
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
@@ -58,8 +71,17 @@ export class AddWorkflowPage implements OnInit {
       });
     }
 
+    this.next = false;
+    this.rotated = 0;
+    this.setZoom = 'false';
+    this.zoomLevel=1;
+
     this.reOrder = true;
+
     this.addFile = false;
+    this.addDescription = false;
+    this.addName = false;
+
     this.phaseNumber = Array(1)
       .fill(0)
       .map((x, i) => i);
@@ -73,6 +95,23 @@ export class AddWorkflowPage implements OnInit {
       ]),
     });
     // console.log(this.workflowForm.controls.phases['controls'][0]);
+  }
+
+  checkStatus(){
+    if(this.workflowForm.get('workflowName').valid){
+      this.addName = true;
+    }else{
+      this.addName = false;
+    }
+    if(this.workflowForm.get('workflowDescription').valid){
+      this.addDescription = true;
+    }else{
+      this.addDescription = false;
+    }
+  }
+
+  changeOver(){
+    this.next = !this.next;
   }
 
   addUser(form: FormGroup) {
@@ -124,13 +163,16 @@ export class AddWorkflowPage implements OnInit {
     await actionSheet.present();
   }
 
-  uploadFile(event: EventTarget) {
+  async uploadFile(event: EventTarget) {
     const eventObj: MSInputMethodContext = event as MSInputMethodContext;
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
     this.file = target.files[0];
-
-    console.log('file', this.file);
-
+    console.log(typeof this.file)
+    console.log('file', this.file.arrayBuffer());
+    // const buff = response.data.filedata.Body.data; //wut
+     const a  = new Uint8Array( await this.file.arrayBuffer() );
+     this.srcFile = a;
+     this.addFile = true;
   }
 
   submit() {
