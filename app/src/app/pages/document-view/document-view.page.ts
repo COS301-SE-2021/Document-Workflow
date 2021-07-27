@@ -76,7 +76,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
             //Look at the Callout tool of the insert bar as well as the stickers that can be inserted.
             instance.loadDocument(this.srcFile, {filename: this.docName});
 
-            const { docViewer, annotManager, CoreControls } = instance;
+            const { docViewer, annotManager, CoreControls} = instance;
             instance.disableElements(['toolbarGroup-Shapes']);
             instance.disableElements(['toolbarGroup-Edit']);
             instance.disableElements(['toolbarGroup-Insert']);
@@ -144,8 +144,12 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
     }
     else{
       console.log("Hiding annotations");
-      annotManager.hideAnnotations(annotations);
+      //annotManager.hideAnnotations(annotations);
+      annotations.forEach(annot =>{
+        annot.Hidden = true;
+      });
     }
+    annotManager.drawAnnotationsFromList(annotations);
 
   }
 
