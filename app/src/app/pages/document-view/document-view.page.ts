@@ -30,8 +30,9 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   pdfDoc: PDFDocument;
   showAnnotions = true;
 
-  @Input('id') id: string;
+  @Input('id') documentId: string;
   @Input('documentname') docName: string;
+  @Input('workflowId') workflowId: string;
   @ViewChild('viewer') viewerRef: ElementRef;
   //TODO: get the name of the person who is editing/viewing the document
   constructor(
@@ -44,7 +45,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
 
   async ngOnInit() {
     await this.route.params.subscribe((stuff) => {
-      this.id = stuff['id'];
+      this.documentId = stuff['id'];
       this.docName = stuff['documentname'];
     });
   }
@@ -57,7 +58,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   });
 
   async ngAfterViewInit(): Promise<void>{
-    await this.docApi.getDocument(this.id, async (response) => {
+    await this.docApi.getDocument(this.documentId, async (response) => {
       if (response) {
         this.srcFileBase64 = response.data.filedata.Body.data;
         const a = new Uint8Array(response.data.filedata.Body.data);
