@@ -55,6 +55,11 @@ const routes: Routes = [
     redirectTo: 'login',
     pathMatch: 'full'
   },
+  {
+    path: 'addWorkflow',
+    loadChildren: () => import('./pages/add-workflow/add-workflow.module').then( m => m.AddWorkflowPageModule)
+  },
+
 
 
 

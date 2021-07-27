@@ -16,7 +16,7 @@
 
 <ion-content style="width:100%">
   <br>
-  <ion-reorder-group disabled="true">
+  <ion-reorder-group [disabled]="reOrder" (ionItemReorder)="fixOrder($event)" style="width:100%">
     <div *ngFor="let doc of documents">
       <ion-reorder style="width:100%">
         <ion-card style="width:95%; justify-content: center;margin:auto">
