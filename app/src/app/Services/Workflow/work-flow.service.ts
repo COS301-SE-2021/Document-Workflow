@@ -65,7 +65,7 @@ export class WorkFlowService {
         callback(data);
       } else callback({status: 'error', message: 'Cannot connect to Server'});
     }, error =>{
-        alert("An unexpected error occurred");
+      alert("An unexpected error occurred");
     });
   }
 
@@ -83,9 +83,32 @@ export class WorkFlowService {
         callback(data);
       } else callback({status: 'error', message: 'Cannot connect to Server'});
     }, error =>{
-        alert("An unexpected error occurred");
+      alert("An unexpected error occurred");
+    });
+  }
+
+  /**
+   * This will likely stay a test function.
+   * @param workflow_id
+   * @param file
+   */
+  public async updateDocument(document_id, file, callback){
+    const formData = new FormData();
+    formData.append('documentId', document_id);
+    formData.append('document', file);
+
+    const token = localStorage.getItem('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: ('Bearer ' + token)
     });
 
-
+    this.http.post(WorkFlowService.url + '/workflows/updateDocument', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
+      if (data) {
+        callback(data);
+      } else callback({status: 'error', message: 'Cannot connect to Server'});
+    }, error =>{
+      alert("An unexpected error occurred");
+    });
   }
+
 }
