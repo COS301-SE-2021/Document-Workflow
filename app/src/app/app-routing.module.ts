@@ -72,7 +72,11 @@ const routes: Routes = [
     path: '',
     redirectTo: 'login',
     pathMatch: 'full',
+  },  {
+    path: 'split-view',
+    loadChildren: () => import('./pages/split-view/split-view.module').then( m => m.SplitViewPageModule)
   },
+
 ];
 @NgModule({
   imports: [
