@@ -2,22 +2,27 @@
 
   <ion-menu contentId="main">
     <ion-header>
-        <ion-grid>
-          <ion-row>
+      <ion-grid>
+        <ion-row>
           <ion-col sizeSm="6" sizeXs="6" sizeMd="3">
-            <ion-img src="../../../assets/LogoWhiteBackground.png"
-            ></ion-img>
+            <ion-img src="../../../assets/LogoWhiteBackground.png"></ion-img>
           </ion-col>
           <ion-col sizeSm="6">
-            <ion-title style="text-align: left; line-height: normal; padding-top: 2%; font-size: 35px;">{{title}}</ion-title>
+            <ion-title style="text-align: left; line-height: normal; padding-top: 2%; font-size: 35px;">{{title}}
+            </ion-title>
           </ion-col>
         </ion-row>
-        </ion-grid>
+      </ion-grid>
     </ion-header>
     <ion-content>
-      here
+      <ion-menu-toggle autoHide="false">
+        <ion-item routerLink="/home" routerDirection="root" routerLinkActive="active-link">Home</ion-item>
+        <ion-item routerLink="/home/addWorkflow" routerDirection="root" routerLinkActive="active-link">Add Workflow</ion-item>
+        <ion-item routerLink="/home/userProfile" routerDirection="root" routerLinkActive="active-link">Profile</ion-item>
+        <ion-item (click)="logout()">Log out</ion-item>
+      </ion-menu-toggle>
     </ion-content>
   </ion-menu>
-    <ion-router-outlet id="main"></ion-router-outlet>
+  <ion-router-outlet id="main"></ion-router-outlet>
 
 </ion-split-pane>

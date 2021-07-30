@@ -12,4 +12,8 @@ export class SplitViewPage implements OnInit {
   ngOnInit() {
   }
 
+  logout(){
+
+  }
+
 }
