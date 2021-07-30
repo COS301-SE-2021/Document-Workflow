@@ -1,8 +1,8 @@
 /* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/prefer-for-of */
-import { Component, OnInit, Input } from '@angular/core';
-import { LoadingController, ModalController, NavController } from '@ionic/angular';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { IonReorderGroup, LoadingController, ModalController, NavController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 
@@ -16,7 +16,7 @@ import { AddWorkflowComponent } from 'src/app/components/add-workflow/add-workfl
 import { EditWorkflowComponent } from 'src/app/components/edit-workflow/edit-workflow.component';
 import { WorkFlowService } from '../../Services/Workflow/work-flow.service';
 import { ConfirmDeleteWorkflowComponent } from 'src/app/components/confirm-delete-workflow/confirm-delete-workflow.component';
-
+import { ItemReorderEventDetail } from '@ionic/core';
 @Component({
   selector: 'app-workflow',
   templateUrl: './workflow.page.html',
@@ -27,10 +27,12 @@ export class WorkflowPage implements OnInit {
   documents: documentImage[] = [];
   ownerEmail: string;
   user: User;
+  reOrder: boolean;
+  isBrowser: boolean;
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
 
-
+  @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   constructor(
     private docService: DocumentAPIService,
     private modals: ModalController,
@@ -41,9 +43,16 @@ export class WorkflowPage implements OnInit {
     private loadctrl: LoadingController,
     private navControl: NavController
   ) {
+    this.title="Home";
   }
 
   async ngOnInit() {
+    this.reOrder = true;
+
+    if(this.plat.is('desktop')){
+      alert("here");
+    }
+
     const load = await this.loadctrl.create({
       message: 'Hang in there... we are almost done',
       duration: 5000,
@@ -168,41 +177,42 @@ export class WorkflowPage implements OnInit {
   }
 
   async addWorkflow() {
-    const addModal = await this.modals.create({
-      component: AddWorkflowComponent,
-    });
+    // const addModal = await this.modals.create({
+    //   component: AddWorkflowComponent,
+    // });
 
-    (await addModal).present();
+    // (await addModal).present();
 
-    (await addModal).onDidDismiss().then(async (data) => {
-      // const users = (await data).data['users'];
-      const documents = (await data).data['document'];
-      const file = (await data).data['file'];
-      let phases = '';
-      console.log(documents.phases);
-      for(let i=0; i<documents.phases.length; ++i) //Sending arrays of arrays does not work well in angular so this workaround will have to do.
-      {
-        let temp = '[';
-        for(const [key, value] of Object.entries(documents.phases[i]))
-          temp+=value + ' ';
-        phases += temp.substr(0, temp.length-1) +']'; //dont want the trailing space
-      }
-      console.log(phases);
-      const workflowData = {
-        name: documents.workflowName,
-        description: documents.workflowDescription
-      };
-      this.workFlowService.createWorkflow(workflowData, phases, file, (response) => {
-        if (response.status === 'success') {
-          this.userApiService.displayPopOver('Success', 'Workflow has been created');
-          location.reload();
-        } else {
-          console.log(response);
-          this.userApiService.displayPopOver('Workflow could not be created', response.message);
-        }
-      });
-    });
-
+    // (await addModal).onDidDismiss().then(async (data) => {
+    //   // const users = (await data).data['users'];
+    //   const documents = (await data).data['document'];
+    //   const file = (await data).data['file'];
+    //   let phases = '';
+    //   console.log(documents.phases);
+    //   for(let i=0; i<documents.phases.length; ++i) //Sending arrays of arrays does not work well in angular so this workaround will have to do.
+    //   {
+    //     let temp = '[';
+    //     for(const [key, value] of Object.entries(documents.phases[i]))
+    //       temp+=value + ' ';
+    //     phases += temp.substr(0, temp.length-1) +']'; //dont want the trailing space
+    //   }
+    //   console.log(phases);
+    //   const workflowData = {
+    //     name: documents.workflowName,
+    //     description: documents.workflowDescription
+    //   };
+    //   this.workFlowService.createWorkflow(workflowData, phases, file, (response) => {
+    //     if (response.status === 'success') {
+    //       this.userApiService.displayPopOver('Success', 'Workflow has been created');
+    //       location.reload();
+    //     } else {
+    //       console.log(response);
+    //       this.userApiService.displayPopOver('Workflow could not be created', response.message);
+    //     }
+    //   });
+    // });
+    console.log("here");
+    this.router.navigate(['addWorkflow']);
   }
 
   viewWorkFlow(id: string, name: string) {
@@ -220,6 +230,10 @@ export class WorkflowPage implements OnInit {
 
   toProfilepage(){
     this.router.navigate(['userProfile']);
+  }
+
+  fixOrder(event: CustomEvent<ItemReorderEventDetail>){
+    event.detail.complete();
   }
 }
 

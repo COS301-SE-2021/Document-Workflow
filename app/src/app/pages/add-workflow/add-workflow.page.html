@@ -1,0 +1,109 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-grid>
+      <ion-row>
+        <ion-col sizeSm="6" sizeXs="6" sizeMd="3">
+          <ion-img src="../../../assets/LogoWhiteBackground.png"></ion-img>
+        </ion-col>
+        <ion-col sizeSm="6">
+          <ion-title style="text-align: left; line-height: normal; padding-top: 2%; font-size: 35px;">{{title}}
+          </ion-title>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content style="height: 100%;" [fullscreen]="true">
+  <form [formGroup]="workflowForm" (ngSubmit)="submit()" style="height: 90%;">
+    <ion-card *ngIf="!next" style="height: 100%;">
+      <ion-card-content style="height: 95%;">
+        <ion-item>
+          <ion-label>Document name</ion-label>
+          <ion-input formControlName="workflowName" inputmode="text" (input)="checkStatus()"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label>Document Description</ion-label>
+          <ion-textarea formControlName="workflowDescription" inputmode="text" (input)="checkStatus()"></ion-textarea>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Add your document</ion-label>
+          <ion-button hidden="true">
+
+            <input FormControlName="fileUploader" type="file" #fileInput (change)="uploadFile($event)" hidden="false"
+              accept="application/pdf" required>
+          </ion-button>
+          <ion-button (click)="selectImageSource()">Add</ion-button>
+
+        </ion-item>
+        <iframe [src]="srcFile" *ngIf="addFile" style="width: 100%; height:70%;"></iframe>
+      </ion-card-content>
+
+      <ion-button [disabled]="!addFile || !addName || !addDescription" (click)="changeOver()">Next</ion-button>
+    </ion-card>
+    <ion-card style="width:100%" *ngIf="next">
+      <ion-card-header>
+        re order
+        <ion-toggle (click)="reOrderTime()">
+
+        </ion-toggle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-item>
+          <ion-reorder-group [disabled]="reOrder" (ionItemReorder)="fixOrder($event)" style="width:100%">
+            <ion-reorder *ngFor="let phase of workflowForm.controls.phases['controls']; let i = index">
+              <ion-card style="width:95%">
+                <ion-card-header>
+                  <ion-card-title>Phase {{i+1}}</ion-card-title>
+                  <ion-fab vertical="top" horizontal="end">
+                    <ion-fab-button mini (click)="addUser(workflowForm.controls.phases['controls'][i])">
+                      <ion-icon name="add-circle-outline"></ion-icon>
+                    </ion-fab-button>
+                  </ion-fab>
+                </ion-card-header>
+                <ion-card-content>
+                  <form [formGroup]="workflowForm.controls.phases['controls'][i]">
+                    <ion-card
+                      *ngFor="let control of workflowForm.controls.phases['controls'][i].controls | keyvalue; let j = index">
+                      <ion-grid>
+                        <ion-row>
+                          <ion-col sizeXs='12' sizeSm='12' sizeMd='4'>
+                            <ion-card-title>Add user:</ion-card-title>
+                          </ion-col>
+                          <ion-col sizeXs='10' sizeSm='10' sizeMd='6'>
+                            <ion-input type="text" formControlName="{{control.key}}"></ion-input>
+                          </ion-col>
+                          <ion-col sizeXs='2' sizeSm='2' sizeMd='2'>
+                            <ion-icon name="close-circle-outline" size="large"
+                              (click)="removeUser(workflowForm.controls.phases['controls'][i], control)"></ion-icon>
+                          </ion-col>
+                        </ion-row>
+                      </ion-grid>
+                    </ion-card>
+                  </form>
+                  <ion-button expand="block" color="primary" fill="outline" (click)="removePhase(i)">Remove this
+                    Phase
+                  </ion-button>
+                </ion-card-content>
+              </ion-card>
+            </ion-reorder>
+          </ion-reorder-group>
+
+        </ion-item>
+        <ion-item>
+          <ion-item style="width:100%">
+            <ion-button style="width:100%" expand="block" color="primary" fill="outline" (click)="addPhase()">Add
+              Phase
+            </ion-button>
+          </ion-item>
+          <ion-item style="width:100%">
+            <ion-button style="width:100%" expand="block" color="primary" fill="outline"
+              [disabled]="!workflowForm.valid" type="submit">
+              Add workflow</ion-button>
+          </ion-item>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+  </form>
+</ion-content>
