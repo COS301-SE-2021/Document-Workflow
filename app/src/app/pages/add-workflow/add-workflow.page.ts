@@ -1,5 +1,5 @@
 import { TypeModifier } from '@angular/compiler/src/output/output_ast';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, Sanitizer, ViewChild } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -8,6 +8,7 @@ import {
   Validators,
   AbstractControl
 } from '@angular/forms';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import {
   ActionSheetController,
@@ -53,6 +54,7 @@ export class AddWorkflowPage implements OnInit {
     private modal: ModalController,
     private router: Router,
     private userApiService: UserAPIService,
+    private sanitizer: DomSanitizer
   ) {}
 
   async ngOnInit() {
@@ -172,7 +174,14 @@ export class AddWorkflowPage implements OnInit {
     // const buff = response.data.filedata.Body.data; //wut
      const a  = new Uint8Array( await this.file.arrayBuffer() );
      this.srcFile = a;
-     this.addFile = true;
+
+
+     var blob = new Blob([this.file], {type: 'application/pdf;base64'});
+        console.log(blob.arrayBuffer());
+        const obj = URL.createObjectURL(blob);
+        console.log(obj);
+        this.srcFile = this.sanitizer.bypassSecurityTrustResourceUrl(obj);
+        this.addFile = true;
   }
 
   submit() {
