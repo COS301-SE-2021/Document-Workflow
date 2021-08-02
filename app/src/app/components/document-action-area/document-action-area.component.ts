@@ -1,14 +1,121 @@
 import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, Input, AfterViewInit, ElementRef, ViewChild} from '@angular/core';
+
+import { ModalController, NavParams, Platform } from '@ionic/angular';
+import { ActivatedRoute, Router } from '@angular/router';
+import { DocumentAPIService } from 'src/app/Services/Document/document-api.service';
+import {WorkFlowService} from 'src/app/Services/Workflow/work-flow.service';
+import { ConfirmSignaturesComponent } from 'src/app/components/confirm-signatures/confirm-signatures.component';
+import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import WebViewer, {PDFNet} from '@pdftron/webviewer';
+import {Integer} from "aws-sdk/clients/ssm";
 
 @Component({
   selector: 'app-document-action-area',
   templateUrl: './document-action-area.component.html',
   styleUrls: ['./document-action-area.component.scss'],
 })
-export class DocumentActionAreaComponent implements OnInit {
+export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
 
-  constructor() { }
+  pdfDoc: PDFDocument;
+  showAnnotations: true;
 
-  ngOnInit() {}
+  @Input('document') document: string;
+  @Input('docName') docName: string;
+  @Input('phase') phaseNumber: Integer;
+  constructor(
+    private modalCtrl: ModalController,
+    private navpar: NavParams,
+    private route: ActivatedRoute,
+    private docApi: DocumentAPIService,
+    private workFlowService: WorkFlowService,
+    private router: Router,
+  ) {}
+
+
+  ngOnInit() {
+    await this.route.params.subscribe((data) => {
+      this.document = data['document'];
+      this.docName = data['docName'];
+      this.phaseNumber = data['phaseNumber'];
+    });
+  }
+
+  async ngAfterViewInit(): Promise<void>{
+
+     const arr = new Uint8Array(this.document);
+     this.pdfDoc = await PDFDocument.load(arr);
+     const pdfBytes = await this.pdfDoc.save();
+     const blob = new Blob([arr], { type: 'application/pdf' });
+
+      WebViewer({
+        path: '../../assets/lib',
+        annotationUser: "Temporary User"
+      }, this.viewerRef.nativeElement)
+        .then(instance => {
+          //Look at the Callout tool of the insert bar as well as the stickers that can be inserted.
+          instance.loadDocument(blob, {filename: this.docName});
+
+          const { docViewer, annotManager, CoreControls} = instance;
+          instance.disableElements(['toolbarGroup-Shapes']);
+          instance.disableElements(['toolbarGroup-Edit']);
+          instance.disableElements(['toolbarGroup-Insert']);
+
+          // Add header button that will get file data on click
+          instance.setHeaderItems(header => {
+            header.getHeader('toolbarGroup-Annotate').delete('highlightToolGroupButton');
+            header.getHeader('toolbarGroup-Annotate').delete('underlineToolGroupButton');
+            header.getHeader('toolbarGroup-Annotate').delete('strikeoutToolGroupButton');
+            header.getHeader('toolbarGroup-Annotate').delete('squigglyToolGroupButton');
+            header.getHeader('toolbarGroup-Annotate').delete('freeTextToolGroupButton');
+
+            header.push({
+              type: 'actionButton',
+              img: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>',
+              onClick: () =>  { this.toggleAnnotations(annotManager);
+              }
+            });
+
+            header.push({
+              type: 'actionButton',
+              img: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>',
+              onClick: async () => {
+                const xfdfString = await annotManager.exportAnnotations();
+                console.log(xfdfString);
+              }
+            });
+
+          });
+
+          docViewer.on('documentLoaded', () => {
+          });
+        });
+  }
+
+  toggleAnnotations(annotManager){
+
+    this.showAnnotations = !this.showAnnotations;
+    const annotations = annotManager.getAnnotationsList();
+    if(this.showAnnotations){
+      console.log("Showing annotations");
+      //annotManager.showAnnotations(annotations);
+      annotations.forEach(annot =>{
+        annot.Hidden = false;
+      });
+    }
+    else{
+      console.log("Hiding annotations");
+      //annotManager.hideAnnotations(annotations);
+      annotations.forEach(annot =>{
+        annot.Hidden = true;
+      });
+    }
+    annotManager.drawAnnotationsFromList(annotations);
+
+  }
+
+  back() {
+    alert("Implement me");
+  }
 
 }
