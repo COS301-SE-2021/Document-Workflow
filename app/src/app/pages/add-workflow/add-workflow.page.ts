@@ -1,12 +1,18 @@
 import { TypeModifier } from '@angular/compiler/src/output/output_ast';
-import { Component, ElementRef, OnInit, Sanitizer, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  Sanitizer,
+  ViewChild,
+} from '@angular/core';
 import {
   FormArray,
   FormBuilder,
   FormControl,
   FormGroup,
   Validators,
-  AbstractControl
+  AbstractControl,
 } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
@@ -17,6 +23,7 @@ import {
   Platform,
 } from '@ionic/angular';
 import { ItemReorderEventDetail } from '@ionic/core';
+import { DocumentActionAreaComponent } from 'src/app/components/document-action-area/document-action-area.component';
 import { UserAPIService } from 'src/app/Services/User/user-api.service';
 @Component({
   selector: 'app-add-workflow',
@@ -24,13 +31,11 @@ import { UserAPIService } from 'src/app/Services/User/user-api.service';
   styleUrls: ['./add-workflow.page.scss'],
 })
 export class AddWorkflowPage implements OnInit {
-
   workflowForm: FormGroup;
   private userCount = 1;
   private phaseNumber: number[];
   phases: FormArray;
   file: File;
-
 
   addFile: boolean;
   addName: boolean;
@@ -58,25 +63,26 @@ export class AddWorkflowPage implements OnInit {
   ) {}
 
   async ngOnInit() {
-    if(localStorage.getItem('token') === null) {
+    if (localStorage.getItem('token') === null) {
       await this.router.navigate(['/login']);
       return;
-    }
-    else
-    {
-      this.userApiService.checkIfAuthorized().subscribe((response) => {
-        console.log("Successfully authorized user");
-      }, async (error) => {
-        console.log(error);
-        await this.router.navigate(['/login']);
-        return;
-      });
+    } else {
+      this.userApiService.checkIfAuthorized().subscribe(
+        (response) => {
+          console.log('Successfully authorized user');
+        },
+        async (error) => {
+          console.log(error);
+          await this.router.navigate(['/login']);
+          return;
+        }
+      );
     }
 
     this.next = false;
     this.rotated = 0;
     this.setZoom = 'false';
-    this.zoomLevel=1;
+    this.zoomLevel = 1;
 
     this.reOrder = true;
 
@@ -99,20 +105,20 @@ export class AddWorkflowPage implements OnInit {
     // console.log(this.workflowForm.controls.phases['controls'][0]);
   }
 
-  checkStatus(){
-    if(this.workflowForm.get('workflowName').valid){
+  checkStatus() {
+    if (this.workflowForm.get('workflowName').valid) {
       this.addName = true;
-    }else{
+    } else {
       this.addName = false;
     }
-    if(this.workflowForm.get('workflowDescription').valid){
+    if (this.workflowForm.get('workflowDescription').valid) {
       this.addDescription = true;
-    }else{
+    } else {
       this.addDescription = false;
     }
   }
 
-  changeOver(){
+  changeOver() {
     this.next = !this.next;
   }
 
@@ -140,7 +146,7 @@ export class AddWorkflowPage implements OnInit {
     phase.push(this.createPhase());
   }
 
-  removePhase( i: number){
+  removePhase(i: number) {
     this.phaseNumber.pop();
     let phase = this.workflowForm.get('phases') as FormArray;
     phase.removeAt(i);
@@ -169,19 +175,18 @@ export class AddWorkflowPage implements OnInit {
     const eventObj: MSInputMethodContext = event as MSInputMethodContext;
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
     this.file = target.files[0];
-    console.log(typeof this.file)
+    console.log(typeof this.file);
     console.log('file', this.file.arrayBuffer());
     // const buff = response.data.filedata.Body.data; //wut
-     const a  = new Uint8Array( await this.file.arrayBuffer() );
-     this.srcFile = a;
+    const a = new Uint8Array(await this.file.arrayBuffer());
+    this.srcFile = a;
 
-
-     var blob = new Blob([this.file], {type: 'application/pdf;base64'});
-        console.log(blob.arrayBuffer());
-        const obj = URL.createObjectURL(blob);
-        console.log(obj);
-        this.srcFile = this.sanitizer.bypassSecurityTrustResourceUrl(obj);
-        this.addFile = true;
+    var blob = new Blob([this.file], { type: 'application/pdf;base64' });
+    console.log(blob.arrayBuffer());
+    const obj = URL.createObjectURL(blob);
+    console.log(obj);
+    this.srcFile = this.sanitizer.bypassSecurityTrustResourceUrl(obj);
+    this.addFile = true;
   }
 
   submit() {
@@ -191,15 +196,32 @@ export class AddWorkflowPage implements OnInit {
     });
   }
 
-  fixOrder(ev: CustomEvent<ItemReorderEventDetail>){
+  fixOrder(ev: CustomEvent<ItemReorderEventDetail>) {
     let phase = this.workflowForm.get('phases') as FormArray;
-    let a = phase.controls.splice(ev.detail.from,1);
-    phase.controls.splice(ev.detail.to, 0, a[0] );
+    let a = phase.controls.splice(ev.detail.from, 1);
+    phase.controls.splice(ev.detail.to, 0, a[0]);
     ev.detail.complete();
   }
 
-  reOrderTime(){
+  reOrderTime() {
     this.reOrder = !this.reOrder;
   }
 
+  async includeActionArea(i: number) {
+    console.log(i);
+    const a = await this.modal.create({
+      component: DocumentActionAreaComponent,
+      componentProps: {
+        file: this.srcFile,
+        phaseNumber: i,
+      },
+    });
+
+    await (await a).present();
+    const data = (await a).onDidDismiss();
+    // this.router.navigate(['addWorkflow/ActionArea', {
+    //   file: this.srcFile,
+    //   phaseNumber: i
+    // }]);
+  }
 }

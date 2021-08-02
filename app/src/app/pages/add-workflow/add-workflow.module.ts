@@ -17,6 +17,7 @@ import { AddWorkflowPage } from './add-workflow.page';
     AddWorkflowPageRoutingModule,
     ReactiveFormsModule,
     PdfViewerModule,
+
   ],
   declarations: [AddWorkflowPage]
 })

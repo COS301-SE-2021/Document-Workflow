@@ -6,8 +6,18 @@ import { AddWorkflowPage } from './add-workflow.page';
 const routes: Routes = [
   {
     path: '',
-    component: AddWorkflowPage
-  }
+    component: AddWorkflowPage,
+    children: [
+      // {
+      //   path: 'ActionArea',
+      //   loadChildren: () =>
+      //     import(
+      //       './../../components/document-action-area/document-action-area.component'
+      //     ).then((m) => m.DocumentActionAreaComponent),
+      //   pathMatch: 'full',
+      // },
+    ],
+  },
 ];
 
 @NgModule({
