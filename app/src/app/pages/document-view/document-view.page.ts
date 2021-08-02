@@ -24,11 +24,8 @@ import WebViewer, {PDFNet} from '@pdftron/webviewer';
 export class DocumentViewPage implements OnInit, AfterViewInit {
   srcFile: any;
   srcFileBase64: any;
-  rotated: number;
-  setZoom: any;
-  zoomLevel: number;
   pdfDoc: PDFDocument;
-  showAnnotions = true;
+  showAnnotations = false;
 
   @Input('id') documentId: string;
   @Input('documentname') docName: string;
@@ -138,10 +135,10 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
 
   toggleAnnotations(annotManager){
 
-    this.showAnnotions = !this.showAnnotions;
+    this.showAnnotations = !this.showAnnotations;
     const annotations = annotManager.getAnnotationsList();
 
-    if(this.showAnnotions){
+    if(this.showAnnotations){
       console.log("Showing annotations");
       annotManager.showAnnotations(annotations);
     }

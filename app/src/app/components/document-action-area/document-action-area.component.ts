@@ -1,4 +1,3 @@
-import { Component, OnInit } from '@angular/core';
 import {Component, OnInit, Input, AfterViewInit, ElementRef, ViewChild} from '@angular/core';
 
 import { ModalController, NavParams, Platform } from '@ionic/angular';
@@ -18,7 +17,9 @@ import {Integer} from "aws-sdk/clients/ssm";
 export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
 
   pdfDoc: PDFDocument;
-  showAnnotations: true;
+  showAnnotations = true;
+
+  @ViewChild('viewer') viewerRef: ElementRef;
 
   @Input('document') document: string;
   @Input('docName') docName: string;
@@ -33,7 +34,7 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
   ) {}
 
 
-  ngOnInit() {
+  async ngOnInit() {
     await this.route.params.subscribe((data) => {
       this.document = data['document'];
       this.docName = data['docName'];
@@ -43,10 +44,10 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
 
   async ngAfterViewInit(): Promise<void>{
 
-     const arr = new Uint8Array(this.document);
-     this.pdfDoc = await PDFDocument.load(arr);
-     const pdfBytes = await this.pdfDoc.save();
-     const blob = new Blob([arr], { type: 'application/pdf' });
+     const arr = new Uint8Array();
+     //this.pdfDoc = await PDFDocument.load(arr);
+     //const pdfBytes = await this.pdfDoc.save();
+    // const blob = new Blob([arr], { type: 'application/pdf' });
 
       WebViewer({
         path: '../../assets/lib',
@@ -54,6 +55,7 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
       }, this.viewerRef.nativeElement)
         .then(instance => {
           //Look at the Callout tool of the insert bar as well as the stickers that can be inserted.
+          /*
           instance.loadDocument(blob, {filename: this.docName});
 
           const { docViewer, annotManager, CoreControls} = instance;
@@ -89,6 +91,7 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
 
           docViewer.on('documentLoaded', () => {
           });
+          */
         });
   }
 
