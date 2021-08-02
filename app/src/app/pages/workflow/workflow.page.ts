@@ -17,6 +17,7 @@ import { EditWorkflowComponent } from 'src/app/components/edit-workflow/edit-wor
 import { WorkFlowService } from '../../Services/Workflow/work-flow.service';
 import { ConfirmDeleteWorkflowComponent } from 'src/app/components/confirm-delete-workflow/confirm-delete-workflow.component';
 import { ItemReorderEventDetail } from '@ionic/core';
+import * as Cookies from 'js-cookie';
 @Component({
   selector: 'app-workflow',
   templateUrl: './workflow.page.html',
@@ -50,7 +51,8 @@ export class WorkflowPage implements OnInit {
     this.reOrder = true;
 
     if(this.plat.is('desktop')){
-      alert("here");
+      //alert("here");
+      console.log('Desktop');
     }
 
     const load = await this.loadctrl.create({
@@ -60,7 +62,8 @@ export class WorkflowPage implements OnInit {
       spinner: 'bubbles'
     });
     await load.present();
-    if(localStorage.getItem('token') === null) {
+    //if(localStorage.getItem('token') === null) {
+    if(Cookies.get('token') === undefined){
       await this.router.navigate(['/login']);
       await load.dismiss();
       return;
