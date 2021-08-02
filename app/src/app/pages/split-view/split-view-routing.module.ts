@@ -33,7 +33,7 @@ const routes: Routes = [
         pathMatch: 'full',
       },
       {
-        path: 'home',
+        path: '',
         loadChildren: () =>
           import('./../workflow/workflow.module').then(
             (m) => m.WorkflowPageModule
@@ -58,7 +58,7 @@ const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: 'home',
+        redirectTo: '',
         pathMatch: 'full',
       },
     ]
