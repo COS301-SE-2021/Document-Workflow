@@ -1,29 +1,33 @@
-
-<br>
 <ion-header>
-  <ion-title>
-    <br>
-    <br>
-    Add a new Workflow
-  </ion-title>
+  <ion-toolbar>
+    <ion-grid>
+      <ion-row>
+      <ion-col sizeSm="6" sizeXs="6" sizeMd="3">
+        <ion-img src="../../../assets/LogoWhiteBackground.png"
+        ></ion-img>
+      </ion-col>
+      <ion-col sizeSm="6">
+        <ion-title style="text-align: left; line-height: normal; padding-top: 2%; font-size: 35px;">{{title}}</ion-title>
+      </ion-col>
+    </ion-row>
+    </ion-grid>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <form [formGroup]="workflowForm" (ngSubmit)="submit()">
-    <ion-slides pager='true'>
-      <ion-slide>
-        <ion-card>
+        <ion-card *ngIf="!next">
           <ion-card-header>
             Details
           </ion-card-header>
           <ion-card-content>
             <ion-item>
               <ion-label>Document name</ion-label>
-              <ion-input formControlName="workflowName" inputmode="text"></ion-input>
+              <ion-input formControlName="workflowName" inputmode="text" (input)="checkStatus()"></ion-input>
             </ion-item>
             <ion-item>
               <ion-label>Document Description</ion-label>
-              <ion-textarea formControlName="workflowDescription" inputmode="text"></ion-textarea>
+              <ion-textarea formControlName="workflowDescription" inputmode="text" (input)="checkStatus()"></ion-textarea>
             </ion-item>
             <ion-item>
               <ion-label position="stacked">Add your document</ion-label>
@@ -35,11 +39,21 @@
               <ion-button (click)="selectImageSource()">Add</ion-button>
             </ion-item>
           </ion-card-content>
-        </ion-card>
-      </ion-slide>
+          <pdf-viewer id="pdf" class="modal-fullscreen" height="30vh"
+          [src]= "srcFile"
+          [render-text]="false"
+          [rotation]="rotated"
+          [original-size]="false"
+          [autoresize]="true"
+          [zoom]="zoomLevel"
+          [zoom-scale]="setZoom"
+          style="display: block;"
+        >
+        </pdf-viewer>
 
-      <ion-slide>
-        <ion-card style="width:100%">
+        <ion-button [disabled]="!addFile || !addName || !addDescription" (click)="changeOver()">Next</ion-button>
+        </ion-card>
+        <ion-card style="width:100%" *ngIf="next" >
           <ion-card-header>
             re order
             <ion-toggle (click)="reOrderTime()">
@@ -103,7 +117,5 @@
             </ion-item>
           </ion-card-content>
         </ion-card>
-      </ion-slide>
-    </ion-slides>
   </form>
 </ion-content>

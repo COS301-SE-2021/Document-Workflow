@@ -65,7 +65,7 @@ export class WorkFlowService {
         callback(data);
       } else callback({status: 'error', message: 'Cannot connect to Server'});
     }, error =>{
-        alert("An unexpected error occurred");
+      alert("An unexpected error occurred");
     });
   }
 
@@ -83,7 +83,7 @@ export class WorkFlowService {
         callback(data);
       } else callback({status: 'error', message: 'Cannot connect to Server'});
     }, error =>{
-        alert("An unexpected error occurred");
+      alert("An unexpected error occurred");
     });
   }
 

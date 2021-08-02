@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/member-ordering */
+import { TypeModifier } from '@angular/compiler/src/output/output_ast';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import {
   FormArray,
@@ -8,7 +8,7 @@ import {
   Validators,
   AbstractControl
 } from '@angular/forms';
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { Router } from '@angular/router';
 import {
   ActionSheetController,
   IonReorderGroup,
@@ -16,22 +16,33 @@ import {
   Platform,
 } from '@ionic/angular';
 import { ItemReorderEventDetail } from '@ionic/core';
-
-import { DocumentViewPageRoutingModule } from 'src/app/pages/document-view/document-view-routing.module';
-
+import { UserAPIService } from 'src/app/Services/User/user-api.service';
 @Component({
   selector: 'app-add-workflow',
-  templateUrl: './add-workflow.component.html',
-  styleUrls: ['./add-workflow.component.scss'],
+  templateUrl: './add-workflow.page.html',
+  styleUrls: ['./add-workflow.page.scss'],
 })
-export class AddWorkflowComponent implements OnInit {
+export class AddWorkflowPage implements OnInit {
+
   workflowForm: FormGroup;
   private userCount = 1;
   private phaseNumber: number[];
   phases: FormArray;
   file: File;
+
+
   addFile: boolean;
+  addName: boolean;
+  addDescription: boolean;
+
   reOrder: boolean;
+
+  srcFile: any;
+  rotated: number;
+  setZoom: any;
+  zoomLevel: number;
+
+  next: boolean;
 
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
@@ -39,12 +50,38 @@ export class AddWorkflowComponent implements OnInit {
     private plat: Platform,
     private fb: FormBuilder,
     private actionSheetController: ActionSheetController,
-    private modal: ModalController
+    private modal: ModalController,
+    private router: Router,
+    private userApiService: UserAPIService,
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
+    if(localStorage.getItem('token') === null) {
+      await this.router.navigate(['/login']);
+      return;
+    }
+    else
+    {
+      this.userApiService.checkIfAuthorized().subscribe((response) => {
+        console.log("Successfully authorized user");
+      }, async (error) => {
+        console.log(error);
+        await this.router.navigate(['/login']);
+        return;
+      });
+    }
+
+    this.next = false;
+    this.rotated = 0;
+    this.setZoom = 'false';
+    this.zoomLevel=1;
+
     this.reOrder = true;
+
     this.addFile = false;
+    this.addDescription = false;
+    this.addName = false;
+
     this.phaseNumber = Array(1)
       .fill(0)
       .map((x, i) => i);
@@ -58,6 +95,23 @@ export class AddWorkflowComponent implements OnInit {
       ]),
     });
     // console.log(this.workflowForm.controls.phases['controls'][0]);
+  }
+
+  checkStatus(){
+    if(this.workflowForm.get('workflowName').valid){
+      this.addName = true;
+    }else{
+      this.addName = false;
+    }
+    if(this.workflowForm.get('workflowDescription').valid){
+      this.addDescription = true;
+    }else{
+      this.addDescription = false;
+    }
+  }
+
+  changeOver(){
+    this.next = !this.next;
   }
 
   addUser(form: FormGroup) {
@@ -109,13 +163,16 @@ export class AddWorkflowComponent implements OnInit {
     await actionSheet.present();
   }
 
-  uploadFile(event: EventTarget) {
+  async uploadFile(event: EventTarget) {
     const eventObj: MSInputMethodContext = event as MSInputMethodContext;
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
     this.file = target.files[0];
-
-    console.log('file', this.file);
-
+    console.log(typeof this.file)
+    console.log('file', this.file.arrayBuffer());
+    // const buff = response.data.filedata.Body.data; //wut
+     const a  = new Uint8Array( await this.file.arrayBuffer() );
+     this.srcFile = a;
+     this.addFile = true;
   }
 
   submit() {
@@ -135,4 +192,5 @@ export class AddWorkflowComponent implements OnInit {
   reOrderTime(){
     this.reOrder = !this.reOrder;
   }
+
 }
