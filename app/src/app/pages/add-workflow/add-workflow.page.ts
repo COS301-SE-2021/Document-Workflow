@@ -48,6 +48,8 @@ export class AddWorkflowPage implements OnInit {
   setZoom: any;
   zoomLevel: number;
 
+  blob: Blob;
+
   next: boolean;
 
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
@@ -181,9 +183,9 @@ export class AddWorkflowPage implements OnInit {
     const a = new Uint8Array(await this.file.arrayBuffer());
     this.srcFile = a;
 
-    var blob = new Blob([this.file], { type: 'application/pdf;base64' });
-    console.log(blob.arrayBuffer());
-    const obj = URL.createObjectURL(blob);
+    this.blob = new Blob([this.file], { type: 'application/pdf;base64' });
+    console.log(this.blob.arrayBuffer());
+    const obj = URL.createObjectURL(this.blob);
     console.log(obj);
     this.srcFile = this.sanitizer.bypassSecurityTrustResourceUrl(obj);
     this.addFile = true;
@@ -212,7 +214,7 @@ export class AddWorkflowPage implements OnInit {
     const a = await this.modal.create({
       component: DocumentActionAreaComponent,
       componentProps: {
-        file: this.srcFile,
+        file: this.blob,
         phaseNumber: i,
       },
     });
