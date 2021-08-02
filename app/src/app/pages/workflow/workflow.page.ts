@@ -80,7 +80,7 @@ export class WorkflowPage implements OnInit {
       });
     }
     await this.getUser();
-    this.loadWorkFlows();
+    await this.loadWorkFlows();
     await load.dismiss();
   }
 
@@ -215,7 +215,7 @@ export class WorkflowPage implements OnInit {
     //   });
     // });
     console.log("here");
-    this.router.navigate(['addWorkflow']);
+    this.router.navigate(['home/addWorkflow']);
   }
 
   viewWorkFlow(id: string, name: string) {

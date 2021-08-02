@@ -4,10 +4,9 @@ import { ModalController, NavParams, Platform } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DocumentAPIService } from 'src/app/Services/Document/document-api.service';
 import {WorkFlowService} from 'src/app/Services/Workflow/work-flow.service';
-import { ConfirmSignaturesComponent } from 'src/app/components/confirm-signatures/confirm-signatures.component';
-import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
-import WebViewer, {PDFNet} from '@pdftron/webviewer';
-import {Integer} from "aws-sdk/clients/ssm";
+import {PDFDocument} from 'pdf-lib';
+import WebViewer from '@pdftron/webviewer';
+
 
 @Component({
   selector: 'app-document-action-area',
@@ -21,9 +20,8 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
 
   @ViewChild('viewer') viewerRef: ElementRef;
 
-  @Input('document') document: string;
-  @Input('docName') docName: string;
-  @Input('phase') phaseNumber: Integer;
+  @Input('file') file: any;
+  @Input('phaseNumber') phaseNumber: any;
   constructor(
     private modalCtrl: ModalController,
     private navpar: NavParams,
@@ -33,18 +31,14 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
     private router: Router,
   ) {}
 
-
   async ngOnInit() {
-    await this.route.params.subscribe((data) => {
-      this.document = data['document'];
-      this.docName = data['docName'];
-      this.phaseNumber = data['phaseNumber'];
-    });
+    console.log(typeof this.file);
+    console.log(this.file);
   }
 
   async ngAfterViewInit(): Promise<void>{
 
-     const arr = new Uint8Array();
+     //const arr = new Uint8Array();
      //this.pdfDoc = await PDFDocument.load(arr);
      //const pdfBytes = await this.pdfDoc.save();
     // const blob = new Blob([arr], { type: 'application/pdf' });
@@ -55,8 +49,8 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
       }, this.viewerRef.nativeElement)
         .then(instance => {
           //Look at the Callout tool of the insert bar as well as the stickers that can be inserted.
-          /*
-          instance.loadDocument(blob, {filename: this.docName});
+
+          instance.loadDocument(this.file, {});//,{filename: this.docName});
 
           const { docViewer, annotManager, CoreControls} = instance;
           instance.disableElements(['toolbarGroup-Shapes']);
@@ -91,7 +85,6 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
 
           docViewer.on('documentLoaded', () => {
           });
-          */
         });
   }
 

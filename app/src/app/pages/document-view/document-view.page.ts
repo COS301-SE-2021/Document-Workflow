@@ -72,6 +72,8 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
         }, this.viewerRef.nativeElement)
           .then(async instance => {
             //Look at the Callout tool of the insert bar as well as the stickers that can be inserted.
+            console.log(instance);
+
             instance.loadDocument(blob, {filename: this.docName});
 
             const { docViewer, annotManager, CoreControls} = instance;
@@ -123,6 +125,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
 
             docViewer.on('documentLoaded', () => {
             });
+
           });
 
 
