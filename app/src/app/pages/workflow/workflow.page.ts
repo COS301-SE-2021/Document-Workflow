@@ -17,6 +17,7 @@ import { EditWorkflowComponent } from 'src/app/components/edit-workflow/edit-wor
 import { WorkFlowService } from '../../Services/Workflow/work-flow.service';
 import { ConfirmDeleteWorkflowComponent } from 'src/app/components/confirm-delete-workflow/confirm-delete-workflow.component';
 import { ItemReorderEventDetail } from '@ionic/core';
+import * as Cookies from 'js-cookie';
 @Component({
   selector: 'app-workflow',
   templateUrl: './workflow.page.html',
@@ -49,9 +50,10 @@ export class WorkflowPage implements OnInit {
   async ngOnInit() {
     this.reOrder = true;
 
-    // if(this.plat.is('desktop')){
-    //   alert("here");
-    // }
+    if(this.plat.is('desktop')){
+      //alert("here");
+      console.log('Desktop');
+    }
 
     const load = await this.loadctrl.create({
       message: 'Hang in there... we are almost done',
@@ -60,7 +62,8 @@ export class WorkflowPage implements OnInit {
       spinner: 'bubbles'
     });
     await load.present();
-    if(localStorage.getItem('token') === null) {
+    //if(localStorage.getItem('token') === null) {
+    if(Cookies.get('token') === undefined){
       await this.router.navigate(['/login']);
       await load.dismiss();
       return;
@@ -212,12 +215,12 @@ export class WorkflowPage implements OnInit {
     //   });
     // });
     console.log("here");
-    this.router.navigate(['/home/addWorkflow']);
+    this.router.navigate(['addWorkflow']);
   }
 
   viewWorkFlow(id: string, name: string) {
     // this.navControl.navigateForward
-    this.router.navigate(['/home/documentView', {
+    this.router.navigate(['documentView', {
       id,
       documentname: name
     }]);
@@ -229,7 +232,7 @@ export class WorkflowPage implements OnInit {
   }
 
   toProfilepage(){
-    this.router.navigate(['/home/userProfile']);
+    this.router.navigate(['userProfile']);
   }
 
   fixOrder(event: CustomEvent<ItemReorderEventDetail>){

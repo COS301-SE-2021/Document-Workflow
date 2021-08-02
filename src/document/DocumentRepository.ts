@@ -62,6 +62,21 @@ export default class DocumentRepository {
         return doc._id;
     }
 
+    async updateDocumentS3(documentMetaData, file) : Promise<any>{
+        console.log("Updating file in AWS S3")
+
+        const uploadParams = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Body: file.data,
+            Key: documentMetaData.document_path
+        }
+        console.log(uploadParams);
+        let d = await s3.putObject(uploadParams).promise();
+        console.log("Finished updating s3 file");
+        console.log(d);
+        return "";
+    }
+
     async getDocument(key) : Promise<any>{
         try{
             return await Document.findById(key);

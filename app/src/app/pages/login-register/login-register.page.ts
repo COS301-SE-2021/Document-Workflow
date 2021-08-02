@@ -23,7 +23,7 @@ import {
 } from './../../Services/User/user-api.service';
 
 import { ActionSheetController, Platform } from '@ionic/angular';
-
+import * as Cookies from 'js-cookie';
 //import for the loading controller
 import { LoadingController } from '@ionic/angular';
 import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
@@ -92,7 +92,8 @@ export class LoginRegisterPage implements OnInit {
     console.log(loginData);
     this.userAPIService.login(loginData, (response) => {
       if (response.status === 'success') {
-        localStorage.setItem('token', response.data.token);
+        //localStorage.setItem('token', response.data.token);
+        Cookies.set('token', response.data.token, {expires: 1});
         this.userAPIService.displayPopOver('Success', 'login was successful');
         this.router.navigate(['home']);
       } else {
