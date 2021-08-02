@@ -49,9 +49,9 @@ export class WorkflowPage implements OnInit {
   async ngOnInit() {
     this.reOrder = true;
 
-    if(this.plat.is('desktop')){
-      alert("here");
-    }
+    // if(this.plat.is('desktop')){
+    //   alert("here");
+    // }
 
     const load = await this.loadctrl.create({
       message: 'Hang in there... we are almost done',
@@ -212,12 +212,12 @@ export class WorkflowPage implements OnInit {
     //   });
     // });
     console.log("here");
-    this.router.navigate(['addWorkflow']);
+    this.router.navigate(['/home/addWorkflow']);
   }
 
   viewWorkFlow(id: string, name: string) {
     // this.navControl.navigateForward
-    this.router.navigate(['documentView', {
+    this.router.navigate(['/home/documentView', {
       id,
       documentname: name
     }]);
@@ -229,7 +229,7 @@ export class WorkflowPage implements OnInit {
   }
 
   toProfilepage(){
-    this.router.navigate(['userProfile']);
+    this.router.navigate(['/home/userProfile']);
   }
 
   fixOrder(event: CustomEvent<ItemReorderEventDetail>){
