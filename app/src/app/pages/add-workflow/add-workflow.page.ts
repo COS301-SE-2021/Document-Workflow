@@ -24,7 +24,7 @@ import {
 } from '@ionic/angular';
 import { ItemReorderEventDetail } from '@ionic/core';
 import { DocumentActionAreaComponent } from 'src/app/components/document-action-area/document-action-area.component';
-import { UserAPIService } from 'src/app/Services/User/user-api.service';
+import { User, UserAPIService } from 'src/app/Services/User/user-api.service';
 @Component({
   selector: 'app-add-workflow',
   templateUrl: './add-workflow.page.html',
@@ -51,6 +51,8 @@ export class AddWorkflowPage implements OnInit {
   blob: Blob;
 
   next: boolean;
+  user: User;
+  ownerEmail: any;
 
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
@@ -104,8 +106,21 @@ export class AddWorkflowPage implements OnInit {
         }),
       ]),
     });
-    // console.log(this.workflowForm.controls.phases['controls'][0]);
+
+    await this.getUser();
   }
+
+  async getUser(){
+    this.userApiService.getUserDetails(async (response)=>{
+     if(response){
+       this.user = response.data;
+       this.ownerEmail = this.user.email;
+       console.log(this.ownerEmail)
+     } else{
+       this.userApiService.displayPopOver('Error', 'Cannot find user')
+     }
+   })
+ }
 
   checkStatus() {
     if (this.workflowForm.get('workflowName').valid) {
@@ -210,10 +225,11 @@ export class AddWorkflowPage implements OnInit {
   }
 
   async includeActionArea(i: number) {
-    console.log(i);
+    console.log(this.ownerEmail);
     const a = await this.modal.create({
       component: DocumentActionAreaComponent,
       componentProps: {
+        email: this.ownerEmail,
         file: this.blob,
         phaseNumber: i,
       },
