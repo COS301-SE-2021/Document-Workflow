@@ -186,7 +186,7 @@ export class WorkflowPage implements OnInit {
 
   viewWorkFlow(id: string, name: string) {
     // this.navControl.navigateForward
-    this.router.navigate(['documentView', {
+    this.router.navigate(['/home/documentView', {
       id,
       documentname: name
     }]);
@@ -198,7 +198,7 @@ export class WorkflowPage implements OnInit {
   }
 
   toProfilepage(){
-    this.router.navigate(['userProfile']);
+    this.router.navigate(['/home/userProfile']);
   }
 
   fixOrder(event: CustomEvent<ItemReorderEventDetail>){

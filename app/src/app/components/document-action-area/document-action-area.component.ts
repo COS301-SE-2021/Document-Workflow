@@ -6,6 +6,7 @@ import { DocumentAPIService } from 'src/app/Services/Document/document-api.servi
 import {WorkFlowService} from 'src/app/Services/Workflow/work-flow.service';
 import {PDFDocument} from 'pdf-lib';
 import WebViewer from '@pdftron/webviewer';
+import { ConfirmDeleteWorkflowComponent } from '../confirm-delete-workflow/confirm-delete-workflow.component';
 
 
 @Component({
@@ -19,12 +20,14 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
   showAnnotations = true;
   docName: string;
 
+  xfdfString: any;
+
   @ViewChild('viewer') viewerRef: ElementRef;
   @Input('file') file: any;
   @Input('phaseNumber') phaseNumber: any;
   @Input('ownerEmail') ownerEmail: any;
   constructor(
-    private modalCtrl: ModalController,
+    private modal: ModalController,
     private navpar: NavParams,
     private route: ActivatedRoute,
     private docApi: DocumentAPIService,
@@ -77,8 +80,8 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
               type: 'actionButton',
               img: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>',
               onClick: async () => {
-                const xfdfString = await annotManager.exportAnnotations();
-                console.log(xfdfString);
+                this.xfdfString = await annotManager.exportAnnotations();
+                console.log(this.xfdfString);
               }
             });
           });
@@ -110,8 +113,28 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
 
   }
 
-  back() {
-    alert("Implement me");
+
+  async back() {
+    const mod = this.modal.create({
+      component: ConfirmDeleteWorkflowComponent,
+      componentProps:{
+        type: "confirmAddActionArea"
+      }
+    })
+
+    await (await mod).present();
+    (await mod).onDidDismiss().then(async (data) => {
+      const result = (await data).data['confirm'];
+      if (result){
+        this.modal.dismiss({
+          'xfdfString': this.xfdfString,
+        })
+      }else{
+        //not delete
+      }
+    });
+
+
   }
 
 }
