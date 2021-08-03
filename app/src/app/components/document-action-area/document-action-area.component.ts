@@ -22,6 +22,7 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
 
   @Input('file') file: any;
   @Input('phaseNumber') phaseNumber: any;
+  @Input('ownerEmail') ownerEmail: any;
   constructor(
     private modalCtrl: ModalController,
     private navpar: NavParams,
@@ -32,8 +33,7 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
   ) {}
 
   async ngOnInit() {
-    console.log(typeof this.file);
-    console.log(this.file);
+    console.log(this.ownerEmail);
   }
 
   async ngAfterViewInit(): Promise<void>{
@@ -45,7 +45,7 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
 
       WebViewer({
         path: '../../assets/lib',
-        annotationUser: "Temporary User"
+        annotationUser: this.ownerEmail
       }, this.viewerRef.nativeElement)
         .then(instance => {
           //Look at the Callout tool of the insert bar as well as the stickers that can be inserted.
@@ -81,7 +81,6 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
                 console.log(xfdfString);
               }
             });
-
           });
 
           docViewer.on('documentLoaded', () => {

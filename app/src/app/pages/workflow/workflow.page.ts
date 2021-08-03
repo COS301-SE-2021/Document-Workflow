@@ -144,7 +144,7 @@ export class WorkflowPage implements OnInit {
           }
         }
       } else {
-        this.userApiService.displayPopOver('Error', 'unexpected error occured');
+        this.userApiService.displayPopOver('Error', 'unexpected error occurred');
       }
     });
   }
@@ -180,40 +180,6 @@ export class WorkflowPage implements OnInit {
   }
 
   async addWorkflow() {
-    // const addModal = await this.modals.create({
-    //   component: AddWorkflowComponent,
-    // });
-
-    // (await addModal).present();
-
-    // (await addModal).onDidDismiss().then(async (data) => {
-    //   // const users = (await data).data['users'];
-    //   const documents = (await data).data['document'];
-    //   const file = (await data).data['file'];
-    //   let phases = '';
-    //   console.log(documents.phases);
-    //   for(let i=0; i<documents.phases.length; ++i) //Sending arrays of arrays does not work well in angular so this workaround will have to do.
-    //   {
-    //     let temp = '[';
-    //     for(const [key, value] of Object.entries(documents.phases[i]))
-    //       temp+=value + ' ';
-    //     phases += temp.substr(0, temp.length-1) +']'; //dont want the trailing space
-    //   }
-    //   console.log(phases);
-    //   const workflowData = {
-    //     name: documents.workflowName,
-    //     description: documents.workflowDescription
-    //   };
-    //   this.workFlowService.createWorkflow(workflowData, phases, file, (response) => {
-    //     if (response.status === 'success') {
-    //       this.userApiService.displayPopOver('Success', 'Workflow has been created');
-    //       location.reload();
-    //     } else {
-    //       console.log(response);
-    //       this.userApiService.displayPopOver('Workflow could not be created', response.message);
-    //     }
-    //   });
-    // });
     console.log("here");
     this.router.navigate(['home/addWorkflow']);
   }
