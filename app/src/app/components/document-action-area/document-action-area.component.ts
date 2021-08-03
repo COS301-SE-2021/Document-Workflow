@@ -17,9 +17,9 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
 
   pdfDoc: PDFDocument;
   showAnnotations = true;
+  docName: string;
 
   @ViewChild('viewer') viewerRef: ElementRef;
-
   @Input('file') file: any;
   @Input('phaseNumber') phaseNumber: any;
   @Input('ownerEmail') ownerEmail: any;
