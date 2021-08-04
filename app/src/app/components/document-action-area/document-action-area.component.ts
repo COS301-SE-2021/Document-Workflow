@@ -52,8 +52,11 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
       }, this.viewerRef.nativeElement)
         .then(instance => {
           //Look at the Callout tool of the insert bar as well as the stickers that can be inserted
-          instance.loadDocument(this.file, {});//,{filename: this.docName});
+          alert("Blaming Brent the Victim");
 
+          //instance.loadDocument(this.file, {});//,{filename: this.docName});
+          instance.UI.loadDocument(this.file, {});
+          /*
           const { docViewer, annotManager, CoreControls} = instance;
           instance.disableElements(['toolbarGroup-Shapes']);
           instance.disableElements(['toolbarGroup-Edit']);
@@ -87,7 +90,10 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
 
           docViewer.on('documentLoaded', () => {
           });
+           */
+
         });
+
   }
 
   toggleAnnotations(annotManager){
