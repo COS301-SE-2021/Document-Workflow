@@ -47,12 +47,11 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
     // const blob = new Blob([arr], { type: 'application/pdf' });
 
       WebViewer({
-        path: '../../assets/lib',
+        path: '../../../assets/lib',
         annotationUser: this.ownerEmail
       }, this.viewerRef.nativeElement)
         .then(instance => {
-          //Look at the Callout tool of the insert bar as well as the stickers that can be inserted.
-
+          //Look at the Callout tool of the insert bar as well as the stickers that can be inserted
           instance.loadDocument(this.file, {});//,{filename: this.docName});
 
           const { docViewer, annotManager, CoreControls} = instance;
