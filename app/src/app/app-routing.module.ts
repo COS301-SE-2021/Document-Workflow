@@ -23,6 +23,10 @@ const routes: Routes = [
   },  {
     path: 'document-edit',
     loadChildren: () => import('./pages/document-edit/document-edit.module').then( m => m.DocumentEditPageModule)
+  },
+  {
+    path: 'contacts',
+    loadChildren: () => import('./pages/contacts/contacts.module').then( m => m.ContactsPageModule)
   }
 
 
