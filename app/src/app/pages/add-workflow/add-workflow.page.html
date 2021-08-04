@@ -1,16 +1,21 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-grid>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="end" size="large">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+
+    <ion-grid style="max-height: 150px;">
       <ion-row>
-        <ion-col sizeSm="6" sizeXs="6" sizeMd="3">
-          <ion-img src="../../../assets/LogoWhiteBackground.png"></ion-img>
+        <ion-col>
+          <ion-img src="../../../assets/LogoWhiteBackground.png" style="height: auto;max-width: 568px;"></ion-img>
         </ion-col>
-        <ion-col sizeSm="6">
-          <ion-title style="text-align: left; line-height: normal; padding-top: 2%; font-size: 35px;">{{title}}
-          </ion-title>
+        <ion-col>
+          Add Document
         </ion-col>
       </ion-row>
     </ion-grid>
+
+
   </ion-toolbar>
 </ion-header>
 
@@ -38,8 +43,8 @@
         </ion-item>
         <iframe [src]="srcFile" *ngIf="addFile" style="width: 100%; height:70%;"></iframe>
       </ion-card-content>
-<!-- [disabled]="!addFile || !addName || !addDescription" -->
-      <ion-button  (click)="changeOver()">Next</ion-button>
+      <!-- [disabled]="!addFile || !addName || !addDescription" -->
+      <ion-button (click)="changeOver()">Next</ion-button>
     </ion-card>
     <ion-card style="width:95%" *ngIf="next">
       <ion-card-header>
@@ -49,10 +54,9 @@
       </ion-card-header>
 
       <ion-card-content>
-        <ion-item>
           <ion-reorder-group [disabled]="reOrder" (ionItemReorder)="fixOrder($event)" style="width:100%">
             <ion-reorder *ngFor="let phase of workflowForm.controls.phases['controls']; let i = index">
-              <ion-card style="width:95%">
+              <ion-card style="width:100%">
                 <ion-card-header>
                   <ion-card-title>Phase {{i+1}}</ion-card-title>
                   <ion-fab vertical="top" horizontal="end">
@@ -61,13 +65,15 @@
                     </ion-fab-button>
                   </ion-fab>
                 </ion-card-header>
-                <ion-card-content>
-                  <ion-button (click)="includeActionArea(i)"> Include action area </ion-button>
+                <ion-card-content style="width: 100%;">
+                  <ion-button (click)="includeActionArea(i, workflowForm.controls.phases['controls'][i])"> Include action area </ion-button>
                   <form [formGroup]="workflowForm.controls.phases['controls'][i]">
-                    <ion-card
-                      *ngFor="let control of workflowForm.controls.phases['controls'][i].controls | keyvalue; let j = index">
-                      <ion-grid>
-                        <ion-row>
+                    <ion-grid style="width: 100%;">
+                      <ion-card style="width: 100%;"
+                        *ngFor="let control of workflowForm.controls.phases['controls'][i].controls| keyvalue; let j = index">
+
+                        <ion-row *ngIf="(j-1)%2===0">
+
                           <ion-col sizeXs='12' sizeSm='12' sizeMd='4'>
                             <ion-card-title>Add user:</ion-card-title>
                           </ion-col>
@@ -78,9 +84,25 @@
                             <ion-icon name="close-circle-outline" size="large"
                               (click)="removeUser(workflowForm.controls.phases['controls'][i], control)"></ion-icon>
                           </ion-col>
+                          <ion-radio-group>
+                            <ion-grid>
+                              <ion-col sizeXs="6">
+                                <ion-item (onclick)="changePermission(workflowForm.controls.phases['controls'][i], control)">
+                                  <ion-label>Viewer</ion-label>
+                                  <ion-radio value="sign"></ion-radio>
+                                </ion-item>
+                              </ion-col>
+                              <ion-col sizeXs="6">
+                                <ion-item (onclick)="changePermission(workflowForm.controls.phases['controls'][i], control)">
+                                  <ion-label>Signer</ion-label>
+                                  <ion-radio value="view"></ion-radio>
+                                </ion-item>
+                              </ion-col>
+                            </ion-grid>
+                          </ion-radio-group>
                         </ion-row>
-                      </ion-grid>
-                    </ion-card>
+                      </ion-card>
+                    </ion-grid>
                   </form>
                   <ion-button expand="block" color="primary" fill="outline" (click)="removePhase(i)">Remove this
                     Phase
@@ -89,8 +111,6 @@
               </ion-card>
             </ion-reorder>
           </ion-reorder-group>
-
-        </ion-item>
         <ion-item>
           <ion-item style="width:100%">
             <ion-button style="width:100%" expand="block" color="primary" fill="outline" (click)="addPhase()">Add

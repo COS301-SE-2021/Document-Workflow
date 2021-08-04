@@ -24,7 +24,7 @@ import {
 } from '@ionic/angular';
 import { ItemReorderEventDetail } from '@ionic/core';
 import { DocumentActionAreaComponent } from 'src/app/components/document-action-area/document-action-area.component';
-import {User, UserAPIService} from 'src/app/Services/User/user-api.service';
+import { User, UserAPIService } from 'src/app/Services/User/user-api.service';
 import * as Cookies from 'js-cookie';
 @Component({
   selector: 'app-add-workflow',
@@ -55,6 +55,8 @@ export class AddWorkflowPage implements OnInit {
   user: User;
   ownerEmail: any;
 
+  controller: boolean;
+
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
   constructor(
@@ -68,7 +70,7 @@ export class AddWorkflowPage implements OnInit {
   ) {}
 
   async ngOnInit() {
-    if(Cookies.get('token') === undefined){
+    if (Cookies.get('token') === undefined) {
       await this.router.navigate(['/login']);
       return;
     } else {
@@ -94,6 +96,7 @@ export class AddWorkflowPage implements OnInit {
     this.addFile = false;
     this.addDescription = false;
     this.addName = false;
+    this.controller = false;
 
     this.phaseNumber = Array(1)
       .fill(0)
@@ -103,7 +106,9 @@ export class AddWorkflowPage implements OnInit {
       workflowDescription: ['', [Validators.required]],
       phases: this.fb.array([
         this.fb.group({
+          xfsdString: new FormControl('', [Validators.required]),
           user1: new FormControl('', [Validators.email, Validators.required]),
+          permission1: new FormControl('', [Validators.required]),
         }),
       ]),
     });
@@ -111,16 +116,16 @@ export class AddWorkflowPage implements OnInit {
     await this.getUser();
   }
 
-  async getUser(){
+  async getUser() {
     await this.userApiService.getUserDetails(async (response) => {
       if (response) {
         this.user = response.data;
         this.ownerEmail = this.user.email;
-        console.log(this.ownerEmail)
+        console.log(this.ownerEmail);
       } else {
-        this.userApiService.displayPopOver('Error', 'Cannot find user')
+        this.userApiService.displayPopOver('Error', 'Cannot find user');
       }
-    })
+    });
   }
 
   checkStatus() {
@@ -136,6 +141,10 @@ export class AddWorkflowPage implements OnInit {
     }
   }
 
+  changeController() {
+    this.controller = !this.controller;
+  }
+
   changeOver() {
     this.next = !this.next;
   }
@@ -146,15 +155,44 @@ export class AddWorkflowPage implements OnInit {
       'user' + this.userCount,
       new FormControl('', [Validators.email, Validators.required])
     );
+    form.addControl(
+      'permission' + this.userCount,
+      new FormControl('', [Validators.required])
+    );
+  }
+
+  findNumber(key: string): number {
+    let length;
+    if (key.length > 10) {
+      length = key.substring(10, key.length);
+    } else {
+      length = key.substring(4, key.length);
+    }
+    return length;
   }
 
   removeUser(form: FormGroup, control) {
-    form.removeControl(control.key);
+    let length = this.findNumber(control.key);
+    form.removeControl('user' + length);
+    form.removeControl('permission' + length);
+  }
+
+  changePermission(form: FormGroup, control: any, str: string) {
+    let num = this.findNumber(control.key);
+    switch (str) {
+      case 'sign':
+        form.get('permission'+num).setValue('sign');
+        break;
+      case 'view':
+        form.get('permission'+num).setValue('view');
+        break;
+    }
   }
 
   createPhase(): FormGroup {
     return this.fb.group({
       user1: new FormControl('', [Validators.email, Validators.required]),
+      permission1: new FormControl('', [Validators.required]),
     });
   }
 
@@ -225,7 +263,7 @@ export class AddWorkflowPage implements OnInit {
     this.reOrder = !this.reOrder;
   }
 
-  async includeActionArea(i: number) {
+  async includeActionArea(i: number, form: FormGroup) {
     console.log(i);
     const a = await this.modal.create({
       component: DocumentActionAreaComponent,
@@ -237,10 +275,13 @@ export class AddWorkflowPage implements OnInit {
     });
 
     await (await a).present();
-    const data = (await a).onDidDismiss();
-    // this.router.navigate(['addWorkflow/ActionArea', {
-    //   file: this.srcFile,
-    //   phaseNumber: i
-    // }]);
+    (await a).onDidDismiss().then(async (data) => {
+      const result = (await data).data['xfdfString'];
+      if (result) {
+        form.get('xfsdString').setValue(result);
+      } else {
+        //not delete
+      }
+    });
   }
 }

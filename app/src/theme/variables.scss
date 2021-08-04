@@ -5,9 +5,9 @@
 :root {
   /** primary **/
   --ion-color-primary: #002060;
-  --ion-color-primary-rgb: 0,32,96;
+  --ion-color-primary-rgb: 0, 32, 96;
   --ion-color-primary-contrast: #ffffff;
-  --ion-color-primary-contrast-rgb: 255,255,255;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
   --ion-color-primary-shade: #001c54;
   --ion-color-primary-tint: #1a3670;
 
@@ -84,11 +84,11 @@
 
   body {
     --ion-color-primary: #002060;
-  --ion-color-primary-rgb: 0,32,96;
-  --ion-color-primary-contrast: #ffffff;
-  --ion-color-primary-contrast-rgb: 255,255,255;
-  --ion-color-primary-shade: #001c54;
-  --ion-color-primary-tint: #1a3670;
+    --ion-color-primary-rgb: 0, 32, 96;
+    --ion-color-primary-contrast: #ffffff;
+    --ion-color-primary-contrast-rgb: 255, 255, 255;
+    --ion-color-primary-shade: #001c54;
+    --ion-color-primary-tint: #1a3670;
 
     --ion-color-secondary: #50c8ff;
     --ion-color-secondary-rgb: 80, 200, 255;
@@ -243,36 +243,30 @@ $color5: #002060;
 ion-content {
   --background: #d0d0d0 !important;
 
-  ion-fab-button{
+  ion-fab-button {
     --background: #002060 !important;
     --ion-color-base: #002060 !important;
   }
 }
 
-
-
 ion-card {
   --background: white !important;
 }
 
-ion-toolbar{
-  --background:  #002060 !important;
+ion-toolbar {
+  --background: #002060 !important;
 
-  ion-title{
+  ion-title {
     --background: #edc7b7 !important;
     color: white;
   }
 }
 
-ion-list{
+ion-list {
   --background: #bab2b5 !important;
 }
 
-
-ion-button{
-  --ion-color-base: #aa021a  !important;
-  --border-color: #aa021e  !important;
+ion-button {
+  --ion-color-base: #aa021a !important;
+  --border-color: #aa021e !important;
 }
-
-
-
