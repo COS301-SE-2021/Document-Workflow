@@ -20,7 +20,11 @@ const routes: Routes = [
     path: '',
     redirectTo: 'home',
     pathMatch: 'full'
+  },  {
+    path: 'document-edit',
+    loadChildren: () => import('./pages/document-edit/document-edit.module').then( m => m.DocumentEditPageModule)
   }
+
 
 ];
 @NgModule({
