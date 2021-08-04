@@ -13,7 +13,6 @@ import {
   DocumentAPIService,
 } from './../../Services/Document/document-api.service';
 import { AddWorkflowComponent } from 'src/app/components/add-workflow/add-workflow.component';
-import { EditWorkflowComponent } from 'src/app/components/edit-workflow/edit-workflow.component';
 import { WorkFlowService } from '../../Services/Workflow/work-flow.service';
 import { ConfirmDeleteWorkflowComponent } from 'src/app/components/confirm-delete-workflow/confirm-delete-workflow.component';
 import { ItemReorderEventDetail } from '@ionic/core';
@@ -150,33 +149,33 @@ export class WorkflowPage implements OnInit {
   }
 
   async editWorkflow(id_ : string){
-    const editModal = await this.modals.create({
-      component: EditWorkflowComponent,
-      componentProps:{
-        workflowID: id_
-      }
-    });
+    // const editModal = await this.modals.create({
+    //   component: EditWorkflowComponent,
+    //   componentProps:{
+    //     workflowID: id_
+    //   }
+    // });
 
-    (await editModal).present();
+    // (await editModal).present();
 
-    (await editModal).onDidDismiss().then(async (data)=>{
-      const documents = (await data).data['document'];
-      // const file = (await data).data['file'];
-      let phases = '';
-      console.log(documents.phases);
-      for(let i=0; i<documents.phases.length; ++i) //Sending arrays of arrays does not work well in angular so this workaround will have to do.
-      {
-        let temp = '[';
-        for(const [key, value] of Object.entries(documents.phases[i]))
-          temp+=value + ' ';
-        phases += temp.substr(0, temp.length-1) +']'; //dont want the trailing space
-      }
-      console.log(phases);
-      const workflowData = {
-        name: documents.workflowName,
-        description: documents.workflowDescription
-      };
-    })
+    // (await editModal).onDidDismiss().then(async (data)=>{
+    //   const documents = (await data).data['document'];
+    //   // const file = (await data).data['file'];
+    //   let phases = '';
+    //   console.log(documents.phases);
+    //   for(let i=0; i<documents.phases.length; ++i) //Sending arrays of arrays does not work well in angular so this workaround will have to do.
+    //   {
+    //     let temp = '[';
+    //     for(const [key, value] of Object.entries(documents.phases[i]))
+    //       temp+=value + ' ';
+    //     phases += temp.substr(0, temp.length-1) +']'; //dont want the trailing space
+    //   }
+    //   console.log(phases);
+    //   const workflowData = {
+    //     name: documents.workflowName,
+    //     description: documents.workflowDescription
+    //   };
+    // })
   }
 
   async addWorkflow() {

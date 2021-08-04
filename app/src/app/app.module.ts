@@ -22,7 +22,6 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
 import { UpdateUserComponent } from './components/update-user/update-user.component';
 import { AddWorkflowComponent } from './components/add-workflow/add-workflow.component';
 import { AddSignatureComponent } from './components/add-signature/add-signature.component';
-import { EditWorkflowComponent } from './components/edit-workflow/edit-workflow.component';
 import { AddCommentComponent } from './components/add-comment/add-comment.component';
 import { ConfirmSignaturesComponent } from './components/confirm-signatures/confirm-signatures.component';
 import { UserNotificationsComponent } from './components/user-notifications/user-notifications.component';
@@ -35,7 +34,6 @@ import { DocumentActionAreaComponent } from './components/document-action-area/d
     AddWorkflowComponent,
     UpdateUserComponent,
     AddSignatureComponent,
-    EditWorkflowComponent,
     AddCommentComponent,
     ConfirmSignaturesComponent,
     UserNotificationsComponent,
