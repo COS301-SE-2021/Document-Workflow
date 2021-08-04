@@ -7,7 +7,7 @@ const routes: Routes = [
   {
     path: '',
     component: SplitViewPage,
-    children:[
+    children: [
       {
         path: 'archive',
         loadChildren: () =>
@@ -54,15 +54,31 @@ const routes: Routes = [
           import('./../add-workflow/add-workflow.module').then(
             (m) => m.AddWorkflowPageModule
           ),
-          pathMatch: 'full'
+        pathMatch: 'full',
+      },
+      {
+        path: 'documentEdit',
+        loadChildren: () =>
+          import('./../document-edit/document-edit.module').then(
+            (m) => m.DocumentEditPageModule
+          ),
+          pathMatch: 'full',
+      },
+      {
+        path: 'contacts',
+        loadChildren: () =>
+          import('./../contacts/contacts.module').then(
+            (m) => m.ContactsPageModule
+          ),
+          pathMatch: 'full',
       },
       {
         path: '',
         redirectTo: '',
         pathMatch: 'full',
       },
-    ]
-  }
+    ],
+  },
 ];
 
 @NgModule({
