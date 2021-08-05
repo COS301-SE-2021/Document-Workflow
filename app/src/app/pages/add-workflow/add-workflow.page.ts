@@ -263,7 +263,7 @@ export class AddWorkflowPage implements OnInit {
     console.log(str);
   }
 
-  async includeActionArea(i: number, form: FormGroup) {
+  async includeActionArea(i: number, form: FormControl) {
     console.log(i);
     const a = await this.modal.create({
       component: DocumentActionAreaComponent,
@@ -278,7 +278,7 @@ export class AddWorkflowPage implements OnInit {
     (await a).onDidDismiss().then(async (data) => {
       const result = (await data).data['xfdfString'];
       if (result) {
-        form.get('xfsdString').setValue(result);
+        form.setValue(result);
       } else {
         //not delete
       }

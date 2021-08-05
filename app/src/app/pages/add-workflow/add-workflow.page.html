@@ -59,8 +59,9 @@
           <ion-card *ngFor="let phase of workflowForm.controls.phases['controls']; let i = index">
             <ion-card-header>
               <ion-card-title>Phase {{i+1}}</ion-card-title>
+              <ion-card-subtitle>Description for this phase</ion-card-subtitle>
+              <ion-textarea [formControl]="phase.controls.description"></ion-textarea>
               <ion-fab vertical="top" horizontal="end">
-
                 <ion-fab-button mini (click)="addUser(phase.controls['users'])"></ion-fab-button>
               </ion-fab>
             </ion-card-header>
@@ -71,7 +72,7 @@
                     <ion-col sizeXs="12" sizeMd="2">
                       Add User:
                     </ion-col>
-                    <ion-col sizeXs='12' sizeMd="9">
+                    <ion-col sizeXs='11' sizeMd="9">
                       <ion-input type="email" [formControl]="user.controls.user"></ion-input>
                     </ion-col>
                     <ion-col>
@@ -100,6 +101,7 @@
                   </ion-row>
                 </ion-grid>
               </ion-item>
+              <ion-button expand="block" color="primary" fill="outline" (click)="includeActionArea(i,phase.controls.annotation)">Add Action Area</ion-button>
               <ion-button expand="block" color="primary" fill="outline" (click)="removePhase(i)">Remove this
                 Phase
               </ion-button>
