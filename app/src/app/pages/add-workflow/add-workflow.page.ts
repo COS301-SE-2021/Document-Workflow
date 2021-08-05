@@ -26,6 +26,11 @@ import { ItemReorderEventDetail } from '@ionic/core';
 import { DocumentActionAreaComponent } from 'src/app/components/document-action-area/document-action-area.component';
 import { User, UserAPIService } from 'src/app/Services/User/user-api.service';
 import * as Cookies from 'js-cookie';
+<<<<<<< Updated upstream
+=======
+import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
+import { Console } from 'console';
+>>>>>>> Stashed changes
 @Component({
   selector: 'app-add-workflow',
   templateUrl: './add-workflow.page.html',
@@ -107,8 +112,9 @@ export class AddWorkflowPage implements OnInit {
       phases: this.fb.array([
         this.fb.group({
           xfsdString: new FormControl('', [Validators.required]),
-          user1: new FormControl('', [Validators.email, Validators.required]),
           permission1: new FormControl('', [Validators.required]),
+          user1: new FormControl('', [Validators.email, Validators.required]),
+
         }),
       ]),
     });
@@ -179,6 +185,9 @@ export class AddWorkflowPage implements OnInit {
 
   changePermission(form: FormGroup, control: any, str: string) {
     let num = this.findNumber(control.key);
+    console.log(num)
+    console.log(form)
+    console.log(form.get('permission'+num))
     switch (str) {
       case 'sign':
         form.get('permission'+num).setValue('sign');
@@ -230,6 +239,9 @@ export class AddWorkflowPage implements OnInit {
   async uploadFile(event: EventTarget) {
     const eventObj: MSInputMethodContext = event as MSInputMethodContext;
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
+    if(this.plat.is('desktop')){
+
+    }
     this.file = target.files[0];
     console.log(typeof this.file);
     console.log('file', this.file.arrayBuffer());
@@ -288,9 +300,19 @@ export class AddWorkflowPage implements OnInit {
     });
   }
 
+<<<<<<< Updated upstream
   createWorkflow(){
     console.log(this.phases);
 
+=======
+  debug(){
+    console.log(this.workflowForm);
+  }
+
+  submit(){
+    console.log(this.workflowForm);
+    this.workflowServices.createWorkflow(this.workflowForm, '', this.file, (response)=>{
+>>>>>>> Stashed changes
 
   }
 }

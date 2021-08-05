@@ -70,7 +70,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
         const pdfBytes = await this.pdfDoc.save();
         this.srcFile = pdfBytes;
         WebViewer({
-          path: '../../../assets/lib',
+          path: './../../../assets/lib',
           annotationUser: this.userEmail
         }, this.viewerRef.nativeElement).then(instance =>{
 
