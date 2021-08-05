@@ -26,6 +26,7 @@ import { ItemReorderEventDetail } from '@ionic/core';
 import { DocumentActionAreaComponent } from 'src/app/components/document-action-area/document-action-area.component';
 import { User, UserAPIService } from 'src/app/Services/User/user-api.service';
 import * as Cookies from 'js-cookie';
+import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 @Component({
   selector: 'app-add-workflow',
   templateUrl: './add-workflow.page.html',
@@ -66,7 +67,8 @@ export class AddWorkflowPage implements OnInit {
     private modal: ModalController,
     private router: Router,
     private userApiService: UserAPIService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private workflowServices: WorkFlowService,
   ) {}
 
   async ngOnInit() {
@@ -180,7 +182,7 @@ export class AddWorkflowPage implements OnInit {
   changePermission(form: FormGroup, control: any, str: string) {
     let num = this.findNumber(control.key);
     switch (str) {
-      case 'sign':
+      case 'edit':
         form.get('permission'+num).setValue('sign');
         break;
       case 'view':
@@ -245,13 +247,6 @@ export class AddWorkflowPage implements OnInit {
     this.addFile = true;
   }
 
-  submit() {
-    this.modal.dismiss({
-      document: this.workflowForm.value,
-      file: this.file,
-    });
-  }
-
   fixOrder(ev: CustomEvent<ItemReorderEventDetail>) {
     let phase = this.workflowForm.get('phases') as FormArray;
     let a = phase.controls.splice(ev.detail.from, 1);
@@ -284,4 +279,45 @@ export class AddWorkflowPage implements OnInit {
       }
     });
   }
+
+  submit(){
+    console.log(this.workflowForm);
+    this.workflowServices.createWorkflow(this.workflowForm, '', this.file, (response)=>{
+
+    });
+  }
 }
+    // const addModal = await this.modals.create({
+    //   component: AddWorkflowComponent,
+    // });
+
+    // (await addModal).present();
+
+    // (await addModal).onDidDismiss().then(async (data) => {
+    //   // const users = (await data).data['users'];
+    //   const documents = (await data).data['document'];
+    //   const file = (await data).data['file'];
+    //   let phases = '';
+    //   console.log(documents.phases);
+    //   for(let i=0; i<documents.phases.length; ++i) //Sending arrays of arrays does not work well in angular so this workaround will have to do.
+    //   {
+    //     let temp = '[';
+    //     for(const [key, value] of Object.entries(documents.phases[i]))
+    //       temp+=value + ' ';
+    //     phases += temp.substr(0, temp.length-1) +']'; //dont want the trailing space
+    //   }
+    //   console.log(phases);
+    //   const workflowData = {
+    //     name: documents.workflowName,
+    //     description: documents.workflowDescription
+    //   };
+    //   this.workFlowService.createWorkflow(workflowData, phases, file, (response) => {
+    //     if (response.status === 'success') {
+    //       this.userApiService.displayPopOver('Success', 'Workflow has been created');
+    //       location.reload();
+    //     } else {
+    //       console.log(response);
+    //       this.userApiService.displayPopOver('Workflow could not be created', response.message);
+    //     }
+    //   });
+    // });

@@ -22,7 +22,7 @@
 <ion-content style="height: 100%;" [fullscreen]="true">
   <form [formGroup]="workflowForm" (ngSubmit)="submit()" style="height: 90%;">
     <ion-card *ngIf="!next" style="height: 100%;">
-      <ion-card-content style="height: 95%;">
+      <ion-card-content style="height: 90%;">
         <ion-item>
           <ion-label>Document name</ion-label>
           <ion-input formControlName="workflowName" inputmode="text" (input)="checkStatus()"></ion-input>
@@ -43,8 +43,7 @@
         </ion-item>
         <iframe [src]="srcFile" *ngIf="addFile" style="width: 100%; height:70%;"></iframe>
       </ion-card-content>
-      <!-- [disabled]="!addFile || !addName || !addDescription" -->
-      <ion-button (click)="changeOver()">Next</ion-button>
+      <ion-button (click)="changeOver()" [disabled]="!addFile || !addName || !addDescription">Next</ion-button>
     </ion-card>
     <ion-card style="width:95%" *ngIf="next">
       <ion-card-header>
@@ -84,20 +83,22 @@
                             <ion-icon name="close-circle-outline" size="large"
                               (click)="removeUser(workflowForm.controls.phases['controls'][i], control)"></ion-icon>
                           </ion-col>
-                          <ion-radio-group>
-                            <ion-grid>
+                          <ion-radio-group style="width: 100%">
+                            <ion-grid style="width: 100%;">
+                              <ion-row style="width: 100%;">
                               <ion-col sizeXs="6">
-                                <ion-item (onclick)="changePermission(workflowForm.controls.phases['controls'][i], control)">
+                                <ion-item (onclick)="changePermission(workflowForm.controls.phases['controls'][i], control, 'view')">
                                   <ion-label>Viewer</ion-label>
                                   <ion-radio value="sign"></ion-radio>
                                 </ion-item>
                               </ion-col>
                               <ion-col sizeXs="6">
-                                <ion-item (onclick)="changePermission(workflowForm.controls.phases['controls'][i], control)">
+                                <ion-item (onclick)="changePermission(workflowForm.controls.phases['controls'][i], control, 'edit')">
                                   <ion-label>Signer</ion-label>
                                   <ion-radio value="view"></ion-radio>
                                 </ion-item>
                               </ion-col>
+                            </ion-row>
                             </ion-grid>
                           </ion-radio-group>
                         </ion-row>
