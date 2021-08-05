@@ -119,11 +119,14 @@
           </ion-item>
           <ion-item style="width:100%">
             <ion-button style="width:100%" expand="block" color="primary" fill="outline"
-              [disabled]="!workflowForm.valid" type="submit">
+              [disabled]="!workflowForm.valid" type="submit" (click)="createWorkflow()">
               Add workflow</ion-button>
           </ion-item>
         </ion-item>
       </ion-card-content>
     </ion-card>
+    <ion-fab>
+      <ion-fab-button (click)="debug()">debug</ion-fab-button>
+    </ion-fab>
   </form>
 </ion-content>

@@ -7,14 +7,17 @@ import { ModalController } from '@ionic/angular';
   styleUrls: ['./error-occurred.component.scss'],
 })
 export class ErrorOccurredComponent implements OnInit {
-  message: string;
-  title: string;
+  @Input() message: string;
+  @Input() title: string;
 
   constructor(private modal: ModalController) {}
 
   ngOnInit() {
-    this.title = 'Oops';
-    this.message = 'An error occurred and we were not able to load in the data you requested. Please try again later';
+    console.log("Message is: ");
+    if(this.message === undefined || this.title === undefined) { //Default message
+      this.title = 'Oops';
+      this.message = 'An error occurred. Please try again later';
+    }
   }
 
   okay(){

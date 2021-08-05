@@ -99,25 +99,9 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
   //TODO: this xfdfString should be reloaded back into this phase if the user decides to add more action areas.
   //This will ensure that they dont have to redo all the work that they did earlier.
   async back() {
-    this.xfdfString = await this.annotationManager.exportAnnotations({links:false, widgets: false});
-    const mod = this.modal.create({
-      component: ConfirmDeleteWorkflowComponent,
-      componentProps:{
-        type: "confirmAddActionArea"
-      }
-    });
-
-    await (await mod).present();
-    (await mod).onDidDismiss().then(async (data) => {
-      const result = (await data).data['confirm'];
-      if (result){
-        await this.modal.dismiss({
-          'xfdfString': this.xfdfString,
-        })
-      }else{
-        //not delete
-      }
+    this.xfdfString = await this.annotationManager.exportAnnotations({links: false, widgets: false});
+    await this.modal.dismiss({
+      xfdfString: this.xfdfString
     });
   }
-
 }

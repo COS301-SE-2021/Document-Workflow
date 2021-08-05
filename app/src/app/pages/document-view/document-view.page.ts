@@ -91,6 +91,8 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
         const a = await this.modalCtrl.create({
           component: ErrorOccurredComponent,
           componentProps: {
+            title: "An error occurred",
+            message: "Please try again later"
           },
         });
 

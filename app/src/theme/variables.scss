@@ -240,6 +240,14 @@ $color3: #bab2b5;
 $color4: #aa021e;
 $color5: #002060;
 
+$colors:(
+  peach: #edc7b7,
+  white: #eee2dc,
+  gray: #bab2b5,
+  red: #aa021e,
+  blue: #002060,
+);
+
 ion-content {
   --background: #d0d0d0 !important;
 

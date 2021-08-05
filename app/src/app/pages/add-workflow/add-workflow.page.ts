@@ -262,6 +262,9 @@ export class AddWorkflowPage implements OnInit {
   reOrderTime() {
     this.reOrder = !this.reOrder;
   }
+  debug(){
+    console.log(this.workflowForm);
+  }
 
   async includeActionArea(i: number, form: FormGroup) {
     console.log(i);
@@ -283,5 +286,11 @@ export class AddWorkflowPage implements OnInit {
         //not delete
       }
     });
+  }
+
+  createWorkflow(){
+    console.log(this.phases);
+
+
   }
 }
