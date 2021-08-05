@@ -20,6 +20,7 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
   showAnnotations = true;
   docName: string;
   xfdfString: any;
+  annotationManager: any;
 
   @ViewChild('viewer') viewerRef: ElementRef;
   @Input('file') file: any;
@@ -40,19 +41,15 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
 
   async ngAfterViewInit(): Promise<void>{
 
-     //const arr = new Uint8Array();
-     //this.pdfDoc = await PDFDocument.load(arr);
-     //const pdfBytes = await this.pdfDoc.save();
-    // const blob = new Blob([arr], { type: 'application/pdf' });
-
       WebViewer({
         path: '../../../assets/lib',
         annotationUser: this.ownerEmail
       }, this.viewerRef.nativeElement)
         .then(instance => {
-          //Look at the Callout tool of the insert bar as well as the stickers that can be inserted
+
           const {documentViewer, annotationManager} = instance.Core;
-          instance.UI.loadDocument(this.file, {});
+          this.annotationManager = annotationManager;
+          instance.UI.loadDocument(this.file, {}); //this.file is a blob.
           //We only want to display the Annotations ribbon
           instance.UI.disableElements(['ribbons']);
           instance.UI.setToolbarGroup('toolbarGroup-Annotate',false);
@@ -82,7 +79,6 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
               }
             });
           });
-
            */
 
         });
@@ -108,14 +104,16 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
     annotationManager.drawAnnotationsFromList(annotations);
   }
 
-
+  //TODO: this xfdfString should be reloaded back into this phase if the user decides to add more action areas.
+  //This will ensure that they dont have to redo all the work that they did earlier.
   async back() {
+    this.xfdfString = this.annotationManager.getAnnotCommand();
     const mod = this.modal.create({
       component: ConfirmDeleteWorkflowComponent,
       componentProps:{
         type: "confirmAddActionArea"
       }
-    })
+    });
 
     await (await mod).present();
     (await mod).onDidDismiss().then(async (data) => {
@@ -128,8 +126,6 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
         //not delete
       }
     });
-
-
   }
 
 }
