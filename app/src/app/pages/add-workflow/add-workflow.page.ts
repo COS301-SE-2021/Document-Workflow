@@ -112,19 +112,18 @@ export class AddWorkflowPage implements OnInit {
           xfsdString: new FormControl('', [Validators.required]),
           users: this.fb.array([
             this.fb.group({
-              permission1: new FormControl('', [Validators.required]),
-              user1: new FormControl('', [
+              user: new FormControl('', [
                 Validators.email,
                 Validators.required,
               ]),
+              permission: new FormControl('', [Validators.required]),
+
             }),
           ]),
         }),
       ]),
     });
 
-    console.log(this.workflowForm);
-    // console.log(this.workflowForm.controls.phases['controls'][0]);
     await this.getUser();
   }
 
@@ -162,18 +161,7 @@ export class AddWorkflowPage implements OnInit {
   }
 
   addUser(form: FormArray) {
-    console.log(form);
     form.push(this.createNewuser());
-    // form.
-    // this.userCount = this.userCount + 1;
-    // form.addControl(
-    //   'user' + this.userCount,
-    //   new FormControl('', [Validators.email, Validators.required])
-    // );
-    // form.addControl(
-    //   'permission' + this.userCount,
-    //   new FormControl('', [Validators.required])
-    // );
   }
 
   createNewuser(): FormGroup{
@@ -183,41 +171,37 @@ export class AddWorkflowPage implements OnInit {
     })
   }
 
-  findNumber(key: string): number {
-    let length;
-    if (key.length > 10) {
-      length = key.substring(10, key.length);
-    } else {
-      length = key.substring(4, key.length);
-    }
-    return length;
-  }
-
   removeUser(form: FormGroup, control) {
-    let length = this.findNumber(control.key);
-    form.removeControl('user' + length);
-    form.removeControl('permission' + length);
+    // let length = this.findNumber(control.key);
+    // form.removeControl('user' + length);
+    // form.removeControl('permission' + length);
   }
 
-  changePermission(form: FormGroup, control: any, str: string) {
-    let num = this.findNumber(control.key);
-    console.log(num);
-    console.log(form);
-    console.log(form.get('permission' + num));
-    switch (str) {
-      case 'sign':
-        form.get('permission' + num).setValue('sign');
-        break;
-      case 'view':
-        form.get('permission' + num).setValue('view');
-        break;
-    }
+  changePermission( control: any, str: string) {
+    control.setValue(str);
+    // console.log(num);
+    // console.log(form);
+    // console.log(form.get('permission' + num));
+    // switch (str) {
+    //   case 'sign':
+    //     form.get('permission' + num).setValue('sign');
+    //     break;
+    //   case 'view':
+    //     form.get('permission' + num).setValue('view');
+    //     break;
+    // }
   }
 
   createPhase(): FormGroup {
     return this.fb.group({
-      user1: new FormControl('', [Validators.email, Validators.required]),
-      permission1: new FormControl('', [Validators.required]),
+      xfsdString: new FormControl('', [Validators.required]),
+      users: this.fb.array([
+        this.fb.group({
+          user: new FormControl('', [Validators.email, Validators.required,
+          ]),
+          permission: new FormControl('', [Validators.required]),
+        })
+      ])
     });
   }
 

@@ -55,26 +55,52 @@
         </ion-toggle>
       </ion-card-header>
       <ion-card-content>
-          <ion-reorder-group [disabled]="reOrder" (ionItemReorder)="fixOrder($event)" style="width:100%">
-            <ion-card *ngFor="let phase of workflowForm.controls.phases['controls']; let i = index">
-              <ion-card-header>
-                <ion-card-title>Phase {{i+1}}</ion-card-title>
-                <ion-fab  vertical="top" horizontal="end" >
-                  <ion-fab-button (click)="debug(phase.controls['users'].controls)">debug</ion-fab-button>
-                  <ion-fab-button mini (click)="addUser(phase.controls['users'])"></ion-fab-button>
-                </ion-fab>
-              </ion-card-header>
-              <ion-card-content>
-                <ion-item *ngFor="let user of phase.controls['users'].controls">
-                  <p>{{user.key}}</p>
-                </ion-item>
-                <ion-button expand="block" color="primary" fill="outline" (click)="removePhase(i)">Remove this
-                  Phase
-                </ion-button>
+        <ion-reorder-group [disabled]="reOrder" (ionItemReorder)="fixOrder($event)" style="width:100%">
+          <ion-card *ngFor="let phase of workflowForm.controls.phases['controls']; let i = index">
+            <ion-card-header>
+              <ion-card-title>Phase {{i+1}}</ion-card-title>
+              <ion-fab vertical="top" horizontal="end">
 
-              </ion-card-content>
-            </ion-card>
-          </ion-reorder-group>
+                <ion-fab-button mini (click)="addUser(phase.controls['users'])"></ion-fab-button>
+              </ion-fab>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-item *ngFor="let user of phase.controls['users'].controls; let j = index">
+                <ion-grid>
+                  <ion-row>
+                    Add User:
+                    <ion-input type="email" [formControl]="user.controls.user"></ion-input>
+                  </ion-row>
+                  <ion-row>
+                    <ion-radio-group style="width: 100%" [formControl]="user.controls.permission">
+                      <ion-row>
+                        <ion-col sizeXs="6">
+                          <ion-item (click)="changePermission(user.controls.permission, 'view')">
+                            <ion-label>View only </ion-label>
+                            <ion-radio value="view"></ion-radio>
+                          </ion-item>
+                        </ion-col>
+                        <ion-col sizeXs="6">
+                          <ion-item (click)="changePermission(user.controls.permission, 'edit')">
+                            <ion-label>Signer</ion-label>
+                            <ion-radio value="sign"></ion-radio>
+                          </ion-item>
+                        </ion-col>
+                      </ion-row>
+                    </ion-radio-group>
+                  </ion-row>
+                </ion-grid>
+                <ion-fab>
+                  <ion-fab-button (click)="debug(user.controls.permission)">debug</ion-fab-button>
+                </ion-fab>
+              </ion-item>
+              <ion-button expand="block" color="primary" fill="outline" (click)="removePhase(i)">Remove this
+                Phase
+              </ion-button>
+
+            </ion-card-content>
+          </ion-card>
+        </ion-reorder-group>
         <ion-item>
           <ion-item style="width:100%">
             <ion-button style="width:100%" expand="block" color="primary" fill="outline" (click)="addPhase()">Add
@@ -83,7 +109,7 @@
           </ion-item>
           <ion-item style="width:100%">
             <ion-button style="width:100%" expand="block" color="primary" fill="outline"
-              [disabled]="!workflowForm.valid" type="submit" (click)="createWorkflow()">
+              [disabled]="!workflowForm.valid" type="submit">
               Add workflow</ion-button>
           </ion-item>
         </ion-item>
