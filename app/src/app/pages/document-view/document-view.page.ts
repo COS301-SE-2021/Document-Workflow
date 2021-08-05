@@ -72,9 +72,12 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
           annotationUser: this.userEmail
         }, this.viewerRef.nativeElement).then(instance =>{
             instance.UI.loadDocument(blob, {filename: this.docName});
+            instance.UI.disableElements(['ribbons']);
+            instance.UI.setToolbarGroup('toolbarGroup-View',false);
 
         });
       } else {
+        //TODO: create popup informing the user that we could not load in the document.
       }
     });
   }

@@ -49,8 +49,6 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
           instance.UI.disableElements(['ribbons']);
           instance.UI.setToolbarGroup('toolbarGroup-Annotate',false);
 
-
-
           //adds the button used to toggle visibility of annotations
           instance.UI.setHeaderItems(header =>{
             header.push({
