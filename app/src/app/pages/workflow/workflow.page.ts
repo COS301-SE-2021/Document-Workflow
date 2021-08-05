@@ -187,7 +187,8 @@ export class WorkflowPage implements OnInit {
     // this.navControl.navigateForward
     this.router.navigate(['/home/documentView', {
       id,
-      documentname: name
+      documentname: name,
+      userEmail: this.user.email
     }]);
   }
 

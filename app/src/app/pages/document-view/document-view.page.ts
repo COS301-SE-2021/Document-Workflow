@@ -31,6 +31,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   @Input('documentname') docName: string;
   @Input('workflowId') workflowId: string;
   @ViewChild('viewer') viewerRef: ElementRef;
+  @Input('userEmail') userEmail: string;
   //TODO: get the name of the person who is editing/viewing the document
   constructor(
     private modalCtrl: ModalController,
@@ -42,9 +43,10 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   ) {}
 
   async ngOnInit() {
-    await this.route.params.subscribe((stuff) => {
-      this.documentId = stuff['id'];
-      this.docName = stuff['documentname'];
+    await this.route.params.subscribe((data) => {
+      this.documentId = data['id'];
+      this.docName = data['documentname'];
+      this.userEmail = data['userEmail'];
     });
   }
 
@@ -67,7 +69,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
         this.srcFile = pdfBytes;
         WebViewer({
           path: '../../../assets/lib',
-          annotationUser: "TemporaryUser"
+          annotationUser: this.userEmail
         }, this.viewerRef.nativeElement).then(instance =>{
             instance.UI.loadDocument(blob, {filename: this.docName});
 
