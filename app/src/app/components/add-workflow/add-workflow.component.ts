@@ -11,9 +11,11 @@ import {
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import {
   ActionSheetController,
+  IonReorderGroup,
   ModalController,
   Platform,
 } from '@ionic/angular';
+import { ItemReorderEventDetail } from '@ionic/core';
 
 import { DocumentViewPageRoutingModule } from 'src/app/pages/document-view/document-view-routing.module';
 
@@ -29,7 +31,9 @@ export class AddWorkflowComponent implements OnInit {
   phases: FormArray;
   file: File;
   addFile: boolean;
+  reOrder: boolean;
 
+  @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
   constructor(
     private plat: Platform,
@@ -39,6 +43,7 @@ export class AddWorkflowComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.reOrder = true;
     this.addFile = false;
     this.phaseNumber = Array(1)
       .fill(0)
@@ -118,6 +123,16 @@ export class AddWorkflowComponent implements OnInit {
       document: this.workflowForm.value,
       file: this.file,
     });
+  }
 
+  fixOrder(ev: CustomEvent<ItemReorderEventDetail>){
+    let phase = this.workflowForm.get('phases') as FormArray;
+    let a = phase.controls.splice(ev.detail.from,1);
+    phase.controls.splice(ev.detail.to, 0, a[0] );
+    ev.detail.complete();
+  }
+
+  reOrderTime(){
+    this.reOrder = !this.reOrder;
   }
 }

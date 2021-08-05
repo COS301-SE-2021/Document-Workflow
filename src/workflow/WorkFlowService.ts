@@ -3,11 +3,12 @@ import {WorkFlowI} from './WorkFlow';
 import WorkFlowRepository from './WorkFlowRepository';
 import DocumentService from "../document/DocumentService";
 import UserRepository from "../user/UserRepository";
+import DocumentRepository from "../document/DocumentRepository";
 
 @injectable()
 export default class WorkFlowService{
 
-    constructor(private workflowRepository: WorkFlowRepository, private documentService: DocumentService, private usersRepository: UserRepository) {
+    constructor(private workflowRepository: WorkFlowRepository, private documentService: DocumentService, private usersRepository: UserRepository, private documentRepository: DocumentRepository) {
     }
 
     /**
@@ -185,7 +186,10 @@ export default class WorkFlowService{
         await this.usersRepository.putUser(user);
     }
 
-    async updateWorkFlow(req) {
-        return Promise.resolve(undefined);
+    async updateDocument(req) {
+        const documentMetadata = await this.documentRepository.getDocument(req.body.documentId);
+        let v = await this.documentRepository.updateDocumentS3(documentMetadata, req.files.document);
+        console.log("Document successfully updated");
+        return {status: 'success', data:{}, response:''};
     }
 }

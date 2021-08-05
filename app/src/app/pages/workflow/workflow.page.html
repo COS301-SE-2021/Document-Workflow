@@ -1,34 +1,26 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-grid>
-      <ion-col size="9">
-        <ion-title>EPI-USE Document Workflow</ion-title>
-      </ion-col>
-      <ion-col side="3">
-        <ion-menu-button></ion-menu-button>
-      </ion-col>
-    </ion-grid>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="end" size="large">
+      <ion-menu-button ></ion-menu-button>
+    </ion-buttons>
+
+      <ion-grid style="max-height: 194px;">
+        <ion-row>
+          <ion-col><ion-img src="../../../assets/LogoWhiteBackground.png" style="height: auto;max-width: 568px;"></ion-img>
+          </ion-col>
+          <ion-col>
+            Home
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+
   </ion-toolbar>
 </ion-header>
 
-<ion-menu side="end" menuId="workflowMenu" contentId="workflowMenu">
-  <ion-header>
-    <ion-toolbar>Menu</ion-toolbar>
-  </ion-header>
-  <ion-content>
-    <ion-list>
-      <ion-item>User Profile</ion-item>
-      <ion-item>User Contracts</ion-item>
-    </ion-list>
-  </ion-content>
-</ion-menu>
-
-
 <ion-content style="width:100%">
   <br>
-  <ion-reorder-group disabled="true">
-
-
+  <ion-reorder-group [disabled]="reOrder" (ionItemReorder)="fixOrder($event)" style="width:100%">
     <div *ngFor="let doc of documents">
       <ion-reorder style="width:100%">
         <ion-card style="width:95%; justify-content: center;margin:auto">
@@ -99,7 +91,7 @@
   </ion-fab>
 </ion-content>
 
-<ion-footer>
+<!-- <ion-footer>
   <ion-tab-bar>
     <ion-tab-button (click)="toProfilepage()">
       <ion-label>profile</ion-label>
@@ -110,4 +102,13 @@
       <ion-icon name="log-out-outline"></ion-icon>
     </ion-tab-button>
   </ion-tab-bar>
-</ion-footer>
+</ion-footer> -->
+
+<!-- <ion-grid>
+  <ion-row>
+
+    <ion-col sizeSm="8" sizeXs="8" sizeMd="8">
+
+    </ion-col>
+  </ion-row>
+</ion-grid> -->
