@@ -15,6 +15,9 @@ import { ConfirmSignaturesComponent } from 'src/app/components/confirm-signature
 import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { DomSanitizer } from '@angular/platform-browser';
 import WebViewer from '@pdftron/webviewer';
+import {UserNotificationsComponent} from "../../components/user-notifications/user-notifications.component";
+import {DocumentActionAreaComponent} from "../../components/document-action-area/document-action-area.component";
+import {ErrorOccurredComponent} from "../../components/error-occurred/error-occurred.component";
 
 @Component({
   selector: 'app-document-view',
@@ -26,6 +29,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   srcFileBase64: any;
   pdfDoc: PDFDocument;
   showAnnotations = false;
+
 
   @Input('id') documentId: string;
   @Input('documentname') docName: string;
@@ -78,10 +82,18 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
         });
       } else {
         //TODO: create popup informing the user that we could not load in the document.
+        const a = await this.modalCtrl.create({
+          component: ErrorOccurredComponent,
+          componentProps: {
+          },
+        });
+
+        await (await a).present();
+        (await a).onDidDismiss().then(async (data) => {
+        });
       }
     });
   }
-
 
   toggleAnnotations(annotManager){
 
