@@ -22,7 +22,7 @@
 <ion-content style="height: 100%;" [fullscreen]="true">
   <form [formGroup]="workflowForm" (ngSubmit)="submit()" style="height: 90%;">
     <!-- TODO change next to !next -->
-    <ion-card *ngIf="next" style="height: 100%;">
+    <ion-card *ngIf="!next" style="height: 100%;">
       <ion-card-content style="height: 90%;">
         <ion-item>
           <ion-label>Document name</ion-label>
@@ -48,7 +48,7 @@
       <ion-button (click)="changeOver()">Next</ion-button>
     </ion-card>
     <!-- TODO change !next to next -->
-    <ion-card style="width:95%" *ngIf="!next">
+    <ion-card style="width:95%" *ngIf="next">
       <ion-card-header>
         re order
         <ion-toggle (click)="reOrderTime()">
