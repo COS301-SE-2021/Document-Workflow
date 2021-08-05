@@ -19,7 +19,6 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
   pdfDoc: PDFDocument;
   showAnnotations = true;
   docName: string;
-
   xfdfString: any;
 
   @ViewChild('viewer') viewerRef: ElementRef;
@@ -52,7 +51,7 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
       }, this.viewerRef.nativeElement)
         .then(instance => {
           //Look at the Callout tool of the insert bar as well as the stickers that can be inserted
-          const annotManager = instance.Core;
+          const {documentViewer, annotationManager} = instance.Core;
           instance.UI.loadDocument(this.file, {});
           //We only want to display the Annotations ribbon
           instance.UI.disableElements(['ribbons']);
@@ -61,11 +60,11 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
             header.push({
               type: 'actionButton',
               img: '<svg xmlns=\'http://www.w3.org/2000/svg\' class=\'ionicon\' viewBox=\'0 0 512 512\'><title>Eye</title><path d=\'M255.66 112c-77.94 0-157.89 45.11-220.83 135.33a16 16 0 00-.27 17.77C82.92 340.8 161.8 400 255.66 400c92.84 0 173.34-59.38 221.79-135.25a16.14 16.14 0 000-17.47C428.89 172.28 347.8 112 255.66 112z\' fill=\'none\' stroke=\'currentColor\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'32\'/><circle cx=\'256\' cy=\'256\' r=\'80\' fill=\'none\' stroke=\'currentColor\' stroke-miterlimit=\'10\' stroke-width=\'32\'/></svg>',
-              onClick: () =>  { this.toggleAnnotations(annotManager);
+              onClick: () =>  { this.toggleAnnotations(annotationManager);
               }
             });
-
           });
+
           /*
             header.push({
               type: 'actionButton',
@@ -84,34 +83,29 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
             });
           });
 
-          docViewer.on('documentLoaded', () => {
-          });
            */
 
         });
 
   }
 
-  toggleAnnotations(annotManager){
+  toggleAnnotations(annotationManager){
 
     this.showAnnotations = !this.showAnnotations;
-    const annotations = annotManager.getAnnotationsList();
+    const annotations = annotationManager.getAnnotationsList();
     if(this.showAnnotations){
-      console.log("Showing annotations");
-      //annotManager.showAnnotations(annotations);
+      //annotManager.showAnnotations(annotations); //use if you wihs to hide the associated comments that go with an annotation as well as the annotation.
       annotations.forEach(annot =>{
         annot.Hidden = false;
       });
     }
     else{
-      console.log("Hiding annotations");
       //annotManager.hideAnnotations(annotations);
       annotations.forEach(annot =>{
         annot.Hidden = true;
       });
     }
-    annotManager.drawAnnotationsFromList(annotations);
-
+    annotationManager.drawAnnotationsFromList(annotations);
   }
 
 
