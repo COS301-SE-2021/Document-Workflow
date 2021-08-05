@@ -36,7 +36,6 @@ import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 export class AddWorkflowPage implements OnInit {
   workflowForm: FormGroup;
   private userCount = 1;
-  private phaseNumber: number[];
   phases: FormArray;
   file: File;
 
@@ -101,15 +100,13 @@ export class AddWorkflowPage implements OnInit {
     this.addName = false;
     this.controller = false;
 
-    this.phaseNumber = Array(1)
-      .fill(0)
-      .map((x, i) => i);
     this.workflowForm = this.fb.group({
       workflowName: ['', [Validators.required]],
       workflowDescription: ['', [Validators.required]],
       phases: this.fb.array([
         this.fb.group({
-          xfsdString: new FormControl('', [Validators.required]),
+          annotation: new FormControl('', [Validators.required]),
+          description: new FormControl('', Validators.required),
           users: this.fb.array([
             this.fb.group({
               user: new FormControl('', [
@@ -171,30 +168,26 @@ export class AddWorkflowPage implements OnInit {
     })
   }
 
-  removeUser(form: FormGroup, control) {
-    // let length = this.findNumber(control.key);
-    // form.removeControl('user' + length);
-    // form.removeControl('permission' + length);
+    removeUser(control: FormArray, i: number, j: number ) {
+    if(control.length > 1){
+      control.removeAt(j);
+    }else{
+      if(this.workflowForm.controls.phases['controls'].length > 1){
+        this.removePhase(i);
+      }else{
+        this.userApiService.displayPopOver('Error','you need at least one user and phase')
+      }
+    }
   }
 
   changePermission( control: any, str: string) {
     control.setValue(str);
-    // console.log(num);
-    // console.log(form);
-    // console.log(form.get('permission' + num));
-    // switch (str) {
-    //   case 'sign':
-    //     form.get('permission' + num).setValue('sign');
-    //     break;
-    //   case 'view':
-    //     form.get('permission' + num).setValue('view');
-    //     break;
-    // }
   }
 
   createPhase(): FormGroup {
     return this.fb.group({
-      xfsdString: new FormControl('', [Validators.required]),
+      description: new FormControl('', Validators.required),
+      annotation: new FormControl('', [Validators.required]),
       users: this.fb.array([
         this.fb.group({
           user: new FormControl('', [Validators.email, Validators.required,
@@ -206,13 +199,13 @@ export class AddWorkflowPage implements OnInit {
   }
 
   addPhase() {
-    this.phaseNumber.push(0);
+
     let phase = this.workflowForm.get('phases') as FormArray;
     phase.push(this.createPhase());
   }
 
   removePhase(i: number) {
-    this.phaseNumber.pop();
+
     let phase = this.workflowForm.get('phases') as FormArray;
     phase.removeAt(i);
   }

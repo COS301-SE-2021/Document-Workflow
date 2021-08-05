@@ -68,8 +68,17 @@
               <ion-item *ngFor="let user of phase.controls['users'].controls; let j = index">
                 <ion-grid>
                   <ion-row>
-                    Add User:
-                    <ion-input type="email" [formControl]="user.controls.user"></ion-input>
+                    <ion-col sizeXs="12" sizeMd="2">
+                      Add User:
+                    </ion-col>
+                    <ion-col sizeXs='12' sizeMd="9">
+                      <ion-input type="email" [formControl]="user.controls.user"></ion-input>
+                    </ion-col>
+                    <ion-col>
+                      <ion-icon name="close-circle-outline" size="large"
+                        (click)="removeUser(phase.controls['users'],i, j)">
+                      </ion-icon>
+                    </ion-col>
                   </ion-row>
                   <ion-row>
                     <ion-radio-group style="width: 100%" [formControl]="user.controls.permission">
@@ -77,27 +86,23 @@
                         <ion-col sizeXs="6">
                           <ion-item (click)="changePermission(user.controls.permission, 'view')">
                             <ion-label>View only </ion-label>
-                            <ion-radio value="view"></ion-radio>
+                            <ion-radio value="view" slot="end"></ion-radio>
                           </ion-item>
                         </ion-col>
                         <ion-col sizeXs="6">
-                          <ion-item (click)="changePermission(user.controls.permission, 'edit')">
+                          <ion-item (click)="changePermission(user.controls.permission, 'sign')">
                             <ion-label>Signer</ion-label>
-                            <ion-radio value="sign"></ion-radio>
+                            <ion-radio value="sign" slot="end"></ion-radio>
                           </ion-item>
                         </ion-col>
                       </ion-row>
                     </ion-radio-group>
                   </ion-row>
                 </ion-grid>
-                <ion-fab>
-                  <ion-fab-button (click)="debug(user.controls.permission)">debug</ion-fab-button>
-                </ion-fab>
               </ion-item>
               <ion-button expand="block" color="primary" fill="outline" (click)="removePhase(i)">Remove this
                 Phase
               </ion-button>
-
             </ion-card-content>
           </ion-card>
         </ion-reorder-group>
