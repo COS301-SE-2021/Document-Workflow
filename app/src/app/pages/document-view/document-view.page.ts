@@ -99,6 +99,17 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
         });
       }
     });
+    //TODO: style this ErrorOccurredPopup
+    const a = await this.modalCtrl.create({
+      component: ErrorOccurredComponent,
+      componentProps: {
+      },
+      cssClass: 'errorModalClass'
+    });
+
+    await (await a).present();
+    (await a).onDidDismiss().then(async (data) => {
+    });
   }
 
   download() {

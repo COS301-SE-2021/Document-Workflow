@@ -24,3 +24,13 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+@import './src/theme/variables.scss';
+
+.errorModalClass .modal-wrapper{
+  height:30%;
+  width:30%;
+  top: 80%;
+  background: $color5;
+}
+
