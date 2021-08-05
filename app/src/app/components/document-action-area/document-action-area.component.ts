@@ -52,25 +52,21 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
       }, this.viewerRef.nativeElement)
         .then(instance => {
           //Look at the Callout tool of the insert bar as well as the stickers that can be inserted
-          alert("Blaming Brent the Victim");
-
-          //instance.loadDocument(this.file, {});//,{filename: this.docName});
+          const annotManager = instance.Core;
           instance.UI.loadDocument(this.file, {});
+          //We only want to display the Annotations ribbon
+          instance.UI.disableElements(['ribbons']);
+          instance.UI.setToolbarGroup('toolbarGroup-Annotate',false);
+          instance.UI.setHeaderItems(header =>{
+            header.push({
+              type: 'actionButton',
+              img: '<svg xmlns=\'http://www.w3.org/2000/svg\' class=\'ionicon\' viewBox=\'0 0 512 512\'><title>Eye</title><path d=\'M255.66 112c-77.94 0-157.89 45.11-220.83 135.33a16 16 0 00-.27 17.77C82.92 340.8 161.8 400 255.66 400c92.84 0 173.34-59.38 221.79-135.25a16.14 16.14 0 000-17.47C428.89 172.28 347.8 112 255.66 112z\' fill=\'none\' stroke=\'currentColor\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'32\'/><circle cx=\'256\' cy=\'256\' r=\'80\' fill=\'none\' stroke=\'currentColor\' stroke-miterlimit=\'10\' stroke-width=\'32\'/></svg>',
+              onClick: () =>  { this.toggleAnnotations(annotManager);
+              }
+            });
+
+          });
           /*
-          const { docViewer, annotManager, CoreControls} = instance;
-          instance.disableElements(['toolbarGroup-Shapes']);
-          instance.disableElements(['toolbarGroup-Edit']);
-          instance.disableElements(['toolbarGroup-Insert']);
-
-          // Add header button that will get file data on click
-          instance.setHeaderItems(header => {
-            header.getHeader('toolbarGroup-Annotate').delete('highlightToolGroupButton');
-            header.getHeader('toolbarGroup-Annotate').delete('underlineToolGroupButton');
-            header.getHeader('toolbarGroup-Annotate').delete('strikeoutToolGroupButton');
-            header.getHeader('toolbarGroup-Annotate').delete('squigglyToolGroupButton');
-            header.getHeader('toolbarGroup-Annotate').delete('freeTextToolGroupButton');
-            header.getHeader('toolbarGroup-Annotate').delete('freeHandToolGroupButton');
-
             header.push({
               type: 'actionButton',
               img: '<svg xmlns=\'http://www.w3.org/2000/svg\' class=\'ionicon\' viewBox=\'0 0 512 512\'><title>Eye</title><path d=\'M255.66 112c-77.94 0-157.89 45.11-220.83 135.33a16 16 0 00-.27 17.77C82.92 340.8 161.8 400 255.66 400c92.84 0 173.34-59.38 221.79-135.25a16.14 16.14 0 000-17.47C428.89 172.28 347.8 112 255.66 112z\' fill=\'none\' stroke=\'currentColor\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'32\'/><circle cx=\'256\' cy=\'256\' r=\'80\' fill=\'none\' stroke=\'currentColor\' stroke-miterlimit=\'10\' stroke-width=\'32\'/></svg>',
