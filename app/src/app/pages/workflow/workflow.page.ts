@@ -204,10 +204,6 @@ export class WorkflowPage implements OnInit {
   fixOrder(event: CustomEvent<ItemReorderEventDetail>){
     event.detail.complete();
   }
-
-  hideMenu(){
-
-  }
 }
 
 
