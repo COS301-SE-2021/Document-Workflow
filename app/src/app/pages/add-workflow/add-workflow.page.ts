@@ -26,11 +26,8 @@ import { ItemReorderEventDetail } from '@ionic/core';
 import { DocumentActionAreaComponent } from 'src/app/components/document-action-area/document-action-area.component';
 import { User, UserAPIService } from 'src/app/Services/User/user-api.service';
 import * as Cookies from 'js-cookie';
-<<<<<<< Updated upstream
-=======
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
-import { Console } from 'console';
->>>>>>> Stashed changes
+
 @Component({
   selector: 'app-add-workflow',
   templateUrl: './add-workflow.page.html',
@@ -64,6 +61,7 @@ export class AddWorkflowPage implements OnInit {
 
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
+  workflowServices: any;
   constructor(
     private plat: Platform,
     private fb: FormBuilder,
@@ -112,12 +110,20 @@ export class AddWorkflowPage implements OnInit {
       phases: this.fb.array([
         this.fb.group({
           xfsdString: new FormControl('', [Validators.required]),
-          permission1: new FormControl('', [Validators.required]),
-          user1: new FormControl('', [Validators.email, Validators.required]),
-
+          users: this.fb.array([
+            this.fb.group({
+              permission1: new FormControl('', [Validators.required]),
+              user1: new FormControl('', [
+                Validators.email,
+                Validators.required,
+              ]),
+            }),
+          ]),
         }),
       ]),
     });
+
+    console.log(this.workflowForm);
     // console.log(this.workflowForm.controls.phases['controls'][0]);
     await this.getUser();
   }
@@ -155,16 +161,26 @@ export class AddWorkflowPage implements OnInit {
     this.next = !this.next;
   }
 
-  addUser(form: FormGroup) {
-    this.userCount = this.userCount + 1;
-    form.addControl(
-      'user' + this.userCount,
-      new FormControl('', [Validators.email, Validators.required])
-    );
-    form.addControl(
-      'permission' + this.userCount,
-      new FormControl('', [Validators.required])
-    );
+  addUser(form: FormArray) {
+    console.log(form);
+    form.push(this.createNewuser());
+    // form.
+    // this.userCount = this.userCount + 1;
+    // form.addControl(
+    //   'user' + this.userCount,
+    //   new FormControl('', [Validators.email, Validators.required])
+    // );
+    // form.addControl(
+    //   'permission' + this.userCount,
+    //   new FormControl('', [Validators.required])
+    // );
+  }
+
+  createNewuser(): FormGroup{
+    return this.fb.group({
+      user: new FormControl('', [Validators.email, Validators.required]),
+      permission: new FormControl('', [Validators.required]),
+    })
   }
 
   findNumber(key: string): number {
@@ -185,15 +201,15 @@ export class AddWorkflowPage implements OnInit {
 
   changePermission(form: FormGroup, control: any, str: string) {
     let num = this.findNumber(control.key);
-    console.log(num)
-    console.log(form)
-    console.log(form.get('permission'+num))
+    console.log(num);
+    console.log(form);
+    console.log(form.get('permission' + num));
     switch (str) {
       case 'sign':
-        form.get('permission'+num).setValue('sign');
+        form.get('permission' + num).setValue('sign');
         break;
       case 'view':
-        form.get('permission'+num).setValue('view');
+        form.get('permission' + num).setValue('view');
         break;
     }
   }
@@ -239,8 +255,7 @@ export class AddWorkflowPage implements OnInit {
   async uploadFile(event: EventTarget) {
     const eventObj: MSInputMethodContext = event as MSInputMethodContext;
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
-    if(this.plat.is('desktop')){
-
+    if (this.plat.is('desktop')) {
     }
     this.file = target.files[0];
     console.log(typeof this.file);
@@ -257,13 +272,6 @@ export class AddWorkflowPage implements OnInit {
     this.addFile = true;
   }
 
-  submit() {
-    this.modal.dismiss({
-      document: this.workflowForm.value,
-      file: this.file,
-    });
-  }
-
   fixOrder(ev: CustomEvent<ItemReorderEventDetail>) {
     let phase = this.workflowForm.get('phases') as FormArray;
     let a = phase.controls.splice(ev.detail.from, 1);
@@ -274,8 +282,8 @@ export class AddWorkflowPage implements OnInit {
   reOrderTime() {
     this.reOrder = !this.reOrder;
   }
-  debug(){
-    console.log(this.workflowForm);
+  debug(str: any) {
+    console.log(str);
   }
 
   async includeActionArea(i: number, form: FormGroup) {
@@ -300,19 +308,17 @@ export class AddWorkflowPage implements OnInit {
     });
   }
 
-<<<<<<< Updated upstream
-  createWorkflow(){
-    console.log(this.phases);
-
-=======
-  debug(){
+  submit() {
     console.log(this.workflowForm);
+    this.workflowServices.createWorkflow(
+      this.workflowForm,
+      '',
+      this.file,
+      (response) => {}
+    );
   }
 
-  submit(){
-    console.log(this.workflowForm);
-    this.workflowServices.createWorkflow(this.workflowForm, '', this.file, (response)=>{
->>>>>>> Stashed changes
-
+  printForm(){
+    console.log(this.workflowForm)
   }
 }
