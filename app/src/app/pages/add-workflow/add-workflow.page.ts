@@ -103,6 +103,7 @@ export class AddWorkflowPage implements OnInit {
     this.workflowForm = this.fb.group({
       workflowName: ['', [Validators.required]],
       workflowDescription: ['', [Validators.required]],
+      workflowFile:['',[Validators.required]],
       phases: this.fb.array([
         this.fb.group({
           annotation: new FormControl('', [Validators.required]),
@@ -158,10 +159,10 @@ export class AddWorkflowPage implements OnInit {
   }
 
   addUser(form: FormArray) {
-    form.push(this.createNewuser());
+    form.push(this.createNewUser());
   }
 
-  createNewuser(): FormGroup{
+  createNewUser(): FormGroup{
     return this.fb.group({
       user: new FormControl('', [Validators.email, Validators.required]),
       permission: new FormControl('', [Validators.required]),
@@ -199,13 +200,11 @@ export class AddWorkflowPage implements OnInit {
   }
 
   addPhase() {
-
     let phase = this.workflowForm.get('phases') as FormArray;
     phase.push(this.createPhase());
   }
 
   removePhase(i: number) {
-
     let phase = this.workflowForm.get('phases') as FormArray;
     phase.removeAt(i);
   }
@@ -221,12 +220,16 @@ export class AddWorkflowPage implements OnInit {
       },
     ];
 
-    const actionSheet = await this.actionSheetController.create({
-      header: 'Select PDF',
-      buttons,
-    });
+    if(this.plat.is('desktop')){
+      this.fileInput.nativeElement.click();
+    }else{
+      const actionSheet = await this.actionSheetController.create({
+        header: 'Select PDF',
+        buttons,
+      });
 
-    await actionSheet.present();
+      await actionSheet.present();
+    }
   }
 
   async uploadFile(event: EventTarget) {
@@ -240,7 +243,8 @@ export class AddWorkflowPage implements OnInit {
     // const buff = response.data.filedata.Body.data; //wut
     const a = new Uint8Array(await this.file.arrayBuffer());
     this.srcFile = a;
-
+    //todo
+    this.workflowForm.get('workflowFile').setValue(this.file);
     this.blob = new Blob([this.file], { type: 'application/pdf;base64' });
     console.log(this.blob.arrayBuffer());
     const obj = URL.createObjectURL(this.blob);
@@ -259,6 +263,7 @@ export class AddWorkflowPage implements OnInit {
   reOrderTime() {
     this.reOrder = !this.reOrder;
   }
+
   debug(str: any) {
     console.log(str);
   }

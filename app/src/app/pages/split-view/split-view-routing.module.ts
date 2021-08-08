@@ -48,21 +48,21 @@ const routes: Routes = [
           ),
         pathMatch: 'full',
       },
-      {
-        path: 'addWorkflow',
-        loadChildren: () =>
-          import('./../add-workflow/add-workflow.module').then(
-            (m) => m.AddWorkflowPageModule
-          ),
-        pathMatch: 'full',
-      },
+      // {
+      //   path: 'addWorkflow',
+      //   loadChildren: () =>
+      //     import('./../add-workflow/add-workflow.module').then(
+      //       (m) => m.AddWorkflowPageModule
+      //     ),
+      //   pathMatch: 'full',
+      // },
       {
         path: 'documentEdit',
         loadChildren: () =>
           import('./../document-edit/document-edit.module').then(
             (m) => m.DocumentEditPageModule
           ),
-          pathMatch: 'full',
+        pathMatch: 'full',
       },
       {
         path: 'contacts',
@@ -70,7 +70,15 @@ const routes: Routes = [
           import('./../contacts/contacts.module').then(
             (m) => m.ContactsPageModule
           ),
-          pathMatch: 'full',
+        pathMatch: 'full',
+      },
+      {
+        path: 'addWorkflow',
+        loadChildren: () =>
+          import('./../document-add/document-add.module').then(
+            (m) => m.DocumentAddPageModule
+          ),
+          pathMatch:'full'
       },
       {
         path: '',
