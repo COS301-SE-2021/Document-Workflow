@@ -19,13 +19,14 @@ export default class WorkFlowService{
      */
     async createWorkFlow(req) :Promise<any>{
 
-        const phases = this.stringIntoPhasesArray(req.body.phases);
-        req.body.phases = phases;
-        console.log(req.body.phases);
-        console.log(phases);
+        //We must first add each phase such that we can
+        const phases = JSON.parse(req.body.phases);
+        console.log(phases[0]);
+
+        return {status:'success', data:{}, message:''};
 
         await this.checkUsersExist(phases);
-        //Now that validation is complete we can create the workflow
+        /*
         try{
             const workflow : WorkFlowI = {
                 _id: null,
@@ -57,6 +58,8 @@ export default class WorkFlowService{
             console.log(err);
             throw err;
         }
+
+        */
     }
 
     //---------------------------------------Create Workflow Helper functions----------------------------------
@@ -75,7 +78,6 @@ export default class WorkFlowService{
                 }
             }
         }
-
         return true;
     }
 
@@ -118,21 +120,6 @@ export default class WorkFlowService{
         };
         return {status:"success", data: data, message:""};
     }
-
-    private stringIntoPhasesArray(str: string): any[]{
-
-        let arr = str.split(']');
-        let result = [];
-
-        for(let i=0; i<arr.length-1; ++i)
-        {
-            let sub_array= (arr[i].replace('[','').split(' '));
-            if(sub_array.length !=0)
-                result.push(sub_array);
-        }
-
-        return result;
-    };
 
     async deleteWorkFlow(req) {
         console.log("Attempting to delete workflow");

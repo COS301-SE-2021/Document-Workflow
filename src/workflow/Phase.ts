@@ -1,7 +1,10 @@
 import { Schema, model } from "mongoose";
 import {PhaseStatus} from "aws-sdk/clients/datasync";
 
-
+/**
+ * This Object functions as an enum for the phase interface. Object.freeze is used
+ * to ensure that the values of the object cannot change.
+ */
 const PhaseStatus = Object.freeze({PENDING: "pending", ACCEPTED: "accepted", REJECTED: "rejected", IN_PROGRESS: "in_progress"});
 
 /**

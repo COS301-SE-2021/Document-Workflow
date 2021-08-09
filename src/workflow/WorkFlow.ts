@@ -8,7 +8,8 @@ export interface WorkFlowI{
     document_id: string,
     document_path: string,
     description: string,
-    phases: [[string]]
+    phases: [[string]],
+    currentPhase: number
 }
 
 const workflowSchema = new Schema<WorkFlowI>({
@@ -18,7 +19,8 @@ const workflowSchema = new Schema<WorkFlowI>({
     owner_email: {type:String, required: true},
     document_id: {type:String},
     document_path: {type:String, required:true},
-    phases: {type: [[String]], required:true}
+    phases: {type: [[String]], required:true},
+    currentPhase: {type: Number, default: 0}
 });
 
 export default model<WorkFlowI>('WorkFlow', workflowSchema)
