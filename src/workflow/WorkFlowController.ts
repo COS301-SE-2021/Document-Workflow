@@ -17,11 +17,20 @@ export default class WorkFlowController{
     }
 
     async createWorkFlow(req) : Promise<any> {
-        try{
+        console.log("Creating new workflow");
+        const phases = JSON.parse(req.body.phases);
+        phases.forEach(phase =>{
+            console.log(phase);
+        })
+        console.log("-------------------------------------------");
+        console.log(req.files);
+
+        return {status:"success", data:{}, message:""};
+        /*try{
             return await this.workflowService.createWorkFlow(req);
         } catch(err) {
             throw err;
-        }
+        }*/
     }
 
     async getWorkFlowDetails(req):Promise<any>{

@@ -103,8 +103,6 @@ export default class WorkFlowService{
         await this.usersRepository.putUser(user);
     }
 
-
-
     async getWorkFlowDetails(req) {
 
         let workflow_id = req.body.id;

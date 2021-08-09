@@ -3,7 +3,7 @@ import express from 'express';
 import bodyParser from "body-parser";
 import { container } from "tsyringe";
 import * as dotenv from 'dotenv';
-import DocumentController from "./document/DocumentController";
+//import DocumentController from "./document/DocumentController";
 import UserController from "./user/UserController";
 import WorkFlowController from "./workflow/WorkFlowController";
 dotenv.config();
@@ -25,7 +25,7 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use("/api/documents", container.resolve(DocumentController).routes());
+//app.use("/api/documents", container.resolve(DocumentController).routes());
 app.use("/api/users", container.resolve(UserController).routes());
 app.use("/api/workflows", container.resolve(WorkFlowController).routes());
 export default app;

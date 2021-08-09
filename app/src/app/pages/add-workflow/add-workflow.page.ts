@@ -26,6 +26,7 @@ import { ItemReorderEventDetail } from '@ionic/core';
 import { DocumentActionAreaComponent } from 'src/app/components/document-action-area/document-action-area.component';
 import { User, UserAPIService } from 'src/app/Services/User/user-api.service';
 import * as Cookies from 'js-cookie';
+import {WorkFlowService} from "../../Services/Workflow/work-flow.service";
 @Component({
   selector: 'app-add-workflow',
   templateUrl: './add-workflow.page.html',
@@ -66,7 +67,8 @@ export class AddWorkflowPage implements OnInit {
     private modal: ModalController,
     private router: Router,
     private userApiService: UserAPIService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private workflowService: WorkFlowService
   ) {}
 
   async ngOnInit() {
@@ -289,8 +291,18 @@ export class AddWorkflowPage implements OnInit {
   }
 
   createWorkflow(){
-    console.log(this.phases);
+    console.log('Extracting form data ------------------------------');
+    console.log('Name: ', this.workflowForm.controls.workflowName.value);
+    console.log('Description: ', this.workflowForm.controls.workflowDescription.value);
+    console.log('Phases:');
+    console.log('Number of phases: ', this.workflowForm.controls.phases.value.length);
 
+    const phases = this.workflowForm.controls.phases.value;
+    const name = this.workflowForm.controls.workflowName.value;
+    const description = this.workflowForm.controls.workflowDescription.value;
+    this.workflowService.createWorkflow(name, description, phases, this.file, (response)=>{
+      console.log(response);
+    });
 
   }
 }
