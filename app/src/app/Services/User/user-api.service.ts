@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import {resolveFileWithPostfixes} from "@angular/compiler-cli/ngcc/src/utils";
 import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
 import { PopoverController } from '@ionic/angular';
+import * as Cookies from 'js-cookie';
 
 export interface User {
   Fname: string;
@@ -30,7 +31,8 @@ export class UserAPIService {
 
   public checkIfAuthorized(){//callback){
     const formData = new FormData();
-    const token = localStorage.getItem('token');
+    //const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: ('Bearer ' + token)
     });
@@ -82,7 +84,8 @@ export class UserAPIService {
     console.log('Getting all owned workflows');
     const formData = new FormData();
     //formData.append('email', email);
-    const token = localStorage.getItem('token');
+    //const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: ('Bearer ' + token)
     });
@@ -99,7 +102,8 @@ export class UserAPIService {
   public getAllWorkFlows( callback){
     const formData = new FormData();
     console.log('Getting all normal workflows');
-    const token = localStorage.getItem('token');
+    //const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: ('Bearer ' + token)
     });
@@ -130,7 +134,8 @@ export class UserAPIService {
 
    async getUserDetails(callback){
      const formData = new FormData();
-     const token = localStorage.getItem('token');
+     //const token = localStorage.getItem('token');
+     const token = Cookies.get('token');
      const httpHeaders: HttpHeaders = new HttpHeaders({
        Authorization: ('Bearer ' + token)
      });
@@ -145,7 +150,8 @@ export class UserAPIService {
    }
 
    logout(){
-     localStorage.removeItem('token');
+     //localStorage.removeItem('token');
+     Cookies.remove('token');
    }
 
 }

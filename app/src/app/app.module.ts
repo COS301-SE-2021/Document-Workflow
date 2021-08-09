@@ -22,11 +22,11 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
 import { UpdateUserComponent } from './components/update-user/update-user.component';
 import { AddWorkflowComponent } from './components/add-workflow/add-workflow.component';
 import { AddSignatureComponent } from './components/add-signature/add-signature.component';
-import { EditWorkflowComponent } from './components/edit-workflow/edit-workflow.component';
 import { AddCommentComponent } from './components/add-comment/add-comment.component';
 import { ConfirmSignaturesComponent } from './components/confirm-signatures/confirm-signatures.component';
 import { UserNotificationsComponent } from './components/user-notifications/user-notifications.component';
 import { ConfirmDeleteWorkflowComponent } from './components/confirm-delete-workflow/confirm-delete-workflow.component';
+import { DocumentActionAreaComponent } from './components/document-action-area/document-action-area.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -34,11 +34,11 @@ import { ConfirmDeleteWorkflowComponent } from './components/confirm-delete-work
     AddWorkflowComponent,
     UpdateUserComponent,
     AddSignatureComponent,
-    EditWorkflowComponent,
     AddCommentComponent,
     ConfirmSignaturesComponent,
     UserNotificationsComponent,
-    ConfirmDeleteWorkflowComponent
+    ConfirmDeleteWorkflowComponent,
+    DocumentActionAreaComponent
   ],
   entryComponents: [],
   imports: [

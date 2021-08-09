@@ -4,5 +4,10 @@
   </ion-card-header>
   <ion-card-content>
     {{message}}
+
+    <div *ngIf='termOfService'>
+      <ion-button inline (click)="confirm()">Confirm</ion-button>
+      <ion-button inline (click)="reject()">Reject</ion-button>
+    </div>
   </ion-card-content>
 </ion-card>

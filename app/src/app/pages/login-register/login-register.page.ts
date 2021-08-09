@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
@@ -8,27 +9,26 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { match } from './../../Services/match.validator';
 
 //popover
-import {ModalController, PopoverController} from '@ionic/angular';
+import { ModalController, PopoverController } from '@ionic/angular';
 // import { RegisterLoginPopoverComponent } from './../../Popovers/register-login-popover/register-login-popover.component';
-
 
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 //import for the users API and interface
 
-
-import { UserAPIService, User, LoginData } from './../../Services/User/user-api.service';
+import {
+  UserAPIService,
+  User,
+  LoginData,
+} from './../../Services/User/user-api.service';
 
 import { ActionSheetController, Platform } from '@ionic/angular';
-
+import * as Cookies from 'js-cookie';
 //import for the loading controller
-import {LoadingController} from '@ionic/angular';
-import { Plugins } from 'protractor/built/plugins';
-import {DocumentAPIService} from './../../Services/Document/document-api.service';
+import { LoadingController } from '@ionic/angular';
 import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
-import {HttpErrorResponse} from '@angular/common/http';
 import { ResetPasswordComponent } from 'src/app/components/reset-password/reset-password.component';
-
+import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
 
 @Component({
   selector: 'app-login-register',
@@ -39,11 +39,10 @@ export class LoginRegisterPage implements OnInit {
   loginForm: FormGroup;
   registerForm: FormGroup;
   file: File;
-  public registerButton: boolean; //for the toggle to change modes
-  loadG: any;
+  registerButton: boolean; //for the toggle to change modes
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
-  @ViewChild('fileInput', { static: false })fileInput: ElementRef;
+  @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
@@ -52,13 +51,13 @@ export class LoginRegisterPage implements OnInit {
     private actionSheetController: ActionSheetController,
     private loadCtrl: LoadingController,
     private modal: ModalController,
-    private pop: PopoverController,
+    private pop: PopoverController
   ) {}
 
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
-      loginEmail: ['', [Validators.required, Validators.email]],
-      loginPassword: ['', [Validators.required, Validators.minLength(8)]],
+      loginEmail: ['brenton.stroberg@yahoo.co.za', [Validators.required, Validators.email]],
+      loginPassword: ['Password#1', [Validators.required, Validators.minLength(8)]],
     });
     const formOptions: AbstractControlOptions = {
       validators: match('password', 'confirmPassword'),
@@ -86,43 +85,58 @@ export class LoginRegisterPage implements OnInit {
   }
 
   async login(): Promise<void> {
-    console.log(this.loginForm.value);
-    const loginData: LoginData=
-    {
+    const loginData: LoginData = {
       email: this.loginForm.value.loginEmail,
-      password : this.loginForm.value.loginPassword
+      password: this.loginForm.value.loginPassword,
     };
     console.log(loginData);
-    this.userAPIService.login(loginData, (response)=>{
-        if(response.status === 'success'){
-          localStorage.setItem('token', response.data.token);
-          this.userAPIService.displayPopOver('Success', "login was successful");
-          this.router.navigate(['home']);
-        }
-        else{
-          console.log(response);
-          this.userAPIService.displayPopOver('Failure in logging in', 'Email or password is incorrect')
-        }
+    this.userAPIService.login(loginData, (response) => {
+      if (response.status === 'success') {
+        //localStorage.setItem('token', response.data.token);
+        Cookies.set('token', response.data.token, {expires: 1});
+        this.userAPIService.displayPopOver('Success', 'login was successful');
+        this.router.navigate(['home']);
+      } else {
+        console.log(response);
+        this.userAPIService.displayPopOver(
+          'Failure in logging in',
+          'Email or password is incorrect'
+        );
+      }
     });
   }
 
-  fileUnspecified(): void{
-    this.userAPIService.displayPopOver('Missing signature', 'Please add a signature');
+  fileUnspecified(): void {
+    this.userAPIService.displayPopOver(
+      'Missing signature',
+      'Please add a signature'
+    );
   }
-
-
 
   async register(): Promise<void> {
 
+    const a = await this.modal.create({
+      component: UserNotificationsComponent,
+      componentProps:{
+        'title' : 'termsOfService',
+      }
+    });
+
+    await (await a).present();
+    const data = (await a).onDidDismiss();
+    if(await (await data).data['confirm']){
+      //still to do
+    }
+    console.log(a);
     this.loadingRegister();
     const userdata = this.registerForm.value;
     console.log('Printing file:');
     console.log(this.file);
 
-    if(this.file === undefined) //We don't allow users to register if they dont specify a signature.
-    {
-        this.fileUnspecified();
-        return;
+    if (this.file === undefined) {
+      //We don't allow users to register if they dont specify a signature.
+      this.fileUnspecified();
+      return;
     }
 
     console.log(userdata);
@@ -131,37 +145,46 @@ export class LoginRegisterPage implements OnInit {
       Lname: userdata.Lname,
       initials: userdata.initials,
       email: userdata.email,
-      password: userdata.password
+      password: userdata.password,
     };
 
     await this.loadingRegister();
-    this.userAPIService.register(user, this.file, (response)=>{
-        if(response.status === 'success')
-        {
-          this.userAPIService.displayPopOver('Successfully created new user account','check your email for account verification')
-          this.router.navigate(['login']);
-        }
-        else {
-          this.userAPIService.displayPopOver('Failed to make a new account:',response.message);
-        }
+    this.userAPIService.register(user, this.file, (response) => {
+      if (response.status === 'success') {
+        this.userAPIService.displayPopOver(
+          'Successfully created new user account',
+          'check your email for account verification'
+        );
+        this.router.navigate(['login']);
+      } else {
+        this.userAPIService.displayPopOver(
+          'Failed to make a new account:',
+          response.message
+        );
+      }
     });
     await this.loadCtrl.dismiss();
   }
 
-  changeOver($event)
-  {
-    this.registerButton = !this.registerButton;
+  changeOver(): boolean {
+    if (this.registerButton) {
+      this.registerButton = false;
+      return false;
+    } else {
+      this.registerButton = true;
+      return true;
     }
+  }
 
   async selectImageSource() {
     const buttons = [
       {
         text: 'Draw your signature',
         icon: 'create',
-        handler:()=>{
+        handler: () => {
           this.addSignatureDraw();
-        }
-      }
+        },
+      },
     ];
 
     if (!this.plat.is('hybrid')) {
@@ -190,24 +213,24 @@ export class LoginRegisterPage implements OnInit {
     console.log('file', this.file);
   }
 
-  async addSignatureDraw(){
+  async addSignatureDraw() {
     const mod = this.modal.create({
-      component: AddSignatureComponent
+      component: AddSignatureComponent,
     });
 
     await (await mod).present();
 
     (await mod).onDidDismiss().then(async (data) => {
-      this.registerButton = data.data.registerButton,
-      this.file = data.data.signature;
-      console.log(typeof(this.file));
+      (this.registerButton = data.data.registerButton),
+        (this.file = data.data.signature);
+      console.log(typeof this.file);
       //console.log(this.file);
     });
   }
 
-  async displayResetPassword(){
+  async displayResetPassword() {
     const mod = this.modal.create({
-      component: ResetPasswordComponent
+      component: ResetPasswordComponent,
     });
 
     (await mod).present();
@@ -215,43 +238,15 @@ export class LoginRegisterPage implements OnInit {
     (await mod).onDidDismiss();
   }
 
-  async addSignature(source: CameraSource) {
-    const image = await Camera.getPhoto({
-      quality: 60,
-      allowEditing: true,
-      resultType: CameraResultType.Base64,
-      source
-    });
-
-    console.log('image: ', image);
-  }
-
-
-//  Loading Control for Register buttons
-  async loadingRegister()
-  {
-    this.loadG = await this.loadCtrl.create({
+  //  Loading Control for Register buttons
+  async loadingRegister() {
+    const load = await this.loadCtrl.create({
       message: 'Hang in there... we are almost done',
-      showBackdrop: true,
-      spinner: 'bubbles'
+      duration: 5000,
+      showBackdrop: false,
+      spinner: 'bubbles',
     });
 
-    return await this.loadG.present();
-  }
-
-  //load keeps on pending, until successfully registered
-  @Input() set pending(isPending: boolean) {
-    if (isPending) {
-      this.loadingRegister();
-    } else {
-      this.loadG.dismiss();
-    }
-  }
-
-//if input from not valid dismiss error
-  @Input() set error(error: HttpErrorResponse) {
-    if (error) {
-      this.loadG.dismiss();
-    }
+    await load.present();
   }
 }
