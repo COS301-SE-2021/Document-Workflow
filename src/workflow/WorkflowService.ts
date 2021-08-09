@@ -1,70 +1,54 @@
 import { injectable } from "tsyringe";
-import WorkFlow ,{WorkFlowModel} from './WorkFlow';
-import WorkFlowRepository from './WorkFlowRepository';
+import { WorkflowProps } from './Workflow';
+import WorkFlowRepository from './WorkflowRepository';
 import DocumentService from "../document/DocumentService";
-import UserRepository from "../user/UserRepository";
-import { UserDoc } from "../user/User";
+import UserService from "../user/UserService";
+import { PhaseProps } from "../phase/Phase";
+import { ObjectId } from "mongoose";
+import { PhaseService } from "../phase/PhaseService";
 
 @injectable()
-export default class WorkFlowService{
+export default class WorkflowService{
+    //Errors in Service files -> Internal Server Error
 
-    constructor(private workflowRepository: WorkFlowRepository, private documentService: DocumentService, private usersRepository: UserRepository) {
+    constructor(
+        private workflowRepository: WorkFlowRepository,
+        private documentService: DocumentService,
+        private userService: UserService,
+        private phaseService: PhaseService) {
     }
 
     /**
      * We first create the workflow so that its ID can be generated. We then store the document
      * which requires its parent workflow id. Once we get the document id back we update our workflow.
      * Members is just an array of email addresses.
-     * @param req
+     * @param workflow
+     * @param file
+     * @param phases
      */
-    async createWorkFlow(req) :Promise<any>{
+    async createWorkFlow(workflow: WorkflowProps, file: File, phases: PhaseProps[]): Promise<ObjectId>{
 
-        const phases = this.stringIntoPhasesArray(req.body.phases);
-        req.body.phases = phases;
-        console.log(req.body.phases);
-        console.log(phases);
-
-        await this.checkUsersExist(phases);
-        //Now that validation is complete we can create the workflow
-        try{
-            const workflow = {
-                _id: null,
-                name: req.body.name,
-                description: req.body.description,
-                owner_email: req.user.email,
-                document_id: null,
-                document_path: req.files.document.name,
-                phases: req.body.phases
-            } as WorkFlow;
-            let workflow_id = await this.workflowRepository.postWorkFlow(workflow);
-            let document = await this.documentService.uploadDocument(req.files.document, workflow_id);
-            console.log("Workflow created and document uploaded, now updating the workflow");
-            let _workflow = await this.workflowRepository.getWorkFlow(workflow_id);
-
-            _workflow._id = workflow_id;
-            _workflow.document_id = document._id;
-            _workflow.document_path = workflow_id + "/" + workflow.document_path;
-
-            await this.workflowRepository.putWorkFlow(_workflow);
-            console.log("------------------------------------------------");
-
-            console.log("Workflow successfully updated, adding id to the members of the workflow");
-            await this.addWorkFlowIdToOwnedWorkflows(req.user.email, workflow_id);
-            await this.addWorkFlowIdToUsersWorkflows(req.body.phases, workflow_id, req.user.email);
-            return {status:'success', data:{}, message:''};
+        //Step 1 create Phases:
+        const phaseIds: ObjectId[] = [];
+        for (const phase of phases) {
+            phaseIds.push(await this.phaseService.createPhase(phase));
         }
-        catch(err) {
-            console.log(err);
-            throw err;
-        }
+        workflow.phases = phaseIds;
+
+        //Step 2 create workflow to get workflowId:
+        const workflowId = await this.workflowRepository.saveWorkflow(workflow);
+
+        //Step 3 save document with workflowId:
+        workflow.documentId = await this.documentService.uploadDocument(file, workflowId);
+
+        //Step 4 update workflow with documentId: TODO: rollback steps in a step fails
+        await this.workflowRepository.updateWorkflow(workflow);
+
+        return workflowId;
     }
-
     //---------------------------------------Create Workflow Helper functions----------------------------------
 
-    async checkUsersExist(phases):Promise<boolean>{
-        console.log("Checking if users exist");
-        if(phases.length == 0)
-            return true;
+    /*async checkUsersExist(phases):Promise<boolean>{
         for(let i =0; i<phases.length; ++i) {
             let users = phases[i];
             for (let email of users) {
@@ -77,9 +61,9 @@ export default class WorkFlowService{
         }
 
         return true;
-    }
+    }*/
 
-    async addWorkFlowIdToUsersWorkflows(phases, workflow_id, owner_email):Promise<void>
+    /*async addWorkFlowIdToUsersWorkflows(phases, workflow_id, owner_email):Promise<void>
     {
         for(let i=0; i<phases.length; ++i) {
             let users = phases[i];
@@ -102,8 +86,6 @@ export default class WorkFlowService{
         console.log(user.owned_workflows);
         await this.usersRepository.putUser(user as UserDoc);
     }
-
-
 
     async getWorkFlowDetails(req) {
 
@@ -184,5 +166,5 @@ export default class WorkFlowService{
             return;
         user.workflows.splice(index, 1);
         await this.usersRepository.putUser(user);
-    }
+    }*/
 }
