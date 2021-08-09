@@ -8,7 +8,7 @@ export default class UserRepository {
      * @throws Error
      * @param Usr: An object containing all the information to create a new user.
      */
-    async postUser(Usr: UserProps): Promise<UserProps> {
+    async saveUser(Usr: UserProps): Promise<UserProps> {
         try{
             const user = new User(Usr);
             return await user.save();
@@ -22,7 +22,7 @@ export default class UserRepository {
      * @throws Error If something goes horribly wrong
      * @param filter An object containing the search criteria
      */
-    async getUsers(filter): Promise<UserProps[]> {
+    async findUsers(filter): Promise<UserProps[]> {
         try {
             return await User.find(filter);
         } catch (err) {
@@ -35,7 +35,7 @@ export default class UserRepository {
      * @throws Error when the user object is not found
      * @param Usr The user object to be modified
      */
-    async putUser(Usr: UserDoc): Promise<UserProps>{
+    async updateUser(Usr: UserDoc): Promise<UserProps>{
         try{
             return await Usr.save();
         }
@@ -89,7 +89,7 @@ export default class UserRepository {
      * @throws Error if findOne breaks somehow
      * @param filter An object containing the search criteria
      */
-    async getUser(filter): Promise<UserDoc> {
+    async findUser(filter): Promise<UserDoc> {
         try {
             return await User.findOne(filter);
         } catch(err) {

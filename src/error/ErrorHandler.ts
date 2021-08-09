@@ -1,6 +1,10 @@
 import jwt from "jsonwebtoken";
 import {RequestError, AuthenticationError, AuthorizationError, ServerError } from "./Error";
 
+/**
+ * @
+ *
+ */
 export async function handleErrors(err: Error, res){
     if(err instanceof RequestError){
         await res.status(400).send(err.message);

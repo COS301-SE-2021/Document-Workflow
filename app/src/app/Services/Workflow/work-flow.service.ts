@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import { User } from './../User/user-api.service';
-import { documentImage } from './../Document/document-api.service';
-import WorkFlow from "../../../../../src/workflow/WorkFlow";
+import { User } from '../User/user-api.service';
+import { documentImage } from '../Document/document-api.service';
 
 export interface Comments{
   comment: string;

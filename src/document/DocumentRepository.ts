@@ -1,6 +1,6 @@
-import Document, { DocumentModel } from "./Document";
+import { Document, DocumentProps } from "./Document";
 import * as AWS from 'aws-sdk';
-import { Types } from "mongoose";
+import { ObjectId, Types } from "mongoose";
 
 const s3 = new AWS.S3({
     region: process.env.AWS_REGION,
@@ -10,9 +10,9 @@ const s3 = new AWS.S3({
 
 export default class DocumentRepository {
 
-    async postDocument(doc: Document, file: File): Promise<Document> {
+    async postDocument(doc: DocumentProps, file: File): Promise<ObjectId> {
         try{
-            const newDoc = new DocumentModel(doc);
+            const newDoc = new Document(doc);
             await newDoc.save();
         }
         catch(err) {
@@ -32,12 +32,12 @@ export default class DocumentRepository {
             else console.log(data);
 
         });
-        return doc;
+        return doc._id;
     }
 
-    async getDocument(id: Types.ObjectId): Promise<Document> {
+    async getDocument(id: Types.ObjectId): Promise<DocumentProps> {
         try {
-            return await DocumentModel.findOne(id);
+            return await Document.findOne(id);
         }
         catch(err){
             throw new Error("Could not find Document");
@@ -55,18 +55,18 @@ export default class DocumentRepository {
 
     async deleteDocument(id){
         try {
-            const doc = await DocumentModel.findById(id);
+            const doc = await Document.findById(id);
             if(!doc === null)
-                await DocumentModel.deleteOne({_id: id});
+                await Document.deleteOne({_id: id});
         }
         catch(err){
             throw 'Could not delete fileMetadata';
         }
     }
 
-    async getDocuments(): Promise<Document[]> {
+    async getDocuments(): Promise<DocumentProps[]> {
         try {
-            return await DocumentModel.find({});
+            return await Document.find();
         }
         catch(err) {
             throw new Error("Could not find Documents");
