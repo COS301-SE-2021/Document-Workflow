@@ -1,15 +1,16 @@
 import { injectable } from "tsyringe";
 import DocumentRepository from "./DocumentRepository";
-import Document, { DocumentModel } from "./Document";
-import RequestError from "../error/RequestError";
+import { Document, DocumentProps } from "./Document";
+import { RequestError } from "../error/Error";
 import fs from 'fs';
+import { ObjectId } from "mongoose";
 
 @injectable()
 export default class DocumentService {
 
     constructor(private documentRepository: DocumentRepository) {}
 
-    async getDocuments(): Promise<Document[]> {
+    async getDocuments(): Promise<DocumentProps[]> {
         try{
             return await this.documentRepository.getDocuments();
         }catch(err){
@@ -17,18 +18,14 @@ export default class DocumentService {
         }
     }
 
-    async uploadDocument(file: File, workflowId): Promise<Document>{
-        // if(!req.body || !req.files){
-        //     throw new RequestError("Missing required properties");
-        // }
+    //TODO: Check if type is PDF
+    async uploadDocument(file: File, id: ObjectId): Promise<ObjectId>{
         try{
-            const doc = new DocumentModel({
-                workflow_id: workflowId,
-                doc_name: file.name,
-                mimetype: file.type,
-                encoding: "",
+            const doc = new Document({
+                name: file.name,
                 size: file.size,
-                document_path: file.name + '/'
+                path: file.name + '/',
+                workflowId: id
             })
             return await this.documentRepository.postDocument(doc, file);
         }
