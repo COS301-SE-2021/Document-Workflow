@@ -20,5 +20,5 @@ project(':capacitor-haptics').projectDir = new File('../node_modules/@capacitor/
 include ':capacitor-keyboard'
 project(':capacitor-keyboard').projectDir = new File('../node_modules/@capacitor/keyboard/android')
 
-include ':capacitor-biometric-auth'
-project(':capacitor-biometric-auth').projectDir = new File('../node_modules/capacitor-biometric-auth/android')
+include ':capacitor-native-biometric'
+project(':capacitor-native-biometric').projectDir = new File('../node_modules/capacitor-native-biometric/android')

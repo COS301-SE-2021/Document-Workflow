@@ -24,7 +24,7 @@
 		"classpath": "com.capacitorjs.plugins.keyboard.KeyboardPlugin"
 	},
 	{
-		"pkg": "capacitor-biometric-auth",
-		"classpath": "com.ahm.capacitor.biometric.BiometricAuth"
+		"pkg": "capacitor-native-biometric",
+		"classpath": "com.epicshaggy.biometric.NativeBiometric"
 	}
 ]
