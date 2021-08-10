@@ -22,5 +22,9 @@
 	{
 		"pkg": "@capacitor/keyboard",
 		"classpath": "com.capacitorjs.plugins.keyboard.KeyboardPlugin"
+	},
+	{
+		"pkg": "capacitor-biometric-auth",
+		"classpath": "com.ahm.capacitor.biometric.BiometricAuth"
 	}
 ]
