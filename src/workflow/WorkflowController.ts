@@ -76,7 +76,6 @@ export default class WorkflowController {
                 description: req.body.description,
                 phases: undefined
             }
-
         /*
         PhaseProps: {
             users: [ObjectId], REQUIRED
@@ -91,7 +90,7 @@ export default class WorkflowController {
                     users: phase.users,
                     description: phase.description,
                     signingUserId: phase.signingUserId,
-                    userAccepts: undefined
+                    //userAccepts: undefined
                 }as PhaseProps)
             })
 
