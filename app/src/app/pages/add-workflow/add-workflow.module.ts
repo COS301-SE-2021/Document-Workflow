@@ -1,27 +1,24 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+import { IonicModule } from '@ionic/angular';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
+
+import { AddWorkflowPageRoutingModule } from './add-workflow-routing.module';
 
 import { AddWorkflowPage } from './add-workflow.page';
 
-const routes: Routes = [
-  {
-    path: '',
-    component: AddWorkflowPage,
-    children: [
-      // {
-      //   path: 'ActionArea',
-      //   loadChildren: () =>
-      //     import(
-      //       './../../components/document-action-area/document-action-area.component'
-      //     ).then((m) => m.DocumentActionAreaComponent),
-      //   pathMatch: 'full',
-      // },
-    ],
-  },
-];
-
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    AddWorkflowPageRoutingModule,
+    ReactiveFormsModule,
+    PdfViewerModule,
+
+  ],
+  declarations: [AddWorkflowPage]
 })
-export class AddWorkflowPageRoutingModule {}
+export class AddWorkflowPageModule {}

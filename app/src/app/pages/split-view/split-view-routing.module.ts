@@ -52,7 +52,7 @@ const routes: Routes = [
         path: 'addWorkflow',
         loadChildren: () =>
           import('./../add-workflow/add-workflow.module').then(
-            (m) => m.AddWorkflowPageRoutingModule
+            (m) => m.AddWorkflowPageModule
           ),
         pathMatch: 'full',
       },

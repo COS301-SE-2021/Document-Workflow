@@ -12,7 +12,6 @@ import {
   documentImage,
   DocumentAPIService,
 } from './../../Services/Document/document-api.service';
-import { AddWorkflowComponent } from 'src/app/components/add-workflow/add-workflow.component';
 import { WorkFlowService } from '../../Services/Workflow/work-flow.service';
 import { ConfirmDeleteWorkflowComponent } from 'src/app/components/confirm-delete-workflow/confirm-delete-workflow.component';
 import { ItemReorderEventDetail } from '@ionic/core';
