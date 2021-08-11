@@ -122,8 +122,8 @@ export class UserAPIService {
     const poper = await this.pop.create({
       component: UserNotificationsComponent,
       componentProps:{
-        'title': title,
-        'message': message
+        title,
+        message
       }
     });
     await poper.present();

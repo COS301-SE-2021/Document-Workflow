@@ -9,7 +9,6 @@ import {
   documentImage,
   DocumentAPIService,
 } from './../../Services/Document/document-api.service';
-import { AddWorkflowComponent } from 'src/app/components/add-workflow/add-workflow.component';
 import { WorkFlowService } from '../../Services/Workflow/work-flow.service';
 import { ConfirmDeleteWorkflowComponent } from 'src/app/components/confirm-delete-workflow/confirm-delete-workflow.component';
 import { ItemReorderEventDetail } from '@ionic/core';
@@ -22,11 +21,12 @@ import * as Cookies from 'js-cookie';
 export class WorkflowPage implements OnInit {
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   documents: documentImage[] = [];
-  ownerEmail: string;
+  userEmail: string;
   user: User;
   reOrder: boolean;
   isBrowser: boolean;
   sizeMe: boolean;
+  allUserDocuments: documentImage[] =[];
 
   constructor(
     private docService: DocumentAPIService,
@@ -86,7 +86,7 @@ export class WorkflowPage implements OnInit {
      this.userApiService.getUserDetails(async (response)=>{
       if(response){
         this.user = response.data;
-        this.ownerEmail = this.user.email;
+        this.userEmail = this.user.email;
       } else{
         this.userApiService.displayPopOver('Error', 'Cannot find user');
       }
@@ -120,6 +120,7 @@ export class WorkflowPage implements OnInit {
         for(const tmpDoc of response.data){
           if(tmpDoc != null){
             this.documents.push(tmpDoc);
+            this.allUserDocuments.push(tmpDoc);
           }
         }
       } else {
@@ -132,6 +133,7 @@ export class WorkflowPage implements OnInit {
         for(const tmpDoc of response.data){
           if(tmpDoc != null){
             this.documents.push(tmpDoc);
+            this.allUserDocuments.push(tmpDoc);
           }
         }
       } else {
@@ -195,6 +197,42 @@ export class WorkflowPage implements OnInit {
 
   fixOrder(event: CustomEvent<ItemReorderEventDetail>){
     event.detail.complete();
+  }
+
+  showOnlyWorkflowOwned(){
+    this.documents = [];
+    console.log(this.documents);
+    for(let document of this.allUserDocuments){
+      if(document.owner_email === this.userEmail){
+        this.documents.push(document);
+      }
+    }
+    console.log(this.documents);
+  }
+
+  sortByNeededActions(){
+    this.documents = [];
+    this.allUserDocuments.push(this.docService.createTestDocuments());
+    for(let document of this.allUserDocuments){
+      for(let phase of document.phases){
+        if(phase.completed === false){
+          for(let user of phase.phaseUsers){
+            if(user.email === this.userEmail){
+              this.documents.push(document);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  getByName(name:string){
+    this.documents=[];
+    for(let document of this.allUserDocuments){
+      if(document.name === name){
+        this.documents.push(document);
+      }
+    }
   }
 }
 

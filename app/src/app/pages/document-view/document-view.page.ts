@@ -80,6 +80,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
             instance.UI.setHeaderItems(header =>{
               header.push({
                 type: 'actionButton',
+                // eslint-disable-next-line max-len
                 img: '<svg xmlns=\'http://www.w3.org/2000/svg\' class=\'ionicon\' viewBox=\'0 0 512 512\'><title>Eye</title><path d=\'M255.66 112c-77.94 0-157.89 45.11-220.83 135.33a16 16 0 00-.27 17.77C82.92 340.8 161.8 400 255.66 400c92.84 0 173.34-59.38 221.79-135.25a16.14 16.14 0 000-17.47C428.89 172.28 347.8 112 255.66 112z\' fill=\'none\' stroke=\'currentColor\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'32\'/><circle cx=\'256\' cy=\'256\' r=\'80\' fill=\'none\' stroke=\'currentColor\' stroke-miterlimit=\'10\' stroke-width=\'32\'/></svg>',
                 onClick: () =>  { this.toggleAnnotations(instance.Core.annotationManager);
                 }
@@ -91,8 +92,8 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
         const a = await this.modalCtrl.create({
           component: ErrorOccurredComponent,
           componentProps: {
-            title: "An error occurred",
-            message: "Please try again later"
+            title: 'An error occurred',
+            message: 'Please try again later'
           },
         });
 
@@ -118,7 +119,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
     const blob = new Blob([this.srcFile], { type: 'application/pdf' });
     const objUrl = URL.createObjectURL(blob);
 
-    var link = document.createElement('a');
+    const link = document.createElement('a');
     link.href = objUrl;
     link.download = this.docName;
     document.body.appendChild(link);
