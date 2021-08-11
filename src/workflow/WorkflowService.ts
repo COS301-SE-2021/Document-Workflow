@@ -47,6 +47,7 @@ export default class WorkflowService{
         }
         catch(e){
             //TODO rollback and rethrow
+            throw e;
         }
     }
     //---------------------------------------Create Workflow Helper functions----------------------------------

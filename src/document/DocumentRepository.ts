@@ -22,7 +22,7 @@ export default class DocumentRepository {
         const uploadParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
             Body: file,
-            Key: doc.workflow_id +"/"+ file.name
+            Key: doc.workflowId +"/"+ file.name
         }
 
         s3.upload(uploadParams, (err, data) => {

@@ -5,8 +5,9 @@ import UserController from "../../src/user/UserController";
 import { UserDoc } from "../../src/user/User";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import AuthenticationError from "../../src/error/AuthenticationError";
 import WorkFlowRepository from "../../src/workflow/WorkflowRepository";
+import { AuthenticationError } from "../../src/error/Error";
+import Authenticator from "../../src/security/Authenticate";
 dotenv.config();
 
 describe("user unit tests", () => {
@@ -17,7 +18,7 @@ describe("user unit tests", () => {
     beforeEach(() => {
         userRepository = new UserRepository();
         userService = new UserService(userRepository, new WorkFlowRepository());
-        userController = new UserController(userService);
+        userController = new UserController(userService, new Authenticator(userService));
     });
 
     describe("GET api/users" ,() => {

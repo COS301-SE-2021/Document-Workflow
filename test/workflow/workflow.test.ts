@@ -16,10 +16,10 @@ describe("unit tests for workflow", () => {
     })
 
     beforeEach(()=> {
-        documentService = new DocumentService(new DocumentRepository());
+        /*documentService = new DocumentService(new DocumentRepository());
         workflowRepository = new WorkFlowRepository();
         workflowService = new WorkFlowService(workflowRepository, documentService, new UserRepository());
-        workflowController = new WorkflowController(workflowService);
+        workflowController = new WorkflowController(workflowService);*/
     })
 
     it("should", () => {
