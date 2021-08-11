@@ -276,6 +276,7 @@ export class LoginRegisterPage implements OnInit {
                 console.log("log in")
                 // this.login(credentials.username, credentials.password);
               },
+
               (error) => {
                 // Failed to authenticate
               }
