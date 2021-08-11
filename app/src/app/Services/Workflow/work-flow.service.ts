@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import { User } from '../User/user-api.service';
-import { documentImage } from '../Document/document-api.service';
+import { User } from './../User/user-api.service';
+import { documentImage } from './../Document/document-api.service';
+import * as Cookies from 'js-cookie';
 
 export interface Comments{
   comment: string;
@@ -25,19 +26,15 @@ export class WorkFlowService {
   constructor(private http: HttpClient) {}
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  public async createWorkflow(workflow_info, phases, document, callback): Promise<any>{
+  public async createWorkflow(workflowName,workflowDescription, phases, document, callback): Promise<any>{
 
     const formData = new FormData();
-    formData.append('name', workflow_info.name);
-    formData.append('description', workflow_info.description);
+    formData.append('name', workflowName);
+    formData.append('description', workflowDescription);
     formData.append('document', document);
-    formData.append('phases', phases);
+    formData.append('phases', JSON.stringify(phases));
 
-    //Object.keys(users).forEach(key =>{
-    //  formData.append('members', users[key]);
-    //});
-
-    const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: ('Bearer ' + token)
     });
@@ -54,7 +51,7 @@ export class WorkFlowService {
     const formData = new FormData();
     formData.append('id', workflow_id);
 
-    const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: ('Bearer ' + token)
     });
@@ -64,7 +61,7 @@ export class WorkFlowService {
         callback(data);
       } else callback({status: 'error', message: 'Cannot connect to Server'});
     }, error =>{
-        alert("An unexpected error occurred");
+      alert("An unexpected error occurred");
     });
   }
 
@@ -72,7 +69,7 @@ export class WorkFlowService {
     const formData = new FormData();
     formData.append('id', workflow_id);
 
-    const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: ('Bearer ' + token)
     });
@@ -82,9 +79,32 @@ export class WorkFlowService {
         callback(data);
       } else callback({status: 'error', message: 'Cannot connect to Server'});
     }, error =>{
-        alert("An unexpected error occurred");
+      alert("An unexpected error occurred");
+    });
+  }
+
+  /**
+   * This will likely stay a test function.
+   * @param workflow_id
+   * @param file
+   */
+  public async updateDocument(document_id, file, callback) {
+    const formData = new FormData();
+    formData.append('documentId', document_id);
+    formData.append('document', file);
+
+    //const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: ('Bearer ' + token)
     });
 
-
+    this.http.post(WorkFlowService.url + '/workflows/updateDocument', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
+      if (data) {
+        callback(data);
+      } else callback({status: 'error', message: 'Cannot connect to Server'});
+    }, error => {
+      alert("An unexpected error occurred");
+    });
   }
 }

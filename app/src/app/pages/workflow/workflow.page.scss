@@ -1,3 +1,23 @@
+$color1: #EDC7B7;
+$color2: #EEE2DC;
+$color3: #BAB2B5;
+$color4: #AA021E;
+$color5: #002060;
+
+
 ion-card{
   min-height: 250px;
+  --background: $color1;
 }
+
+// ion-item,ion-grid{
+//   --background: #EEE2DC;
+// }
+
+img{
+  width:auto;
+}
+ion-content{
+  --background: var($color2);
+}
+

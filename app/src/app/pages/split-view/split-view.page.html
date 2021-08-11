@@ -1,0 +1,48 @@
+<ion-split-pane contentId="main" when="false">
+  <ion-menu contentId="main" >
+    <ion-header>
+      <ion-grid>
+        <ion-row>
+          <ion-col sizeSm="12" sizeXs="12" sizeMd="12">
+            <ion-img src="../../../assets/LogoWhiteBackground.png"></ion-img>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-header>
+    <ion-content>
+      <ion-menu-toggle autoHide="false">
+        <ion-item routerLink="/home" routerDirection="root" routerLinkActive="active-link">
+          <ion-label>Home</ion-label>
+        </ion-item>
+      </ion-menu-toggle>
+      <ion-menu-toggle autoHide="false">
+        <ion-item routerLink="/home/addWorkflow" routerDirection="root" routerLinkActive="active-link">
+          <ion-label> Add Workflow</ion-label>
+        </ion-item>
+      </ion-menu-toggle>
+      <ion-menu-toggle autoHide="false">
+        <ion-item routerLink="/home/documentEdit" routerDirection="root" routerLinkActive="active-link">
+          <ion-label> Edit Workflow </ion-label>
+        </ion-item>
+      </ion-menu-toggle>
+      <ion-menu-toggle autoHide="false">
+        <ion-item routerLink="/home/userProfile" routerDirection="root" routerLinkActive="active-link">
+          <ion-label>Profile </ion-label>
+        </ion-item>
+      </ion-menu-toggle>
+      <ion-menu-toggle autoHide="false">
+        <ion-item routerLink="/home/contacts" routerDirection="root" routerLinkActive="active-link">
+          <ion-label>User friends</ion-label>
+        </ion-item>
+      </ion-menu-toggle>
+      <ion-menu-toggle autoHide="false">
+        <ion-item (click)="logout()">Log out</ion-item>
+      </ion-menu-toggle>
+    </ion-content>
+  </ion-menu>
+
+  <ion-router-outlet id="main">
+  </ion-router-outlet>
+
+
+</ion-split-pane>
