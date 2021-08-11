@@ -55,7 +55,7 @@ export class DocumentEditPage implements OnInit {
   next: boolean;
   user: User;
   ownerEmail: any;
-
+  sizeMe: boolean;
   controller: boolean;
 
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
@@ -86,6 +86,11 @@ export class DocumentEditPage implements OnInit {
           return;
         }
       );
+    }
+    if(this.plat.width() > 572){
+      this.sizeMe = false;
+    }else{
+      this.sizeMe = true;
     }
 
     this.next = false;

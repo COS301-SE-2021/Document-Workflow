@@ -38,6 +38,7 @@
     "@schematics/angular": "^9.1.0",
     "angular2-signaturepad": "^3.0.4",
     "bootstrap": "^5.0.1",
+    "capacitor-native-biometric": "^3.0.3",
     "cordova-plugin-file-opener2": "^3.0.5",
     "cordova-plugin-filechooser": "^1.2.0",
     "http-proxy-middleware": "^0.19.1",

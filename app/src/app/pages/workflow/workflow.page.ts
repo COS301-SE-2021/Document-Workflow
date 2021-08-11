@@ -29,6 +29,7 @@ export class WorkflowPage implements OnInit {
   user: User;
   reOrder: boolean;
   isBrowser: boolean;
+  sizeMe: boolean;
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
 
@@ -47,6 +48,11 @@ export class WorkflowPage implements OnInit {
   }
 
   async ngOnInit() {
+    if(this.plat.width() > 572){
+      this.sizeMe = false;
+    }else{
+      this.sizeMe = true;
+    }
     this.reOrder = true;
 
     if(this.plat.is('desktop')){

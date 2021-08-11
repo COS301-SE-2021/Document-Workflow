@@ -55,6 +55,7 @@ export class DocumentAddPage implements OnInit {
     next: boolean;
     user: User;
     ownerEmail: any;
+    sizeMe: boolean;
 
     controller: boolean;
 
@@ -86,6 +87,11 @@ export class DocumentAddPage implements OnInit {
             return;
           }
         );
+      }
+      if(this.plat.width() > 572){
+        this.sizeMe = false;
+      }else{
+        this.sizeMe = true;
       }
 
       this.next = false;
