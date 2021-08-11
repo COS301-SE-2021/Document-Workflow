@@ -27,27 +27,30 @@ export default class WorkflowService{
      * @param phases
      */
     async createWorkFlow(workflow: WorkflowProps, file: File, phases: PhaseProps[]): Promise<ObjectId>{
+        try {
+            //Step 1 create Phases:
+            const phaseIds: ObjectId[] = [];
+            for (const phase of phases) {
+                phaseIds.push(await this.phaseService.createPhase(phase));
+            }
+            workflow.phases = phaseIds;
 
-        //Step 1 create Phases:
-        const phaseIds: ObjectId[] = [];
-        for (const phase of phases) {
-            phaseIds.push(await this.phaseService.createPhase(phase));
+            //Step 2 create workflow to get workflowId:
+            const workflowId = await this.workflowRepository.saveWorkflow(workflow);
+
+            //Step 3 save document with workflowId:
+            workflow.documentId = await this.documentService.uploadDocument(file, workflowId);
+
+            //Step 4 update workflow with documentId:
+            await this.workflowRepository.updateWorkflow(workflow);
+            return workflowId;
         }
-        workflow.phases = phaseIds;
-
-        //Step 2 create workflow to get workflowId:
-        const workflowId = await this.workflowRepository.saveWorkflow(workflow);
-
-        //Step 3 save document with workflowId:
-        workflow.documentId = await this.documentService.uploadDocument(file, workflowId);
-
-        //Step 4 update workflow with documentId: TODO: rollback steps in a step fails
-        await this.workflowRepository.updateWorkflow(workflow);
-
-        return workflowId;
+        catch(e){
+            //TODO rollback and rethrow
+        }
     }
     //---------------------------------------Create Workflow Helper functions----------------------------------
-
+    //TODO: reimplement this based on the phases structure
     /*async checkUsersExist(phases):Promise<boolean>{
         for(let i =0; i<phases.length; ++i) {
             let users = phases[i];

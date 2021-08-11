@@ -8,6 +8,7 @@ import { phaseSchema } from "../phase/Phase";
 import { userSchema } from "../user/User";
 import { documentSchema } from "../document/Document";
 
+//TODO: add current phase index number
 export const workflowSchema = createSchema({
     name: Type.string({required: true}),
     ownerId: Type.ref(Type.objectId({required: true})).to("User", userSchema),
