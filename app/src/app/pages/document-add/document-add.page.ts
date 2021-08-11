@@ -34,8 +34,10 @@ import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
   styleUrls: ['./document-add.page.scss'],
 })
 export class DocumentAddPage implements OnInit {
-    workflowForm: FormGroup;
-    private userCount = 1;
+  @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
+  @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
+  workflowForm: FormGroup;
+    userCount = 1;
     phases: FormArray;
     file: File;
 
@@ -59,8 +61,6 @@ export class DocumentAddPage implements OnInit {
 
     controller: boolean;
 
-    @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
-    @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
     workflowServices: any;
     constructor(
       private plat: Platform,
@@ -172,17 +172,18 @@ export class DocumentAddPage implements OnInit {
       return this.fb.group({
         user: new FormControl('', [Validators.email, Validators.required]),
         permission: new FormControl('', [Validators.required]),
-      })
+      });
     }
 
       removeUser(control: FormArray, i: number, j: number ) {
       if(control.length > 1){
         control.removeAt(j);
       }else{
+        // eslint-disable-next-line @typescript-eslint/dot-notation
         if(this.workflowForm.controls.phases['controls'].length > 1){
           this.removePhase(i);
         }else{
-          this.userApiService.displayPopOver('Error','you need at least one user and phase')
+          this.userApiService.displayPopOver('Error','you need at least one user and phase');
         }
       }
     }
@@ -206,12 +207,12 @@ export class DocumentAddPage implements OnInit {
     }
 
     addPhase() {
-      let phase = this.workflowForm.get('phases') as FormArray;
+      const phase = this.workflowForm.get('phases') as FormArray;
       phase.push(this.createPhase());
     }
 
     removePhase(i: number) {
-      let phase = this.workflowForm.get('phases') as FormArray;
+      const phase = this.workflowForm.get('phases') as FormArray;
       phase.removeAt(i);
     }
 
@@ -249,7 +250,7 @@ export class DocumentAddPage implements OnInit {
       // const buff = response.data.filedata.Body.data; //wut
       const a = new Uint8Array(await this.file.arrayBuffer());
       this.srcFile = a;
-      //todo
+
       this.workflowForm.get('workflowFile').setValue(this.file);
       this.blob = new Blob([this.file], { type: 'application/pdf;base64' });
       console.log(this.blob.arrayBuffer());
@@ -260,8 +261,8 @@ export class DocumentAddPage implements OnInit {
     }
 
     fixOrder(ev: CustomEvent<ItemReorderEventDetail>) {
-      let phase = this.workflowForm.get('phases') as FormArray;
-      let a = phase.controls.splice(ev.detail.from, 1);
+      const phase = this.workflowForm.get('phases') as FormArray;
+      const a = phase.controls.splice(ev.detail.from, 1);
       phase.controls.splice(ev.detail.to, 0, a[0]);
       ev.detail.complete();
     }
@@ -287,6 +288,7 @@ export class DocumentAddPage implements OnInit {
 
       await (await a).present();
       (await a).onDidDismiss().then(async (data) => {
+        // eslint-disable-next-line @typescript-eslint/dot-notation
         const result = (await data).data['xfdfString'];
         if (result) {
           form.setValue(result);
@@ -307,6 +309,6 @@ export class DocumentAddPage implements OnInit {
     }
 
     printForm(){
-      console.log(this.workflowForm)
+      console.log(this.workflowForm);
     }
   }

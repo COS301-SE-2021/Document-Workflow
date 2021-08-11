@@ -127,7 +127,7 @@ export class LoginRegisterPage implements OnInit {
 
     await (await a).present();
     const data = (await a).onDidDismiss();
-    if (await (await data).data['confirm']) {
+    if (await (await data).data.confirm) {
       //still to do
     }
     console.log(a);
@@ -257,7 +257,7 @@ export class LoginRegisterPage implements OnInit {
     NativeBiometric.isAvailable().then(
       (result: AvailableResult) => {
         const isAvailable = result.isAvailable;
-        const isFaceId = result.biometryType == BiometryType.FACE_ID;
+        const isFaceId = result.biometryType === BiometryType.FACE_ID;
 
         if (isAvailable) {
           // Get user's credentials
@@ -273,7 +273,7 @@ export class LoginRegisterPage implements OnInit {
             }).then(
               () => {
                 // Authentication successful
-                console.log("log in")
+                console.log('log in');
                 // this.login(credentials.username, credentials.password);
               },
 
@@ -285,8 +285,8 @@ export class LoginRegisterPage implements OnInit {
         }
       },
       (error) => {
-        console.log("here");
-        alert("here");
+        console.log('here');
+        alert('here');
       }
     );
   }

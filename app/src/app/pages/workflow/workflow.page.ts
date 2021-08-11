@@ -90,7 +90,7 @@ export class WorkflowPage implements OnInit {
       } else{
         this.userApiService.displayPopOver('Error', 'Cannot find user');
       }
-    })
+    });
   }
 
   async deleteWorkFlow(id: string){

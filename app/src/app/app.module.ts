@@ -19,8 +19,6 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
 
 //Components
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
-import { UpdateUserComponent } from './components/update-user/update-user.component';
-import { AddWorkflowComponent } from './components/add-workflow/add-workflow.component';
 import { AddSignatureComponent } from './components/add-signature/add-signature.component';
 import { AddCommentComponent } from './components/add-comment/add-comment.component';
 import { ConfirmSignaturesComponent } from './components/confirm-signatures/confirm-signatures.component';
@@ -31,8 +29,6 @@ import { DocumentActionAreaComponent } from './components/document-action-area/d
   declarations: [
     AppComponent,
     ResetPasswordComponent,
-    AddWorkflowComponent,
-    UpdateUserComponent,
     AddSignatureComponent,
     AddCommentComponent,
     ConfirmSignaturesComponent,
