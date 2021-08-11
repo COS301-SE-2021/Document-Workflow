@@ -2,7 +2,7 @@ import UserService from "../../src/user/UserService";
 import UserRepository from "../../src/user/UserRepository";
 import UserController from "../../src/user/UserController";
 import Database from "../../src/Database";
-import WorkFlowRepository from "../../src/workflow/WorkFlowRepository";
+import WorkFlowRepository from "../../src/workflow/WorkflowRepository";
 
 let userService;
 let userController;
@@ -59,8 +59,9 @@ describe("User integration tests", () => {
           }
         } as unknown as Request;
 
-        const postResponse = await userController.registerUserRoute(mockPostRequest);
-        console.log(postResponse);
+        // const postResponse = await userController.registerUserRoute(mockPostRequest);
+        await userController.registerUserRoute(mockPostRequest);
+        //console.log(postResponse);
       });
     });
 });

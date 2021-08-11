@@ -6,7 +6,7 @@ import { UserDoc } from "../../src/user/User";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import AuthenticationError from "../../src/error/AuthenticationError";
-import WorkFlowRepository from "../../src/workflow/WorkFlowRepository";
+import WorkFlowRepository from "../../src/workflow/WorkflowRepository";
 dotenv.config();
 
 describe("user unit tests", () => {
