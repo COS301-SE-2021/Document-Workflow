@@ -4,7 +4,7 @@ import { userSchema } from "../user/User";
 export const ActionAreaType = ["Date","Signature", "initial"];
 export const PhaseStatus = ["Pending", "InProgress", "Rejected", "Completed"];
 
-const actionAreaSchema = createSchema({ //sort of scrapped
+/*const actionAreaSchema = createSchema({ //sort of scrapped
     coordinates: Type.array({maxlength: 2, minlength: 2, required: true}).of(Type.number),
     type: Type.string({enum: ActionAreaType, required: true}),
     dimensions: Type.array({maxlength: 2, minlength: 2, required: true}).of(Type.number),
@@ -14,7 +14,7 @@ const actionAreaSchema = createSchema({ //sort of scrapped
 const commentSchema = createSchema({ //sort of scrapped
     userId: Type.ref(Type.objectId({required: true})).to("User", userSchema),
     content: Type.string({required: true})
-}, { _id: false, _v: false });
+}, { _id: false, _v: false });*/
 
 export const phaseSchema = createSchema({
     users: Type.array({required: true}).of(Type.ref(Type.objectId()).to("User", userSchema)),
@@ -24,11 +24,11 @@ export const phaseSchema = createSchema({
     //actionAreas: Type.array().of(actionAreaSchema), //annotations: string -> includes comments
     signingUserId: Type.ref(Type.objectId({required:true})).to("User", userSchema),
     //status: Type.string({enum: PhaseStatus, required: true}),
-    userAccepts: Type.array().of(Type.array({maxlength: 2, minlength: 2, required: false}).of(Type.string()))
+    //userAccepts: Type.array().of(Type.array({maxlength: 2, minlength: 2, required: false}).of(Type.string()))
 }, { _id: true, _v: false });
 
 export const Phase = typedModel('Phase', phaseSchema);
 export type PhaseProps = ExtractProps<typeof phaseSchema>;
 
-export const ActionArea = typedModel('ActionArea', actionAreaSchema);
-export type ActionAreaProps = ExtractProps<typeof actionAreaSchema>;
+/*export const ActionArea = typedModel('ActionArea', actionAreaSchema);
+export type ActionAreaProps = ExtractProps<typeof actionAreaSchema>;*/
