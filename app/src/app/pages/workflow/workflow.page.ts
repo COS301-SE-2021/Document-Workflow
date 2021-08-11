@@ -1,6 +1,3 @@
-/* eslint-disable prefer-const */
-/* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable @typescript-eslint/prefer-for-of */
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { IonReorderGroup, LoadingController, ModalController, NavController } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -23,7 +20,7 @@ import * as Cookies from 'js-cookie';
   styleUrls: ['./workflow.page.scss'],
 })
 export class WorkflowPage implements OnInit {
-  public title = 'Home Page';
+  @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   documents: documentImage[] = [];
   ownerEmail: string;
   user: User;
@@ -31,9 +28,6 @@ export class WorkflowPage implements OnInit {
   isBrowser: boolean;
   sizeMe: boolean;
 
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-
-  @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   constructor(
     private docService: DocumentAPIService,
     private modals: ModalController,
@@ -44,7 +38,6 @@ export class WorkflowPage implements OnInit {
     private loadctrl: LoadingController,
     private navControl: NavController
   ) {
-    this.title="Home";
   }
 
   async ngOnInit() {
@@ -76,7 +69,7 @@ export class WorkflowPage implements OnInit {
     else
     {
       this.userApiService.checkIfAuthorized().subscribe((response) => {
-        console.log("Successfully authorized user");
+        console.log('Successfully authorized user');
       }, async (error) => {
         console.log(error);
         await this.router.navigate(['/login']);
@@ -95,7 +88,7 @@ export class WorkflowPage implements OnInit {
         this.user = response.data;
         this.ownerEmail = this.user.email;
       } else{
-        this.userApiService.displayPopOver('Error', 'Cannot find user')
+        this.userApiService.displayPopOver('Error', 'Cannot find user');
       }
     })
   }
@@ -107,11 +100,11 @@ export class WorkflowPage implements OnInit {
 
     (await deleteMod).present();
     (await deleteMod).onDidDismiss().then(async (data) => {
-      const result = (await data).data['confirm'];
+      const result = (await data).data.confirm;
       if (result){
         this.workFlowService.deleteWorkFlow(id, (response) =>{
           console.log(response);
-          this.userApiService.displayPopOver("Deletion of workflow", 'Workflow has been successfully deleted');
+          this.userApiService.displayPopOver('Deletion of workflow', 'Workflow has been successfully deleted');
         });
 
       }else{
@@ -120,15 +113,11 @@ export class WorkflowPage implements OnInit {
     });
   }
 
-    changeTitle(title) {
-    this.title = title;
-  }
+
   async loadWorkFlows() {
     this.userApiService.getAllWorkOwnedFlows((response) => {
       if (response.status === 'success') {
-        for (let i = 0; i < response.data.length; i++) {
-          let tmpDoc: documentImage;
-          tmpDoc = response.data[i];
+        for(const tmpDoc of response.data){
           if(tmpDoc != null){
             this.documents.push(tmpDoc);
           }
@@ -138,12 +127,9 @@ export class WorkflowPage implements OnInit {
       }
     });
     this.userApiService.getAllWorkFlows((response) => {
-      console.log("Got normal workflows");
-      console.log(response);
+
       if (response.status === 'success') {
-        for (let i = 0; i < response.data.length; i++) {
-          let tmpDoc: documentImage;
-          tmpDoc = response.data[i];
+        for(const tmpDoc of response.data){
           if(tmpDoc != null){
             this.documents.push(tmpDoc);
           }
@@ -154,7 +140,7 @@ export class WorkflowPage implements OnInit {
     });
   }
 
-  async editWorkflow(id_ : string){
+  async editWorkflow(id_: string){
     // const editModal = await this.modals.create({
     //   component: EditWorkflowComponent,
     //   componentProps:{
@@ -169,7 +155,8 @@ export class WorkflowPage implements OnInit {
     //   // const file = (await data).data['file'];
     //   let phases = '';
     //   console.log(documents.phases);
-    //   for(let i=0; i<documents.phases.length; ++i) //Sending arrays of arrays does not work well in angular so this workaround will have to do.
+    //   for(let i=0; i<documents.phases.length; ++i)
+    //Sending arrays of arrays does not work well in angular so this workaround will have to do.
     //   {
     //     let temp = '[';
     //     for(const [key, value] of Object.entries(documents.phases[i]))
@@ -185,7 +172,6 @@ export class WorkflowPage implements OnInit {
   }
 
   async addWorkflow() {
-    console.log("here");
     this.router.navigate(['home/addWorkflow']);
   }
 

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import {
   Component,
   Input,
@@ -25,6 +24,7 @@ export class UserProfilePage implements OnInit {
   srcFile: any;
   ready: boolean;
   sizeMe: boolean;
+
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -42,10 +42,6 @@ export class UserProfilePage implements OnInit {
     }
   }
 
-  ngOnDestroy(): void {
-    // URL.revokeObjectURL();
-  }
-
   async getUser() {
     this.ready = false;
     await this.userService.getUserDetails(async (response) => {
@@ -58,8 +54,8 @@ export class UserProfilePage implements OnInit {
 
         this.userForm = this.fb.group(
           {
-            Fname: [response.data.name, [Validators.required]],
-            Lname: [response.data.surname, [Validators.required]],
+            firstName: [response.data.name, [Validators.required]],
+            lastName: [response.data.surname, [Validators.required]],
             initials: [response.data.initials, [Validators.required]],
             // phone_number: ['',[Validators.required]],
             email: [response.data.email, [Validators.required]],
@@ -76,7 +72,7 @@ export class UserProfilePage implements OnInit {
   }
 
   submit() {
-    let use = this.userForm.value;
+    const use = this.userForm.value;
     if (use.password === '') {
       //if the user hasnt changed the password
     }
