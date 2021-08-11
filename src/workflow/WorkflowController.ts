@@ -42,16 +42,6 @@ export default class WorkflowController {
             files: {
                 file: "...."
             }*/
-        /*
-        WorkflowProps: {
-            _id: ObjectId, GENERATED
-            name: string, REQUIRED
-            ownerId: ObjectId, REQUIRED
-            documentId: ObjectId, OPTIONAL
-            description: string, REQUIRED
-            phases: [phaseSchema] OPTIONAL
-        }
-        */
         //TODO: Check names of request variables
         //Check the request for the proper variables
         if(!req.body.name || !req.body.ownerId || !req.body.description
@@ -60,41 +50,38 @@ export default class WorkflowController {
         }
 
         //Check each phase for proper variables
-        req.body.phases.forEach(phase => {
+        const phases = JSON.parse(req.body.phases);
+        phases.forEach(phase => {
             if(!phase.annotations || !phase.description || !phase.users || !phase.signingUserId){
                 throw new RequestError("There was something wrong with the request");
             }
         })
-        try{
-            //parse request, setup WorkflowProps object to send through
-            const workflow: WorkflowProps = {
-                _id: undefined,
-                __v: undefined,
-                name: req.body.name,
-                ownerId: req.body.ownerId,
-                documentId: undefined,
-                description: req.body.description,
-                phases: undefined
-            }
-        /*
-        PhaseProps: {
-            users: [ObjectId], REQUIRED
-            description: string, REQUIRED
-            signingUserId: ObjectId, REQUIRED
-            userAccepts: [[string, string]], OPTIONAL
-        }
-        */
-            const phases: PhaseProps[] = [];
-            req.body.phases.forEach( phase => {
-                phases.push({
-                    users: phase.users,
-                    description: phase.description,
-                    signingUserId: phase.signingUserId,
-                    //userAccepts: undefined
-                }as PhaseProps)
-            })
 
-            return await this.workflowService.createWorkFlow(workflow, req.files.file, phases);
+        //parse request, setup WorkflowProps object to send through
+        const workflow: WorkflowProps = {
+            _id: undefined,
+            __v: undefined,
+            name: req.body.name,
+            ownerId: req.body.ownerId,
+            documentId: undefined,
+            description: req.body.description,
+            phases: undefined
+        }
+
+        const convertedPhases: PhaseProps[] = [];
+        phases.forEach( phase => {
+            convertedPhases.push({
+                users: phase.users,
+                description: phase.description,
+                signingUserId: phase.signingUserId,
+                annotations: phase.annotations
+                //userAccepts: undefined
+            }as PhaseProps)
+        })
+
+        try{
+            return await this.workflowService.createWorkFlow(workflow, req.files.file, convertedPhases);
+
         } catch(err) {
             throw new ServerError(err.toString());
         }
@@ -117,7 +104,7 @@ export default class WorkflowController {
     }*/
 
     routes() {
-        this.router.post("", this.auth, async (req, res) => {
+        this.router.post("", /*this.auth,*/ async (req, res) => {
             try {
                 res.status(200).json(await this.createWorkFlow(req));
             } catch(err){
