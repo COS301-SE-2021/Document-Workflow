@@ -119,13 +119,14 @@ export class AddWorkflowPage implements OnInit {
   }
 
   async getUser() {
+    console.log("Getting the user");
     await this.userApiService.getUserDetails(async (response) => {
       if (response) {
         this.user = response.data;
         this.ownerEmail = this.user.email;
         console.log(this.ownerEmail);
       } else {
-        this.userApiService.displayPopOver('Error', 'Cannot find user');
+        await this.userApiService.displayPopOver('Error', 'Cannot find user');
       }
     });
   }

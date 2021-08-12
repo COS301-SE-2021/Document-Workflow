@@ -164,7 +164,7 @@ export default class UserController{
         this.router.post("/login" , async (req,res) => {
             try {
                 const token = await this.loginUserRoute(req);
-                if(token) res.status(200).json({status: "Success", data:{}, message: token})
+                if(token) res.status(200).json({status: "success", data:{}, message: token})
                 else res.status(400).send("Could not log in user");
             } catch(err){
                 await handleErrors(err,res);

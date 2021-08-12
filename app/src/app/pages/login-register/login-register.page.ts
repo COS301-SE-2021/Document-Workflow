@@ -91,7 +91,7 @@ export class LoginRegisterPage implements OnInit {
     };
     console.log(loginData);
     this.userAPIService.login(loginData, (response) => {
-      if (response.status === 'success') {
+      if (response.status.toLowerCase() === 'success') {
         //localStorage.setItem('token', response.data.token);
         Cookies.set('token', response.data.token, {expires: 1});
         this.userAPIService.displayPopOver('Success', 'login was successful');
@@ -150,7 +150,7 @@ export class LoginRegisterPage implements OnInit {
 
     await this.loadingRegister();
     this.userAPIService.register(user, this.file, (response) => {
-      if (response.status === 'success') {
+      if (response.status.toLowerCase() === 'success') {
         this.userAPIService.displayPopOver(
           'Successfully created new user account',
           'check your email for account verification'
