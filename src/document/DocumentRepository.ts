@@ -1,6 +1,8 @@
 import { Document, DocumentProps } from "./Document";
 import * as AWS from 'aws-sdk';
 import { ObjectId, Types } from "mongoose";
+import * as multer from 'multer';
+import * as multerS3 from 'multer-s3';
 
 const s3 = new AWS.S3({
     region: process.env.AWS_REGION,
@@ -9,6 +11,22 @@ const s3 = new AWS.S3({
 });
 
 export default class DocumentRepository {
+
+    async saveDocumentToS3() {
+        const upload = multer({
+            storage: multerS3({
+                s3: s3,
+                bucket: process.env.AWS_BUCKET_NAME,
+                metadata: function (req, file, cb) {
+                    cb(null, { fieldName: file.fieldname });
+                },
+                key: function (req, file, cb) {
+                    cb(null, Date.now().toString())
+                }
+            })
+        })
+
+    }
 
     async postDocument(doc: DocumentProps, file: File): Promise<ObjectId> {
         try{
@@ -69,7 +87,7 @@ export default class DocumentRepository {
             return await Document.find();
         }
         catch(err) {
-            throw new Error("Could not find Documents");
+            throw new Error("Could not find Documents " + err.toString());
         }
     }
 

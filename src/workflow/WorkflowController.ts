@@ -10,7 +10,7 @@ import { ObjectId } from "mongoose";
 
 @injectable()
 export default class WorkflowController {
-    // Errors in Controller files -> RequestError, TimeoutError, AuthenticationError
+    //Errors in Controller files -> RequestError, TimeoutError, AuthenticationError
     router: Router;
 
     constructor(
