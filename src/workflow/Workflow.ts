@@ -18,6 +18,5 @@ export const workflowSchema = createSchema({
     currentPhase: Type.number({default: 0})
 }, {_id: true, _v: false});
 
-
-export const Workflow = typedModel('WorkFlowModel', workflowSchema);
+export const Workflow = typedModel('WorkFlow', workflowSchema);
 export type WorkflowProps = ExtractProps<typeof workflowSchema>;
