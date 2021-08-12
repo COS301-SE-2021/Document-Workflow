@@ -94,7 +94,6 @@ export default class WorkflowController {
             throw new ServerError(err.toString());
         }
     }
-
     private async deleteWorkFlow(req) {
         try{
             return await this.workflowService.deleteWorkFlow(req);
@@ -119,7 +118,6 @@ export default class WorkflowController {
                 await handleErrors(err,res);
             }
         });
-
         this.router.post("/delete",this.auth, async(req,res)=>{
             try {
                 res.status(200).json(await this.deleteWorkFlow(req));

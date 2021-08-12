@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import {resolveFileWithPostfixes} from "@angular/compiler-cli/ngcc/src/utils";
 import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
 import { PopoverController } from '@ionic/angular';
+import * as Cookies from 'js-cookie';
 
 export interface User {
   Fname: string;
@@ -26,11 +27,12 @@ export class UserAPIService {
   constructor(
     private http: HttpClient,
     private pop: PopoverController
-    ) {}
+  ) {}
 
   public checkIfAuthorized(){//callback){
     const formData = new FormData();
-    const token = localStorage.getItem('token');
+    //const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: ('Bearer ' + token)
     });
@@ -53,8 +55,8 @@ export class UserAPIService {
       }
       else callback({status:'error', message: 'Cannot connect to Server'});
     }, (error)=>{
-        console.log(error);
-       this.displayPopOver("Error", "An unexpected error occurred, please try again later");
+      console.log(error);
+      this.displayPopOver("Error", "An unexpected error occurred, please try again later");
     });
   }
 
@@ -82,36 +84,38 @@ export class UserAPIService {
     console.log('Getting all owned workflows');
     const formData = new FormData();
     //formData.append('email', email);
-    const token = localStorage.getItem('token');
+    //const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: ('Bearer ' + token)
     });
 
-      this.http.post(UserAPIService.url + '/users/retrieveOwnedWorkflows', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
-        if (data) {
-          callback(data);
-        } else callback({status: 'error', message: 'Cannot connect to Server'});
-        }, (error) =>{
-          this.displayPopOver('Error user-api-services - getAllWorkOwnedFlows', error);
-      });
+    this.http.post(UserAPIService.url + '/users/retrieveOwnedWorkflows', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
+      if (data) {
+        callback(data);
+      } else callback({status: 'error', message: 'Cannot connect to Server'});
+    }, (error) =>{
+      this.displayPopOver('Error user-api-services - getAllWorkOwnedFlows', error);
+    });
   }
 
   public getAllWorkFlows( callback){
     const formData = new FormData();
     console.log('Getting all normal workflows');
-    const token = localStorage.getItem('token');
+    //const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: ('Bearer ' + token)
     });
 
-      this.http.post(UserAPIService.url + '/users/retrieveWorkflows', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
-        if (data) {
-          callback(data);
-        } else callback({status: 'error', message: 'Cannot connect to Server'});
-      }, error =>{
-        this.displayPopOver('Error user-api-services - getAllWorkFlows', error);
-      });
-    }
+    this.http.post(UserAPIService.url + '/users/retrieveWorkflows', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
+      if (data) {
+        callback(data);
+      } else callback({status: 'error', message: 'Cannot connect to Server'});
+    }, error =>{
+      this.displayPopOver('Error user-api-services - getAllWorkFlows', error);
+    });
+  }
 
   //for the pop over
   async displayPopOver(title: string, message: string){
@@ -126,26 +130,29 @@ export class UserAPIService {
 
     const a = await poper.onDidDismiss();
     console.log( a );
-   }
+  }
 
-   async getUserDetails(callback){
-     const formData = new FormData();
-     const token = localStorage.getItem('token');
-     const httpHeaders: HttpHeaders = new HttpHeaders({
-       Authorization: ('Bearer ' + token)
-     });
+  async getUserDetails(callback){
+    const formData = new FormData();
+    //const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: ('Bearer ' + token)
+    });
 
-     this.http.post(UserAPIService.url + '/users/getDetails', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
-       if (data) {
-         callback(data);
-       } else callback({status: 'error', message: 'Cannot connect to Server'});
-     }, error =>{
-      this.displayPopOver('Error user-api-services - getUserDetails', error);
-     });
-   }
+    this.http.post(UserAPIService.url + '/users/getDetails', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
 
-   logout(){
-     localStorage.removeItem('token');
-   }
+      if (data) {
+        callback(data);
+      } else callback({status: 'error', message: 'Cannot connect to Server'});
+    }, async error =>{
+      await this.displayPopOver('Error user-api-services - getUserDetails', error);
+    });
+  }
+
+  logout(){
+    //localStorage.removeItem('token');
+    Cookies.remove('token');
+  }
 
 }

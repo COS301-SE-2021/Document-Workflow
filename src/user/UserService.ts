@@ -14,6 +14,8 @@ export default class UserService {
     async authenticateUser(password, usr: UserProps) {
         const result = await bcrypt.compare(password, await usr.password);
         if(result){
+            console.log("Authenticating user:");
+            console.log(usr);
             return this.generateToken(usr.email, usr._id);
         }else{
             throw new AuthenticationError("Password or Email is incorrect");
@@ -31,11 +33,13 @@ export default class UserService {
     }
 
     generateToken(email, id): string{
-        return jwt.sign({id: id, email: email}, process.env.SECRET, {expiresIn: "1 hour"});
+        return jwt.sign({id: id, email: email}, process.env.SECRET, {expiresIn: "24h"});
     }
 
     async getUser(request): Promise<UserProps> {
-        if(!request.params){
+        console.log('Getting user')
+        console.log(request);
+        if(request === undefined){
             throw new RequestError("Search criteria required");
         }
         try {

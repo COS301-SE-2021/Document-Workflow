@@ -1,8 +1,8 @@
 /* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/prefer-for-of */
-import { Component, OnInit, Input } from '@angular/core';
-import { LoadingController, ModalController, NavController } from '@ionic/angular';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { IonReorderGroup, LoadingController, ModalController, NavController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 
@@ -12,11 +12,10 @@ import {
   documentImage,
   DocumentAPIService,
 } from './../../Services/Document/document-api.service';
-import { AddWorkflowComponent } from 'src/app/components/add-workflow/add-workflow.component';
-import { EditWorkflowComponent } from 'src/app/components/edit-workflow/edit-workflow.component';
 import { WorkFlowService } from '../../Services/Workflow/work-flow.service';
 import { ConfirmDeleteWorkflowComponent } from 'src/app/components/confirm-delete-workflow/confirm-delete-workflow.component';
-
+import { ItemReorderEventDetail } from '@ionic/core';
+import * as Cookies from 'js-cookie';
 @Component({
   selector: 'app-workflow',
   templateUrl: './workflow.page.html',
@@ -27,10 +26,12 @@ export class WorkflowPage implements OnInit {
   documents: documentImage[] = [];
   ownerEmail: string;
   user: User;
+  reOrder: boolean;
+  isBrowser: boolean;
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
 
-
+  @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   constructor(
     private docService: DocumentAPIService,
     private modals: ModalController,
@@ -41,9 +42,17 @@ export class WorkflowPage implements OnInit {
     private loadctrl: LoadingController,
     private navControl: NavController
   ) {
+    this.title="Home";
   }
 
   async ngOnInit() {
+    this.reOrder = true;
+
+    if(this.plat.is('desktop')){
+      //alert("here");
+      console.log('Desktop');
+    }
+
     const load = await this.loadctrl.create({
       message: 'Hang in there... we are almost done',
       duration: 5000,
@@ -51,7 +60,8 @@ export class WorkflowPage implements OnInit {
       spinner: 'bubbles'
     });
     await load.present();
-    if(localStorage.getItem('token') === null) {
+    //if(localStorage.getItem('token') === null) {
+    if(Cookies.get('token') === undefined){
       await this.router.navigate(['/login']);
       await load.dismiss();
       return;
@@ -68,12 +78,12 @@ export class WorkflowPage implements OnInit {
       });
     }
     await this.getUser();
-    this.loadWorkFlows();
+    await this.loadWorkFlows();
     await load.dismiss();
   }
 
   async getUser(){
-     this.userApiService.getUserDetails(async (response)=>{
+    this.userApiService.getUserDetails(async (response)=>{
       if(response){
         this.user = response.data;
         this.ownerEmail = this.user.email;
@@ -103,12 +113,12 @@ export class WorkflowPage implements OnInit {
     });
   }
 
-    changeTitle(title) {
+  changeTitle(title) {
     this.title = title;
   }
   async loadWorkFlows() {
     this.userApiService.getAllWorkOwnedFlows((response) => {
-      if (response.status === 'success') {
+      if (response.status.toLowerCase() === 'success') {
         for (let i = 0; i < response.data.length; i++) {
           let tmpDoc: documentImage;
           tmpDoc = response.data[i];
@@ -123,7 +133,7 @@ export class WorkflowPage implements OnInit {
     this.userApiService.getAllWorkFlows((response) => {
       console.log("Got normal workflows");
       console.log(response);
-      if (response.status === 'success') {
+      if (response.status.toLowerCase() === 'success') {
         for (let i = 0; i < response.data.length; i++) {
           let tmpDoc: documentImage;
           tmpDoc = response.data[i];
@@ -132,84 +142,52 @@ export class WorkflowPage implements OnInit {
           }
         }
       } else {
-        this.userApiService.displayPopOver('Error', 'unexpected error occured');
+        this.userApiService.displayPopOver('Error', 'unexpected error occurred');
       }
     });
   }
 
   async editWorkflow(id_ : string){
-    const editModal = await this.modals.create({
-      component: EditWorkflowComponent,
-      componentProps:{
-        workflowID: id_
-      }
-    });
+    // const editModal = await this.modals.create({
+    //   component: EditWorkflowComponent,
+    //   componentProps:{
+    //     workflowID: id_
+    //   }
+    // });
 
-    (await editModal).present();
+    // (await editModal).present();
 
-    (await editModal).onDidDismiss().then(async (data)=>{
-      const documents = (await data).data['document'];
-      // const file = (await data).data['file'];
-      let phases = '';
-      console.log(documents.phases);
-      for(let i=0; i<documents.phases.length; ++i) //Sending arrays of arrays does not work well in angular so this workaround will have to do.
-      {
-        let temp = '[';
-        for(const [key, value] of Object.entries(documents.phases[i]))
-          temp+=value + ' ';
-        phases += temp.substr(0, temp.length-1) +']'; //dont want the trailing space
-      }
-      console.log(phases);
-      const workflowData = {
-        name: documents.workflowName,
-        description: documents.workflowDescription
-      };
-    })
+    // (await editModal).onDidDismiss().then(async (data)=>{
+    //   const documents = (await data).data['document'];
+    //   // const file = (await data).data['file'];
+    //   let phases = '';
+    //   console.log(documents.phases);
+    //   for(let i=0; i<documents.phases.length; ++i) //Sending arrays of arrays does not work well in angular so this workaround will have to do.
+    //   {
+    //     let temp = '[';
+    //     for(const [key, value] of Object.entries(documents.phases[i]))
+    //       temp+=value + ' ';
+    //     phases += temp.substr(0, temp.length-1) +']'; //dont want the trailing space
+    //   }
+    //   console.log(phases);
+    //   const workflowData = {
+    //     name: documents.workflowName,
+    //     description: documents.workflowDescription
+    //   };
+    // })
   }
 
   async addWorkflow() {
-    const addModal = await this.modals.create({
-      component: AddWorkflowComponent,
-    });
-
-    (await addModal).present();
-
-    (await addModal).onDidDismiss().then(async (data) => {
-      // const users = (await data).data['users'];
-      const documents = (await data).data['document'];
-      const file = (await data).data['file'];
-      let phases = '';
-      console.log(documents.phases);
-      for(let i=0; i<documents.phases.length; ++i) //Sending arrays of arrays does not work well in angular so this workaround will have to do.
-      {
-        let temp = '[';
-        for(const [key, value] of Object.entries(documents.phases[i]))
-          temp+=value + ' ';
-        phases += temp.substr(0, temp.length-1) +']'; //dont want the trailing space
-      }
-      console.log(phases);
-      const workflowData = {
-        name: documents.workflowName,
-        description: documents.workflowDescription
-      };
-      this.workFlowService.createWorkflow(workflowData, phases, file, (response) => {
-        if (response.status === 'success') {
-          this.userApiService.displayPopOver('Success', 'Workflow has been created');
-          location.reload();
-        } else {
-          console.log(response);
-          this.userApiService.displayPopOver('Workflow could not be created', response.message);
-        }
-      });
-    });
-
+    console.log("here");
+    this.router.navigate(['home/addWorkflow']);
   }
 
   viewWorkFlow(id: string, name: string) {
     // this.navControl.navigateForward
-    this.router.navigate(['documentView', {
+    this.router.navigate(['/home/documentView', {
       id,
-      documentname: name
+      documentname: name,
+      userEmail: this.user.email
     }]);
   }
 
@@ -219,8 +197,14 @@ export class WorkflowPage implements OnInit {
   }
 
   toProfilepage(){
-    this.router.navigate(['userProfile']);
+    this.router.navigate(['/home/userProfile']);
+  }
+
+  fixOrder(event: CustomEvent<ItemReorderEventDetail>){
+    event.detail.complete();
+  }
+
+  hideMenu(){
+
   }
 }
-
-
