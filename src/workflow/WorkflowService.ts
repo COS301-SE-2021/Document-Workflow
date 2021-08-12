@@ -24,9 +24,10 @@ export default class WorkflowService{
      * Members is just an array of email addresses.
      * @param workflow
      * @param file
+     * @param fileData
      * @param phases
      */
-    async createWorkFlow(workflow: WorkflowProps, file: File, phases: PhaseProps[]): Promise<ObjectId>{
+    async createWorkFlow(workflow: WorkflowProps, file: File, fileData: Buffer, phases: PhaseProps[]): Promise<ObjectId>{
         try {
             //Step 1 create Phases:
             const phaseIds: ObjectId[] = [];
@@ -39,7 +40,7 @@ export default class WorkflowService{
             const workflowId = await this.workflowRepository.saveWorkflow(workflow);
 
             //Step 3 save document with workflowId:
-            workflow.documentId = await this.documentService.uploadDocument(file, workflowId);
+            workflow.documentId = await this.documentService.saveDocument(file,fileData, workflowId);
 
             //Step 4 update workflow with documentId:
             await this.workflowRepository.updateWorkflow(workflow);

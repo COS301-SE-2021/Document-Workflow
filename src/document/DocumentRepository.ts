@@ -1,8 +1,7 @@
 import { Document, DocumentProps } from "./Document";
 import * as AWS from 'aws-sdk';
 import { ObjectId, Types } from "mongoose";
-import * as multer from 'multer';
-import * as multerS3 from 'multer-s3';
+import { CloudError } from "../error/Error";
 
 const s3 = new AWS.S3({
     region: process.env.AWS_REGION,
@@ -12,23 +11,7 @@ const s3 = new AWS.S3({
 
 export default class DocumentRepository {
 
-    async saveDocumentToS3() {
-        const upload = multer({
-            storage: multerS3({
-                s3: s3,
-                bucket: process.env.AWS_BUCKET_NAME,
-                metadata: function (req, file, cb) {
-                    cb(null, { fieldName: file.fieldname });
-                },
-                key: function (req, file, cb) {
-                    cb(null, Date.now().toString())
-                }
-            })
-        })
-
-    }
-
-    async postDocument(doc: DocumentProps, file: File): Promise<ObjectId> {
+    async saveDocument(doc: DocumentProps, fileData: Buffer, fileName: string): Promise<ObjectId> {
         try{
             const newDoc = new Document(doc);
             await newDoc.save();
@@ -39,13 +22,13 @@ export default class DocumentRepository {
 
         const uploadParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
-            Body: file,
-            Key: doc.workflowId +"/"+ file.name
+            Body: fileData,
+            Key: doc.workflowId +"/"+ fileName
         }
 
         s3.upload(uploadParams, (err, data) => {
             if(err) {
-                throw new Error("Error establishing connection to the cloud file server");
+                throw new CloudError(err.toString());
             }
             else console.log(data);
 

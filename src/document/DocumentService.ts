@@ -19,15 +19,16 @@ export default class DocumentService {
     }
 
     //TODO: Check if type is PDF
-    async uploadDocument(file: File, id: ObjectId): Promise<ObjectId>{
+    async saveDocument(file: File, fileData: Buffer, id: ObjectId): Promise<ObjectId>{
         try{
             const doc = new Document({
                 name: file.name,
                 size: file.size,
-                path: file.name + '/',
+                path: id.toString() + '/' + file.name,
                 workflowId: id
             })
-            return await this.documentRepository.postDocument(doc, file);
+            const fileName = file.name;
+            return await this.documentRepository.saveDocument(doc, fileData, fileName);
         }
         catch(err) {
             throw new RequestError("Could not store document");

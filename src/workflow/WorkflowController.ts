@@ -8,6 +8,32 @@ import { WorkflowProps } from "./Workflow";
 import { PhaseProps } from "../phase/Phase";
 import { ObjectId } from "mongoose";
 
+/**Example swagger comment:
+ * @swagger
+ * components:
+ *   schemas:
+ *     Book:
+ *       type: object
+ *       required:
+ *         - name
+ *         - ownerId
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The auto-generated id of the book
+ *         title:
+ *           type: string
+ *           description: The book title
+ *         author:
+ *           type: string
+ *           description: The book author
+ *       example:
+ *         id: d5fE_asz
+ *         title: The New Turing Omnibus
+ *         author: Alexander K. Dewdney
+ */
+
+
 @injectable()
 export default class WorkflowController {
     //Errors in Controller files -> RequestError, TimeoutError, AuthenticationError
@@ -80,7 +106,7 @@ export default class WorkflowController {
         })
 
         try{
-            return await this.workflowService.createWorkFlow(workflow, req.files.file, convertedPhases);
+            return await this.workflowService.createWorkFlow(workflow, req.files.file,req.files.file.data, convertedPhases);
 
         } catch(err) {
             throw new ServerError(err.toString());
@@ -103,7 +129,7 @@ export default class WorkflowController {
     }*/
 
     routes() {
-        this.router.post("", /*this.auth,*/ async (req, res) => {
+        this.router.post("", /*this.auth, upload.single("file") ,*/async (req, res) => {
             try {
                 res.status(200).json(await this.createWorkFlow(req));
             } catch(err){
