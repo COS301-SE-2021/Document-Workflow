@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { UserAPIService } from 'src/app/Services/User/user-api.service';
 
 @Component({
   selector: 'app-split-view',
@@ -7,13 +9,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SplitViewPage implements OnInit {
 
-  constructor() { }
+  constructor(
+    private userServices: UserAPIService,
+    private router: Router,
+    ) { }
 
   ngOnInit() {
   }
 
   logout(){
-
+    console.log('herre');
+    this.userServices.logout();
+    this.router.navigate(['login']);
   }
-
 }

@@ -27,6 +27,7 @@ import { DocumentActionAreaComponent } from 'src/app/components/document-action-
 import { User, UserAPIService } from 'src/app/Services/User/user-api.service';
 import * as Cookies from 'js-cookie';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
+import { DocumentAPIService } from 'src/app/Services/Document/document-api.service';
 
 @Component({
   selector: 'app-document-edit',
@@ -68,10 +69,13 @@ export class DocumentEditPage implements OnInit {
     private modal: ModalController,
     private router: Router,
     private userApiService: UserAPIService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private docServices: DocumentAPIService,
   ) {}
 
   async ngOnInit() {
+
+
     if (Cookies.get('token') === undefined) {
       await this.router.navigate(['/login']);
       return;
