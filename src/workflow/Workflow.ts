@@ -14,8 +14,10 @@ export const workflowSchema = createSchema({
     ownerId: Type.ref(Type.objectId({required: true})).to("User", userSchema),
     documentId: Type.ref(Type.objectId({required: false})).to("Document", documentSchema),
     description: Type.string({required: true}),
-    phases: Type.array({required: false}).of(Type.ref(Type.objectId({required: true})).to("Phase", phaseSchema))
+    phases: Type.array({required: false}).of(Type.ref(Type.objectId({required: true})).to("Phase", phaseSchema)),
+    currentPhase: Type.number({default: 0})
 }, {_id: true, _v: false});
+
 
 export const Workflow = typedModel('WorkFlowModel', workflowSchema);
 export type WorkflowProps = ExtractProps<typeof workflowSchema>;

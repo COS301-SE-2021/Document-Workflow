@@ -22,7 +22,7 @@ export const phaseSchema = createSchema({
     annotations: Type.string({required: true}),
     description: Type.string({required: true}),
     //actionAreas: Type.array().of(actionAreaSchema), //annotations: string -> includes comments
-    signingUserId: Type.ref(Type.objectId({required:true})).to("User", userSchema),
+    //signingUserId: Type.ref(Type.objectId({required:true})).to("User", userSchema),
     //status: Type.string({enum: PhaseStatus, required: true}),
     //userAccepts: Type.array().of(Type.array({maxlength: 2, minlength: 2, required: false}).of(Type.string()))
 }, { _id: true, _v: false });
