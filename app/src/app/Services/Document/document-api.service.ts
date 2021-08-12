@@ -17,7 +17,7 @@ export interface documentImage {
 
 export interface phase {
   completed: boolean;
-  annotation: string;
+  annotations: string;
   phaseDescription: string;
   phaseUsers: phaseUser[];
 }
@@ -97,7 +97,7 @@ export class DocumentAPIService {
     let b: phase;
     b = {
       completed: true,
-      annotation: 'wfrnuiwrfbihwrvbihfwrebiuhwrfegwirfuygb',
+      annotations: 'wfrnuiwrfbihwrvbihfwrebiuhwrfegwirfuygb',
       phaseDescription: 'phase 1',
       phaseUsers: [f, g],
     };
@@ -105,14 +105,14 @@ export class DocumentAPIService {
     let c: phase;
     c = {
       completed: false,
-      annotation: 'dfbnhjiesfbdhdbfkjdbskjnbdvsfujbnrsfkjbsedkfrj',
+      annotations: 'dfbnhjiesfbdhdbfkjdbskjnbdvsfujbnrsfkjbsedkfrj',
       phaseDescription: 'phase 2',
       phaseUsers: [e],
     };
     let d: phase;
     d={
       completed: false,
-      annotation: 'wbihjfbwhbfrwhbf',
+      annotations: 'wbihjfbwhbfrwhbf',
       phaseDescription: 'phase 3',
       phaseUsers: [f, g],
     }
@@ -124,6 +124,8 @@ export class DocumentAPIService {
       document_path: 'd',
       name: 'hello',
       owner_email: 'brenton.stroberg@yahoo.co.za',
+      _v: 1,
+      _id:'jfhnrweiuwrfbniujfowerbio',
       phases:[b,c,d]
     };
     return a;

@@ -27,7 +27,11 @@ import { DocumentActionAreaComponent } from 'src/app/components/document-action-
 import { User, UserAPIService } from 'src/app/Services/User/user-api.service';
 import * as Cookies from 'js-cookie';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
-import { DocumentAPIService } from 'src/app/Services/Document/document-api.service';
+import {
+  DocumentAPIService,
+  documentImage, phase, phaseUser
+} from 'src/app/Services/Document/document-api.service';
+import { formattedError } from '@angular/compiler';
 
 @Component({
   selector: 'app-document-edit',
@@ -35,6 +39,8 @@ import { DocumentAPIService } from 'src/app/Services/Document/document-api.servi
   styleUrls: ['./document-edit.page.scss'],
 })
 export class DocumentEditPage implements OnInit {
+  document: documentImage;
+
   workflowForm: FormGroup;
   private userCount = 1;
   phases: FormArray;
@@ -59,6 +65,8 @@ export class DocumentEditPage implements OnInit {
   sizeMe: boolean;
   controller: boolean;
 
+  phaseViewers: boolean[] = [];
+
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
   workflowServices: any;
@@ -70,11 +78,11 @@ export class DocumentEditPage implements OnInit {
     private router: Router,
     private userApiService: UserAPIService,
     private sanitizer: DomSanitizer,
-    private docServices: DocumentAPIService,
+    private docServices: DocumentAPIService
   ) {}
 
   async ngOnInit() {
-
+    this.document = this.docServices.createTestDocuments();
 
     if (Cookies.get('token') === undefined) {
       await this.router.navigate(['/login']);
@@ -91,9 +99,9 @@ export class DocumentEditPage implements OnInit {
         }
       );
     }
-    if(this.plat.width() > 572){
+    if (this.plat.width() > 572) {
       this.sizeMe = false;
-    }else{
+    } else {
       this.sizeMe = true;
     }
 
@@ -109,28 +117,46 @@ export class DocumentEditPage implements OnInit {
     this.addName = false;
     this.controller = false;
 
-    this.workflowForm = this.fb.group({
-      workflowName: ['', [Validators.required]],
-      workflowDescription: ['', [Validators.required]],
-      workflowFile: ['', [Validators.required]],
-      phases: this.fb.array([
-        this.fb.group({
-          annotation: new FormControl('', [Validators.required]),
-          description: new FormControl('', Validators.required),
-          users: this.fb.array([
-            this.fb.group({
-              user: new FormControl('', [
-                Validators.email,
-                Validators.required,
-              ]),
-              permission: new FormControl('', [Validators.required]),
-            }),
-          ]),
-        }),
-      ]),
-    });
+    await this.getDocumentData();
 
     await this.getUser();
+  }
+
+  async getDocumentData() {
+    this.workflowForm = this.fb.group({
+      workflowName: [this.document.name, [Validators.required]],
+      workflowDescription: [this.document.description, [Validators.required]],
+      workflowFile:['',[Validators.required]],
+      phases: this.fb.array([]),
+    }),
+    this.fillPhases();
+  }
+
+  fillPhases() {
+    let i =0;
+    for(let phase of this.document.phases){
+      this.workflowForm.controls.phases['controls'].push(this.fillPhase(phase));
+      for(let user of phase.phaseUsers){
+        this.workflowForm.controls.phases['controls'][i].controls.users['controls'].push(this.fillUser(user));
+      }
+      this.phaseViewers.push(false);
+      i++;
+    }
+  }
+
+  fillPhase(phase: phase): FormGroup {
+    return this.fb.group({
+      description: new FormControl(phase.phaseDescription, Validators.required),
+      annotations: new FormControl(phase.annotations, [Validators.required]),
+      users: this.fb.array([]),
+    });
+  }
+
+  fillUser(user: phaseUser): FormGroup{
+    return this.fb.group({
+      user: new FormControl(user.email, [Validators.email, Validators.required]),
+      permission: new FormControl(user.permission, [Validators.required]),
+    });
   }
 
   async getUser() {
@@ -138,7 +164,6 @@ export class DocumentEditPage implements OnInit {
       if (response) {
         this.user = response.data;
         this.ownerEmail = this.user.email;
-        console.log(this.ownerEmail);
       } else {
         this.userApiService.displayPopOver('Error', 'Cannot find user');
       }
@@ -196,10 +221,12 @@ export class DocumentEditPage implements OnInit {
     control.setValue(str);
   }
 
+
+
   createPhase(): FormGroup {
     return this.fb.group({
       description: new FormControl('', Validators.required),
-      annotation: new FormControl('', [Validators.required]),
+      annotations: new FormControl('', [Validators.required]),
       users: this.fb.array([
         this.fb.group({
           user: new FormControl('', [Validators.email, Validators.required]),
@@ -304,6 +331,10 @@ export class DocumentEditPage implements OnInit {
       this.file,
       (response) => {}
     );
+  }
+
+  viewPhase(i: number){
+    this.phaseViewers[i] = !this.phaseViewers[i];
   }
 
   printForm() {
