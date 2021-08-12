@@ -12,6 +12,13 @@ export class AuthorizationError extends Error{
     }
 }
 
+export class CloudError extends Error{
+    constructor(msg?: string) {
+        if(msg) super(msg)
+        else super();
+    }
+}
+
 export class RequestError extends Error{
     constructor(msg?: string) {
         if(msg) super(msg)

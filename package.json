@@ -36,6 +36,8 @@
     "pdf-lib": "^1.16.0",
     "reflect-metadata": "^0.1.13",
     "request": "^2.88.2",
+    "swagger-jsdoc": "^6.1.0",
+    "swagger-ui-express": "^4.1.6",
     "ts-mongoose": "^0.0.24",
     "tsyringe": "^4.5.0",
     "validator": "^13.6.0"
