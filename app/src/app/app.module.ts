@@ -19,18 +19,16 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
 
 //Components
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
-import { UpdateUserComponent } from './components/update-user/update-user.component';
 import { AddSignatureComponent } from './components/add-signature/add-signature.component';
 import { AddCommentComponent } from './components/add-comment/add-comment.component';
 import { ConfirmSignaturesComponent } from './components/confirm-signatures/confirm-signatures.component';
 import { UserNotificationsComponent } from './components/user-notifications/user-notifications.component';
 import { ConfirmDeleteWorkflowComponent } from './components/confirm-delete-workflow/confirm-delete-workflow.component';
-import { DocumentActionAreaComponent } from './components/document-action-area/document-action-area.component';
+import {DocumentActionAreaComponent} from './components/document-action-area/document-action-area.component';
 @NgModule({
   declarations: [
     AppComponent,
     ResetPasswordComponent,
-    UpdateUserComponent,
     AddSignatureComponent,
     AddCommentComponent,
     ConfirmSignaturesComponent,

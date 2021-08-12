@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Platform } from '@ionic/angular';
+
 
 @Component({
   selector: 'app-contacts',
@@ -7,9 +9,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ContactsPage implements OnInit {
 
-  constructor() { }
+  sizeMe: boolean;
+
+  constructor(
+    private plat: Platform,
+  ) { }
 
   ngOnInit() {
+    if(this.plat.width() > 572){
+      this.sizeMe = false;
+    }else{
+      this.sizeMe = true;
+    }
   }
 
 }

@@ -1,20 +1,20 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-buttons slot="end" size="large">
-      <ion-menu-button ></ion-menu-button>
+      <ion-menu-button></ion-menu-button>
     </ion-buttons>
 
     <ion-grid style="max-height: 194px;">
       <ion-row>
-        <ion-col><ion-img src="../../../assets/LogoWhiteBackground.png" style="height: auto;max-width: 568px;"></ion-img>
+        <ion-col style="top:50%;" sizeXs='9' sizeMd='4' sizeLg='3' sizeXl='2'>
+          <ion-img src="../../../assets/LogoWhiteBackground.png" style="max-height: 100px; max-width: 320px; top:50%;">
+          </ion-img>
         </ion-col>
-        <ion-col>
-          Home
+        <ion-col style="top:50%;" *ngIf='!sizeMe'>
+          <h1 style="top:50%; font-size:xx-large;">Home</h1>
         </ion-col>
       </ion-row>
     </ion-grid>
-
-
   </ion-toolbar>
 </ion-header>
 
@@ -25,8 +25,8 @@
       <ion-reorder style="width:100%">
         <ion-card style="width:95%; justify-content: center;margin:auto">
           <ion-card-header>
-            <ion-card-title id="workflowName">{{doc.name}}</ion-card-title>
-            <ion-card-subtitle id="workflowOwner">Owner of workflow: {{doc.owner_email}}
+            <ion-card-title>{{doc.name}}</ion-card-title>
+            <ion-card-subtitle>Owner of workflow: {{doc.owner_email}}
             </ion-card-subtitle>
             <ion-fab vertical="top" horizontal="end">
               <ion-fab-button>
@@ -51,9 +51,7 @@
               <ion-list>
                 <ion-title>Description:</ion-title>
                 <ion-item>
-                  <div id='workflowDescription'>
-                    {{doc.description}}
-                  </div>
+                  {{doc.description}}
                 </ion-item>
               </ion-list>
             </ion-item>
@@ -88,5 +86,16 @@
     <ion-fab-button (click)="addWorkflow()">
       <ion-icon name="add-circle-outline"></ion-icon>
     </ion-fab-button>
+  </ion-fab>
+
+  <ion-fab>
+    <ion-fab-button>
+      test
+    </ion-fab-button>
+    <ion-fab-list>
+      <ion-fab-button (click)="showOnlyWorkflowOwned()" style='color:white'>1</ion-fab-button>
+      <ion-fab-button (click)="sortByNeededActions()" style='color:white'>2</ion-fab-button>
+      <ion-fab-button (click)="getByName('testiie boi')" style='color:white'>3</ion-fab-button>
+    </ion-fab-list>
   </ion-fab>
 </ion-content>

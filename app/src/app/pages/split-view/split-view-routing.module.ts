@@ -48,14 +48,7 @@ const routes: Routes = [
           ),
         pathMatch: 'full',
       },
-      {
-        path: 'addWorkflow',
-        loadChildren: () =>
-          import('./../add-workflow/add-workflow.module').then(
-            (m) => m.AddWorkflowPageModule
-          ),
-        pathMatch: 'full',
-      },
+
       {
         path: 'documentEdit',
         loadChildren: () =>
@@ -71,6 +64,14 @@ const routes: Routes = [
             (m) => m.ContactsPageModule
           ),
         pathMatch: 'full',
+      },
+      {
+        path: 'addWorkflow',
+        loadChildren: () =>
+          import('./../document-add/document-add.module').then(
+            (m) => m.DocumentAddPageModule
+          ),
+          pathMatch:'full'
       },
       {
         path: '',

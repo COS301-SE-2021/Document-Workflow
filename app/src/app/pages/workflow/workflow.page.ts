@@ -1,6 +1,3 @@
-/* eslint-disable prefer-const */
-/* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable @typescript-eslint/prefer-for-of */
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { IonReorderGroup, LoadingController, ModalController, NavController } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -22,16 +19,15 @@ import * as Cookies from 'js-cookie';
   styleUrls: ['./workflow.page.scss'],
 })
 export class WorkflowPage implements OnInit {
-  public title = 'Home Page';
+  @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   documents: documentImage[] = [];
-  ownerEmail: string;
+  userEmail: string;
   user: User;
   reOrder: boolean;
   isBrowser: boolean;
+  sizeMe: boolean;
+  allUserDocuments: documentImage[] =[];
 
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-
-  @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   constructor(
     private docService: DocumentAPIService,
     private modals: ModalController,
@@ -42,10 +38,14 @@ export class WorkflowPage implements OnInit {
     private loadctrl: LoadingController,
     private navControl: NavController
   ) {
-    this.title="Home";
   }
 
   async ngOnInit() {
+    if(this.plat.width() > 572){
+      this.sizeMe = false;
+    }else{
+      this.sizeMe = true;
+    }
     this.reOrder = true;
 
     if(this.plat.is('desktop')){
@@ -69,7 +69,7 @@ export class WorkflowPage implements OnInit {
     else
     {
       this.userApiService.checkIfAuthorized().subscribe((response) => {
-        console.log("Successfully authorized user");
+        console.log('Successfully authorized user');
       }, async (error) => {
         console.log(error);
         await this.router.navigate(['/login']);
@@ -83,14 +83,14 @@ export class WorkflowPage implements OnInit {
   }
 
   async getUser(){
-    this.userApiService.getUserDetails(async (response)=>{
+     this.userApiService.getUserDetails(async (response)=>{
       if(response){
         this.user = response.data;
-        this.ownerEmail = this.user.email;
+        this.userEmail = this.user.email;
       } else{
-        this.userApiService.displayPopOver('Error', 'Cannot find user')
+        this.userApiService.displayPopOver('Error', 'Cannot find user');
       }
-    })
+    });
   }
 
   async deleteWorkFlow(id: string){
@@ -100,11 +100,11 @@ export class WorkflowPage implements OnInit {
 
     (await deleteMod).present();
     (await deleteMod).onDidDismiss().then(async (data) => {
-      const result = (await data).data['confirm'];
+      const result = (await data).data.confirm;
       if (result){
         this.workFlowService.deleteWorkFlow(id, (response) =>{
           console.log(response);
-          this.userApiService.displayPopOver("Deletion of workflow", 'Workflow has been successfully deleted');
+          this.userApiService.displayPopOver('Deletion of workflow', 'Workflow has been successfully deleted');
         });
 
       }else{
@@ -113,17 +113,14 @@ export class WorkflowPage implements OnInit {
     });
   }
 
-  changeTitle(title) {
-    this.title = title;
-  }
+
   async loadWorkFlows() {
     this.userApiService.getAllWorkOwnedFlows((response) => {
-      if (response.status.toLowerCase() === 'success') {
-        for (let i = 0; i < response.data.length; i++) {
-          let tmpDoc: documentImage;
-          tmpDoc = response.data[i];
+      if (response.status === 'success') {
+        for(const tmpDoc of response.data){
           if(tmpDoc != null){
             this.documents.push(tmpDoc);
+            this.allUserDocuments.push(tmpDoc);
           }
         }
       } else {
@@ -131,14 +128,12 @@ export class WorkflowPage implements OnInit {
       }
     });
     this.userApiService.getAllWorkFlows((response) => {
-      console.log("Got normal workflows");
-      console.log(response);
-      if (response.status.toLowerCase() === 'success') {
-        for (let i = 0; i < response.data.length; i++) {
-          let tmpDoc: documentImage;
-          tmpDoc = response.data[i];
+
+      if (response.status === 'success') {
+        for(const tmpDoc of response.data){
           if(tmpDoc != null){
             this.documents.push(tmpDoc);
+            this.allUserDocuments.push(tmpDoc);
           }
         }
       } else {
@@ -147,7 +142,7 @@ export class WorkflowPage implements OnInit {
     });
   }
 
-  async editWorkflow(id_ : string){
+  async editWorkflow(id_: string){
     // const editModal = await this.modals.create({
     //   component: EditWorkflowComponent,
     //   componentProps:{
@@ -162,7 +157,8 @@ export class WorkflowPage implements OnInit {
     //   // const file = (await data).data['file'];
     //   let phases = '';
     //   console.log(documents.phases);
-    //   for(let i=0; i<documents.phases.length; ++i) //Sending arrays of arrays does not work well in angular so this workaround will have to do.
+    //   for(let i=0; i<documents.phases.length; ++i)
+    //Sending arrays of arrays does not work well in angular so this workaround will have to do.
     //   {
     //     let temp = '[';
     //     for(const [key, value] of Object.entries(documents.phases[i]))
@@ -178,7 +174,6 @@ export class WorkflowPage implements OnInit {
   }
 
   async addWorkflow() {
-    console.log("here");
     this.router.navigate(['home/addWorkflow']);
   }
 
@@ -204,7 +199,41 @@ export class WorkflowPage implements OnInit {
     event.detail.complete();
   }
 
-  hideMenu(){
+  showOnlyWorkflowOwned(){
+    this.documents = [];
+    console.log(this.documents);
+    for(let document of this.allUserDocuments){
+      if(document.owner_email === this.userEmail){
+        this.documents.push(document);
+      }
+    }
+    console.log(this.documents);
+  }
 
+  sortByNeededActions(){
+    this.documents = [];
+    this.allUserDocuments.push(this.docService.createTestDocuments());
+    for(let document of this.allUserDocuments){
+      for(let phase of document.phases){
+        if(phase.completed === false){
+          for(let user of phase.phaseUsers){
+            if(user.email === this.userEmail){
+              this.documents.push(document);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  getByName(name:string){
+    this.documents=[];
+    for(let document of this.allUserDocuments){
+      if(document.name === name){
+        this.documents.push(document);
+      }
+    }
   }
 }
+
+

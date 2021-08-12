@@ -1,15 +1,16 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-buttons slot="end" size="large">
-      <ion-menu-button ></ion-menu-button>
+      <ion-menu-button></ion-menu-button>
     </ion-buttons>
 
-    <ion-grid style="max-height: 150px;">
+    <ion-grid style="max-height: 194px;">
       <ion-row>
-        <ion-col><ion-img src="../../../assets/LogoWhiteBackground.png" style="height: auto;max-width: 568px;"></ion-img>
+        <ion-col style="top:50%;" sizeXs='9' sizeMd='4' sizeLg='3' sizeXl='2'>
+          <ion-img src="../../../assets/LogoWhiteBackground.png" style="max-height: 100px; max-width: 320px; top:50%;"></ion-img>
         </ion-col>
-        <ion-col>
-          Edit Document
+        <ion-col style="top:50%;" *ngIf='!sizeMe'>
+          <h1 style="top:50%; font-size:xx-large;">Edit Workflow</h1>
         </ion-col>
       </ion-row>
     </ion-grid>

@@ -5,6 +5,11 @@ import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { AbstractControlOptions, FormBuilder } from '@angular/forms';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
+//biometric stuff
+import { AvailableResult, BiometryType } from 'capacitor-native-biometric';
+import { Credentials, NativeBiometric } from 'capacitor-native-biometric';
+//popover
+
 import { ActivatedRoute, Router } from '@angular/router';
 import { match } from './../../Services/match.validator';
 
@@ -248,5 +253,43 @@ export class LoginRegisterPage implements OnInit {
     });
 
     await load.present();
+  }
+
+  debug() {
+    NativeBiometric.isAvailable().then(
+      (result: AvailableResult) => {
+        const isAvailable = result.isAvailable;
+        const isFaceId = result.biometryType === BiometryType.FACE_ID;
+
+        if (isAvailable) {
+          // Get user's credentials
+          NativeBiometric.getCredentials({
+            server: 'www.example.com',
+          }).then((credentials: Credentials) => {
+            // Authenticate using biometrics before logging the user in
+            NativeBiometric.verifyIdentity({
+              reason: 'For easy log in',
+              title: 'Log in',
+              subtitle: 'Maybe add subtitle here?',
+              description: 'Maybe a description too?',
+            }).then(
+              () => {
+                // Authentication successful
+                console.log('log in');
+                // this.login(credentials.username, credentials.password);
+              },
+
+              (error) => {
+                // Failed to authenticate
+              }
+            );
+          });
+        }
+      },
+      (error) => {
+        console.log('here');
+        alert('here');
+      }
+    );
   }
 }
