@@ -79,9 +79,9 @@ export default class WorkflowService{
     }
 
     async checkUsersExist(users):Promise<boolean>{
-        for(let i=0; i<users.lenght; ++i){
+        for(let i=0; i<users.length; ++i){
             console.log("Checking if user ", users[i], " exists");
-            const user = await this.userService.getUserByEmail(users[i][0]);
+            const user = await this.userService.getUserByEmail(users[i].user);
             if(user === undefined || user === null)
                 return false;
         }
