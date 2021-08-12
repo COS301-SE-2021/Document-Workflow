@@ -5,7 +5,7 @@ import Authenticator from "../security/Authenticate";
 import { RequestError, ServerError } from "../error/Error";
 import { handleErrors } from "../error/ErrorHandler";
 import { WorkflowProps } from "./Workflow";
-import { PhaseProps } from "../phase/Phase";
+import { PhaseProps, Phase } from "../phase/Phase";
 import { ObjectId } from "mongoose";
 
 @injectable()
@@ -69,15 +69,16 @@ export default class WorkflowController {
             phases: undefined
         }
 
-        const convertedPhases: PhaseProps[] = [];
+        const convertedPhases = [];
+
         phases.forEach( phase => {
-            convertedPhases.push({
+            convertedPhases.push(new Phase({
                 users: phase.users,
                 description: phase.description,
                 //signingUserId: phase.signingUserId,
-                annotations: phase.annotations
-                //userAccepts: undefined
-            }as PhaseProps)
+                annotations: phase.annotations,
+                userAccepts: {}
+            }));
         })
 
         try{
