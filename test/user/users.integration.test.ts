@@ -2,8 +2,7 @@ import UserService from "../../src/user/UserService";
 import UserRepository from "../../src/user/UserRepository";
 import UserController from "../../src/user/UserController";
 import Database from "../../src/Database";
-import Authentication from "../../src/auth/Authentication";
-import * as supertest from "supertest";
+import WorkFlowRepository from "../../src/workflow/WorkflowRepository";
 
 let userService;
 let userController;
@@ -14,8 +13,8 @@ describe("User integration tests", () => {
   });
 
   beforeEach(() => {
-    userService = new UserService(new UserRepository());
-    userController = new UserController(userService, new Authentication(userService));
+    userService = new UserService(new UserRepository(), new WorkFlowRepository());
+    userController = new UserController(userService);
   });
 
   afterAll(async () => {
@@ -34,35 +33,35 @@ describe("User integration tests", () => {
 
         const getResponse = await userController.getUserByEmailRoute(findByEmailRequest);
         if(getResponse){
-          //delete user
           const deleteRequest = {
             params: {
               id: getResponse._id
             }
           } as unknown as Request;
 
-          await userController.deleteUserRoute(deleteRequest);
-
+          const deletedUser = await userController.deleteUserRoute(deleteRequest);
+          expect(deletedUser.email).toBe("testymctestface@testmail.test");
         }
 
-        const currentDate = Date.now();
+        //const currentDate = Date.now();
         const mockPostRequest = {
           body: {
             name: "Testy",
-            surname: "Testson",
+            surname: "TestFace",
             initials: "TT",
             email: "testymctestface@testmail.test",
-            password: "paSsW*or^d1234",
-            validated: false,
-            tokenDate: currentDate,
-            signature: ""
+            password: "paSsW*or^d1234"
           },
+          files: {
+            signature: {
+              data: "somedataofasignaturelul"
+            }
+          }
         } as unknown as Request;
 
-        const postResponse = await userController.registerUserRoute(mockPostRequest);
-        console.log(postResponse);
-
-
+        // const postResponse = await userController.registerUserRoute(mockPostRequest);
+        await userController.registerUserRoute(mockPostRequest);
+        //console.log(postResponse);
       });
     });
 });

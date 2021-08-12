@@ -3,9 +3,8 @@ import express from 'express';
 import bodyParser from "body-parser";
 import { container } from "tsyringe";
 import * as dotenv from 'dotenv';
-import DocumentController from "./document/DocumentController";
 import UserController from "./user/UserController";
-//import WorkFlowController from "./workflow/WorkFlowController";
+import WorkflowController from "./workflow/WorkflowController";
 dotenv.config();
 
 const fileUpload = require('express-fileupload');
@@ -24,8 +23,7 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use("/api/documents", container.resolve(DocumentController).routes());
 app.use("/api/users", container.resolve(UserController).routes());
-//app.use("/api/workflows", container.resolve(WorkFlowController).routes());
+app.use("/api/workflows", container.resolve(WorkflowController).routes());
 export default app;
 

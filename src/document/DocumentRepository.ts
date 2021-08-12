@@ -1,7 +1,8 @@
-import Document, { DocumentModel } from "./Document";
+import { Document, DocumentProps } from "./Document";
 import * as AWS from 'aws-sdk';
-import { Types } from "mongoose";
-import ServerError from "../error/ServerError";
+import { ObjectId, Types } from "mongoose";
+import * as multer from 'multer';
+import * as multerS3 from 'multer-s3';
 
 const s3 = new AWS.S3({
     region: process.env.AWS_REGION,
@@ -11,10 +12,26 @@ const s3 = new AWS.S3({
 
 export default class DocumentRepository {
 
-    async postDocument(doc: Document, file: File): Promise<Document> {
+    async saveDocumentToS3() {
+        const upload = multer({
+            storage: multerS3({
+                s3: s3,
+                bucket: process.env.AWS_BUCKET_NAME,
+                metadata: function (req, file, cb) {
+                    cb(null, { fieldName: file.fieldname });
+                },
+                key: function (req, file, cb) {
+                    cb(null, Date.now().toString())
+                }
+            })
+        })
+
+    }
+
+    async postDocument(doc: DocumentProps, file: File): Promise<ObjectId> {
         try{
-            await doc.validate();
-            await doc.save();
+            const newDoc = new Document(doc);
+            await newDoc.save();
         }
         catch(err) {
             throw new Error("Could not save Document data");
@@ -23,7 +40,7 @@ export default class DocumentRepository {
         const uploadParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
             Body: file,
-            Key: doc.workflow_id +"/"+ file.name
+            Key: doc.workflowId +"/"+ file.name
         }
 
         s3.upload(uploadParams, (err, data) => {
@@ -33,24 +50,73 @@ export default class DocumentRepository {
             else console.log(data);
 
         });
-        return doc;
+        return doc._id;
     }
 
-    async getDocument(id: Types.ObjectId): Promise<Document> {
+    async getDocument(id: Types.ObjectId): Promise<DocumentProps> {
         try {
-            return await DocumentModel.findOne(id);
+            return await Document.findOne(id);
         }
         catch(err){
             throw new Error("Could not find Document");
         }
     }
 
-    async getDocuments(): Promise<Document[]> {
+    async getDocumentFromS3(path):Promise<any>{
+        try{
+            return await s3.getObject({Bucket: process.env.AWS_BUCKET_NAME, Key:path}).promise();
+        }
+        catch(err){
+            throw "The document server could not be reached";
+        }
+    }
+
+    async deleteDocument(id){
         try {
-            return await DocumentModel.find({});
+            const doc = await Document.findById(id);
+            if(!doc === null)
+                await Document.deleteOne({_id: id});
+        }
+        catch(err){
+            throw 'Could not delete fileMetadata';
+        }
+    }
+
+    async getDocuments(): Promise<DocumentProps[]> {
+        try {
+            return await Document.find();
         }
         catch(err) {
-            throw new Error("Could not find Documents");
+            throw new Error("Could not find Documents " + err.toString());
+        }
+    }
+
+    async deleteDocumentFromS3(workflow_id){ //workflow_id is the folder name
+        try {
+            const listParams = {
+                Bucket: process.env.AWS_BUCKET_NAME,
+                Prefix: workflow_id
+            };
+
+            const listedObjects = await s3.listObjectsV2(listParams).promise();
+
+            if (listedObjects.Contents.length === 0) return;
+
+            const deleteParams = {
+                Bucket: process.env.AWS_BUCKET_NAME,
+                Delete: { Objects: [] }
+            };
+
+            listedObjects.Contents.forEach(({ Key }) => {
+                deleteParams.Delete.Objects.push({ Key });
+            });
+
+            await s3.deleteObjects(deleteParams).promise();
+
+            if (listedObjects.IsTruncated) await this.deleteDocument(workflow_id);
+        }
+        catch(err){
+            throw "Could not delete document from File Server";
         }
     }
 }

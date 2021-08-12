@@ -1,0 +1,92 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="end" size="large">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+
+    <ion-grid style="max-height: 194px;">
+      <ion-row>
+        <ion-col style="top:50%;" sizeXs='9' sizeMd='4' sizeLg='3' sizeXl='2'>
+          <ion-img src="../../../assets/LogoWhiteBackground.png" style="max-height: 100px; max-width: 320px; top:50%;"></ion-img>
+        </ion-col>
+        <ion-col style="top:50%;" *ngIf='!sizeMe'>
+          <h1 style="top:50%; font-size:xx-large;">Profile</h1>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="ready">
+  <form [formGroup]="userForm" (ngSubmit)="submit()">
+    <ion-grid>
+      <ion-row>
+
+        <ion-col size="12" style="justify-content: center; display: block;  text-align: center">
+          <div height="150px" width="150px">
+           <img [src]="srcFile" height="150px" width='200px'>
+          </div>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size='6'>
+          <ion-item>
+            <ion-label position="stacked">First name:</ion-label>
+            <ion-input inputmode="text" formControlName="firstName"></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size='6'>
+          <ion-item>
+            <ion-label position="stacked">Last name:</ion-label>
+            <ion-input inputmode="text" formControlName="lastName"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size='4'>
+          <ion-item>
+            <ion-label position="stacked">Initials:</ion-label>
+            <ion-input inputmode="text" formControlName="initials"></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size='8'>
+          <ion-item>
+            <ion-label position="stacked">Email:</ion-label>
+            <ion-input inputmode="text" formControlName="email"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size='6'>
+          <ion-item>
+            <ion-label position="stacked">Password</ion-label>
+            <ion-input type="password" formControlName="password"></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size='6'>
+          <ion-item>
+            <ion-label position="stacked">Confirm password</ion-label>
+            <ion-input type="password" formControlName="confirmPassword"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <ion-button hide="true" expand="block" color="primary" fill="outline" [disabled]="!userForm.valid" type="submit">Save your edits
+    </ion-button>
+  </form>
+</ion-content>
+
+<ion-footer>
+  <ion-tab-bar>
+    <ion-tab-button (click)="back()">
+      <ion-label>Back</ion-label>
+      <ion-icon name="arrow-back"></ion-icon>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-footer>
+<!--
+<ion-item>
+  <ion-label position="stacked">Phone number:</ion-label>
+  <ion-input inputmode="text" formControlName="phone_number"></ion-input>
+</ion-item> -->

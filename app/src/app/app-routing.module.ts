@@ -1,48 +1,28 @@
 import { Component, NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { LoginRegisterComponent } from './login-register/login-register.component';
-import { ViewWorkflowComponent } from './view-workflow/view-workflow.component';
-import { ViewAllWorkflowsComponent } from './view-all-workflows/view-all-workflows.component';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { AddSignatureComponent } from './components/add-signature/add-signature.component';
 
 const routes: Routes = [
   {
     path: 'login',
-    component: LoginRegisterComponent,
+    loadChildren: () =>
+      import('./pages/login-register/login-register.module').then(
+        (m) => m.LoginRegisterPageModule
+      ),
+    pathMatch: 'full',
   },
   {
-    path: 'view',
-    component: ViewWorkflowComponent,
-  },
-  {
-    path: 'viewAll',
-    component: ViewAllWorkflowsComponent,
+    path: 'home',
+    loadChildren: () => import('./pages/split-view/split-view.module').then( m => m.SplitViewPageModule)
   },
   {
     path: '',
     redirectTo: 'login',
-    pathMatch: 'full',
+    pathMatch: 'full'
   },
-  {
-    path: 'add-document-modal',
-    loadChildren: () =>
-      import('./Modals/add-document-modal/add-document-modal.module').then(
-        (m) => m.AddDocumentModalPageModule
-      ),
-  },
-  {
-    path: 'view-document-modal',
-    loadChildren: () =>
-      import('./Modals/view-document-modal/view-document-modal.module').then(
-        (m) => m.ViewDocumentModalPageModule
-      ),
-  },
-  {
-    path: 'edit-document-modal',
-    loadChildren: () =>
-      import('./Modals/edit-document-modal/edit-document-modal.module').then(
-        (m) => m.EditDocumentModalPageModule
-      ),
-  },
+
+
 ];
 @NgModule({
   imports: [
@@ -51,3 +31,7 @@ const routes: Routes = [
   exports: [RouterModule],
 })
 export class AppRoutingModule {}
+export const routingComponents = [
+  ResetPasswordComponent,
+  AddSignatureComponent,
+];

@@ -5,9 +5,13 @@ import DocumentService from "../../src/document/DocumentService";
 
 describe("DocumentController: UNIT TESTS", () => {
    let documentService;
+   let documentController;
+   let documentRepository;
 
    beforeEach(()=>{
-       documentService = new DocumentService(new DocumentRepository());
+       documentRepository = new DocumentRepository();
+       documentService = new DocumentService(documentRepository);
+       documentController = new DocumentController(documentService);
    });
 
    test("Zero Documents Found: ", async () => {

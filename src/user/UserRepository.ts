@@ -1,7 +1,5 @@
-import { Token, User, UserDoc, UserProps } from "./User";
+import { User, UserDoc, UserProps } from "./User";
 import { Types } from "mongoose";
-import { doc } from "prettier";
-import concat = doc.builders.concat;
 
 export default class UserRepository {
 
@@ -10,12 +8,12 @@ export default class UserRepository {
      * @throws Error
      * @param Usr: An object containing all the information to create a new user.
      */
-    async postUser(Usr: UserProps): Promise<UserProps> {
+    async saveUser(Usr: UserProps): Promise<UserProps> {
         try{
             const user = new User(Usr);
             return await user.save();
         } catch (err) {
-            throw new Error(err);
+            throw {status: "failed", data: {}, message:"User email already exists"};
         }
     }
 
@@ -24,7 +22,7 @@ export default class UserRepository {
      * @throws Error If something goes horribly wrong
      * @param filter An object containing the search criteria
      */
-    async getUsers(filter): Promise<UserProps[]> {
+    async findUsers(filter): Promise<UserProps[]> {
         try {
             return await User.find(filter);
         } catch (err) {
@@ -37,31 +35,13 @@ export default class UserRepository {
      * @throws Error when the user object is not found
      * @param Usr The user object to be modified
      */
-    async putUser(Usr: UserProps): Promise<UserProps> {
-        const usr: UserDoc = await User.findOne({id: Usr._id});
-        if(usr){
-            try{
-                usr.name = Usr.name;
-                usr.surname = Usr.surname;
-                usr.initials = Usr.initials;
-                usr.email = Usr.email;
-                usr.password = Usr.password;
-                usr.signature = Usr.signature as any;
-                usr.validated = Usr.validated;
-                usr.tokenDate = Usr.tokenDate;
-                usr.tokens = Usr.tokens as any;
-                usr.owned_workflows = Usr.owned_workflows;
-                usr.workflows = Usr.workflows;
-                return await usr.save();
-            }
-            // try{
-            //     return await User.findOneAndUpdate({_id: usr._id}, {$set: Usr as any}, {useFindAndModify: false});
-            // }
-            catch(err){
-                throw new Error(err);
-            }
-        }else{
-            throw new Error("Could not find User");
+    async updateUser(Usr: UserDoc): Promise<UserProps>{
+        try{
+            return await Usr.save();
+        }
+        catch(err){
+            console.error(err);
+            throw new Error(err);
         }
     }
 
@@ -109,7 +89,7 @@ export default class UserRepository {
      * @throws Error if findOne breaks somehow
      * @param filter An object containing the search criteria
      */
-    async getUser(filter): Promise<UserProps> {
+    async findUser(filter): Promise<UserDoc> {
         try {
             return await User.findOne(filter);
         } catch(err) {

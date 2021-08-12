@@ -1,0 +1,114 @@
+<ion-content>
+  <br>
+  <ion-fab>
+    <ion-fab-button (click)="debug()">
+      debug
+    </ion-fab-button>
+  </ion-fab>
+  <ion-grid>
+    <ion-row style="background-color: #002060;">
+
+      <ion-col sizeXs="12" sizeSm="12" sizeMd="6" offsetMd="3" style="justify-content: center; align-items: center; ">
+        <div>
+          <ion-img src="../../../assets/LogoWhiteBackground.png"></ion-img>
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="10" offset="1">
+
+        <div style="height: 100%; width:100%; display: flex; align-items: center; justify-content: center;">
+          <ion-card name="login" *ngIf="!registerButton" style="width:100%">
+            <ion-card-header color="primary">Login</ion-card-header>
+            <ion-card-content>
+              <form [formGroup]="loginForm" (ngSubmit)="login()">
+                <ion-item>
+                  <ion-label position="stacked">Email Address:</ion-label>
+                  <ion-input inputmode="email" formControlName="loginEmail"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-label position="stacked">Password:</ion-label>
+                  <ion-input type="password" formControlName="loginPassword"></ion-input>
+                </ion-item>
+                <div style="text-align: center;">
+                  <span>
+                    Reset <a (click)="displayResetPassword()">
+                      password</a>
+                  </span>
+                  <br>
+                  <span>Register a new Account <a (click)="changeOver()">here</a></span>
+                </div>
+                <ion-button padding expand="block" color="primary" fill="outline" [disabled]="!loginForm.valid"
+                  type="submit">Login</ion-button>
+              </form>
+            </ion-card-content>
+
+          </ion-card>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <div style="height: 100%; display: flex; align-items: center; justify-content: center;">
+          <ion-card name="register" *ngIf="registerButton">
+            <ion-card-header color="primary">
+              <ion-row>
+                <ion-col size='9'>
+                  Register
+                </ion-col>
+                <ion-col>
+                  <a (click)="changeOver()" style="color:white">Back</a>
+                </ion-col>
+              </ion-row>
+            </ion-card-header>
+            <ion-card-content>
+              <form [formGroup]="registerForm" (ngSubmit)="register()">
+                <ion-item>
+                  <ion-label position="stacked">First name:</ion-label>
+                  <ion-input inputmode="text" formControlName="Fname"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-label position="stacked">Last name:</ion-label>
+                  <ion-input inputmode="text" formControlName="Lname"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-label position="stacked">Initials:</ion-label>
+                  <ion-input inputmode="text" formControlName="initials"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-label position="stacked">Email:</ion-label>
+                  <ion-input inputmode="text" formControlName="email"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-label position="stacked">Phone number:</ion-label>
+                  <ion-input inputmode="text" formControlName="phone_number"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-label position="stacked">Password</ion-label>
+                  <ion-input type="password" formControlName="password"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-label position="stacked">Confirm password</ion-label>
+                  <ion-input type="password" formControlName="confirmPassword"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-label position="stacked">Add your signature</ion-label>
+                  <ion-button hidden="true">
+                    <!-- dont edit, its not an error believe it or not -->
+                    <input type="file" #fileInput (change)="uploadFile($event)" hidden="true" accept="image/*">
+                  </ion-button>
+                  <ion-button (click)="selectImageSource()">Add</ion-button>
+                </ion-item>
+                <ion-button expand="block" color="primary" fill="outline" [disabled]="!registerForm.valid"
+                  type="submit">Register</ion-button>
+              </form>
+            </ion-card-content>
+          </ion-card>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
