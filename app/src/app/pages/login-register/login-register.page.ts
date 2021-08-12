@@ -5,14 +5,21 @@ import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { AbstractControlOptions, FormBuilder } from '@angular/forms';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
-import { ActivatedRoute, Router } from '@angular/router';
-import { match } from './../../Services/match.validator';
-
 //biometric stuff
 import { AvailableResult, BiometryType } from 'capacitor-native-biometric';
 import { Credentials, NativeBiometric } from 'capacitor-native-biometric';
 //popover
+
+import { ActivatedRoute, Router } from '@angular/router';
+import { match } from './../../Services/match.validator';
+
+//popover
 import { ModalController, PopoverController } from '@ionic/angular';
+// import { RegisterLoginPopoverComponent } from './../../Popovers/register-login-popover/register-login-popover.component';
+
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+
+//import for the users API and interface
 
 import {
   UserAPIService,
@@ -54,14 +61,8 @@ export class LoginRegisterPage implements OnInit {
 
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
-      loginEmail: [
-        'brenton.stroberg@yahoo.co.za',
-        [Validators.required, Validators.email],
-      ],
-      loginPassword: [
-        'Password#1',
-        [Validators.required, Validators.minLength(8)],
-      ],
+      loginEmail: ['brenton.stroberg@yahoo.co.za', [Validators.required, Validators.email]],
+      loginPassword: ['Password#1', [Validators.required, Validators.minLength(8)]],
     });
     const formOptions: AbstractControlOptions = {
       validators: match('password', 'confirmPassword'),
@@ -97,7 +98,7 @@ export class LoginRegisterPage implements OnInit {
     this.userAPIService.login(loginData, (response) => {
       if (response.status === 'success') {
         //localStorage.setItem('token', response.data.token);
-        Cookies.set('token', response.data.token, { expires: 1 });
+        Cookies.set('token', response.data.token, {expires: 1});
         this.userAPIService.displayPopOver('Success', 'login was successful');
         this.router.navigate(['home']);
       } else {
@@ -118,16 +119,17 @@ export class LoginRegisterPage implements OnInit {
   }
 
   async register(): Promise<void> {
+
     const a = await this.modal.create({
       component: UserNotificationsComponent,
-      componentProps: {
-        title: 'termsOfService',
-      },
+      componentProps:{
+        'title' : 'termsOfService',
+      }
     });
 
     await (await a).present();
     const data = (await a).onDidDismiss();
-    if (await (await data).data.confirm) {
+    if(await (await data).data['confirm']){
       //still to do
     }
     console.log(a);

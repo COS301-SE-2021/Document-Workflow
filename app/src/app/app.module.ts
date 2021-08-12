@@ -24,7 +24,7 @@ import { AddCommentComponent } from './components/add-comment/add-comment.compon
 import { ConfirmSignaturesComponent } from './components/confirm-signatures/confirm-signatures.component';
 import { UserNotificationsComponent } from './components/user-notifications/user-notifications.component';
 import { ConfirmDeleteWorkflowComponent } from './components/confirm-delete-workflow/confirm-delete-workflow.component';
-import { DocumentActionAreaComponent } from './components/document-action-area/document-action-area.component';
+import {DocumentActionAreaComponent} from './components/document-action-area/document-action-area.component';
 @NgModule({
   declarations: [
     AppComponent,

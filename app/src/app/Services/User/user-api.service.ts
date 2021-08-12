@@ -27,7 +27,7 @@ export class UserAPIService {
   constructor(
     private http: HttpClient,
     private pop: PopoverController
-    ) {}
+  ) {}
 
   public checkIfAuthorized(){//callback){
     const formData = new FormData();
@@ -55,8 +55,8 @@ export class UserAPIService {
       }
       else callback({status:'error', message: 'Cannot connect to Server'});
     }, (error)=>{
-        console.log(error);
-       this.displayPopOver("Error", "An unexpected error occurred, please try again later");
+      console.log(error);
+      this.displayPopOver("Error", "An unexpected error occurred, please try again later");
     });
   }
 
@@ -90,13 +90,13 @@ export class UserAPIService {
       Authorization: ('Bearer ' + token)
     });
 
-      this.http.post(UserAPIService.url + '/users/retrieveOwnedWorkflows', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
-        if (data) {
-          callback(data);
-        } else callback({status: 'error', message: 'Cannot connect to Server'});
-        }, (error) =>{
-          this.displayPopOver('Error user-api-services - getAllWorkOwnedFlows', error);
-      });
+    this.http.post(UserAPIService.url + '/users/retrieveOwnedWorkflows', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
+      if (data) {
+        callback(data);
+      } else callback({status: 'error', message: 'Cannot connect to Server'});
+    }, (error) =>{
+      this.displayPopOver('Error user-api-services - getAllWorkOwnedFlows', error);
+    });
   }
 
   public getAllWorkFlows( callback){
@@ -108,50 +108,51 @@ export class UserAPIService {
       Authorization: ('Bearer ' + token)
     });
 
-      this.http.post(UserAPIService.url + '/users/retrieveWorkflows', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
-        if (data) {
-          callback(data);
-        } else callback({status: 'error', message: 'Cannot connect to Server'});
-      }, error =>{
-        this.displayPopOver('Error user-api-services - getAllWorkFlows', error);
-      });
-    }
+    this.http.post(UserAPIService.url + '/users/retrieveWorkflows', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
+      if (data) {
+        callback(data);
+      } else callback({status: 'error', message: 'Cannot connect to Server'});
+    }, error =>{
+      this.displayPopOver('Error user-api-services - getAllWorkFlows', error);
+    });
+  }
 
   //for the pop over
   async displayPopOver(title: string, message: string){
     const poper = await this.pop.create({
       component: UserNotificationsComponent,
       componentProps:{
-        title,
-        message
+        'title': title,
+        'message': message
       }
     });
     await poper.present();
 
     const a = await poper.onDidDismiss();
     console.log( a );
-   }
+  }
 
-   async getUserDetails(callback){
-     const formData = new FormData();
-     //const token = localStorage.getItem('token');
-     const token = Cookies.get('token');
-     const httpHeaders: HttpHeaders = new HttpHeaders({
-       Authorization: ('Bearer ' + token)
-     });
+  async getUserDetails(callback){
+    const formData = new FormData();
+    //const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: ('Bearer ' + token)
+    });
 
-     this.http.post(UserAPIService.url + '/users/getDetails', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
-       if (data) {
-         callback(data);
-       } else callback({status: 'error', message: 'Cannot connect to Server'});
-     }, error =>{
-      this.displayPopOver('Error user-api-services - getUserDetails', error);
-     });
-   }
+    this.http.post(UserAPIService.url + '/users/getDetails', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
 
-   logout(){
-     //localStorage.removeItem('token');
-     Cookies.remove('token');
-   }
+      if (data) {
+        callback(data);
+      } else callback({status: 'error', message: 'Cannot connect to Server'});
+    }, async error =>{
+      await this.displayPopOver('Error user-api-services - getUserDetails', error);
+    });
+  }
+
+  logout(){
+    //localStorage.removeItem('token');
+    Cookies.remove('token');
+  }
 
 }

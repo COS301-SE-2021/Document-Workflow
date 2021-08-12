@@ -1,274 +1,234 @@
 import { injectable } from "tsyringe";
 import UserRepository from "./UserRepository";
-import { UserI } from "./User";
-import url from 'url';
-import crypto from "crypto";
+import { UserProps, Token } from "./User";
 import nodemailer from 'nodemailer';
-import bcrypt from "bcryptjs";
-import WorkFlowRepository from "../workflow/WorkFlowRepository";
 import jwt from "jsonwebtoken";
+import { AuthenticationError, RequestError } from "../error/Error";
+import bcrypt from "bcrypt";
+import crypto from "crypto";
+import WorkflowRepository from "../workflow/WorkflowRepository";
 
 @injectable()
 export default class UserService {
-
-    constructor(private userRepository: UserRepository, private workFlowRepository: WorkFlowRepository) {
+    constructor(private userRepository: UserRepository, private workflowRepository: WorkflowRepository) {}
+    async authenticateUser(password, usr: UserProps) {
+        const result = await bcrypt.compare(password, await usr.password);
+        if(result){
+            console.log("Authenticating user:");
+            console.log(usr);
+            return this.generateToken(usr.email, usr._id);
+        }else{
+            throw new AuthenticationError("Password or Email is incorrect");
+        }
     }
 
-    async authenticateUser(email, password, id, hash){
+    async getHashedPassword(password: string){
+        return await bcrypt.hash(password, parseInt(process.env.SALT_ROUNDS))
+            .then(function(hash){
+                return hash;
+            })
+            .catch(err => {
+                throw new Error(err);
+            });
+    }
+
+    generateToken(email, id): string{
+        return jwt.sign({id: id, email: email}, process.env.SECRET, {expiresIn: "24h"});
+    }
+
+    async getUser(request): Promise<UserProps> {
+        console.log('Getting user')
+        console.log(request);
+        if(request === undefined){
+            throw new RequestError("Search criteria required");
+        }
         try {
-            let result = await bcrypt.compare(password, hash);
-            if (!result) {
-                throw "Email or password incorrect";
-            }
-            return jwt.sign({_id: id, email: email}, process.env.SECRET, {expiresIn: '24h'});
+            return await this.userRepository.findUser(request.params);
         } catch (err) {
-            throw Error("Email or password incorrect");
+            console.error(err);
+            throw new RequestError("Could not get user");
         }
     }
 
-    async getUser(request): Promise<UserI> {
-        if(!request._id){
-            throw new URIError("id is required");
-        }
-        try{
-            const res = await this.userRepository.getUsers({_id: request._id});
-            return res[0];
-        }catch(err) {
-            throw err;
-        }
-    }
-
-    async getUserById(request): Promise<UserI> {
+    async getUserById(request): Promise<UserProps> {
         if(!request.params.id){
             throw new Error("Search criteria required");
         }
         try {
-            return await this.userRepository.getUser({id: request.params.id});
+            return await this.userRepository.findUser({id: request.params.id});
         } catch (err) {
-            throw err;
+            console.error(err);
+            throw new RequestError("Could not get user");
         }
     }
 
-    async getUserByEmail(request): Promise<UserI> {
+    async getUserByEmail(request): Promise<UserProps> {
         if(!request.params.email){
             throw new Error("Search criteria required");
         }
         try {
-            return await this.userRepository.getUser({email: request.params.email});
+            return await this.userRepository.findUser({email: request.params.email});
         } catch (err) {
-            throw err;
+            console.error(err);
+            throw new RequestError("Could not get user");
         }
     }
 
-    async getAllUsers(): Promise<UserI[]> {
+    async getAllUsers(): Promise<UserProps[]> {
         try {
-            const users = await this.userRepository.getUsers({});
-            console.log(users);
-            return users;
+            return await this.userRepository.findUsers({});
         } catch (err) {
-            throw err;
+            console.error(err);
+            throw new RequestError("Could not get users");
         }
     }
 
-    async getUsers(): Promise<UserI[]> {
-        try{
-            const users = await this.userRepository.getUsers({});
-            console.log(users);
-            return users;
-        }catch(err){
-            throw err;
+    async registerUser(req): Promise<UserProps> {
+        if (req.body.length === 0 || !req.body || !req.files.signature.data) {
+            throw new RequestError("Missing required information to register user");
         }
-    }
-
-    /**
-     * The function responsible for creating a new user and adding their information to the DocumentWorkflow system.
-     * @param req
-     */
-    async registerUser(req): Promise<any> {
-        //Validation:
-        let signature_base64 = req.files.signature.data.toString('base64');
-        if (req.body.length === 0 || !req.body) {
-            return {message: "No User details sent"};
-        } else {
-            try {
-                const Usr = req.body;
-                const usr: UserI = {
-                    name: Usr.name,
-                    surname: Usr.surname,
-                    initials: Usr.initials,
-                    email: Usr.email,
-                    password: this.validatePassword(Usr.password),
-                    validated: Usr.validated,
-                    tokenDate: Usr.tokenDate,
-                    validateCode: crypto.randomBytes(64).toString('hex'),
-                    signature: Buffer.from(signature_base64), // req.files.signature.data could maybe go straight here
-                    owned_workflows: [],
-                    workflows: []
-                }
-                await this.userRepository.postUser(usr);
-                await this.sendVerificationEmail(usr.validateCode, usr.email );
-                return {status:'success', data:{}, message:"Successfully created user account"};
-
-            } catch (err) {
-                throw err;
+        try {
+            const usr: UserProps = req.body;
+            usr.signature = req.files.signature.data;
+            usr.validateCode = crypto.randomBytes(64).toString('hex');
+            usr.password = await this.getHashedPassword(usr.password);
+            //const user: UserProps = await this.userRepository.postUser(usr);
+            const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
+            usr.tokens = [token];
+            const user: UserProps = await this.userRepository.saveUser(usr);
+            //const response = await this.userRepository.putUser(usr);
+            if(user){
+                await this.sendVerificationEmail(usr.email, usr.validateCode)//,
+                return user;
             }
+        } catch (err) {
+            console.error(err);
+            throw new RequestError("Could not register user");
         }
     }
 
-    /**
-     * A function that verifies whether or not the password associated with a new user account is strong enough.
-     * It exists simply to fzcilitate error handling, since the schema for the user contains ths validator as well.
-     * A password must be at least 8 characters long, contain an uppercase letter, lowercase letter, number and special symbol.
-     * @param password
-     * @private
-     */
-    private validatePassword(password): string{
-        if(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/.test(password))
-            return password;
-        else throw {status: "failed", data: {}, message:"Password is not strong enough"};
-    }
-
-    /**
-     * Validates a user by comparing request verification code with that stored in the corresponding user. The incoming request
-     * is a get request, hence the need for url.parse.
-     * @param req
-     * TODO: need to have more elegant returned html.
-     * TODO: need a better system for the redirect_html.
-     */
-    async verifyUser(req) : Promise<any>{
-        const redirect_url = "http://localhost:8100/login-register";
-        const queryObject = url.parse(req.url, true).query
-
-        let users = await this.userRepository.getUsers({"email": queryObject["email"]});
-        if(users[0].validateCode === queryObject["verificationCode"])
-        {
-            users[0].validated = true;
-            await this.userRepository.putUser(users[0]);
-            return ('<html>Successfully verified. Click<a href= ' + redirect_url + '> here</a> to return to login</html>');
+    async verifyUser(req): Promise<any> {
+        const redirect_url = "http://localhost:3000/login-register";
+        if(!req.query.email || !req.query.verificationCode){
+            throw new RequestError("Missing required properties");
         }
-        else {
-            throw "Validation Codes do not match";
+        const query = req.query;
+
+        const user = await this.userRepository.findUser({"email": query.email});
+        if (user && user.validateCode === query.verificationCode) {
+            user.validated = true;
+            await this.userRepository.updateUser(user);
+            return ('<html lang="en">Successfully verified. Click<a href= ' + redirect_url + '> here</a> to return to login</html>');
+        } else {
+            throw new AuthenticationError("Could not Validate User Email");
         }
     }
 
-    /**
-     * This functiona handles the process of sending the email to a user that they can use to verify that they wish to
-     * create an account on the DocumentWorkflow system. Makes use
-     * @param code: the randomly generated code needed to validate the user.
-     * @param emailAddress: the email address associated with the user to which the email is sent.
-     * TODO: will need to handle any errors as a result of emails not being sent.
-     */
     async sendVerificationEmail(code, emailAddress): Promise<void> {
-        function sendVerificationEmail(code, emailAddress) {
-            let url = process.env.BASE_URL + '/users/verify?verificationCode=' + code + '&email=' + emailAddress;
-            let transporter = nodemailer.createTransport({
-                service: 'gmail',
-                auth: {
-                    user: process.env.EMAIL_ADDRESS,
-                    pass: process.env.EMAIL_PASSWORD
-                }
-            });
+        let url = process.env.BASE_URL + '/users/verify?verificationCode=' + code + '&email=' + emailAddress;
+        let transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_ADDRESS,
+                pass: process.env.EMAIL_PASSWORD
+            }
+        });
 
-            let mailOptions = {
-                from: process.env.EMAIL_ADDRESS,
-                to: emailAddress,
-                subject: 'DocumentWorkflow Verification Code',
-                html: "<html lang='en'><p>Hello new DocumentWorkflow User, use this link to activate your account! </p>" +
-                    "<a href='" + url + "'>Click here</a></html>"
+        let mailOptions = {
+            from: process.env.EMAIL_ADDRESS,
+            to: emailAddress,
+            subject: 'DocumentWorkflow Verification Code',
+            html: "<html lang='en'><p>Hello new DocumentWorkflow User, use this link to activate your account! </p>" +
+                "<a href='" + url + "'>Click here</a></html>"
+        };
 
-            };
-
-            transporter.sendMail(mailOptions, function (error, info) {
-                if (error) {
-                    console.log(error);
-                    return false;
-                } else {
-                    console.log('Email sent: ' + info.response);
-                    return true;
-                }
-            });
-        } sendVerificationEmail(code, emailAddress);
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error);
+                return false;
+            } else {
+                console.log('Email sent: ' + info.response);
+                return true;
+            }
+        });
     }
 
-    /**
-     * The function that handles the logic of logging in a user. It expects the given request to contain
-     * an email and a password field. It checks if the email is associated with any stored user and if the user
-     * has validated their account using the email verification functionality. For security reasons, we throw a
-     * 'Email or password incorrect' error if either the user does not exist or the password is incorrect.
-     * @param req: the HTTP request and all associated data.
-     */
     async loginUser(req): Promise<any> {
         if(!req.body.email || !req.body.password){
             throw new Error("Could not log in");
         }
-        let user = await this.userRepository.getUser({"email": req.body.email});
-        console.log(user);
-        if(user == null)
-            throw new Error("Email or password incorrect");
+        const user = await this.userRepository.findUser({"email": req.body.email});
         if(user.validated){
-            return await this.authenticateUser(user.email, req.body.password, user._id, user.password);
+            try{
+                return await this.authenticateUser(req.body.password, user);
+            }
+            catch(err){
+                throw new AuthenticationError(err.message);
+            }
         } else {
-            throw new Error("User must be validated");
+            throw new AuthenticationError("User must be validated");
         }
     }
 
-    async deleteUser(request): Promise<{}> {
-        const id = request.params.id;
-        if(!id){
-            return { message: "No user specified" };
+    async logoutUser(req): Promise<UserProps> {
+        if(!req.user){
+            throw new RequestError("Missing required properties");
         }
-        const usr = await this.userRepository.getUser(id);
-        if(!usr){
-            return { message: "User not found" };
-        }
-        return { user: await this.userRepository.deleteUser(id) };
-    }
-
-    async retrieveOwnedWorkFlows(req): Promise<any> {
-        console.log("Retrieving owned workflows")
-        const user = await this.userRepository.getUser({email: req.user.email});
-
-        let workflows = [];
-        for(let id of user.owned_workflows)
-        {
-            workflows.push(await this.workFlowRepository.getWorkFlow(id));
-        }
-
-        return {status:"success", data: workflows, message:""};
-    }
-
-    async retrieveWorkFlows(req):Promise<any> {
-        console.log("Retrieving workflows")
-
-        const user = await this.userRepository.getUser({email: req.user.email});
-
-        let workflows = [];
-        for(let id of user.workflows)
-        {
-            workflows.push(await this.workFlowRepository.getWorkFlow(id));
-        }
-
-        return {status:"success", data: workflows, message:""};
-    }
-
-    async getUserDetails(req) {
-        try{
-            let user = await this.userRepository.getUser({email: req.user.email});
-            const data = {
-                name: user.name,
-                surname: user.surname,
-                initials: user.initials,
-                email: user.email,
-                signature:user.signature.toString(),
-                owned_workflows: user.owned_workflows,
-                workflows: user.workflows
-            };
-            return {status: "success", data: data, message:""};
+        const user = await this.userRepository.findUser({email: req.user.email});
+        const tokens: Token[] = req.user.tokens;
+        tokens.filter(token => {return token.token !== req.user.token});
+        user.tokens = tokens as any;
+        try {
+            return await this.userRepository.updateUser(user);
         }
         catch(err){
-            console.log(err);
-            throw "Could not fetch user details";
+            console.error(err);
+            throw new RequestError("Could not log out user");
         }
+    }
+
+    // async retrieveOwnedWorkFlows(req): Promise<any> {
+    //     console.log("Retrieving owned workflows")
+    //     const user = await this.userRepository.findUser({email: req.user.email});
+    //
+    //     let workflows = [];
+    //     for(let id of user.owned_workflows)
+    //     {
+    //         workflows.push(await this.workFlowRepository.getWorkFlow(id));
+    //     }
+    //
+    //     return {status:"success", data: workflows, message:""};
+    // }
+    //
+    // async retrieveWorkFlows(req):Promise<any> {
+    //     console.log("Retrieving workflows")
+    //
+    //     const user = await this.userRepository.findUser({email: req.user.email});
+    //
+    //     let workflows = [];
+    //     for(let id of user.workflows)
+    //     {
+    //         workflows.push(await this.workFlowRepository.getWorkFlow(id));
+    //     }
+    //
+    //     return {status:"success", data: workflows, message:""};
+    // }
+
+    async deleteUser(req): Promise<UserProps> {
+        if (!req.params.id) {
+            throw new RequestError("Missing Parameter");
+        }
+        if(!await this.userRepository.findUser(req.params.id)){
+            throw new RequestError("User does not exist");
+        }
+        try{
+            return await this.userRepository.deleteUser(req.params.id);
+        }
+        catch(err){
+            console.error(err);
+            throw new RequestError("Could not remove user");
+        }
+
     }
 
     encryptSignature(buffer){
@@ -281,6 +241,24 @@ export default class UserService {
         result = Buffer.concat([iv, cipher.update(buffer), cipher.final()]);
 
         return result;
+    }
+
+    async getUserDetails(req) {
+        try{
+            let user = await this.userRepository.findUser({email: req.user.email});
+            const data = {
+                name: user.name,
+                surname: user.surname,
+                initials: user.initials,
+                email: user.email,
+                signature:user.signature.toString()
+            };
+            return {status: "success", data: data, message:""};
+        }
+        catch(err){
+            console.log(err);
+            throw "Could not fetch user details";
+        }
     }
 
     decryptSignature(buffer){
@@ -296,5 +274,21 @@ export default class UserService {
 
         return result;
     }
-}
 
+    async updateUser(req): Promise<UserProps> {
+        if(!req.body || !req.params.id){
+            throw new RequestError("Missing Parameters");
+        }
+        if(!await this.userRepository.findUser({_id: req.params.id})){
+            throw new RequestError("User does not exist");
+        }
+        try{
+            return await this.userRepository.updateUser(req.body);
+        }
+        catch(err){
+            console.error(err);
+            throw new RequestError("Could not update User");
+        }
+
+    }
+}

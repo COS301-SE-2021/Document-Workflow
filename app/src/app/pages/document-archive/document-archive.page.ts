@@ -13,7 +13,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 
 //imports for services and interfaces
-import { User } from '../../Services/User/user-api.service';
+import { User, UserAPIService } from '../../Services/User/user-api.service';
 import { DocumentAPIService, documentImage } from '../../Services/Document/document-api.service';
 import { DocumentViewPage } from '../document-view/document-view.page';
 
@@ -29,12 +29,28 @@ export class DocumentArchivePage implements OnInit {
     private docService: DocumentAPIService,
     private modals: ModalController,
     private plat: Platform,
-    private router: Router
+    private router: Router,
+    private userApiService: UserAPIService
   ) {}
 
   @Input() user: User;
 
-  async ngOnInit() {}
+  async ngOnInit() {
+    if(localStorage.getItem('token') === null) {
+      await this.router.navigate(['/login']);
+      return;
+    }
+    else
+    {
+      this.userApiService.checkIfAuthorized().subscribe((response) => {
+        console.log("Successfully authorized user");
+      }, async (error) => {
+        console.log(error);
+        await this.router.navigate(['/login']);
+        return;
+      });
+    }
+  }
 
   loadDocuments() {
     // this.docService.getDocuments().subscribe();

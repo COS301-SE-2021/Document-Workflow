@@ -1,36 +1,36 @@
 import { injectable } from "tsyringe";
 import DocumentRepository from "./DocumentRepository";
-import { DocumentI } from "./Document";
+import { Document, DocumentProps } from "./Document";
+import { RequestError } from "../error/Error";
 import fs from 'fs';
+import { ObjectId } from "mongoose";
 
 @injectable()
 export default class DocumentService {
-    documentRepository: DocumentRepository;
 
-    constructor(documentRepository: DocumentRepository) {
-        this.documentRepository = documentRepository;
-    }
+    constructor(private documentRepository: DocumentRepository) {}
 
-    async getDocuments(): Promise<DocumentI[]> {
+    async getDocuments(): Promise<DocumentProps[]> {
         try{
-            return await this.documentRepository.getDocuments({});
+            return await this.documentRepository.getDocuments();
         }catch(err){
-            throw err;
+            throw new RequestError("Could not retrieve documents");
         }
     }
 
-    /**
-     *
-     * @param document
-     * @param workflow_id
-     */
-    async uploadDocument(document, workflow_id) : Promise<any>{
+    //TODO: Check if type is PDF
+    async uploadDocument(file: File, id: ObjectId): Promise<ObjectId>{
         try{
-            return await this.documentRepository.postDocument(document, workflow_id);
+            const doc = new Document({
+                name: file.name,
+                size: file.size,
+                path: file.name + '/',
+                workflowId: id
+            })
+            return await this.documentRepository.postDocument(doc, file);
         }
-        catch(err)
-        {
-            throw err
+        catch(err) {
+            throw new RequestError("Could not store document");
         }
     }
 
@@ -40,7 +40,6 @@ export default class DocumentService {
         console.log("deleting document from metadata database ", document_id);
         await this.documentRepository.deleteDocument(document_id);
     }
-
 
     async retrieveDocument(req) : Promise<any> {
         console.log("retrieving a document");

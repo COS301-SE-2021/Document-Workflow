@@ -2,16 +2,18 @@ import UserService from "../../src/user/UserService";
 import UserRepository from "../../src/user/UserRepository";
 import UserController from "../../src/user/UserController";
 import Database from "../../src/Database";
+import WorkFlowRepository from "../../src/workflow/WorkflowRepository";
 
 let userService;
 let userController;
-describe("user integration tests", () => {
-  // Database.get();
+describe("User integration tests", () => {
+
   beforeAll(async () => {
       await Database.get();
   });
+
   beforeEach(() => {
-    userService = new UserService(new UserRepository());
+    userService = new UserService(new UserRepository(), new WorkFlowRepository());
     userController = new UserController(userService);
   });
 
@@ -19,34 +21,47 @@ describe("user integration tests", () => {
     await Database.disconnect();
   });
 
-  describe("/POST", () => {
-    describe("/api/users", () => {
+  describe("User Lifecycle:", () => {
+
       test("Create new user:", async () => {
 
-        const mockGetRequest = {
+        const findByEmailRequest = {
           params: {
-           // id: postResponse._id,
+            email: "testymctestface@testmail.test"
           },
         } as unknown as Request;
 
-        //const getResponse = await userController.getUserRoute(mockGetRequest);
-        const currentDate = Date.now();
+        const getResponse = await userController.getUserByEmailRoute(findByEmailRequest);
+        if(getResponse){
+          const deleteRequest = {
+            params: {
+              id: getResponse._id
+            }
+          } as unknown as Request;
+
+          const deletedUser = await userController.deleteUserRoute(deleteRequest);
+          expect(deletedUser.email).toBe("testymctestface@testmail.test");
+        }
+
+        //const currentDate = Date.now();
         const mockPostRequest = {
           body: {
-            name: "Joey2",
-            surname: "Cooper2",
-            initials: "JC",
-            email: "joey@hotmail.gov",
-            password: "paSsW*or^d1234",
-            validated: false,
-            tokenDate: currentDate,
+            name: "Testy",
+            surname: "TestFace",
+            initials: "TT",
+            email: "testymctestface@testmail.test",
+            password: "paSsW*or^d1234"
           },
+          files: {
+            signature: {
+              data: "somedataofasignaturelul"
+            }
+          }
         } as unknown as Request;
 
-        //const postResponse = await userController.postUserRoute(mockPostRequest);
-
-
+        // const postResponse = await userController.registerUserRoute(mockPostRequest);
+        await userController.registerUserRoute(mockPostRequest);
+        //console.log(postResponse);
       });
     });
-  });
 });
