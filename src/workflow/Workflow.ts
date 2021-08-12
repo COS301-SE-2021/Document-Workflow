@@ -12,6 +12,7 @@ import { documentSchema } from "../document/Document";
 export const workflowSchema = createSchema({
     name: Type.string({required: true}),
     ownerId: Type.ref(Type.objectId({required: true})).to("User", userSchema),
+    ownerEmail: Type.string({required: true}),
     documentId: Type.ref(Type.objectId({required: false})).to("Document", documentSchema),
     description: Type.string({required: true}),
     phases: Type.array({required: false}).of(Type.ref(Type.objectId({required: true})).to("Phase", phaseSchema)),

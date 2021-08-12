@@ -60,7 +60,12 @@ export default class WorkflowService{
 
             //Step 4 update workflow with documentId:
             await this.workflowRepository.updateWorkflow(workflow);
-            console.log("Workflow updated");
+            console.log("Workflow updated, adding the workflow to the relevant users");
+
+            console.log(workflow);
+
+            await this.addWorkFlowIdToUsersWorkflows(phases, workflowId, workflow.ownerEmail);
+            await this.addWorkFlowIdToOwnedWorkflows(workflowId, workflow.ownerEmail);
             return {status: "success", data: {id:workflowId}, message:""};
         }
         catch(e){
@@ -94,30 +99,28 @@ export default class WorkflowService{
         return true;
     }
 
-    /*async addWorkFlowIdToUsersWorkflows(phases, workflow_id, owner_email):Promise<void>
+    async addWorkFlowIdToUsersWorkflows(phases, workflowId, ownerEmail):Promise<void>
     {
         for(let i=0; i<phases.length; ++i) {
-            let users = phases[i];
-            for (let email of users) {
-                const users = await this.usersRepository.getUsers({email: email});
-                let user = users[0];
-                if(user.email != owner_email && !user.workflows.includes(workflow_id))
-                    user.workflows.push(workflow_id);
-                await this.usersRepository.putUser(user as UserDoc);
+            let users = phases[i].users;
+            for(let k=0; k<users.length; ++k){
+                let user = await this.userService.getUserByEmail(users[k].user);
+                if(user.email != ownerEmail && !user.workflows.includes(workflowId))
+                    user.workflows.push(workflowId);
+                await this.userService.updateUserWorkflows(user);
             }
         }
     }
 
-    async addWorkFlowIdToOwnedWorkflows(owner_email, workflow_id):Promise<void>{
-        console.log("Adding the workflow id to the workflows array of the owner " + workflow_id);
-        let users = await this.usersRepository.getUsers({email:owner_email});
-        let user = users[0];
-        console.log(user.owned_workflows);
-        user.owned_workflows.push(workflow_id);
-        console.log(user.owned_workflows);
-        await this.usersRepository.putUser(user as UserDoc);
+    async addWorkFlowIdToOwnedWorkflows(workflowId, ownerEmail):Promise<void>{
+        console.log("Adding the workflow id to the workflows array of the owner " + ownerEmail);
+        let user = await this.userService.getUserByEmail(ownerEmail);
+        console.log(user.ownedWorkflows);
+        user.ownedWorkflows.push(workflowId);
+        console.log(user.ownedWorkflows);
+        await this.userService.updateUserWorkflows(user);
     }
-
+    /*
     async getWorkFlowDetails(req) {
 
         let workflow_id = req.body.id;
@@ -133,21 +136,6 @@ export default class WorkflowService{
         };
         return {status:"success", data: data, message:""};
     }
-
-    private stringIntoPhasesArray(str: string): any[]{
-
-        let arr = str.split(']');
-        let result = [];
-
-        for(let i=0; i<arr.length-1; ++i)
-        {
-            let sub_array= (arr[i].replace('[','').split(' '));
-            if(sub_array.length !=0)
-                result.push(sub_array);
-        }
-
-        return result;
-    };
 
     async deleteWorkFlow(req) {
         console.log("Attempting to delete workflow");

@@ -42,7 +42,6 @@ export default class WorkflowController {
             files: {
                 document: "...."
             }*/
-        //TODO: Check names of request variables
 
         //Check the request for the proper variables
         if(!req.body.name || !req.body.description
@@ -64,6 +63,7 @@ export default class WorkflowController {
             __v: undefined,
             name: req.body.name,
             ownerId: req.user._id,
+            ownerEmail: req.user.email,
             documentId: undefined,
             description: req.body.description,
             phases: undefined
@@ -88,14 +88,15 @@ export default class WorkflowController {
             throw new ServerError(err.toString());
         }
     }
-
-    /*async getWorkFlowDetails(req):Promise<any>{
+    /*
+    async getWorkFlowDetails(req):Promise<any>{
         try{
             return await this.workflowService.getWorkFlowDetails(req);
         } catch(err) {
             throw new ServerError(err.toString());
         }
     }
+
     private async deleteWorkFlow(req) {
         try{
             return await this.workflowService.deleteWorkFlow(req);
@@ -112,14 +113,15 @@ export default class WorkflowController {
                 await handleErrors(err,res);
             }
         });
-
-        /*this.router.post("/getDetails", this.auth, async (req,res) =>{
+        /*
+        this.router.post("/getDetails", this.auth, async (req,res) =>{
             try {
                 res.status(200).json(await this.getWorkFlowDetails(req));
             } catch(err){
                 await handleErrors(err,res);
             }
         });
+
         this.router.post("/delete",this.auth, async(req,res)=>{
             try {
                 res.status(200).json(await this.deleteWorkFlow(req));

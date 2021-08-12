@@ -34,6 +34,10 @@ export default class UserService {
         return jwt.sign({id: id, email: email}, process.env.SECRET, {expiresIn: "24h"});
     }
 
+    async updateUserWorkflows(user){
+        await this.userRepository.saveUser(user);
+    }
+
     async getUser(request): Promise<UserProps> {
         if(request === undefined){
             throw new RequestError("Search criteria required");
