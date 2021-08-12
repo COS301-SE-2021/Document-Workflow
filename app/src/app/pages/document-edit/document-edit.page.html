@@ -18,8 +18,8 @@
   </ion-toolbar>
 </ion-header>
 <ion-content style="height:100%">
-  <form [formGroup]="workflowForm" style="height:100%"(ngSubmit)="submit()">
-    <ion-card style="height: 80%;">
+  <form [formGroup]="workflowForm" style="height:100%" (ngSubmit)="submit()">
+    <ion-card style="height: 100%;">
       <ion-card-header>
         <ion-input formControlName="workflowName"></ion-input>
         <ion-input formControlName="workflowDescription"> </ion-input>
@@ -32,8 +32,17 @@
           <ion-card-content>
             <ion-card *ngFor="let phase of workflowForm.controls.phases['controls']; let i = index">
               <ion-card-header>
-                <ion-title>Phase {{i+1}}</ion-title>
-                <ion-toggle (click)='viewPhase(i)' ></ion-toggle>
+                <ion-grid>
+                  <ion-row>
+                    <ion-col sizeXs='10'>
+                      <ion-title>Phase {{i+1}}</ion-title>
+                    </ion-col>
+                    <ion-col sizeXs='2'>
+                      <a (click)='viewPhase(i)' *ngIf="!phaseViewers[i]">Show Phase</a>
+                      <a (click)='viewPhase(i)' *ngIf="phaseViewers[i]">Hide Phase</a>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
               </ion-card-header>
               <ion-card-content *ngIf='phaseViewers[i]'>
                 <ion-grid *ngFor="let user of  phase.controls['users'].controls; let j = index">
@@ -41,10 +50,10 @@
                     <ion-col sizeXs="12" sizeMd="2">
                       Add User:
                     </ion-col>
-                    <ion-col sizeXs='11' sizeMd="9">
+                    <ion-col sizeXs='10' sizeMd="8">
                       <ion-input type="email" [formControl]="user.controls.user"></ion-input>
                     </ion-col>
-                    <ion-col sizeMd="2">
+                    <ion-col sizeXs='2' sizeMd="2">
                       <ion-icon name="close-circle-outline" size="large"
                         (click)="removeUser(phase.controls['users'],i, j)">
                       </ion-icon>
@@ -69,11 +78,35 @@
                     </ion-radio-group>
                   </ion-row>
                 </ion-grid>
+                <ion-item style="width:100%">
+                <ion-button style="width:100%" expand="block" color="primary" fill="outline" (click)="includeActionArea(i,phase.controls.annotation)">
+                Add Action Area
+              </ion-button>
+              </ion-item>
+                <ion-item style="width:100%">
+                  <ion-button style="width:100%" expand="block" color="primary" fill="outline" (click)="addUser(phase.controls['users'])">
+                    Add User
+                  </ion-button>
+                </ion-item>
+                <ion-item style="width:100%">
+                  <ion-button style="width:100%" expand="block" color="primary" fill="outline" (click)="removePhase(i)">
+                    Remove phase
+                  </ion-button>
+                </ion-item>
               </ion-card-content>
             </ion-card>
+            <ion-item style="width:100%">
+              <ion-button style="width:100%" expand="block" color="primary" fill="outline" (click)="addPhase()">Add
+                Phase
+              </ion-button>
+            </ion-item>
+            <ion-item style="width:100%">
+              <ion-button style="width:100%" expand="block" color="primary" fill="outline"
+                [disabled]="!workflowForm.valid" type="submit">
+                Update workflow</ion-button>
+            </ion-item>
           </ion-card-content>
         </ion-card>
-
       </ion-content>
     </ion-card>
   </form>
