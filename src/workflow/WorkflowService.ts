@@ -27,7 +27,20 @@ export default class WorkflowService{
      * @param phases
      */
     async createWorkFlow(workflow: WorkflowProps, file: File, phases: PhaseProps[]): Promise<ObjectId>{
+
+        console.log("In the createWorkFlow function");
+
+
         try {
+            //Before any creation of objects takes place, checks must be done on the inputs to ensure that they are valid.
+            const areValid = await this.arePhasesValid(phases);
+            if(!areValid){
+                console.log("Phase was malformed");
+                throw "Error";
+            }
+            console.log("ALL PHASES ARE VALID");
+            return null;
+
             //Step 1 create Phases:
             const phaseIds: ObjectId[] = [];
             for (const phase of phases) {
@@ -52,20 +65,29 @@ export default class WorkflowService{
     }
     //---------------------------------------Create Workflow Helper functions----------------------------------
     //TODO: reimplement this based on the phases structure
-    /*async checkUsersExist(phases):Promise<boolean>{
-        for(let i =0; i<phases.length; ++i) {
-            let users = phases[i];
-            for (let email of users) {
-                const result = await this.usersRepository.getUsers({email: email});
-                if (result.length == 0) {
-                    console.log("User " + email + " does not exist")
-                    throw {status: "error", data:{}, message:"User " + email + " does not exist"};
-                }
-            }
+
+    async arePhasesValid(phases):Promise<boolean>{
+        console.log("Checking if phases are valid");
+        console.log(typeof  phases);
+        for(let i=0; i<phases.length; ++i) {
+            console.log("Checking Phase: ", i+1);
+            if (!await this.checkUsersExist(phases[i].users))
+                return false;
         }
 
         return true;
-    }*/
+    }
+
+    async checkUsersExist(users):Promise<boolean>{
+        for(let i=0; i<users.lenght; ++i){
+            console.log("Checking if user ", users[i], " exists");
+            const user = await this.userService.getUserByEmail(users[i][0]);
+            if(user === undefined || user === null)
+                return false;
+        }
+
+        return true;
+    }
 
     /*async addWorkFlowIdToUsersWorkflows(phases, workflow_id, owner_email):Promise<void>
     {

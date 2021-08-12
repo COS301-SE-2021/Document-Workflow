@@ -63,7 +63,7 @@ export default class WorkflowController {
             _id: undefined,
             __v: undefined,
             name: req.body.name,
-            ownerId: req.body.ownerId,
+            ownerId: req.user._id,
             documentId: undefined,
             description: req.body.description,
             phases: undefined
@@ -74,7 +74,7 @@ export default class WorkflowController {
             convertedPhases.push({
                 users: phase.users,
                 description: phase.description,
-                signingUserId: phase.signingUserId,
+                //signingUserId: phase.signingUserId,
                 annotations: phase.annotations
                 //userAccepts: undefined
             }as PhaseProps)
@@ -104,7 +104,7 @@ export default class WorkflowController {
     }*/
 
     routes() {
-        this.router.post("", /*this.auth,*/ async (req, res) => { //TODO: re-enable authentication
+        this.router.post("",  this.authenticationService.Authenticate ,async (req, res) => { //TODO: re-enable authentication
             try {
                 res.status(200).json(await this.createWorkFlow(req));
             } catch(err){

@@ -58,12 +58,12 @@ export default class UserService {
         }
     }
 
-    async getUserByEmail(request): Promise<UserProps> {
-        if(!request.params.email){
+    async getUserByEmail(email): Promise<UserProps> {
+        if(email === undefined){
             throw new Error("Search criteria required");
         }
         try {
-            return await this.userRepository.findUser({email: request.params.email});
+            return await this.userRepository.findUser({email: email});
         } catch (err) {
             console.error(err);
             throw new RequestError("Could not get user");
