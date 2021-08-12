@@ -1,13 +1,8 @@
 import {Component, OnInit, Input, AfterViewInit, ElementRef, ViewChild} from '@angular/core';
 
 import { ModalController, NavParams, Platform } from '@ionic/angular';
-import { ActivatedRoute, Router } from '@angular/router';
-import { DocumentAPIService } from 'src/app/Services/Document/document-api.service';
-import {WorkFlowService} from 'src/app/Services/Workflow/work-flow.service';
 import {PDFDocument} from 'pdf-lib';
 import WebViewer from '@pdftron/webviewer';
-import { ConfirmDeleteWorkflowComponent } from '../confirm-delete-workflow/confirm-delete-workflow.component';
-
 
 @Component({
   selector: 'app-document-action-area',
@@ -35,6 +30,7 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
   }
 
   async ngAfterViewInit(): Promise<void>{
+    console.log("Setting up Webviewer");
 
     WebViewer({
       path: '../../../assets/lib',
