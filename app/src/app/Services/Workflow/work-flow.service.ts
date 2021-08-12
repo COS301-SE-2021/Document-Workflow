@@ -22,7 +22,7 @@ export interface WorkFlow{
   providedIn: 'root'
 })
 export class WorkFlowService {
-  static url =  'http://localhost:3000/api';
+  static url =  'http://localhost:3000/api'; //TODO: change this url
   constructor(private http: HttpClient) {}
 
   // eslint-disable-next-line @typescript-eslint/naming-convention

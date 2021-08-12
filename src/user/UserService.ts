@@ -14,8 +14,6 @@ export default class UserService {
     async authenticateUser(password, usr: UserProps) {
         const result = await bcrypt.compare(password, await usr.password);
         if(result){
-            console.log("Authenticating user:");
-            console.log(usr);
             return this.generateToken(usr.email, usr._id);
         }else{
             throw new AuthenticationError("Password or Email is incorrect");
@@ -37,8 +35,6 @@ export default class UserService {
     }
 
     async getUser(request): Promise<UserProps> {
-        console.log('Getting user')
-        console.log(request);
         if(request === undefined){
             throw new RequestError("Search criteria required");
         }
@@ -50,12 +46,12 @@ export default class UserService {
         }
     }
 
-    async getUserById(request): Promise<UserProps> {
-        if(!request.params.id){
+    async getUserById(_id): Promise<UserProps> {
+        if(_id === undefined){
             throw new Error("Search criteria required");
         }
         try {
-            return await this.userRepository.findUser({id: request.params.id});
+            return await this.userRepository.findUser({_id: _id});
         } catch (err) {
             console.error(err);
             throw new RequestError("Could not get user");

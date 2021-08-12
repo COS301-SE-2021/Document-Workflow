@@ -15,9 +15,10 @@ export default class Authenticator {
         //if(!req.header("Authorization")) throw new AuthenticationError("Authorization Header missing");
         const token = req.header("Authorization").replace("Bearer ", "");
         const decoded = jwt.verify(token, process.env.SECRET);
-        console.log("In Authenticate:")
+        console.log("In authenticate..ts");
         console.log(decoded);
-        const user = await this.userService.getUser({_id: decoded.id, 'tokens.token': token}); //NOTE: the decoded object has an id field, not a _id field
+        const user = await this.userService.getUserById(decoded.id); //NOTE: the decoded object has an id field, not a _id field
+        console.log(user);
         if (!user) {
             throw new AuthenticationError("User could not be authenticated");
         }
