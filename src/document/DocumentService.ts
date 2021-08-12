@@ -24,12 +24,13 @@ export default class DocumentService {
             const doc = new Document({
                 name: file.name,
                 size: file.size,
-                path: file.name + '/',
+                path: id + '/' +file.name,
                 workflowId: id
             })
             return await this.documentRepository.postDocument(doc, file);
         }
         catch(err) {
+            console.log(err);
             throw new RequestError("Could not store document");
         }
     }
@@ -41,6 +42,7 @@ export default class DocumentService {
         await this.documentRepository.deleteDocument(document_id);
     }
 
+    //TODO: update this!! fetch documents based on their phase.
     async retrieveDocument(req) : Promise<any> {
         console.log("retrieving a document");
         console.log(req.body.doc_id);

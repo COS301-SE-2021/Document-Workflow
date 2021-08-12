@@ -26,7 +26,7 @@ export const phaseSchema = createSchema({
     //status: Type.string({enum: PhaseStatus, required: true}),
     userAccepts: {type: Map,
         of: String,
-        default: {"meow": '69'},
+        default: {},
         required: true } //Note that the key by default will always be a string
 }, { _id: true, _v: false });
 

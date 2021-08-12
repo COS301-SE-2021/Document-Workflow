@@ -28,28 +28,54 @@ export default class DocumentRepository {
 
     }
 
-    async postDocument(doc: DocumentProps, file: File): Promise<ObjectId> {
+    /*
+       This function should only be used when creating a document!!!!!!!
+     */
+    //TODO: when saving documents to s3, use promises instead of callbacks
+    async postDocument(doc: DocumentProps, file): Promise<ObjectId> {
+        console.log(file);
         try{
             const newDoc = new Document(doc);
             await newDoc.save();
         }
         catch(err) {
+            console.log(err);
             throw new Error("Could not save Document data");
         }
 
         const uploadParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
-            Body: file,
+            Body: file.data,
             Key: doc.workflowId +"/"+ file.name
         }
+        try{
+            await s3.upload(uploadParams, (err, data) => {
+                console.log(err)
+                if(err) {
+                    throw new Error("Error establishing connection to the cloud file server");
+                }
+                else console.log(data);
 
-        s3.upload(uploadParams, (err, data) => {
+            });
+
+        }
+        catch(e){
+            console.log(e);
+        }
+
+        const uploadParams2 = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Body: file.data,
+            Key: doc.workflowId +"/phase0/"+ file.name
+        }
+
+        await s3.upload(uploadParams2, (err, data) => {
             if(err) {
                 throw new Error("Error establishing connection to the cloud file server");
             }
             else console.log(data);
-
         });
+
         return doc._id;
     }
 

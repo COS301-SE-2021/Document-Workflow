@@ -26,7 +26,7 @@ export default class WorkflowService{
      * @param file
      * @param phases
      */
-    async createWorkFlow(workflow: WorkflowProps, file: File, phases: PhaseProps[]): Promise<ObjectId>{
+    async createWorkFlow(workflow: WorkflowProps, file: File, phases: PhaseProps[]): Promise<any>{
 
         console.log("In the createWorkFlow function");
 
@@ -39,24 +39,29 @@ export default class WorkflowService{
                 throw "Error";
             }
             console.log("ALL PHASES ARE VALID");
-            return null;
+
 
             //Step 1 create Phases:
+            console.log("Saving Phases");
             const phaseIds: ObjectId[] = [];
             for (const phase of phases) {
                 phaseIds.push(await this.phaseService.createPhase(phase));
             }
             workflow.phases = phaseIds;
+            console.log("Phases saved, saving workflow");
 
             //Step 2 create workflow to get workflowId:
             const workflowId = await this.workflowRepository.saveWorkflow(workflow);
+            console.log("Workflow saved, saving document");
 
             //Step 3 save document with workflowId:
             workflow.documentId = await this.documentService.uploadDocument(file, workflowId);
+            console.log("Document saved, updating workflow");
 
             //Step 4 update workflow with documentId:
             await this.workflowRepository.updateWorkflow(workflow);
-            return workflowId;
+            console.log("Workflow updated");
+            return {status: "success", data: {id:workflowId}, message:""};
         }
         catch(e){
             //TODO rollback and rethrow
@@ -64,9 +69,9 @@ export default class WorkflowService{
         }
     }
     //---------------------------------------Create Workflow Helper functions----------------------------------
-    //TODO: reimplement this based on the phases structure
 
     async arePhasesValid(phases):Promise<boolean>{
+        //TODO: possibly add checks for a signer/signers
         console.log("Checking if phases are valid");
         console.log(typeof  phases);
         for(let i=0; i<phases.length; ++i) {

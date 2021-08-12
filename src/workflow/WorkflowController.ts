@@ -22,7 +22,7 @@ export default class WorkflowController {
     auth = this.authenticationService.Authenticate;
 
     //Check for correct input, check that it exists, send object through to service
-    async createWorkFlow(req) : Promise<ObjectId> {
+    async createWorkFlow(req) : Promise<any> {
         /*  request object looks like:
             body: {
             name: "Workflow Name",
@@ -82,7 +82,7 @@ export default class WorkflowController {
         })
 
         try{
-            return await this.workflowService.createWorkFlow(workflow, req.files.file, convertedPhases);
+            return await this.workflowService.createWorkFlow(workflow, req.files.document, convertedPhases);
 
         } catch(err) {
             throw new ServerError(err.toString());
