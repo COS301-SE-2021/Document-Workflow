@@ -32,7 +32,7 @@ export default class WorkflowController {
                     annotations: "....",
                     description: "description of phase 1",
                     users: [ "ObjectId of User 1", "ObjectId of User 2", "ObjectId of User 3" ]},
-                    signingUserId: "ObjectId of Signing User"
+                    signingUserId: "ObjectId of Signing User" //NOTE as of right now phases do not have the signingUserID as a separate entity from users array
                 {
                     annotations: "....",
                     description: "description of phase 1",
@@ -40,19 +40,20 @@ export default class WorkflowController {
                     signingUserId: "ObjectId of Signing User"]
             },
             files: {
-                file: "...."
+                document: "...."
             }*/
         //TODO: Check names of request variables
+
         //Check the request for the proper variables
-        if(!req.body.name || !req.body.ownerId || !req.body.description
-            || !req.files.file || !req.body.phases) {
+        if(!req.body.name || !req.body.description
+            || !req.files.document || !req.body.phases) { //owner ID will be added after the auth is used!!! dont check for it here
             throw new RequestError("There was something wrong with the request");
         }
 
         //Check each phase for proper variables
         const phases = JSON.parse(req.body.phases);
         phases.forEach(phase => {
-            if(!phase.annotations || !phase.description || !phase.users || !phase.signingUserId){
+            if(!phase.annotations || !phase.description || !phase.users){
                 throw new RequestError("There was something wrong with the request");
             }
         })
@@ -103,7 +104,7 @@ export default class WorkflowController {
     }*/
 
     routes() {
-        this.router.post("", /*this.auth,*/ async (req, res) => {
+        this.router.post("", /*this.auth,*/ async (req, res) => { //TODO: re-enable authentication
             try {
                 res.status(200).json(await this.createWorkFlow(req));
             } catch(err){

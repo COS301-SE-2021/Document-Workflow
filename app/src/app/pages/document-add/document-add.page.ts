@@ -60,8 +60,6 @@ export class DocumentAddPage implements OnInit {
     sizeMe: boolean;
 
     controller: boolean;
-
-    workflowServices: any;
     constructor(
       private plat: Platform,
       private fb: FormBuilder,
@@ -69,7 +67,8 @@ export class DocumentAddPage implements OnInit {
       private modal: ModalController,
       private router: Router,
       private userApiService: UserAPIService,
-      private sanitizer: DomSanitizer
+      private sanitizer: DomSanitizer,
+      private workflowService: WorkFlowService
     ) {}
 
     async ngOnInit() {
@@ -112,7 +111,7 @@ export class DocumentAddPage implements OnInit {
         workflowFile:['',[Validators.required]],
         phases: this.fb.array([
           this.fb.group({
-            annotation: new FormControl('', [Validators.required]),
+            annotations: new FormControl('', [Validators.required]),
             description: new FormControl('', Validators.required),
             users: this.fb.array([
               this.fb.group({
@@ -195,7 +194,7 @@ export class DocumentAddPage implements OnInit {
     createPhase(): FormGroup {
       return this.fb.group({
         description: new FormControl('', Validators.required),
-        annotation: new FormControl('', [Validators.required]),
+        annotations: new FormControl('', [Validators.required]),
         users: this.fb.array([
           this.fb.group({
             user: new FormControl('', [Validators.email, Validators.required,
@@ -298,15 +297,23 @@ export class DocumentAddPage implements OnInit {
       });
     }
 
-    submit() {
-      console.log(this.workflowForm);
-      this.workflowServices.createWorkflow(
-        this.workflowForm,
-        '',
-        this.file,
-        (response) => {}
-      );
+    async submit() {
+      await this.createWorkflow();
     }
+
+  async createWorkflow() {
+    console.log('Extracting form data ------------------------------');
+    console.log('Name: ', this.workflowForm.controls.workflowName.value);
+    console.log('Description: ', this.workflowForm.controls.workflowDescription.value);
+    console.log(this.workflowForm);
+
+    const phases = this.workflowForm.controls.phases.value;
+    const name = this.workflowForm.controls.workflowName.value;
+    const description = this.workflowForm.controls.workflowDescription.value;
+    this.workflowService.createWorkflow(name, description, phases, this.file, (response) => {
+      console.log(response);
+    });
+  }
 
     printForm(){
       console.log(this.workflowForm);
