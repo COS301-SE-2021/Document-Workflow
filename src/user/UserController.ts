@@ -137,6 +137,7 @@ export default class UserController{
             try {
                 res.status(200).json(await this.getUserDetails(req));
             } catch(err){
+                console.log("Fetcing user details had an error");
                 await handleErrors(err,res);
             }
         });

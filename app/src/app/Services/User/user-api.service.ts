@@ -141,11 +141,12 @@ export class UserAPIService {
     });
 
     this.http.post(UserAPIService.url + '/users/getDetails', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
+
       if (data) {
         callback(data);
       } else callback({status: 'error', message: 'Cannot connect to Server'});
-    }, error =>{
-      this.displayPopOver('Error user-api-services - getUserDetails', error);
+    }, async error =>{
+      await this.displayPopOver('Error user-api-services - getUserDetails', error);
     });
   }
 

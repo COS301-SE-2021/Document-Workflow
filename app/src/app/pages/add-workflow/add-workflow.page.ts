@@ -121,8 +121,11 @@ export class AddWorkflowPage implements OnInit {
   async getUser() {
     console.log("Getting the user");
     await this.userApiService.getUserDetails(async (response) => {
+      console.log("REEEEEEE");
+      console.log(response);
       if (response) {
-
+        alert(response.data);
+        console.log("REsponse from getting the user: ", response.data);
         this.user = response.data;
         this.ownerEmail = this.user.email;
         console.log(this.ownerEmail);
@@ -235,8 +238,8 @@ export class AddWorkflowPage implements OnInit {
     const eventObj: MSInputMethodContext = event as MSInputMethodContext;
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
     this.file = target.files[0];
-    console.log(typeof this.file);
-    console.log('file', this.file.arrayBuffer());
+    //console.log(typeof this.file);
+    //console.log('file', this.file.arrayBuffer());
     // const buff = response.data.filedata.Body.data; //wut
     const a = new Uint8Array(await this.file.arrayBuffer());
     this.srcFile = a;

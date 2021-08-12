@@ -14,6 +14,8 @@ export default class UserService {
     async authenticateUser(password, usr: UserProps) {
         const result = await bcrypt.compare(password, await usr.password);
         if(result){
+            console.log("Authenticating user:");
+            console.log(usr);
             return this.generateToken(usr.email, usr._id);
         }else{
             throw new AuthenticationError("Password or Email is incorrect");
@@ -35,7 +37,9 @@ export default class UserService {
     }
 
     async getUser(request): Promise<UserProps> {
-        if(!request.params){
+        console.log('Getting user')
+        console.log(request);
+        if(request === undefined){
             throw new RequestError("Search criteria required");
         }
         try {
