@@ -122,6 +122,7 @@ export class AddWorkflowPage implements OnInit {
     console.log("Getting the user");
     await this.userApiService.getUserDetails(async (response) => {
       if (response) {
+
         this.user = response.data;
         this.ownerEmail = this.user.email;
         console.log(this.ownerEmail);

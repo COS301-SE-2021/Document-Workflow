@@ -31,7 +31,7 @@ export default class UserService {
     }
 
     generateToken(email, id): string{
-        return jwt.sign({id: id, email: email}, process.env.SECRET, {expiresIn: "1 hour"});
+        return jwt.sign({id: id, email: email}, process.env.SECRET, {expiresIn: "24h"});
     }
 
     async getUser(request): Promise<UserProps> {
