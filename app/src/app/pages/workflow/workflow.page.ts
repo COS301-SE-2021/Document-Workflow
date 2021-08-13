@@ -43,16 +43,12 @@ export class WorkflowPage implements OnInit {
   }
 
   async ngOnInit() {
+    this.reOrder = true;
+
     if(this.plat.width() > 572){
       this.sizeMe = false;
     }else{
       this.sizeMe = true;
-    }
-    this.reOrder = true;
-
-    if(this.plat.is('desktop')){
-      //alert("here");
-      console.log('Desktop');
     }
 
     const load = await this.loadctrl.create({
@@ -62,7 +58,7 @@ export class WorkflowPage implements OnInit {
       spinner: 'bubbles'
     });
     await load.present();
-    //if(localStorage.getItem('token') === null) {
+
     if(Cookies.get('token') === undefined){
       await this.router.navigate(['/login']);
       await load.dismiss();
@@ -108,21 +104,36 @@ export class WorkflowPage implements OnInit {
         const ownedWorkflows = response.data.ownedWorkflows;
         const workflows = response.data.workflows;
 
-        for(let i=0; i<ownedWorkflows.length; ++i){
-          let tmpDoc: documentImage;
-          tmpDoc = ownedWorkflows[i];
+        for(let tmpDoc of ownedWorkflows){
           if(tmpDoc != null) {
             this.documents.push(tmpDoc);
           }
         }
 
-        for(let i=0; i<workflows.length; ++i){
-          let tmpDoc: documentImage;
-          tmpDoc = workflows[i];
-          if(tmpDoc != null) {
+        for(let tmpDoc of workflows){
+          if(tmpDoc != null){
             this.documents.push(tmpDoc);
           }
         }
+        //for the searching and sorting so we wont waste users data.
+        this.allUserDocuments = this.documents;
+
+        //Todo show tim this, changed to for of+
+        // for(let i=0; i<ownedWorkflows.length; ++i){
+        //   let tmpDoc: documentImage;
+        //   tmpDoc = ownedWorkflows[i];
+        //   if(tmpDoc != null) {
+        //     this.documents.push(tmpDoc);
+        //   }
+        // }
+
+        // for(let i=0; i<workflows.length; ++i){
+        //   let tmpDoc: documentImage;
+        //   tmpDoc = workflows[i];
+        //   if(tmpDoc != null) {
+        //     this.documents.push(tmpDoc);
+        //   }
+        // }
 
       }
       else{
@@ -205,15 +216,6 @@ export class WorkflowPage implements OnInit {
       documentname: name,
       userEmail: this.user.email
     }]);
-  }
-
-  logout(){
-    this.userApiService.logout();
-    this.router.navigate(['login']);
-  }
-
-  toProfilepage(){
-    this.router.navigate(['/home/userProfile']);
   }
 
   fixOrder(event: CustomEvent<ItemReorderEventDetail>){

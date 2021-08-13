@@ -20,6 +20,11 @@
 
 <ion-content style="width:100%">
   <br>
+
+
+  <ion-reorder-group [disabled]="reOrder" (ionItemReorder)="fixOrder($event)" style="width:100%">
+
+  </ion-reorder-group>
   <ion-reorder-group [disabled]="reOrder" (ionItemReorder)="fixOrder($event)" style="width:100%">
     <div *ngFor="let doc of documents">
       <ion-reorder style="width:100%">
@@ -39,7 +44,7 @@
                 <ion-fab-button (click)="viewWorkFlow(doc.document_id, doc.name)">
                   <ion-icon name="arrow-redo-outline"></ion-icon>
                 </ion-fab-button>
-                <ion-fab-button *ngIf="doc.owner_email === ownerEmail">
+                <ion-fab-button *ngIf="doc.owner_email === userEmail">
                   <ion-icon name="trash" (click)="deleteWorkFlow(doc._id)"></ion-icon>
                 </ion-fab-button>
               </ion-fab-list>
