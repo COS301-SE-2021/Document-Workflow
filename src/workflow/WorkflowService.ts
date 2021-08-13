@@ -120,23 +120,29 @@ export default class WorkflowService{
         console.log(user.ownedWorkflows);
         await this.userService.updateUserWorkflows(user);
     }
-    /*
-    async getWorkFlowDetails(req) {
 
-        let workflow_id = req.body.id;
-        let workflow = await this.workflowRepository.getWorkFlow(workflow_id);
-        if(workflow === null)
-            throw {status:"error", data:{}, message:"Workflow does not exist"};
-        let data = {
-            name: workflow.name,
-            owner_email: workflow.owner_email,
-            document_path: workflow.document_path,
-            description: workflow.description,
-            phases: workflow.phases
+    async getWorkFlowDetails(id) {
+
+        const workflow = await this.workflowRepository.getWorkflow(id);
+        if(workflow === undefined || workflow === null)
+            return {status:"error", data: {}, message:"workflow " + id + " not found"}
+
+        let phases = [];
+
+        for (const phaseId of workflow.phases) {
+            phases.push(await this.phaseService.getPhaseById(phaseId));
+        }
+
+        console.log(workflow);
+        console.log(phases);
+
+        const data = {
+
         };
-        return {status:"success", data: data, message:""};
-    }
 
+        return {status:"success", data: workflow, message:""};
+    }
+    /*
     async deleteWorkFlow(req) {
         console.log("Attempting to delete workflow");
         console.log(req.body);

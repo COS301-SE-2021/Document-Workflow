@@ -93,6 +93,14 @@ export class WorkflowPage implements OnInit {
     });
   }
 
+  async testRetrieveWorkflow(){
+    console.log("Testing the retrieve workflow function");
+    const id = "6115383a975a5f4efc5c9ff0";
+    await this.workFlowService.getWorkFlowData(id, response=>{
+      console.log(response);
+    })
+  }
+
   async deleteWorkFlow(id: string){
     const deleteMod = this.modals.create({
       component: ConfirmDeleteWorkflowComponent

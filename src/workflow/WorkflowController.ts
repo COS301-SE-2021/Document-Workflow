@@ -88,15 +88,19 @@ export default class WorkflowController {
             throw new ServerError(err.toString());
         }
     }
-    /*
+
     async getWorkFlowDetails(req):Promise<any>{
+
+        if(!req.body.id)
+            throw new RequestError("There was something wrong with the request");
+
         try{
-            return await this.workflowService.getWorkFlowDetails(req);
+            return await this.workflowService.getWorkFlowDetails(req.body.id);
         } catch(err) {
             throw new ServerError(err.toString());
         }
     }
-
+    /*
     private async deleteWorkFlow(req) {
         try{
             return await this.workflowService.deleteWorkFlow(req);
@@ -113,7 +117,7 @@ export default class WorkflowController {
                 await handleErrors(err,res);
             }
         });
-        /*
+
         this.router.post("/getDetails", this.auth, async (req,res) =>{
             try {
                 res.status(200).json(await this.getWorkFlowDetails(req));
@@ -121,7 +125,7 @@ export default class WorkflowController {
                 await handleErrors(err,res);
             }
         });
-
+        /*
         this.router.post("/delete",this.auth, async(req,res)=>{
             try {
                 res.status(200).json(await this.deleteWorkFlow(req));

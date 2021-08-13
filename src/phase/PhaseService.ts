@@ -11,4 +11,8 @@ export class PhaseService{
     async createPhase(phase: PhaseProps): Promise<ObjectId>{
         return await this.phaseRepository.savePhase(phase);
     }
+
+    async getPhaseById(id): Promise<any>{
+        return await this.phaseRepository.getPhaseById(id);
+    }
 }

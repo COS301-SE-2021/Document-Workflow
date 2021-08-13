@@ -65,9 +65,9 @@ export class WorkFlowService {
     });
   }
 
-  public async getWorkFlowData(workflow_id, callback){
+  public async getWorkFlowData(workflowId, callback){
     const formData = new FormData();
-    formData.append('id', workflow_id);
+    formData.append('id', workflowId);
 
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
