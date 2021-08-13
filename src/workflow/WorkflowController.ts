@@ -104,7 +104,7 @@ export default class WorkflowController {
             throw new RequestError("There was something wrong with the request");
 
         try{
-            return await this.workflowService.getWorkFlowDetails(req.body.id);
+            return await this.workflowService.getWorkFlowById(req.body.id);
         } catch(err) {
             throw new ServerError(err.toString());
         }

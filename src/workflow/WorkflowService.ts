@@ -122,7 +122,7 @@ export default class WorkflowService{
         await this.userService.updateUserWorkflows(user);
     }
 
-    async getWorkFlowDetails(id) {
+    async getWorkFlowById(id) {
 
         const workflow = await this.workflowRepository.getWorkflow(id);
         if(workflow === undefined || workflow === null)
