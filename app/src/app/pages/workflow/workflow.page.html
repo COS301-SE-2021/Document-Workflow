@@ -25,9 +25,23 @@
         <ion-header>
           <ion-card-title>{{document.name}}</ion-card-title>
           <ion-card-subtitle>Owner of the workflow: {{document.ownerEmail}}</ion-card-subtitle>
+          <p>{{document.description}}</p>
         </ion-header>
         <ion-card-content>
-
+          <div>
+            Current Phase: {{document.currentPhase + 1}}
+            <ion-grid>
+              <ion-row *ngFor="let phase of document.phases;  let i = index">
+                <ion-col sizeXs='12'>
+                Phase {{i+1}}
+              </ion-col>
+                <ion-col *ngFor="let user of phase['users']">
+                  {{user.email}}
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </div>
+          <ion-progress-bar [value]="document.currentPercent+0.01" buffer="0"></ion-progress-bar>
         </ion-card-content>
       </ion-card>
     </ion-reorder>
@@ -106,9 +120,7 @@
     </ion-fab-button>
   </ion-fab>
 
-  <ion-fab>
-    <ion-fab-button (click)="debug()">Debug</ion-fab-button>
-  </ion-fab>
+
 
   <!-- <ion-fab>
     <ion-fab-button>

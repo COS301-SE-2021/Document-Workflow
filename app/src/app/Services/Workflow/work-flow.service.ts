@@ -5,6 +5,7 @@ import { documentImage, phaseUser } from './../Document/document-api.service';
 import * as Cookies from 'js-cookie';
 
 export interface workflowFormat {
+  currentPercent?: number;
   currentPhase: number;
   description: string;
   name: string;
@@ -25,7 +26,7 @@ export interface phaseFormat {
 export interface phaseUserFormat {
   email: string;
   permission: string;
-  accepted: boolean;
+  accepted: string;
 }
 @Injectable({
   providedIn: 'root',
@@ -138,7 +139,6 @@ export class WorkFlowService {
         (data) => {
           //TODO: change url
           if (data) {
-            console.log(data)
             data['data'].ownedWorkflows = this.formatWorkflows(data['data'].ownedWorkflows);
             data['data'].workflows = this.formatWorkflows(data['data'].workflows);
             callback(data);
@@ -166,7 +166,7 @@ export class WorkFlowService {
             email: user.user,
             permission: user.permission,
           };
-          if (tmpUser.accepted === false) {
+          if (tmpUser.accepted === "false") {
             checker = false;
           }
           tempUser.push(tmpUser);
@@ -180,7 +180,9 @@ export class WorkFlowService {
         };
         tempPhase.push(tmpPhase);
       }
+      let percent = document['currentPhase']/tempPhase.length;
       tmpWorkflow={
+        currentPercent: percent,
         currentPhase: document['currentPhase'],
         description: document['description'],
         ownerEmail: document['ownerEmail'],
@@ -192,7 +194,6 @@ export class WorkFlowService {
       }
       temp.push(tmpWorkflow);
     }
-    console.log(temp)
     return temp;
   }
   /**

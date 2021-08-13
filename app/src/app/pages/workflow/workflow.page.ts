@@ -9,7 +9,7 @@ import {
   documentImage,
   DocumentAPIService,
 } from './../../Services/Document/document-api.service';
-import { WorkFlowService } from '../../Services/Workflow/work-flow.service';
+import { workflowFormat, WorkFlowService } from '../../Services/Workflow/work-flow.service';
 import { ConfirmDeleteWorkflowComponent } from 'src/app/components/confirm-delete-workflow/confirm-delete-workflow.component';
 import { ItemReorderEventDetail } from '@ionic/core';
 import * as Cookies from 'js-cookie';
@@ -20,13 +20,13 @@ import * as Cookies from 'js-cookie';
 })
 export class WorkflowPage implements OnInit {
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
-  documents: documentImage[] = [];
+  documents: workflowFormat[] = [];
   userEmail: string;
   user;
   reOrder: boolean;
   isBrowser: boolean;
   sizeMe: boolean;
-  allUserDocuments: documentImage[] =[];
+  allUserDocuments: workflowFormat[] =[];
   ownedWorkflows = [];
   workflows = [];
 
@@ -42,8 +42,8 @@ export class WorkflowPage implements OnInit {
   ) {
   }
 
-  debug(){
-    console.log(this.documents)
+  debug(str: any){
+    console.log(str)
   }
 
   async ngOnInit() {
@@ -121,23 +121,7 @@ export class WorkflowPage implements OnInit {
         }
         //for the searching and sorting so we wont waste users data.
         this.allUserDocuments = this.documents;
-
-        //Todo show tim this, changed to for of+
-        // for(let i=0; i<ownedWorkflows.length; ++i){
-        //   let tmpDoc: documentImage;
-        //   tmpDoc = ownedWorkflows[i];
-        //   if(tmpDoc != null) {
-        //     this.documents.push(tmpDoc);
-        //   }
-        // }
-
-        // for(let i=0; i<workflows.length; ++i){
-        //   let tmpDoc: documentImage;
-        //   tmpDoc = workflows[i];
-        //   if(tmpDoc != null) {
-        //     this.documents.push(tmpDoc);
-        //   }
-        // }
+        console.log(this.documents);
       }
       else{
         alert('Something went wrong');
@@ -145,7 +129,7 @@ export class WorkflowPage implements OnInit {
     })
 
   }
-
+//todo move this to the spec.ts of workflow
   async testRetrieveWorkflow(){
     console.log("Testing the retrieve workflow function");
     const id = "61163482d68c450938c29a30";
@@ -238,11 +222,11 @@ export class WorkflowPage implements OnInit {
 
   sortByNeededActions(){
     this.documents = [];
-    this.allUserDocuments.push(this.docService.createTestDocuments());
+    // this.allUserDocuments.push(this.docService.createTestDocuments());
     for(let document of this.allUserDocuments){
       for(let phase of document.phases){
         if(phase.completed === false){
-          for(let user of phase.phaseUsers){
+          for(let user of phase.users){
             if(user.email === this.userEmail){
               this.documents.push(document);
             }
