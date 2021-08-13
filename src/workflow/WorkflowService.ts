@@ -34,7 +34,7 @@ export default class WorkflowService{
             const areValid = await this.arePhasesValid(phases);
             if(!areValid){
                 console.log("Phase was malformed");
-                throw "Error";
+                return {status: "error", data:{}, message: "A phase contains a user that does not exist"}
             }
             console.log("ALL PHASES ARE VALID");
 
