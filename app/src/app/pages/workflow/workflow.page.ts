@@ -22,11 +22,13 @@ export class WorkflowPage implements OnInit {
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   documents: documentImage[] = [];
   userEmail: string;
-  user: User;
+  user;
   reOrder: boolean;
   isBrowser: boolean;
   sizeMe: boolean;
   allUserDocuments: documentImage[] =[];
+  ownedWorkflows = [];
+  workflows = [];
 
   constructor(
     private docService: DocumentAPIService,
@@ -78,19 +80,41 @@ export class WorkflowPage implements OnInit {
       });
     }
     await this.getUser();
-    await this.loadWorkFlows();
     await load.dismiss();
   }
 
   async getUser(){
-     this.userApiService.getUserDetails(async (response)=>{
-      if(response){
-        this.user = response.data;
-        this.userEmail = this.user.email;
-      } else{
-        this.userApiService.displayPopOver('Error', 'Cannot find user');
-      }
+     await this.userApiService.getUserDetails(async (response) => {
+       console.log(response);
+       if (response) {
+         this.user = response.data;
+         console.log("Our user looks like: ");
+         console.log(this.user);
+         this.userEmail = this.user.email;
+         console.log("Finished fetching the user");
+         await this.retrieveWorkflows();
+       } else {
+         await this.userApiService.displayPopOver('Error', 'Cannot find user');
+         Cookies.set('token', '');
+         await this.router.navigate(['login']);
+       }
+     });
+  }
+
+  async retrieveWorkflows(){
+
+  }
+
+  async testRetrieveWorkflow(){
+    console.log("Testing the retrieve workflow function");
+    const id = "61163482d68c450938c29a30";
+    await this.workFlowService.getWorkFlowData(id, response=>{
+      console.log(response);
     });
+
+    await this.workFlowService.getUserWorkflowsData(response =>{
+      console.log(response);
+    })
   }
 
   async deleteWorkFlow(id: string){
@@ -109,35 +133,6 @@ export class WorkflowPage implements OnInit {
 
       }else{
         //not delete
-      }
-    });
-  }
-
-
-  async loadWorkFlows() {
-    this.userApiService.getAllWorkOwnedFlows((response) => {
-      if (response.status === 'success') {
-        for(const tmpDoc of response.data){
-          if(tmpDoc != null){
-            this.documents.push(tmpDoc);
-            this.allUserDocuments.push(tmpDoc);
-          }
-        }
-      } else {
-        this.userApiService.displayPopOver('Error', 'unexpected error occured');
-      }
-    });
-    this.userApiService.getAllWorkFlows((response) => {
-
-      if (response.status === 'success') {
-        for(const tmpDoc of response.data){
-          if(tmpDoc != null){
-            this.documents.push(tmpDoc);
-            this.allUserDocuments.push(tmpDoc);
-          }
-        }
-      } else {
-        this.userApiService.displayPopOver('Error', 'unexpected error occurred');
       }
     });
   }
@@ -202,7 +197,7 @@ export class WorkflowPage implements OnInit {
   showOnlyWorkflowOwned(){
     this.documents = [];
     console.log(this.documents);
-    for(let document of this.allUserDocuments){
+    for(const document of this.allUserDocuments){
       if(document.owner_email === this.userEmail){
         this.documents.push(document);
       }

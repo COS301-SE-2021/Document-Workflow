@@ -19,18 +19,18 @@ export default class DocumentService {
     }
 
     //TODO: Check if type is PDF
-    async saveDocument(file: File, fileData: Buffer, id: ObjectId): Promise<ObjectId>{
+    async uploadDocument(file: File, id: ObjectId): Promise<ObjectId>{
         try{
             const doc = new Document({
                 name: file.name,
                 size: file.size,
-                path: id.toString() + '/' + file.name,
+                path: id + '/' +file.name,
                 workflowId: id
             })
-            const fileName = file.name;
-            return await this.documentRepository.saveDocument(doc, fileData, fileName);
+            return await this.documentRepository.postDocument(doc, file);
         }
         catch(err) {
+            console.log(err);
             throw new RequestError("Could not store document");
         }
     }
@@ -42,6 +42,7 @@ export default class DocumentService {
         await this.documentRepository.deleteDocument(document_id);
     }
 
+    //TODO: update this!! fetch documents based on their phase.
     async retrieveDocument(req) : Promise<any> {
         console.log("retrieving a document");
         console.log(req.body.doc_id);

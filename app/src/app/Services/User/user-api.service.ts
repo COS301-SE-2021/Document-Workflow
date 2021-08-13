@@ -80,43 +80,6 @@ export class UserAPIService {
     }
   }
 
-  public getAllWorkOwnedFlows(callback) { //TODO: change this function name. Made it when I was tired.
-    console.log('Getting all owned workflows');
-    const formData = new FormData();
-    //formData.append('email', email);
-    //const token = localStorage.getItem('token');
-    const token = Cookies.get('token');
-    const httpHeaders: HttpHeaders = new HttpHeaders({
-      Authorization: ('Bearer ' + token)
-    });
-
-    this.http.post(UserAPIService.url + '/users/retrieveOwnedWorkflows', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
-      if (data) {
-        callback(data);
-      } else callback({status: 'error', message: 'Cannot connect to Server'});
-    }, (error) =>{
-      this.displayPopOver('Error user-api-services - getAllWorkOwnedFlows', error);
-    });
-  }
-
-  public getAllWorkFlows( callback){
-    const formData = new FormData();
-    console.log('Getting all normal workflows');
-    //const token = localStorage.getItem('token');
-    const token = Cookies.get('token');
-    const httpHeaders: HttpHeaders = new HttpHeaders({
-      Authorization: ('Bearer ' + token)
-    });
-
-    this.http.post(UserAPIService.url + '/users/retrieveWorkflows', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
-      if (data) {
-        callback(data);
-      } else callback({status: 'error', message: 'Cannot connect to Server'});
-    }, error =>{
-      this.displayPopOver('Error user-api-services - getAllWorkFlows', error);
-    });
-  }
-
   //for the pop over
   async displayPopOver(title: string, message: string){
     const poper = await this.pop.create({

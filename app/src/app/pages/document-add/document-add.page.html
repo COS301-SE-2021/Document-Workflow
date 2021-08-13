@@ -25,11 +25,11 @@
     <ion-card *ngIf="!next" style="height: 100%;">
       <ion-card-content style="height: 90%;">
         <ion-item>
-          <ion-label>Document name</ion-label>
+          <ion-label>Workflow Name</ion-label>
           <ion-input formControlName="workflowName" inputmode="text" (input)="checkStatus()"></ion-input>
         </ion-item>
         <ion-item>
-          <ion-label>Document Description</ion-label>
+          <ion-label>Workflow Description</ion-label>
           <ion-textarea formControlName="workflowDescription" inputmode="text" (input)="checkStatus()"></ion-textarea>
         </ion-item>
         <ion-item>
@@ -44,7 +44,6 @@
         </ion-item>
         <iframe [src]="srcFile" *ngIf="addFile" style="width: 100%; height:70%;"></iframe>
       </ion-card-content>
-      <!-- [disabled]="!addFile || !addName || !addDescription" -->
       <ion-button (click)="changeOver()" >Next</ion-button>
     </ion-card>
     <ion-card style="width:95%" *ngIf="next">
@@ -75,7 +74,7 @@
                       <ion-col sizeXs='11' sizeMd="9">
                         <ion-input type="email" [formControl]="user.controls.user"></ion-input>
                       </ion-col>
-                      <ion-col sizeMd="2">
+                      <ion-col>
                         <ion-icon name="close-circle-outline" size="large"
                           (click)="removeUser(phase.controls['users'],i, j)">
                         </ion-icon>
@@ -102,7 +101,7 @@
                   </ion-grid>
                 </ion-item>
                 <ion-button expand="block" color="primary" fill="outline"
-                  (click)="includeActionArea(i,phase.controls.annotation)">Add Action Area</ion-button>
+                  (click)="includeActionArea(i,phase.controls.annotations)">Add Action Area</ion-button>
                 <ion-button expand="block" color="primary" fill="outline" (click)="removePhase(i)">Remove this
                   Phase
                 </ion-button>

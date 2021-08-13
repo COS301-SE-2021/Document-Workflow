@@ -78,15 +78,6 @@ export default class UserController{
         }
     }
 
-    // private async retrieveOwnedWorkFlows(req):Promise<any> {
-    //     try{
-    //         return await this.userService.retrieveOwnedWorkFlows(req);
-    //     }
-    //     catch(err) {
-    //         throw err;
-    //     }
-    // }
-
     async logoutUserRoute(request): Promise<UserProps> {
         try{
             return await this.userService.logoutUser(request);
@@ -137,7 +128,7 @@ export default class UserController{
             try {
                 res.status(200).json(await this.getUserDetails(req));
             } catch(err){
-                console.log("Fetcing user details had an error");
+                console.log("Fetching user details had an error");
                 await handleErrors(err,res);
             }
         });

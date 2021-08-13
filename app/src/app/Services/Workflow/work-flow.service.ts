@@ -64,10 +64,10 @@ export class WorkFlowService {
       alert("An unexpected error occurred");
     });
   }
-
-  public async getWorkFlowData(workflow_id, callback){
+  //TODO: promise-ify this code otherwise it will get really complicated in the frontend.
+  public async getWorkFlowData(workflowId, callback){
     const formData = new FormData();
-    formData.append('id', workflow_id);
+    formData.append('id', workflowId);
 
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
@@ -83,6 +83,21 @@ export class WorkFlowService {
     });
   }
 
+  async getUserWorkflowsData(callback){
+    const formData = new FormData();
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: ('Bearer ' + token)
+    });
+
+    this.http.post(WorkFlowService.url + '/workflows/getUserWorkflowsData', formData, {headers: httpHeaders}).subscribe(data => { //TODO: change url
+      if (data) {
+        callback(data);
+      } else callback({status: 'error', message: 'Cannot connect to Server'});
+    }, error =>{
+      alert("An unexpected error occurred");
+    });
+  }
   /**
    * This will likely stay a test function.
    * @param workflow_id

@@ -112,11 +112,15 @@ export class DocumentAddPage implements OnInit {
         phases: this.fb.array([
           this.fb.group({
             annotations: new FormControl('', [Validators.required]),
-            description: new FormControl('', [Validators.required]),
+            description: new FormControl('', Validators.required),
             users: this.fb.array([
               this.fb.group({
-                user: new FormControl('', [Validators.email, Validators.required,]),
+                user: new FormControl('', [
+                  Validators.email,
+                  Validators.required,
+                ]),
                 permission: new FormControl('', [Validators.required]),
+                accepted: new FormControl('false', [Validators.required])
               }),
             ]),
           }),
@@ -167,6 +171,7 @@ export class DocumentAddPage implements OnInit {
       return this.fb.group({
         user: new FormControl('', [Validators.email, Validators.required]),
         permission: new FormControl('', [Validators.required]),
+        accepted: new FormControl('false', [Validators.required])
       });
     }
 
@@ -196,6 +201,7 @@ export class DocumentAddPage implements OnInit {
             user: new FormControl('', [Validators.email, Validators.required,
             ]),
             permission: new FormControl('', [Validators.required]),
+            accepted: new FormControl('false', [Validators.required])
           })
         ])
       });
