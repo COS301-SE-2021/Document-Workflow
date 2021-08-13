@@ -109,6 +109,15 @@ export default class WorkflowController {
             throw new ServerError(err.toString());
         }
     }
+
+    private async getUsersWorkflowData(req) {
+        try{
+            return await this.workflowService.getUsersWorkflowData(req.user);
+        } catch(err) {
+            throw new ServerError(err.toString());
+        }
+    }
+
     /*
     private async deleteWorkFlow(req) {
         try{
@@ -134,6 +143,19 @@ export default class WorkflowController {
                 await handleErrors(err,res);
             }
         });
+
+        this.router.post('/getUserWorkflowsData', this.auth, async (req,res) =>{
+            console.log('getting wokflow data for a specific user');
+            try {
+                res.status(200).json(await this.getUsersWorkflowData(req));
+            } catch(err){
+                console.log(err);
+                await handleErrors(err,res);
+            }
+        });
+
+
+
         /*
         this.router.post("/delete",this.auth, async(req,res)=>{
             try {
@@ -144,5 +166,4 @@ export default class WorkflowController {
         });*/
         return this.router;
     }
-
 }

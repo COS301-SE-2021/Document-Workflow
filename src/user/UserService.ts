@@ -223,9 +223,9 @@ export default class UserService {
                 surname: user.surname,
                 initials: user.initials,
                 email: user.email,
-                signature:user.signature.toString(),
-                ownedWorkflows: user.ownedWorkflows,
-                workflows: user.workflows
+                signature:user.signature.toString()
+                //ownedWorkflows: user.ownedWorkflows,
+               // workflows: user.workflows
             };
             return {status: "success", data: data, message:""};
         }

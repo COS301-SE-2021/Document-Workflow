@@ -134,9 +134,8 @@ export default class WorkflowService{
             phases.push(await this.phaseService.getPhaseById(phaseId));
         }
 
-        console.log(workflow);
-        console.log(phases);
-
+        //console.log(workflow);
+        //console.log(phases);
         const data = {
             name: workflow.name,
             ownerId: workflow.ownerId,
@@ -199,4 +198,34 @@ export default class WorkflowService{
         user.workflows.splice(index, 1);
         await this.usersRepository.putUser(user);
     }*/
+    async getUsersWorkflowData(usr) {
+
+        //we have the user's email and id, but we need to fetch this user from the UserService
+        //So that we have the ids of workflows they are a part of, and that they
+        try {
+            const user = await this.userService.getUserById(usr._id);
+            console.log("getting the users workflow data");
+            console.log(user);
+            let ownedWorkflows = [];
+            let workflows = [];
+
+            for(let i=0; i<user.ownedWorkflows.length; ++i){
+                console.log(user.ownedWorkflows[i])
+                ownedWorkflows.push(await this.workflowRepository.getWorkflow(String(user.ownedWorkflows[i])));
+            }
+
+            for(let i=0; i<user.workflows.length; ++i)
+            {
+                console.log(user.workflows[i])
+                workflows.push(await this.workflowRepository.getWorkflow(String(user.workflows[i])));
+            }
+            const data = {ownedWorkflows, workflows};
+
+            return {status: 'success', data:data, message:''};
+        }
+        catch(e){
+            console.log(e);
+            throw e;
+        }
+    }
 }
