@@ -98,7 +98,7 @@ export class WorkflowPage implements OnInit {
     const id = "6115383a975a5f4efc5c9ff0";
     await this.workFlowService.getWorkFlowData(id, response=>{
       console.log(response);
-    })
+    });
   }
 
   async deleteWorkFlow(id: string){

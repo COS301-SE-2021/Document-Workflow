@@ -77,7 +77,7 @@ export default class WorkflowController {
                 description: phase.description,
                 //signingUserId: phase.signingUserId,
                 annotations: phase.annotations,
-                userAccepts: {}
+                userAccepts: ""
             }));
         })
 

@@ -24,10 +24,7 @@ export const phaseSchema = createSchema({
     //actionAreas: Type.array().of(actionAreaSchema), //annotations: string -> includes comments
     //signingUserId: Type.ref(Type.objectId({required:true})).to("User", userSchema),
     //status: Type.string({enum: PhaseStatus, required: true}),
-    userAccepts: {type: Map,
-        of: String,
-        default: {},
-        required: true } //Note that the key by default will always be a string
+    userAccepts: Type.string({required: true})
 }, { _id: true, _v: false });
 
 export const Phase = typedModel('Phase', phaseSchema);

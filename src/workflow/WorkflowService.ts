@@ -29,8 +29,6 @@ export default class WorkflowService{
     async createWorkFlow(workflow: WorkflowProps, file: File, phases: PhaseProps[]): Promise<any>{
 
         console.log("In the createWorkFlow function");
-
-
         try {
             //Before any creation of objects takes place, checks must be done on the inputs to ensure that they are valid.
             const areValid = await this.arePhasesValid(phases);
@@ -39,6 +37,16 @@ export default class WorkflowService{
                 throw "Error";
             }
             console.log("ALL PHASES ARE VALID");
+            //Next we need to initialize the userAccepts field for each phase.
+            for(let i=0; i<phases.length; ++i){
+                let accepts = [];
+                for(let k=0; k<phases[i].users.length; ++k){
+
+                    const userEmail = await this.userService.getUserById(phases[i].users[k]);
+                    accepts.push({userEmail: userEmail, accept: 'false'});
+                }
+                phases[i].userAccepts = JSON.stringify(accepts);
+            }
 
 
             //Step 1 create Phases:
@@ -137,10 +145,16 @@ export default class WorkflowService{
         console.log(phases);
 
         const data = {
-
+            name: workflow.name,
+            ownerId: workflow.ownerId,
+            ownerEmail: workflow.ownerEmail,
+            documentId: workflow.documentId,
+            description: workflow.description,
+            phases: phases,
+            currentPhase: workflow.currentPhase
         };
 
-        return {status:"success", data: workflow, message:""};
+        return {status:"success", data: data, message:""};
     }
     /*
     async deleteWorkFlow(req) {
