@@ -6,7 +6,6 @@ import { RequestError, ServerError } from "../error/Error";
 import { handleErrors } from "../error/ErrorHandler";
 import { WorkflowProps } from "./Workflow";
 import { PhaseProps, Phase } from "../phase/Phase";
-import { ObjectId } from "mongoose";
 
 @injectable()
 export default class WorkflowController {
@@ -167,3 +166,10 @@ export default class WorkflowController {
         return this.router;
     }
 }
+
+/*
+      \    /\
+       )  ( ') Meow Meow Meow
+      (  /  )
+       \(__)|
+ */

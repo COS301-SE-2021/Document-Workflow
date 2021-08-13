@@ -209,15 +209,30 @@ export default class WorkflowService{
             let ownedWorkflows = [];
             let workflows = [];
 
-            for(let i=0; i<user.ownedWorkflows.length; ++i){
+            for(let i=0; i<user.ownedWorkflows.length; ++i){ //I couldnt find a prettier way of iterating through this, other methods did not work
                 console.log(user.ownedWorkflows[i])
-                ownedWorkflows.push(await this.workflowRepository.getWorkflow(String(user.ownedWorkflows[i])));
+                let workflow = await this.workflowRepository.getWorkflow(String(user.ownedWorkflows[i]));
+                let phases = [];
+
+                for(let k=0; k<workflow.phases.length; ++k){
+                    phases.push(await this.phaseService.getPhaseById(workflow.phases[k]));
+                }
+                workflow.phases = phases;
+                ownedWorkflows.push(workflow);
             }
 
             for(let i=0; i<user.workflows.length; ++i)
             {
                 console.log(user.workflows[i])
-                workflows.push(await this.workflowRepository.getWorkflow(String(user.workflows[i])));
+                let workflow = await this.workflowRepository.getWorkflow(String(user.workflows[i]));
+                let phases = [];
+
+                for(let k=0; k<workflow.phases.length; ++k){
+                    phases.push(await this.phaseService.getPhaseById(workflow.phases[k]));
+                }
+                workflow.phases = phases;
+
+                workflows.push(workflow);
             }
             const data = {ownedWorkflows, workflows};
 
