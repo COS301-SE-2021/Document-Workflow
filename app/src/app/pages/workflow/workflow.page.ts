@@ -210,7 +210,7 @@ export class WorkflowPage implements OnInit {
   showOnlyWorkflowOwned(){
     this.documents = [];
     console.log(this.documents);
-    for(let document of this.allUserDocuments){
+    for(const document of this.allUserDocuments){
       if(document.owner_email === this.userEmail){
         this.documents.push(document);
       }
