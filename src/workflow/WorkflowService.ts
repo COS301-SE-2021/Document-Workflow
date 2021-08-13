@@ -37,16 +37,6 @@ export default class WorkflowService{
                 throw "Error";
             }
             console.log("ALL PHASES ARE VALID");
-            //Next we need to initialize the userAccepts field for each phase.
-            for(let i=0; i<phases.length; ++i){
-                let accepts = [];
-                for(let k=0; k<phases[i].users.length; ++k){
-
-                    const userEmail = await this.userService.getUserById(phases[i].users[k]);
-                    accepts.push({userEmail: userEmail, accept: 'false'});
-                }
-                phases[i].userAccepts = JSON.stringify(accepts);
-            }
 
 
             //Step 1 create Phases:
@@ -89,7 +79,9 @@ export default class WorkflowService{
         console.log(typeof  phases);
         for(let i=0; i<phases.length; ++i) {
             console.log("Checking Phase: ", i+1);
-            if (!await this.checkUsersExist(phases[i].users))
+            console.log(phases[i]);
+            const usrs = JSON.parse(phases[i].users);
+            if (!await this.checkUsersExist(usrs))
                 return false;
         }
 
@@ -97,6 +89,7 @@ export default class WorkflowService{
     }
 
     async checkUsersExist(users):Promise<boolean>{
+        console.log(users);
         for(let i=0; i<users.length; ++i){
             console.log("Checking if user ", users[i], " exists");
             const user = await this.userService.getUserByEmail(users[i].user);
@@ -110,7 +103,7 @@ export default class WorkflowService{
     async addWorkFlowIdToUsersWorkflows(phases, workflowId, ownerEmail):Promise<void>
     {
         for(let i=0; i<phases.length; ++i) {
-            let users = phases[i].users;
+            let users = JSON.parse(phases[i].users);
             for(let k=0; k<users.length; ++k){
                 let user = await this.userService.getUserByEmail(users[k].user);
                 if(user.email != ownerEmail && !user.workflows.includes(workflowId))

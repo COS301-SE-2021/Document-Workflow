@@ -72,8 +72,17 @@ export default class WorkflowController {
         const convertedPhases = [];
 
         phases.forEach( phase => {
+            /*console.log(phase.users);
+            let accepts = [];
+            let users = [];
+            for(let k=0; k<phase.users.length; ++k){
+                accepts.push({userEmail: phase.users[k][0], accept: 'false'});
+                users.push(phase.users[k][0]);
+            }*/
+            console.log("THIS PHASE HAS THE FOLLOWING USERS OBJECT");
+            console.log(phase.users);
             convertedPhases.push(new Phase({
-                users: phase.users,
+                users: JSON.stringify(phase.users), //The input users array is actually an array with a signle JSON strng
                 description: phase.description,
                 //signingUserId: phase.signingUserId,
                 annotations: phase.annotations,

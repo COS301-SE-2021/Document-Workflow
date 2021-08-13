@@ -17,14 +17,14 @@ const commentSchema = createSchema({ //sort of scrapped
 }, { _id: false, _v: false });*/
 
 export const phaseSchema = createSchema({
-    users: Type.array({required: true}).of(Type.ref(Type.objectId()).to("User", userSchema)),
+    users: String,
     //comments: Type.array().of(commentSchema),
     annotations: Type.string({required: true}),
     description: Type.string({required: true}),
     //actionAreas: Type.array().of(actionAreaSchema), //annotations: string -> includes comments
     //signingUserId: Type.ref(Type.objectId({required:true})).to("User", userSchema),
     //status: Type.string({enum: PhaseStatus, required: true}),
-    userAccepts: Type.string({required: true})
+    //userAccepts: Type.string({required: true})
 }, { _id: true, _v: false });
 
 export const Phase = typedModel('Phase', phaseSchema);
