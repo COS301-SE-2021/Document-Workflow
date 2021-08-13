@@ -6,11 +6,10 @@ import { UserAPIService, User } from '../User/user-api.service';
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface documentImage {
   _id?: string;
-  document_id: string;
+  currentPhase: number;
   description: string;
-  document_path: string;
   name: string;
-  owner_email: string;
+  ownerEmail: string;
   _v?: number;
   phases: phase[];
 }
@@ -18,8 +17,9 @@ export interface documentImage {
 export interface phase {
   completed: boolean;
   annotations: string;
-  phaseDescription: string;
+  description: string;
   phaseUsers: phaseUser[];
+  _v?: number;
 }
 
 export interface phaseUser {
@@ -98,7 +98,7 @@ export class DocumentAPIService {
     b = {
       completed: true,
       annotations: 'wfrnuiwrfbihwrvbihfwrebiuhwrfegwirfuygb',
-      phaseDescription: 'phase 1',
+      description: 'phase 1',
       phaseUsers: [f, g],
     };
 
@@ -106,24 +106,23 @@ export class DocumentAPIService {
     c = {
       completed: false,
       annotations: 'dfbnhjiesfbdhdbfkjdbskjnbdvsfujbnrsfkjbsedkfrj',
-      phaseDescription: 'phase 2',
+      description: 'phase 2',
       phaseUsers: [e],
     };
     let d: phase;
     d={
       completed: false,
       annotations: 'wbihjfbwhbfrwhbf',
-      phaseDescription: 'phase 3',
+      description: 'phase 3',
       phaseUsers: [f, g],
     }
 
     let a: documentImage;
     a = {
+      currentPhase:0,
       description: 'this is just for testing',
-      document_id: 'drjknujowrfnoujrwfhno',
-      document_path: 'd',
       name: 'hello',
-      owner_email: 'brenton.stroberg@yahoo.co.za',
+      ownerEmail: 'brenton.stroberg@yahoo.co.za',
       _v: 1,
       _id:'jfhnrweiuwrfbniujfowerbio',
       phases:[b,c,d]

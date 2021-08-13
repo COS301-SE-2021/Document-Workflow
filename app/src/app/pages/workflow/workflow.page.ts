@@ -42,6 +42,10 @@ export class WorkflowPage implements OnInit {
   ) {
   }
 
+  debug(){
+    console.log(this.documents)
+  }
+
   async ngOnInit() {
     this.reOrder = true;
 
@@ -99,7 +103,7 @@ export class WorkflowPage implements OnInit {
 
   async retrieveWorkflows(){
     await this.workFlowService.getUserWorkflowsData(response =>{
-      console.log(response);
+      // console.log(response);
       if(response.status === 'success'){
         const ownedWorkflows = response.data.ownedWorkflows;
         const workflows = response.data.workflows;
@@ -134,7 +138,6 @@ export class WorkflowPage implements OnInit {
         //     this.documents.push(tmpDoc);
         //   }
         // }
-
       }
       else{
         alert('Something went wrong');
@@ -226,7 +229,7 @@ export class WorkflowPage implements OnInit {
     this.documents = [];
     console.log(this.documents);
     for(const document of this.allUserDocuments){
-      if(document.owner_email === this.userEmail){
+      if(document.ownerEmail === this.userEmail){
         this.documents.push(document);
       }
     }

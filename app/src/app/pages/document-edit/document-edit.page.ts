@@ -146,7 +146,7 @@ export class DocumentEditPage implements OnInit {
 
   fillPhase(phase: phase): FormGroup {
     return this.fb.group({
-      description: new FormControl(phase.phaseDescription, Validators.required),
+      description: new FormControl(phase.description, Validators.required),
       annotations: new FormControl(phase.annotations, [Validators.required]),
       users: this.fb.array([]),
     });
