@@ -102,6 +102,33 @@ export class WorkflowPage implements OnInit {
   }
 
   async retrieveWorkflows(){
+    await this.workFlowService.getUserWorkflowsData(response =>{
+      console.log(response);
+      if(response.status === 'success'){
+        const ownedWorkflows = response.data.ownedWorkflows;
+        const workflows = response.data.workflows;
+
+        for(let i=0; i<ownedWorkflows.length; ++i){
+          let tmpDoc: documentImage;
+          tmpDoc = ownedWorkflows[i];
+          if(tmpDoc != null) {
+            this.documents.push(tmpDoc);
+          }
+        }
+
+        for(let i=0; i<workflows.length; ++i){
+          let tmpDoc: documentImage;
+          tmpDoc = workflows[i];
+          if(tmpDoc != null) {
+            this.documents.push(tmpDoc);
+          }
+        }
+
+      }
+      else{
+        alert('Something went wrong');
+      }
+    })
 
   }
 
@@ -111,7 +138,6 @@ export class WorkflowPage implements OnInit {
     await this.workFlowService.getWorkFlowData(id, response=>{
       console.log(response);
     });
-
     await this.workFlowService.getUserWorkflowsData(response =>{
       console.log(response);
     })
