@@ -70,6 +70,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
 
 
           instance.UI.loadDocument(blob, {filename: this.docName});
+          instance.UI.disableElements(['toolbarGroup-Annotate']);
           instance.UI.setHeaderItems(header =>{
             header.push({
               type: 'actionButton',
@@ -84,6 +85,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
             console.log(this.annotations);
             instance.Core.annotationManager.importAnnotations(this.annotations);
           });
+
           instance.UI.setHeaderItems(header =>{
             header.push({
               type: 'actionButton',
