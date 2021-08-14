@@ -125,6 +125,7 @@ export default class WorkflowService{
         await this.userService.updateUserWorkflows(user);
     }
 
+    //TODO: this function is strange and requires verification, also the way in which it returns data is strange
     async getWorkFlowById(id) {
 
         const workflow = await this.workflowRepository.getWorkflow(id);
@@ -382,5 +383,23 @@ export default class WorkflowService{
             console.log(err);
             throw new ServerError("Could not update the annotations of the phase");
         }
+    }
+
+    //This function is not efficient
+    async retrieveWorkflow(workflowId, email) {
+
+        try {
+            const workflow = await this.workflowRepository.getWorkflow(workflowId);
+            if(! await this.isUserMemberOfWorkflow(workflow, email)){
+                return {status:"error", data:{}, message: ""};
+            }
+            return await this.getWorkFlowById(workflowId);
+        }
+        catch(err){
+            console.log(err);
+            throw new ServerError("Could not retrieve workflow");
+        }
+
+
     }
 }

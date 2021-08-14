@@ -160,6 +160,19 @@ export default class WorkflowController {
             throw new ServerError(err.toString());
         }
     }
+
+    private async retrieveWorkflow(req) {
+        if(!req.body.workflowId){
+            throw new RequestError("There was something wrong with the request");
+        }
+
+        try{
+            return await this.workflowService.retrieveWorkflow(req.body.workflowId, req.user.email);
+        } catch(err) {
+            console.log(err)
+            throw new ServerError(err.toString());
+        }
+    }
     /*
     private async deleteWorkFlow(req) {
         try{
@@ -189,6 +202,15 @@ export default class WorkflowController {
         this.router.post('/getUserWorkflowsData', this.auth, async (req,res) =>{
             try {
                 res.status(200).json(await this.getUsersWorkflowData(req));
+            } catch(err){
+                console.log(err);
+                await handleErrors(err,res);
+            }
+        });
+
+        this.router.post('/retrieveWorkflow', this.auth, async(req,res) =>{
+            try {
+                res.status(200).json(await this.retrieveWorkflow(req));
             } catch(err){
                 console.log(err);
                 await handleErrors(err,res);
@@ -237,8 +259,6 @@ export default class WorkflowController {
         });*/
         return this.router;
     }
-
-
 }
 
 /*
