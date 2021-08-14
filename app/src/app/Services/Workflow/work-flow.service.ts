@@ -126,10 +126,10 @@ export class WorkFlowService {
       );
   }
 
-  async updatePhase(workflowId, accepts, document, callback){
+  async updatePhase(workflowId, accept, document, callback){
     const formData = new FormData();
     formData.append('workflowId', workflowId);
-    formData.append('accept', accepts);
+    formData.append('accept', accept);
     formData.append('document', document);
 
     const token = Cookies.get('token');

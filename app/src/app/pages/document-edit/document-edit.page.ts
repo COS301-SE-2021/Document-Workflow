@@ -21,6 +21,9 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   srcFileBase64: any;
   pdfDoc: PDFDocument;
   showAnnotations = false;
+  annotationManager: any;
+  documentViewer: any;
+  documentMetadata: any;
 
   @Input('documentname') docName: string;
   @Input('workflowId') workflowId: string;
@@ -54,6 +57,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     await this.workflowService.retrieveDocument(this.workflowId, async (response) => {
       console.log(response);
       if (response) {
+        this.documentMetadata = response.data.metadata;
         this.srcFileBase64 = response.data.filedata.Body.data;
         const arr = new Uint8Array(response.data.filedata.Body.data);
         const blob = new Blob([arr], {type: 'application/pdf'});
@@ -66,6 +70,8 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
           annotationUser: this.userEmail
         }, this.viewerRef.nativeElement).then(instance =>{
 
+          this.annotationManager = instance.Core.annotationManager;
+          this.documentViewer = instance.Core.documentViewer;
 
           instance.UI.loadDocument(blob, {filename: this.docName});
           instance.UI.disableElements(['toolbarGroup-Annotate']);
@@ -154,8 +160,18 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     });
   }
 
-  acceptDocument(){
+  async acceptDocument() {
     alert('Bring in the popup here to let a user set whether or not they accept or reject the phase!!!');
+    console.log('Need to ensure that we save any annotations here aswell');
+    const doc = this.documentViewer.getDocument();
+    await this.updateDocumentAnnotations(this.annotationManager.exportAnnotations()); //TODO: decide if we save the annotations for the edits made
+    const data = await doc.getFileData({});
+    const arr = new Uint8Array(data);
+    const blob = new Blob([arr], {type: 'application/pdf'});
+    const file = new File([blob], this.documentMetadata.name);
+    await this.workflowService.updatePhase(this.workflowId, true, file, (response) => {
+      console.log(response);
+    });
   }
 
   async updateDocumentAnnotations(annotationsString){
