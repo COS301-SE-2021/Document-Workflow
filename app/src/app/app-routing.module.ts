@@ -5,12 +5,12 @@ import { AddSignatureComponent } from './components/add-signature/add-signature.
 
 const routes: Routes = [
   {
-  path: 'intro',
-  loadChildren: () =>
-  import('./pages/intro/intro-routing.module').then(
-    (m) => m.IntroPageRoutingModule
-  ),
-pathMatch: 'full',
+    path: 'intro',
+    loadChildren: () =>
+      import('./pages/intro/intro-routing.module').then(
+        (m) => m.IntroPageRoutingModule
+      ),
+    pathMatch: 'full',
   },
   {
     path: 'login',
@@ -22,12 +22,15 @@ pathMatch: 'full',
   },
   {
     path: 'home',
-    loadChildren: () => import('./pages/split-view/split-view.module').then( m => m.SplitViewPageModule)
+    loadChildren: () =>
+      import('./pages/split-view/split-view.module').then(
+        (m) => m.SplitViewPageModule
+      ),
   },
   {
     path: '',
     redirectTo: 'login',
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
 ];
 @NgModule({
