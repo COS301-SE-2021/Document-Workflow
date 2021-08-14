@@ -22,9 +22,10 @@
   <ion-reorder-group [disabled]="reOrder" (ionItemReorder)="fixOrder($event)" style="width:100%">
     <ion-reorder *ngFor="let document of documents">
       <ion-card>
-        <ion-header style="min-height: 80px">
-              <ion-card-title style="font-size: 24px;">{{document.name}}</ion-card-title>
-              <ion-card-subtitle style="font-size: 16px;">Owner of the workflow: {{document.ownerEmail}}</ion-card-subtitle>
+        <ion-header style="min-height: 80px;">
+          <br/>
+              <ion-card-title style="font-size: 24px; padding-left: 10px;">{{document.name}}</ion-card-title>
+              <ion-card-subtitle style="font-size: 16px; padding-left: 10px;">Owner of the workflow: {{document.ownerEmail}}</ion-card-subtitle>
              <ion-fab vertical="top" horizontal="end">
                 <ion-fab-button (click)="viewWorkFlow(document._id, document.name)">
                   <ion-icon name="arrow-redo-outline" style="font-size: 22px;"></ion-icon>
@@ -32,7 +33,7 @@
               </ion-fab>
         </ion-header>
         <ion-card-content>
-          <ion-item>
+          <ion-item lines="none">
             <p>{{document.description}}</p>
           </ion-item>
           <ion-item>
@@ -59,7 +60,8 @@
                           </div>
                           <div slot='end'>
                             <ion-icon *ngIf="user.accepted" name="checkmark-circle-outline"></ion-icon>
-                            <ion-icon *ngIf="!user.accepted" name="checkmark-circle-outline"></ion-icon>
+                            <ion-icon *ngIf="!user.accepted" name="close-circle-outline"></ion-icon>
+
                           </div>
                         </ion-item>
                       </ion-col>

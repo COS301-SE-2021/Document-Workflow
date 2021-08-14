@@ -5,6 +5,14 @@ import { AddSignatureComponent } from './components/add-signature/add-signature.
 
 const routes: Routes = [
   {
+  path: 'intro',
+  loadChildren: () =>
+  import('./pages/intro/intro-routing.module').then(
+    (m) => m.IntroPageRoutingModule
+  ),
+pathMatch: 'full',
+  },
+  {
     path: 'login',
     loadChildren: () =>
       import('./pages/login-register/login-register.module').then(
