@@ -35,6 +35,10 @@ export default class DocumentService {
         }
     }
 
+    async putDocument(file: File, id: ObjectId){
+        //TODO: implement me
+    }
+
     async deleteDocument(workflow_id, document_id){
         console.log("Deleting document from CLoud server");
         await this.documentRepository.deleteDocumentFromS3(workflow_id);

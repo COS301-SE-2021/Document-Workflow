@@ -1,5 +1,5 @@
 import { injectable } from "tsyringe";
-import { WorkflowProps } from './Workflow';
+import {WorkflowProps, WorkflowStatus} from './Workflow';
 import WorkFlowRepository from './WorkflowRepository';
 import DocumentService from "../document/DocumentService";
 import UserService from "../user/UserService";
@@ -258,9 +258,41 @@ export default class WorkflowService{
 
             //Next, a check is done to ensure that this user is actually a participant of this phase and
             //if so, what their permissions are.
-            const phaseUsers = JSON.parse(currentPhase.users);
-            console.log(phaseUsers);
+            let phaseUsers = JSON.parse(currentPhase.users);
+            let permission = '';
+            let userFound = false;
+            for(let i=0; i<phaseUsers.length; ++i){
+                if(phaseUsers[i].user === user.email){
+                    userFound = true;
+                    permission = phaseUsers[i].permission;
+                    phaseUsers[i].accepted = accept;
+                }
+            }
+            currentPhase.users = JSON.stringify(phaseUsers);
+            if(!userFound)
+                return {status:"error", data:{}, message:'You are not a part of this phase'};
 
+            //At this point there are two things that must be done:
+            //1) The phase must be checked to see if everyone accepts the phase. If they do, then the workflow
+            //Progresses to the next phase. If this is the last phase of the workflow, the workflow must be considered
+            //Completed
+            //2) The document must be updated IFF the user's permission is to sign the document.
+            if(this.isPhaseComplete(currentPhase)){
+                console.log("Phase is complete");
+                if(workflow.phases.length === currentPhase + 1){
+                    workflow.status = WorkflowStatus.COMPLETED;
+                }
+                else{
+                    workflow.currentPhase = currentPhase + 1;
+                    //this.documentService.putDocument()
+                    console.log("NEED TO CREATE THE FILE FOR THE NEXT FACE!!!!");
+                }
+            }
+            if(permission === 'sign'){ //TODO: make the permission field an enum.
+
+            }
+
+            //Save everything
 
             return {status:"success", data:{}, message:""};
         }
@@ -268,5 +300,15 @@ export default class WorkflowService{
             console.log(err);
             throw new ServerError(err);
         }
+    }
+    //my cat walked across my keyboard while I was typing this out. If there are any bugs, she is too blame.
+    isPhaseComplete(phase){
+        const phaseUsers = JSON.parse(phase.users); //It is important to remember that the users of a phase are stored as a JSON string.
+        for(let i=0; i<phaseUsers.length; ++i){
+            if(phaseUsers[i].accepted === 'false')
+                return false;
+        }
+
+        return true;
     }
 }
