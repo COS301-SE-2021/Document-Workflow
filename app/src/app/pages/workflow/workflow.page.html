@@ -31,10 +31,10 @@
 
             <ion-fab-button>Tim</ion-fab-button>
             <ion-fab-list side="down">
-              <ion-fab-button (click)="viewWorkFlow(document._id, document.name, document.phases[document.currentPhase])">
+              <ion-fab-button (click)="viewWorkFlow(document._id, document.name)">
                 <ion-icon name="arrow-redo-outline" style="font-size: 22px;"></ion-icon>
               </ion-fab-button>
-              <ion-fab-button (click)="editDocument(document._id, document.name, document.phases[document.currentPhase])">
+              <ion-fab-button (click)="editDocument(document._id, document.name)">
                 <ion-icon name="construct-outline" style="font-size: 22px;"></ion-icon>
               </ion-fab-button>
             </ion-fab-list>

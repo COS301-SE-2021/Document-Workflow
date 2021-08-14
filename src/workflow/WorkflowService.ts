@@ -328,7 +328,10 @@ export default class WorkflowService{
             }
             console.log("REquesting user is a member of this workflow");
 
-            return await this.documentService.retrieveDocument(workflow.documentId, workflowId, workflow.currentPhase);
+            let data = await this.documentService.retrieveDocument(workflow.documentId, workflowId, workflow.currentPhase);
+            const phase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
+            data.annotations = phase.annotations;
+            return {status: 'success', data: data, message:''};
         }
         catch(err){
             console.log(err);
@@ -361,6 +364,7 @@ export default class WorkflowService{
      * @param annotations
      */
     async updatePhaseAnnotations(userEmail, workflowId, annotations) {
+        console.log("Updating the annotations of a phase");
         try{
             const workflow = await this.workflowRepository.getWorkflow(workflowId);
             if(!await this.isUserMemberOfWorkflow(workflow, userEmail)){
@@ -369,6 +373,7 @@ export default class WorkflowService{
             }
             let phase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
             phase.annotations = annotations;
+            console.log(phase);
             await this.phaseService.updatePhase(phase);
 
             return {status:'success', data:{}, message:''};

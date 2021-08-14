@@ -32,7 +32,6 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
 
   @Input('documentname') docName: string;
   @Input('workflowId') workflowId: string;
-  @Input('annotations') annotations: string;
   @ViewChild('viewer') viewerRef: ElementRef;
   @Input('userEmail') userEmail: string;
   constructor(
@@ -49,7 +48,6 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
       this.workflowId = data['workflowId'];
       this.docName = data['documentname'];
       this.userEmail = data['userEmail'];
-      this.annotations = data['annotations'];
     });
   }
 
@@ -101,9 +99,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
           });
 
             instance.Core.documentViewer.addEventListener('documentLoaded', ()=>{
-              console.log('The annotations we are loading in look like this: ');
-              console.log(this.annotations);
-              instance.Core.annotationManager.importAnnotations(this.annotations);
+              instance.Core.annotationManager.importAnnotations(response.data.annotations);
             });
 
         });

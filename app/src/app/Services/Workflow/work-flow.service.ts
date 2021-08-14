@@ -175,11 +175,29 @@ export class WorkFlowService {
           callback({ status: 'error', message: 'Cannot connect to Server' });
         }
       });
-
   }
 
   async updateCurrentPhaseAnnotations(workflowId, annotations, callback){
+    const formData = new FormData();
+    formData.append('workflowId', workflowId);
+    formData.append('annotations', annotations);
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
 
+    this.http
+      .post(WorkFlowService.url + '/workflows/updatePhaseAnnotations', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe((data) => {
+        console.log(data);
+        if (data != null) {
+          callback(data);
+        } else {
+          callback({ status: 'error', message: 'Cannot connect to Server' });
+        }
+      });
   }
 
   async getUserWorkflowsData(callback) {

@@ -64,7 +64,7 @@ export default class DocumentService {
             if(filedata === null)
                 throw "The specified document does not exist.";
             console.log({status:"success", data:{metadata: metadata, filedata: filedata}, message:"" });
-            return {status:"success", data:{metadata: metadata, filedata: filedata}, message:"" };
+            return {metadata: metadata, filedata: filedata};
             //return {status:"success", data:{filepath: metadata.doc_name}, message:"" }; //need to return filepath ( which is just the file name) up the chain so we can pipe it to the response.
         }
         catch(err)

@@ -24,7 +24,6 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
 
   @Input('documentname') docName: string;
   @Input('workflowId') workflowId: string;
-  @Input('annotations') annotations: string;
   @ViewChild('viewer') viewerRef: ElementRef;
   @Input('userEmail') userEmail: string;
   constructor(
@@ -41,7 +40,6 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
       this.workflowId = data['workflowId'];
       this.docName = data['documentname'];
       this.userEmail = data['userEmail'];
-      this.annotations = data['annotations'];
     });
   }
 
@@ -81,9 +79,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
             });
           });
           instance.Core.documentViewer.addEventListener('documentLoaded', ()=>{
-            console.log('The annotations we are loading in look like this: ');
-            console.log(this.annotations);
-            instance.Core.annotationManager.importAnnotations(this.annotations);
+            instance.Core.annotationManager.importAnnotations(response.data.annotations);
           });
 
           instance.UI.setHeaderItems(header =>{
@@ -92,7 +88,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
               img: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>',
               onClick: async () => {
                 const xfdfString = await  instance.Core.annotationManager.exportAnnotations();
-                console.log(xfdfString);
+                await this.updateDocumentAnnotations(xfdfString);
               }
             });
           });
@@ -162,4 +158,9 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     alert('Bring in the popup here to let a user set whether or not they accept or reject the phase!!!');
   }
 
+  async updateDocumentAnnotations(annotationsString){
+    await this.workflowService.updateCurrentPhaseAnnotations(this.workflowId, annotationsString, (response)=>{
+      console.log(response);
+    });
+  }
 }
