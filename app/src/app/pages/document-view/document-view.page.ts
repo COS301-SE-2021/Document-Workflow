@@ -93,6 +93,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
               console.log(this.annotations);
               instance.Core.annotationManager.importAnnotations(this.annotations);
             });
+
         });
       }else {
         //TODO: style this ErrorOccurredPopup
@@ -108,7 +109,10 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
         });
       }
     });
+  }
 
+  acceptDocument(){
+    alert('Bring in the popup here to let a user set whether or not they accept or reject the phase!!!');
   }
 
   download() {

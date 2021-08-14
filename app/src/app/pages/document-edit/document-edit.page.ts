@@ -53,7 +53,6 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   });
 
   async ngAfterViewInit(): Promise<void>{
-    alert("REEEE");
     await this.workflowService.retrieveDocument(this.workflowId, async (response) => {
       console.log(response);
       if (response) {
@@ -85,6 +84,16 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
             console.log(this.annotations);
             instance.Core.annotationManager.importAnnotations(this.annotations);
           });
+          instance.UI.setHeaderItems(header =>{
+            header.push({
+              type: 'actionButton',
+              img: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>',
+              onClick: async () => {
+                const xfdfString = await  instance.Core.annotationManager.exportAnnotations();
+                console.log(xfdfString);
+              }
+            });
+          });
 
         });
       }else {
@@ -109,6 +118,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   }
 
   back() {
+    alert('TODO, add a check saying "unsaved data will be lost"');
     this.router.navigate(['home']);
   }
 
@@ -145,4 +155,9 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
       }
     });
   }
+
+  acceptDocument(){
+    alert('Bring in the popup here to let a user set whether or not they accept or reject the phase!!!');
+  }
+
 }
