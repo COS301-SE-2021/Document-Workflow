@@ -2,6 +2,7 @@ import { TypeModifier } from '@angular/compiler/src/output/output_ast';
 import {
   Component,
   ElementRef,
+  Input,
   OnInit,
   Sanitizer,
   ViewChild,
@@ -40,6 +41,8 @@ import { formattedError } from '@angular/compiler';
   styleUrls: ['./workflow-edit.page.scss'],
 })
 export class WorkflowEditPage implements OnInit {
+
+  @Input("workflowID") workflowId: string;
   document: documentImage;
 
   workflowForm: FormGroup;
@@ -70,7 +73,7 @@ export class WorkflowEditPage implements OnInit {
 
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
-  workflowServices: any;
+
   constructor(
     private plat: Platform,
     private fb: FormBuilder,
@@ -79,12 +82,11 @@ export class WorkflowEditPage implements OnInit {
     private router: Router,
     private userApiService: UserAPIService,
     private sanitizer: DomSanitizer,
-    private docServices: DocumentAPIService
+    private workflowServices: WorkFlowService
   ) {}
 
   async ngOnInit() {
-    this.document = this.docServices.createTestDocuments();
-
+    console.log(this.workflowId);
     if (Cookies.get('token') === undefined) {
       await this.router.navigate(['/login']);
       return;
@@ -122,6 +124,9 @@ export class WorkflowEditPage implements OnInit {
 
     await this.getUser();
   }
+
+  //  workflow id -> "611661feb394bb1d4cc91f3e"
+
 
   async getDocumentData() {
     this.workflowForm = this.fb.group({
@@ -221,8 +226,6 @@ export class WorkflowEditPage implements OnInit {
   changePermission(control: any, str: string) {
     control.setValue(str);
   }
-
-
 
   createPhase(): FormGroup {
     return this.fb.group({
@@ -325,13 +328,13 @@ export class WorkflowEditPage implements OnInit {
   }
 
   submit() {
-    console.log(this.workflowForm);
-    this.workflowServices.createWorkflow(
-      this.workflowForm,
-      '',
-      this.file,
-      (response) => {}
-    );
+    // console.log(this.workflowForm);
+    // this.workflowServices.createWorkflow(
+    //   this.workflowForm,
+    //   '',
+    //   this.file,
+    //   (response) => {}
+    // );
   }
 
   viewPhase(i: number){
@@ -342,3 +345,31 @@ export class WorkflowEditPage implements OnInit {
     console.log(this.workflowForm);
   }
 }
+
+
+// export interface workflowFormat {
+//   currentPercent: number;
+//   currentPhase: number;
+//   description: string;
+//   name: string;
+//   ownerEmail: string;
+//   ownerId: string;
+//   _v: number;
+//   _id: string;
+
+//   phases: phaseFormat[];
+// }
+
+// export interface phaseFormat {
+//   showPhase?: boolean;
+//   status: string;
+//   annotations: string;
+//   description: string;
+//   users: phaseUserFormat[];
+// }
+
+// export interface phaseUserFormat {
+//   email: string;
+//   permission: string;
+//   accepted: boolean;
+// }

@@ -26,7 +26,7 @@
         </ion-item>
         <ion-item>
           <ion-label position="stacked" >Workflow description: </ion-label>
-          <ion-input formControlName="workflowDescription"> </ion-input>
+          <ion-textarea formControlName="workflowDescription"> </ion-textarea>
         </ion-item>
         <!-- <ion-fab>
           <ion-fab-button (click)="debug(workflowForm.controls.phases['controls'])">debug</ion-fab-button>
@@ -39,17 +39,27 @@
             <ion-col sizeXs="12">
               <ion-row>
                 <ion-col sizeXs='10'>
-                  <ion-text>Phase {{i+1}}</ion-text>
+                  <ion-text style="font-size: 20px;">Phase {{i+1}}</ion-text>
                 </ion-col>
                 <ion-col sizeXs='2'>
                   <ion-icon name="eye-outline" (click)='viewPhase(i)' *ngIf="!phaseViewers[i]"
-                    style="font-size: 24px;text-align: center;"></ion-icon>
+                    style="font-size: 30px;text-align: center;"></ion-icon>
                   <ion-icon name="eye-off-outline" (click)='viewPhase(i)' *ngIf="phaseViewers[i]"
-                    style="font-size: 24px;text-align:center"></ion-icon>
+                    style="font-size: 30px;text-align:center"></ion-icon>
                 </ion-col>
+                <ion-col sizeXs='12'>
+                <ion-item lines='none'>
+                  <ion-label position="stacked" >Description</ion-label>
+                  <ion-fab vertical="bottom" horizontal="end">
+                    <ion-fab-button (click)='debug(phase.controls.description)'>Debug</ion-fab-button>
+                  </ion-fab>
+                  <ion-textarea [formControl]="phase.controls.description"></ion-textarea>
+                </ion-item>
+              </ion-col>
               </ion-row>
             </ion-col>
             <ion-col sizeXs="12" *ngIf='phaseViewers[i]'>
+              <ion-text style="font-size: 18px;">Users:</ion-text>
               <ion-row *ngFor="let user of  phase.controls['users'].controls; let j = index">
                 <ion-col sizeXs='10'>
                   <ion-input type="email" [formControl]="user.controls.user"></ion-input>

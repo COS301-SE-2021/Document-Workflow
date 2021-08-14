@@ -121,27 +121,6 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
     });
   }
 
- async acceptDocument(){
-   const a = await this.modalCtrl.create({
-     component: UserNotificationsComponent,
-     componentProps:{
-        'title': 'signPhase',
-        'message': "Do you accept this phase?"
-     }});
-
-
-     (await a).present();
-
-     (await a).onDidDismiss().then(async (data)=>{
-       if(data.data['confirm'] === true){
-        //  todo they confirmed
-       }
-     });
-      //   const documents = (await data).data['document'];
-      //   // c
-       // alert('Bring in the popup here to let a user set whether or not they accept or reject the phase!!!');
-  }
-
   download() {
     const blob = new Blob([this.srcFile], { type: 'application/pdf' });
     const objUrl = URL.createObjectURL(blob);
@@ -154,25 +133,17 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
     link.click();
     link.remove();
   }
-
   async back() {
-    const a = await this.modalCtrl.create({
-      component: UserNotificationsComponent,
-      componentProps:{
-         'title': 'signPhase',
-         'message': "Are you sure you want to go back?"
-      }});
-
-
-      (await a).present();
-
-      (await a).onDidDismiss().then(async (data)=>{
-        if(data.data['confirm'] === true){
-          this.router.navigate(['home']);
-        }
-      });
-
+    await this.userApiService.displayPopOverWithButtons('signPhase','Are you sure you want to go back', (response) =>{
+      console.log(response);
+    });
   }
+
+  async acceptDocument(){
+    await this.userApiService.displayPopOverWithButtons('signPhase','Do you accept this phase', (response) =>{
+      console.log(response);
+    });
+   }
 
   toggleAnnotations(annotationManager){
 

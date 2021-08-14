@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import {Component, OnInit, Input, AfterViewInit, ElementRef, ViewChild} from '@angular/core';
 
-import { ModalController, NavParams, Platform } from '@ionic/angular';
+import { ModalController, NavParams, Platform, PopoverController } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DocumentAPIService } from 'src/app/Services/Document/document-api.service';
 import {WorkFlowService} from 'src/app/Services/Workflow/work-flow.service';
@@ -32,12 +32,13 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   @ViewChild('viewer') viewerRef: ElementRef;
   @Input('userEmail') userEmail: string;
   constructor(
-    private modalCtrl: ModalController,
     private navpar: NavParams,
     private route: ActivatedRoute,
     private docApi: DocumentAPIService,
     private workflowService: WorkFlowService,
     private router: Router,
+    private userApiService: UserAPIService,
+    private pop: PopoverController,
   ) {}
 
   async ngOnInit() {
@@ -123,11 +124,6 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     link.remove();
   }
 
-  back() {
-    alert('TODO, add a check saying "unsaved data will be lost"');
-    this.router.navigate(['home']);
-  }
-
   toggleAnnotations(annotationManager){
 
     this.showAnnotations = !this.showAnnotations;
@@ -162,37 +158,17 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     });
   }
 
-  async acceptDocument() {
-    const a = await this.modalCtrl.create({
-      component: UserNotificationsComponent,
-      componentProps:{
-        'title': 'signPhase',
-        'message': "Do you accept this phase?"
-      }});
-
-
-    (await a).present();
-
-    (await a).onDidDismiss().then(async (data)=>{
-      if(data.data['confirm'] === true){
-        //  todo they confirmed
-      }
-    });
-    //   const documents = (await data).data['document'];
-    //   // c
-    //
-    alert('Bring in the popup here to let a user set whether or not they accept or reject the phase!!!');
-    console.log('Need to ensure that we save any annotations here aswell');
-    const doc = this.documentViewer.getDocument();
-    await this.updateDocumentAnnotations(this.annotationManager.exportAnnotations()); //TODO: decide if we save the annotations for the edits made
-    const data = await doc.getFileData({});
-    const arr = new Uint8Array(data);
-    const blob = new Blob([arr], {type: 'application/pdf'});
-    const file = new File([blob], this.documentMetadata.name);
-    await this.workflowService.updatePhase(this.workflowId, true, file, (response) => {
+  async back() {
+    await this.userApiService.displayPopOverWithButtons('signPhase','Are you sure you want to go back', (response) =>{
       console.log(response);
     });
   }
+
+  async acceptDocument(){
+    await this.userApiService.displayPopOverWithButtons('signPhase','Do you accept this phase', (response) =>{
+      console.log(response);
+    });
+   }
 
   async updateDocumentAnnotations(annotationsString){
     await this.workflowService.updateCurrentPhaseAnnotations(this.workflowId, annotationsString, (response)=>{

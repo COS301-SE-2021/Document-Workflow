@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, PopoverController } from '@ionic/angular';
 
 @Component({
   selector: 'app-user-notifications',
@@ -12,7 +12,7 @@ export class UserNotificationsComponent implements OnInit {
 
   accept: boolean;
   displayButtons: boolean = false;
-  constructor(private modal: ModalController) {}
+  constructor(private pop: PopoverController) {}
 
   ngOnInit() {
     if (this.title === 'termsOfService') {
@@ -33,13 +33,13 @@ export class UserNotificationsComponent implements OnInit {
   }
 
   confirm() {
-    this.modal.dismiss({
+    this.pop.dismiss({
       'confirm': true,
     });
   }
 
   reject() {
-    this.modal.dismiss({
+    this.pop.dismiss({
       'confirm': false,
     });
   }
