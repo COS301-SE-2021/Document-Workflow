@@ -225,7 +225,7 @@ export class WorkflowPage implements OnInit {
     // this.allUserDocuments.push(this.docService.createTestDocuments());
     for(let document of this.allUserDocuments){
       for(let phase of document.phases){
-        if(phase.completed === false){
+        if(phase.status !== 'Completed'){
           for(let user of phase.users){
             if(user.email === this.userEmail){
               this.documents.push(document);

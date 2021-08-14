@@ -17,7 +17,7 @@ export interface workflowFormat {
 }
 
 export interface phaseFormat {
-  completed?: boolean;
+  status: string;
   annotations: string;
   description: string;
   users: phaseUserFormat[];
@@ -173,7 +173,7 @@ export class WorkFlowService {
         }
         let tmpPhase: phaseFormat;
         tmpPhase = {
-          completed: checker,
+          status: phase['status'],
           annotations: phase['annotations'],
           description: phase['description'],
           users: tempUser,
