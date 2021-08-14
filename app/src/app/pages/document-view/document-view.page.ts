@@ -32,6 +32,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
 
   @Input('documentname') docName: string;
   @Input('workflowId') workflowId: string;
+  @Input('annotations') annotations: string;
   @ViewChild('viewer') viewerRef: ElementRef;
   @Input('userEmail') userEmail: string;
   constructor(
@@ -48,6 +49,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
       this.workflowId = data['workflowId'];
       this.docName = data['documentname'];
       this.userEmail = data['userEmail'];
+      this.annotations = data['annotations'];
     });
   }
 
@@ -88,19 +90,20 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
          });
         });
       }else {
+        //TODO: style this ErrorOccurredPopup
+        const a = await this.modalCtrl.create({
+          component: ErrorOccurredComponent,
+          componentProps: {
+          },
+          cssClass: 'errorModalClass'
+        });
+
+        await (await a).present();
+        (await a).onDidDismiss().then(async (data) => {
+        });
       }
     });
-    //TODO: style this ErrorOccurredPopup
-    const a = await this.modalCtrl.create({
-      component: ErrorOccurredComponent,
-      componentProps: {
-      },
-      cssClass: 'errorModalClass'
-    });
 
-    await (await a).present();
-    (await a).onDidDismiss().then(async (data) => {
-    });
   }
 
   download() {

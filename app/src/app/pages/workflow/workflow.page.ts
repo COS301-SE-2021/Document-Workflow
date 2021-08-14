@@ -204,19 +204,24 @@ export class WorkflowPage implements OnInit {
     this.router.navigate(['home/addWorkflow']);
   }
 
-  viewWorkFlow( id: string, name: string) {
-    console.log(id)
+  viewWorkFlow( id: string, name: string, phase) {
+    console.log("Yo here is the active phase you booty boi");
+    console.log(phase);
+    alert('asdas');
     // this.navControl.navigateForward
     this.router.navigate(['/home/documentView', {
+      annotations: phase.annotations,
       workflowId: id,
       documentname: name,
       userEmail: this.user.email
     }]);
   }
 
-  editDocument(id: string){
+  editDocument(id: string, name:string, phase){
     this.router.navigate(['/home/documentEdit', {
+      annotations: phase.annotations,
       workflowId: id,
+      documentname: name,
       userEmail: this.user.email
     }]);
   }
