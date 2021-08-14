@@ -205,6 +205,7 @@ export class WorkflowPage implements OnInit {
   }
 
   viewWorkFlow(id: string, name: string) {
+    console.log(id)
     // this.navControl.navigateForward
     this.router.navigate(['/home/documentView', {
       id,
@@ -254,6 +255,7 @@ export class WorkflowPage implements OnInit {
   }
 
   showPhase(phase: phaseFormat){
+
     phase.showPhase = !phase.showPhase;
   }
 }

@@ -5,10 +5,7 @@ $color4: #AA021E;
 $color5: #002060;
 
 
-ion-card{
-  min-height: 250px;
-  --background: $color1;
-}
+
 
 // ion-item,ion-grid{
 //   --background: #EEE2DC;
@@ -21,6 +18,9 @@ ion-content{
   --background: var($color2);
 }
 
+ion-icon {
+  font-size: 36px;
+}
 
 
 // <ion-backdrop>
