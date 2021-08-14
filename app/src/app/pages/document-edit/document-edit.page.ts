@@ -192,13 +192,9 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
       });
   }
 
-<<<<<<< Updated upstream
   async updateDocumentAnnotations(annotationsString){
     await this.workflowService.updateCurrentPhaseAnnotations(this.workflowId, annotationsString, (response)=>{
       console.log(response);
     });
   }
-=======
-
->>>>>>> Stashed changes
 }
