@@ -124,6 +124,35 @@ export class WorkFlowService {
       );
   }
 
+  async updatePhase(workflowId, accepts, document, callback){
+    const formData = new FormData();
+    formData.append('workflowId', workflowId);
+    formData.append('accept', accepts);
+    formData.append('document', document);
+
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+
+    this.http
+      .post(WorkFlowService.url + '/workflows/updatePhase', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          if (data) {
+            callback(data);
+          } else
+            callback({ status: 'error', message: 'Cannot connect to Server' });
+        },
+        (error) => {
+          console.log(error);
+          alert('An unexpected error occurred');
+        }
+      );
+  }
+
   async getUserWorkflowsData(callback) {
     const formData = new FormData();
     const token = Cookies.get('token');
@@ -137,7 +166,6 @@ export class WorkFlowService {
       })
       .subscribe(
         (data) => {
-          //TODO: change url
           if (data) {
             data['data'].ownedWorkflows = this.formatWorkflows(data['data'].ownedWorkflows);
             data['data'].workflows = this.formatWorkflows(data['data'].workflows);
@@ -146,11 +174,12 @@ export class WorkFlowService {
             callback({ status: 'error', message: 'Cannot connect to Server' });
         },
         (error) => {
+          console.log(error);
           alert('An unexpected error occurred');
         }
       );
   }
-//todo cancerous maybe but its works and will make the frontend processing so much easier
+  //todo ugly maybe but itsworks and will make the frontend processing so much easier
   formatWorkflows(documents: any): workflowFormat[] {
     let temp: workflowFormat[] = [];
     for (let document of documents) {

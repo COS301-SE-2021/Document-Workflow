@@ -141,6 +141,14 @@ export class WorkflowPage implements OnInit {
     });
   }
 
+  async testUpdatePhase(){
+    const id = '611661feb394bb1d4cc91f3e';
+    const accepts = true;
+    await this.workFlowService.updatePhase(id, accepts, null, data=>{
+      console.log(data);
+    });
+  }
+
   async deleteWorkFlow(id: string){
     const deleteMod = this.modals.create({
       component: ConfirmDeleteWorkflowComponent

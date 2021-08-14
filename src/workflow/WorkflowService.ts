@@ -259,7 +259,7 @@ export default class WorkflowService{
             //Next, a check is done to ensure that this user is actually a participant of this phase and
             //if so, what their permissions are.
             const phaseUsers = JSON.parse(currentPhase.users);
-
+            console.log(phaseUsers);
 
 
             return {status:"success", data:{}, message:""};

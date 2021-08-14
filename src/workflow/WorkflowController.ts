@@ -126,7 +126,10 @@ export default class WorkflowController {
         if(!req.body.workflowId || !req.body.accept){
             throw new RequestError("There was something wrong with the request");
         }
-
+        if(req.files === null) {
+            const files = {document: null};
+            req.files = files;
+        }
         try{
             return await this.workflowService.updatePhase(req.user, req.body.workflowId, req.body.accept, req.files.document);
         } catch(err) {
