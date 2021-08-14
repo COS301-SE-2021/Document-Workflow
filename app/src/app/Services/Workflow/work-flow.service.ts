@@ -155,6 +155,23 @@ export class WorkFlowService {
       );
   }
 
+  async retrieveDocument(workflowId, callback){
+    const formData = new FormData();
+    formData.append('workflowId', workflowId);
+
+    this.http
+      .post(WorkFlowService.url + '/workflows/retrieveDocument', formData)
+      .subscribe((data) => {
+        console.log(data);
+        if (data != null) {
+          callback(data);
+        } else {
+          callback({ status: 'error', message: 'Cannot connect to Server' });
+        }
+      });
+
+  }
+
   async getUserWorkflowsData(callback) {
     const formData = new FormData();
     const token = Cookies.get('token');

@@ -35,8 +35,14 @@ export default class DocumentService {
         }
     }
 
-    async putDocument(file: File, id: ObjectId){
-        //TODO: implement me
+    async putDocument(file: File, id: ObjectId, phaseNumber){
+        try{
+            await this.documentRepository.putDocumentS3(file, id, phaseNumber);
+        }
+        catch(err){
+            console.log(err);
+            throw(err);
+        }
     }
 
     async deleteDocument(workflow_id, document_id){
@@ -47,17 +53,16 @@ export default class DocumentService {
     }
 
     //TODO: update this!! fetch documents based on their phase.
-    async retrieveDocument(req) : Promise<any> {
+    async retrieveDocument(docId, S3Path) : Promise<any> {
         console.log("retrieving a document");
-        console.log(req.body.doc_id);
+        console.log(docId);
         try {
-            const metadata = await this.documentRepository.getDocument(req.body.doc_id);
+            const metadata = await this.documentRepository.getDocument(docId);
             console.log(metadata);
             console.log(metadata.document_path);
-            const filedata = await this.documentRepository.getDocumentFromS3(metadata.document_path);
+            const filedata = await this.documentRepository.getDocumentFromS3(S3Path);
             if(filedata === null)
                 throw "The specified document does not exist.";
-            //await this.turnBufferIntoFile(filedata,metadata);
             console.log({status:"success", data:{metadata: metadata, filedata: filedata}, message:"" });
             return {status:"success", data:{metadata: metadata, filedata: filedata}, message:"" };
             //return {status:"success", data:{filepath: metadata.doc_name}, message:"" }; //need to return filepath ( which is just the file name) up the chain so we can pipe it to the response.
