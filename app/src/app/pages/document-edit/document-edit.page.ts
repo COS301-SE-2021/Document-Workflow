@@ -53,6 +53,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   });
 
   async ngAfterViewInit(): Promise<void>{
+    alert("REEEE");
     await this.workflowService.retrieveDocument(this.workflowId, async (response) => {
       console.log(response);
       if (response) {
@@ -68,6 +69,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
           annotationUser: this.userEmail
         }, this.viewerRef.nativeElement).then(instance =>{
 
+
           instance.UI.loadDocument(blob, {filename: this.docName});
           instance.UI.setHeaderItems(header =>{
             header.push({
@@ -78,20 +80,16 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
               }
             });
           });
+          instance.Core.documentViewer.addEventListener('documentLoaded', ()=>{
+            console.log('The annotations we are loading in look like this: ');
+            console.log(this.annotations);
+            instance.Core.annotationManager.importAnnotations(this.annotations);
+          });
 
         });
       }else {
-        //TODO: style this ErrorOccurredPopup
-        const a = await this.modalCtrl.create({
-          component: ErrorOccurredComponent,
-          componentProps: {
-          },
-          cssClass: 'errorModalClass'
-        });
 
-        await (await a).present();
-        (await a).onDidDismiss().then(async (data) => {
-        });
+
       }
     });
 

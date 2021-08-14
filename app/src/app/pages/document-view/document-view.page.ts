@@ -88,6 +88,11 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
                 }
               });
          });
+            instance.Core.documentViewer.addEventListener('documentLoaded', ()=>{
+              console.log('The annotations we are loading in look like this: ');
+              console.log(this.annotations);
+              instance.Core.annotationManager.importAnnotations(this.annotations);
+            });
         });
       }else {
         //TODO: style this ErrorOccurredPopup

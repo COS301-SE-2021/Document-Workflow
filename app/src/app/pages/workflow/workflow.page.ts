@@ -207,7 +207,6 @@ export class WorkflowPage implements OnInit {
   viewWorkFlow( id: string, name: string, phase) {
     console.log("Yo here is the active phase you booty boi");
     console.log(phase);
-    alert('asdas');
     // this.navControl.navigateForward
     this.router.navigate(['/home/documentView', {
       annotations: phase.annotations,
