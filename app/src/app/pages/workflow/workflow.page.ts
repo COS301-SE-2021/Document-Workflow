@@ -42,8 +42,8 @@ export class WorkflowPage implements OnInit {
   ) {
   }
 
-  debug(str: any){
-    console.log(str);
+  async debug(str: any){
+    await this.userApiService.displayPopOver('signPhase', 'hfihrbehfrgbihugrbf');
   }
 
   async ngOnInit() {

@@ -11,12 +11,12 @@ export class UserNotificationsComponent implements OnInit {
   @Input() title: string;
 
   accept: boolean;
-  termOfService = false;
+  displayButtons: boolean = false;
   constructor(private modal: ModalController) {}
 
   ngOnInit() {
     if (this.title === 'termsOfService') {
-      this.termOfService = true;
+      this.displayButtons = true;
       this.message =
         'Note that by making use of the Document Workflow system, you are ' +
         'essentially giving your soul to our Lizard overlord JeffBezos. He will steal all of' +
@@ -25,17 +25,22 @@ export class UserNotificationsComponent implements OnInit {
         'rise to power through your indirect support of him by using our services.' +
         'All hail King Zuck.';
     }
+
+    if(this.title === 'signPhase'){
+      this.title ='Accept Phase';
+      this.displayButtons = true;
+    }
   }
 
   confirm() {
     this.modal.dismiss({
-      confirm: true,
+      'confirm': true,
     });
   }
 
   reject() {
     this.modal.dismiss({
-      confirm: false,
+      'confirm': false,
     });
   }
 }

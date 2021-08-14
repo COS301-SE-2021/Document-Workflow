@@ -18,6 +18,7 @@ import WebViewer from '@pdftron/webviewer';
 import {UserNotificationsComponent} from "../../components/user-notifications/user-notifications.component";
 import {DocumentActionAreaComponent} from "../../components/document-action-area/document-action-area.component";
 import {ErrorOccurredComponent} from "../../components/error-occurred/error-occurred.component";
+import { UserAPIService } from 'src/app/Services/User/user-api.service';
 
 @Component({
   selector: 'app-document-view',
@@ -41,6 +42,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
     private docApi: DocumentAPIService,
     private workflowService: WorkFlowService,
     private router: Router,
+    private userApiService: UserAPIService
   ) {}
 
   async ngOnInit() {
@@ -119,8 +121,25 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
     });
   }
 
-  acceptDocument(){
-    alert('Bring in the popup here to let a user set whether or not they accept or reject the phase!!!');
+ async acceptDocument(){
+   const a = await this.modalCtrl.create({
+     component: UserNotificationsComponent,
+     componentProps:{
+        'title': 'signPhase',
+        'message': "Do you accept this phase?"
+     }});
+
+
+     (await a).present();
+
+     (await a).onDidDismiss().then(async (data)=>{
+       if(data.data['confirm'] === true){
+        //  todo they confirmed
+       }
+     });
+      //   const documents = (await data).data['document'];
+      //   // c
+       // alert('Bring in the popup here to let a user set whether or not they accept or reject the phase!!!');
   }
 
   download() {
@@ -136,8 +155,23 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
     link.remove();
   }
 
-  back() {
-    this.router.navigate(['home']);
+  async back() {
+    const a = await this.modalCtrl.create({
+      component: UserNotificationsComponent,
+      componentProps:{
+         'title': 'signPhase',
+         'message': "Are you sure you want to go back?"
+      }});
+
+
+      (await a).present();
+
+      (await a).onDidDismiss().then(async (data)=>{
+        if(data.data['confirm'] === true){
+          this.router.navigate(['home']);
+        }
+      });
+
   }
 
   toggleAnnotations(annotationManager){

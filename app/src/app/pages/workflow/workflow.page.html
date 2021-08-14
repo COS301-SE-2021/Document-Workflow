@@ -37,6 +37,9 @@
               <ion-fab-button (click)="editDocument(document._id, document.name)">
                 <ion-icon name="construct-outline" style="font-size: 22px;"></ion-icon>
               </ion-fab-button>
+              <ion-fab-button (click)="debug('')">
+                <ion-icon name="construct-outline" style="font-size: 22px;"></ion-icon>
+              </ion-fab-button>
             </ion-fab-list>
           </ion-fab>
         </ion-header>
@@ -58,15 +61,15 @@
               </ion-col>
               <ion-col *ngIf='phase.showPhase' lines="none" sizeXs='12'>
                 <ion-row *ngFor="let user of phase.users">
-                  <ion-col sizeXs='12' sizeMd='8' sizeSm='8' style="text-align: left;">
+                  <ion-col sizeXs='12' sizeMd='7' sizeSm='7' style="text-align: left;">
                     <ion-item lines="none">
-                      <ion-label position="stacked">User email</ion-label>
+                      <ion-label position="stacked" style="width: 100%;">User email</ion-label>
                       {{user.email}}
                     </ion-item>
                   </ion-col>
-                  <ion-col sizeXs='6' sizeSm='2' sizeMd='2' style="text-align: center;">
-                    <ion-item lines="none">
-                      <ion-label position="stacked">Permission</ion-label>
+                  <ion-col sizeXs='6' sizeSm='3' sizeMd='3' style="text-align: center;">
+                    <ion-item lines="none" style="width: 100%;">
+                      <ion-label position="stacked" style="width: 100%;">Permission</ion-label>
                       {{user.permission}}
                     </ion-item>
                   </ion-col>
@@ -86,66 +89,6 @@
       </ion-card>
     </ion-reorder>
   </ion-reorder-group>
-  <!-- <ion-reorder-group [disabled]="reOrder" (ionItemReorder)="fixOrder($event)" style="width:100%">
-    <div *ngFor="let doc of documents">
-      <ion-reorder style="width:100%">
-        <ion-card style="width:95%; justify-content: center;margin:auto">
-          <ion-card-header>
-            <ion-card-title>{{doc.name}}</ion-card-title>
-            <ion-card-subtitle>Owner of workflow: {{doc.ownerEmail}}
-            </ion-card-subtitle>
-            <ion-fab vertical="top" horizontal="end">
-              <ion-fab-button>
-                <ion-icon name="arrow-down-outline"></ion-icon>
-              </ion-fab-button>
-              <ion-fab-list side="bottom">
-                <ion-fab-button (click)="editWorkflow(doc._id)">
-                  <ion-icon name="construct-outline"></ion-icon>
-                </ion-fab-button>
-
-                <ion-fab-button *ngIf="doc.ownerEmail === userEmail">
-                  <ion-icon name="trash" (click)="deleteWorkFlow(doc._id)"></ion-icon>
-                </ion-fab-button>
-              </ion-fab-list>
-            </ion-fab>
-          </ion-card-header>
-          <ion-card-content>
-            <br>
-            <ion-item>
-              <ion-list>
-                <ion-title>Description:</ion-title>
-                <ion-item>
-                  {{doc.description}}
-                </ion-item>
-              </ion-list>
-            </ion-item>
-            <ion-item>
-              <ion-list>
-                <ion-grid>
-                  <ion-title>Phases</ion-title>
-                  <ion-row>
-                    <div *ngFor="let phase of doc.phases; let i = index">
-                      <ion-col sizeLg="4" sizeMd="6" sizeSm="6" sizeXs="12">
-                        <h2>
-                          Phase {{i+1}}
-                        </h2>
-                        <ion-item>
-                          {{phase}}
-                        </ion-item>
-                      </ion-col>
-                    </div>
-                  </ion-row>
-                </ion-grid>
-              </ion-list>
-            </ion-item>
-          </ion-card-content>
-        </ion-card>
-      </ion-reorder>
-      <br>
-    </div>
-
-  </ion-reorder-group> -->
-
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button (click)="addWorkflow()">
       <ion-icon name="add-circle-outline"></ion-icon>
@@ -159,53 +102,3 @@
   </ion-fab>
 
 
-
-  <!-- <ion-fab>
-    <ion-fab-button>
-      test
-    </ion-fab-button>
-    <ion-fab-list>
-      <ion-fab-button (click)="showOnlyWorkflowOwned()" style='color:white'>1</ion-fab-button>
-      <ion-fab-button (click)="sortByNeededActions()" style='color:white'>2</ion-fab-button>
-      <ion-fab-button (click)="getByName('testiie boi')" style='color:white'>3</ion-fab-button>
-    </ion-fab-list>
-  </ion-fab> -->
-</ion-content>
-
-<!-- <ion-item>
-  <ion-grid style="width:95%">
-    <ion-row *ngFor="let phase of document.phases;  let i = index" style="width:95%">
-      <ion-card style="width:95%">
-        <ion-card-header>
-          <ion-item lines="none" style="width:100%">
-            <div slot="start">
-              <ion-card-title>Phase {{i+1}}</ion-card-title>
-              <ion-card-subtitle>{{phase.description}}</ion-card-subtitle>
-            </div>
-            <div slot="end">
-              <ion-icon name="chevron-down-circle-outline" (click)='showPhase(phase)' slot='end'></ion-icon>
-            </div>
-          </ion-item>
-        </ion-card-header>
-        <ion-card-content *ngIf='phase.showPhase'>
-          <ion-grid>
-            <ion-row *ngFor="let user of phase.users">
-              <ion-col sizeXs="12">
-                <ion-item detail="false" lines="none" style="width: 100%;">
-                  <div slot='start'>
-                    {{user.email}} {{user.permission}}
-                  </div>
-                  <div slot='end'>
-                    <ion-icon *ngIf="user.accepted" name="checkmark-circle-outline" style="width: 100%;">
-                    </ion-icon>
-                    <ion-icon *ngIf="!user.accepted" name="close-circle-outline"></ion-icon>
-                  </div>
-                </ion-item>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-        </ion-card-content>
-      </ion-card>
-    </ion-row>
-  </ion-grid>
-</ion-item> -->

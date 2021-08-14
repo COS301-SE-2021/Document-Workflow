@@ -9,7 +9,9 @@ import { DocumentAPIService } from 'src/app/Services/Document/document-api.servi
 import {WorkFlowService} from 'src/app/Services/Workflow/work-flow.service';
 import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import WebViewer from '@pdftron/webviewer';
-import {ErrorOccurredComponent} from '../../components/error-occurred/error-occurred.component';
+import { UserAPIService } from 'src/app/Services/User/user-api.service';
+import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
+
 
 @Component({
   selector: 'app-document-edit',
@@ -161,6 +163,24 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   }
 
   async acceptDocument() {
+    const a = await this.modalCtrl.create({
+      component: UserNotificationsComponent,
+      componentProps:{
+        'title': 'signPhase',
+        'message': "Do you accept this phase?"
+      }});
+
+
+    (await a).present();
+
+    (await a).onDidDismiss().then(async (data)=>{
+      if(data.data['confirm'] === true){
+        //  todo they confirmed
+      }
+    });
+    //   const documents = (await data).data['document'];
+    //   // c
+    //
     alert('Bring in the popup here to let a user set whether or not they accept or reject the phase!!!');
     console.log('Need to ensure that we save any annotations here aswell');
     const doc = this.documentViewer.getDocument();

@@ -89,10 +89,13 @@ export class UserAPIService {
         'message': message
       }
     });
-    await poper.present();
 
-    const a = await poper.onDidDismiss();
-    console.log( a );
+
+    (await poper).onDidDismiss().then(async (data) => {
+      console.log(data);
+    });
+
+    await poper.present();
   }
 
   async getUserDetails(callback){
