@@ -59,7 +59,6 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   });
 
   async ngAfterViewInit(): Promise<void>{
-    alert(this.workflowId);
     await this.workflowService.retrieveDocument(this.workflowId, async (response) => {
       console.log(response);
       if (response) {
@@ -89,18 +88,6 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
          });
         });
       }else {
-        //TODO: style this ErrorOccurredPopup
-        const a = await this.modalCtrl.create({
-          component: ErrorOccurredComponent,
-          componentProps: {
-            title: 'An error occurred',
-            message: 'Please try again later'
-          },
-        });
-
-        await (await a).present();
-        (await a).onDidDismiss().then(async (data) => {
-        });
       }
     });
     //TODO: style this ErrorOccurredPopup

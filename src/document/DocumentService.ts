@@ -53,14 +53,14 @@ export default class DocumentService {
     }
 
     //TODO: update this!! fetch documents based on their phase.
-    async retrieveDocument(docId, S3Path) : Promise<any> {
+    async retrieveDocument(docId, workflowId, currentPhase) : Promise<any> {
         console.log("retrieving a document");
         console.log(docId);
         try {
             const metadata = await this.documentRepository.getDocument(docId);
             console.log(metadata);
-            console.log(metadata.document_path);
-            const filedata = await this.documentRepository.getDocumentFromS3(S3Path);
+            console.log("Fetching document from S3 server with path: ", workflowId +'/phase' + currentPhase +'/', metadata.name);
+            const filedata = await this.documentRepository.getDocumentFromS3(workflowId +'/phase' + currentPhase +'/' + metadata.name);
             if(filedata === null)
                 throw "The specified document does not exist.";
             console.log({status:"success", data:{metadata: metadata, filedata: filedata}, message:"" });

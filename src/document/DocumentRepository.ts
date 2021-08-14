@@ -103,7 +103,7 @@ export default class DocumentRepository {
 
     async getDocument(id: Types.ObjectId): Promise<DocumentProps> {
         try {
-            return await Document.findOne(id);
+            return await Document.findById(id);
         }
         catch(err){
             throw new Error("Could not find Document");

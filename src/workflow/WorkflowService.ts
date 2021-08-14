@@ -247,6 +247,7 @@ export default class WorkflowService{
         }
     }
 
+    //TODO: finish implementing
     async updatePhase(user, workflowId, accept, document) {//NOTE: document should always be sent through.
         //first, retrieve the workflow based on the workflow id
         try{
@@ -322,10 +323,12 @@ export default class WorkflowService{
             const workflow = await this.workflowRepository.getWorkflow(workflowId);
             console.log(workflow);
             if(!await this.isUserMemberOfWorkflow(workflow, userEmail)){
+                console.log("REquesting user is NOT a member of this workflow");
                 return {status:"error", data:{}, message:"You are not a member of this workflow"};
             }
+            console.log("REquesting user is a member of this workflow");
 
-            return await this.documentService.retrieveDocument(workflow.documentId, workflowId +'/phase' + workflow.currentPhase+'/' + workflow.documentId);
+            return await this.documentService.retrieveDocument(workflow.documentId, workflowId, workflow.currentPhase);
         }
         catch(err){
             console.log(err);
