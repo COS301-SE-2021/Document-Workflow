@@ -16,7 +16,7 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   ActionSheetController,
   IonReorderGroup,
@@ -27,13 +27,14 @@ import { ItemReorderEventDetail } from '@ionic/core';
 import { DocumentActionAreaComponent } from 'src/app/components/document-action-area/document-action-area.component';
 import { User, UserAPIService } from 'src/app/Services/User/user-api.service';
 import * as Cookies from 'js-cookie';
-import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 import {
-  DocumentAPIService,
-  documentImage, phase, phaseUser
-} from 'src/app/Services/Document/document-api.service';
-import { formattedError } from '@angular/compiler';
+  phaseFormat,
+  phaseUserFormat,
+  workflowFormat,
+  WorkFlowService,
+} from 'src/app/Services/Workflow/work-flow.service';
 
+import { formattedError } from '@angular/compiler';
 
 @Component({
   selector: 'app-workflow-edit',
@@ -41,15 +42,16 @@ import { formattedError } from '@angular/compiler';
   styleUrls: ['./workflow-edit.page.scss'],
 })
 export class WorkflowEditPage implements OnInit {
-
-  @Input("workflowID") workflowId: string;
-  document: documentImage;
+  @Input('workflowID') workflowId: string;
+  @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
+  @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
 
   workflowForm: FormGroup;
   private userCount = 1;
   phases: FormArray;
   file: File;
 
+  ready:boolean;
   addFile: boolean;
   addName: boolean;
   addDescription: boolean;
@@ -71,14 +73,14 @@ export class WorkflowEditPage implements OnInit {
 
   phaseViewers: boolean[] = [];
 
-  @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
-  @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
+  document: workflowFormat;
 
   constructor(
     private plat: Platform,
     private fb: FormBuilder,
     private actionSheetController: ActionSheetController,
     private modal: ModalController,
+    private route: ActivatedRoute,
     private router: Router,
     private userApiService: UserAPIService,
     private sanitizer: DomSanitizer,
@@ -86,7 +88,6 @@ export class WorkflowEditPage implements OnInit {
   ) {}
 
   async ngOnInit() {
-    console.log(this.workflowId);
     if (Cookies.get('token') === undefined) {
       await this.router.navigate(['/login']);
       return;
@@ -108,49 +109,90 @@ export class WorkflowEditPage implements OnInit {
       this.sizeMe = true;
     }
 
-    this.next = false;
-    this.rotated = 0;
-    this.setZoom = 'false';
-    this.zoomLevel = 1;
+    this.assignVariable();
 
-    this.reOrder = true;
+    await this.route.params.subscribe((data) => {
+      this.workflowId = data['workflowId'];
+    });
 
-    this.addFile = false;
-    this.addDescription = false;
-    this.addName = false;
-    this.controller = false;
-
-    await this.getDocumentData();
+    await this.getWorkflowData();
 
     await this.getUser();
   }
-
+//todo add workflowId
+  async getWorkflowData() {
+    await this.workflowServices.retrieveWorkflow(
+      '611661feb394bb1d4cc91f3e',
+      async (response) => {
+        console.log(response.data);
+        let phases: phaseFormat[] = [];
+        for (let phase of response.data.phases) {
+          let tmpPhase: phaseFormat;
+          let tempUser: phaseUserFormat[] = [];
+          for (let user of JSON.parse(phase.users)) {
+            let tmpUser: phaseUserFormat;
+            let tmpB: boolean = true;
+            if (user['accepted'] === 'false') {
+              tmpB = false;
+            }
+            tmpUser = {
+              email: user['user'],
+              permission: user['permission'],
+              accepted: tmpB,
+            };
+            tempUser.push(tmpUser);
+          }
+          tmpPhase = {
+            annotations: phase.annotations,
+            description: phase.description,
+            status: phase.status,
+            users: tempUser,
+          };
+          phases.push(tmpPhase);
+        }
+        this.document = {
+          currentPercent: 0,
+          currentPhase: response.data.currentPhase,
+          description: response.data.description,
+          name: response.data['name'],
+          ownerEmail: response.data.ownerEmail,
+          ownerId: response.data.ownerId,
+          _v: response.data._v,
+          _id: response.data._id,
+          phases: phases,
+        };
+        await this.setDocumentData();
+        this.ready = true;
+      }
+    );
+  }
   //  workflow id -> "611661feb394bb1d4cc91f3e"
 
-
-  async getDocumentData() {
-    this.workflowForm = this.fb.group({
+  async setDocumentData() {
+    (this.workflowForm = this.fb.group({
       workflowName: [this.document.name, [Validators.required]],
       workflowDescription: [this.document.description, [Validators.required]],
-      workflowFile:['',[Validators.required]],
+      workflowFile: ['', [Validators.required]],
       phases: this.fb.array([]),
-    }),
-    this.fillPhases();
+    })),
+      this.fillPhases();
   }
 
   fillPhases() {
-    let i =0;
-    for(let phase of this.document.phases){
+    let i = 0;
+    for (let phase of this.document.phases) {
       this.workflowForm.controls.phases['controls'].push(this.fillPhase(phase));
-      for(let user of phase.phaseUsers){
-        this.workflowForm.controls.phases['controls'][i].controls.users['controls'].push(this.fillUser(user));
+      for (let user of phase.users) {
+        this.workflowForm.controls.phases['controls'][i].controls.users[
+          'controls'
+        ].push(this.fillUser(user));
       }
       this.phaseViewers.push(false);
       i++;
     }
   }
 
-  fillPhase(phase: phase): FormGroup {
+  fillPhase(phase: phaseFormat): FormGroup {
     return this.fb.group({
       description: new FormControl(phase.description, Validators.required),
       annotations: new FormControl(phase.annotations, [Validators.required]),
@@ -158,9 +200,12 @@ export class WorkflowEditPage implements OnInit {
     });
   }
 
-  fillUser(user: phaseUser): FormGroup{
+  fillUser(user: phaseUserFormat): FormGroup {
     return this.fb.group({
-      user: new FormControl(user.email, [Validators.email, Validators.required]),
+      user: new FormControl(user.email, [
+        Validators.email,
+        Validators.required,
+      ]),
       permission: new FormControl(user.permission, [Validators.required]),
     });
   }
@@ -337,15 +382,30 @@ export class WorkflowEditPage implements OnInit {
     // );
   }
 
-  viewPhase(i: number){
+  viewPhase(i: number) {
     this.phaseViewers[i] = !this.phaseViewers[i];
   }
 
   printForm() {
     console.log(this.workflowForm);
   }
-}
 
+  assignVariable() {
+    this.next = false;
+    this.rotated = 0;
+    this.setZoom = 'false';
+    this.zoomLevel = 1;
+
+    this.reOrder = true;
+
+    this.addFile = false;
+    this.addDescription = false;
+    this.addName = false;
+    this.controller = false;
+
+    this.ready = false;
+  }
+}
 
 // export interface workflowFormat {
 //   currentPercent: number;

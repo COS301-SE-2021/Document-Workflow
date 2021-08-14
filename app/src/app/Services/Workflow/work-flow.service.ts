@@ -190,7 +190,6 @@ export class WorkFlowService {
         headers: httpHeaders,
       })
       .subscribe((data) => {
-        console.log(data);
         if (data != null) {
           callback(data);
         } else {

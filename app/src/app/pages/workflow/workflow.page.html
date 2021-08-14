@@ -28,14 +28,16 @@
           <ion-card-subtitle style="font-size: 12px; padding-left: 10px;">Owner of the workflow: {{document.ownerEmail}}
           </ion-card-subtitle>
           <ion-fab vertical="top" horizontal="end">
-
             <ion-fab-button><ion-icon name="apps-outline"></ion-icon></ion-fab-button>
             <ion-fab-list side="down">
               <ion-fab-button (click)="viewWorkFlow(document._id, document.name)">
-                <ion-icon name="arrow-redo-outline" style="font-size: 22px;"></ion-icon>
+                <ion-icon name="arrow-redo-outline" style="font-size: 22px; color:white"></ion-icon>
               </ion-fab-button>
               <ion-fab-button (click)="editDocument(document._id, document.name)">
-                <ion-icon name="construct-outline" style="font-size: 22px;"></ion-icon>
+                <ion-icon name="construct-outline" style="font-size: 22px;color:white"></ion-icon>
+              </ion-fab-button>
+              <ion-fab-button (click)="editWorkflow(document._id)">
+                <ion-icon name="construct-outline" style="font-size: 22px;color:white"></ion-icon>
               </ion-fab-button>
             </ion-fab-list>
           </ion-fab>
@@ -64,13 +66,13 @@
                       {{user.email}}
                     </ion-item>
                   </ion-col>
-                  <ion-col sizeXs='6' sizeSm='3' sizeMd='3' style="text-align: center;">
+                  <ion-col sizeXs='9' sizeSm='3' sizeMd='3' style="text-align: center;">
                     <ion-item lines="none" style="width: 100%;">
                       <ion-label position="stacked" style="width: 100%;">Permission</ion-label>
                       {{user.permission}}
                     </ion-item>
                   </ion-col>
-                  <ion-col sizeXs='6' sizeMd='2' sizeSm='2' style="text-align: right;">
+                  <ion-col sizeXs='3' sizeMd='2' sizeSm='2' style="text-align: right;">
                     <ion-item lines="none">
                       <ion-label position="stacked">Done</ion-label>
                       <ion-icon *ngIf="user.accepted" name="checkmark-circle-outline"></ion-icon>
@@ -97,12 +99,12 @@
       Test P
     </ion-fab-button>
   </ion-fab> -->
-
+<!--
 
   <ion-fab vertical="bottom" horizontal="start" slot="fixed">
     <ion-fab-button (click)="debug()">
       b test
     </ion-fab-button>
-  </ion-fab>
+  </ion-fab> -->
 
 
