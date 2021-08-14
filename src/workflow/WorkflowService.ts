@@ -353,7 +353,29 @@ export default class WorkflowService{
         return false;
     }
 
-    async updatePhaseAnnotations(user, workflowId, annotations) {
-        return Promise.resolve(undefined);
+    /**
+     * This function will be used to update the annotations of the current phase of the workflow to allow users
+     * to comment on the phase regardless of whether or not they are viewers or signers.
+     * @param userEmail
+     * @param workflowId
+     * @param annotations
+     */
+    async updatePhaseAnnotations(userEmail, workflowId, annotations) {
+        try{
+            const workflow = await this.workflowRepository.getWorkflow(workflowId);
+            if(!await this.isUserMemberOfWorkflow(workflow, userEmail)){
+                console.log("REquesting user is NOT a member of this workflow");
+                return {status:"error", data:{}, message:"You are not a member of this workflow"};
+            }
+            let phase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
+            phase.annotations = annotations;
+            await this.phaseService.updatePhase(phase);
+
+            return {status:'success', data:{}, message:''};
+        }
+        catch(err){
+            console.log(err);
+            throw new ServerError("Could not update the annotations of the phase");
+        }
     }
 }

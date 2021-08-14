@@ -154,7 +154,7 @@ export default class WorkflowController {
         }
 
         try{
-            return await this.workflowService.updatePhaseAnnotations(req.user, req.body.workflowId, req.body.annotations);
+            return await this.workflowService.updatePhaseAnnotations(req.user.email, req.body.workflowId, req.body.annotations);
         } catch(err) {
             console.log(err)
             throw new ServerError(err.toString());

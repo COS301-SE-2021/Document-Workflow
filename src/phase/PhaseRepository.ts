@@ -23,4 +23,12 @@ export class PhaseRepository{
             throw new ServerError(e);
         }
     }
+
+    async updatePhase(phase: typeof Phase):Promise<void>{
+        try{
+            phase.save();
+        }catch(e){
+            throw new ServerError(e);
+        }
+    }
 }

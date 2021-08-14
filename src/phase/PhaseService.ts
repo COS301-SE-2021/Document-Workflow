@@ -15,4 +15,8 @@ export class PhaseService{
     async getPhaseById(id): Promise<any>{
         return await this.phaseRepository.getPhaseById(id);
     }
+
+    async updatePhase(phase) :Promise<void>{
+        await this.phaseRepository.updatePhase(phase);
+    }
 }
