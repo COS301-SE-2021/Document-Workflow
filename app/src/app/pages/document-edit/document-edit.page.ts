@@ -10,6 +10,8 @@ import {WorkFlowService} from 'src/app/Services/Workflow/work-flow.service';
 import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import WebViewer from '@pdftron/webviewer';
 import {ErrorOccurredComponent} from '../../components/error-occurred/error-occurred.component';
+import { UserAPIService } from 'src/app/Services/User/user-api.service';
+import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
 
 @Component({
   selector: 'app-document-edit',
@@ -33,6 +35,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     private docApi: DocumentAPIService,
     private workflowService: WorkFlowService,
     private router: Router,
+    private userApiService: UserAPIService
   ) {}
 
   async ngOnInit() {
@@ -115,10 +118,27 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     link.remove();
   }
 
-  back() {
-    alert('TODO, add a check saying "unsaved data will be lost"');
-    this.router.navigate(['home']);
-  }
+  async acceptDocument(){
+    const a = await this.modalCtrl.create({
+      component: UserNotificationsComponent,
+      componentProps:{
+         'title': 'signPhase',
+         'message': "Do you accept this phase?"
+      }});
+
+
+      (await a).present();
+
+      (await a).onDidDismiss().then(async (data)=>{
+        if(data.data['confirm'] === true){
+         //  todo they confirmed
+        }
+      });
+       //   const documents = (await data).data['document'];
+       //   // c
+        // alert('Bring in the popup here to let a user set whether or not they accept or reject the phase!!!');
+   }
+
 
   toggleAnnotations(annotationManager){
 
@@ -154,13 +174,31 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     });
   }
 
-  acceptDocument(){
-    alert('Bring in the popup here to let a user set whether or not they accept or reject the phase!!!');
+  async back() {
+    const a = await this.modalCtrl.create({
+      component: UserNotificationsComponent,
+      componentProps:{
+         'title': 'signPhase',
+         'message': "Are you sure you want to go back?"
+      }});
+
+
+      (await a).present();
+
+      (await a).onDidDismiss().then(async (data)=>{
+        if(data.data['confirm'] === true){
+          this.router.navigate(['home']);
+        }
+      });
   }
 
+<<<<<<< Updated upstream
   async updateDocumentAnnotations(annotationsString){
     await this.workflowService.updateCurrentPhaseAnnotations(this.workflowId, annotationsString, (response)=>{
       console.log(response);
     });
   }
+=======
+
+>>>>>>> Stashed changes
 }
