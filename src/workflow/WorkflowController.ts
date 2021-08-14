@@ -71,21 +71,12 @@ export default class WorkflowController {
         const convertedPhases = [];
 
         phases.forEach( phase => {
-            /*console.log(phase.users);
-            let accepts = [];
-            let users = [];
-            for(let k=0; k<phase.users.length; ++k){
-                accepts.push({userEmail: phase.users[k][0], accept: 'false'});
-                users.push(phase.users[k][0]);
-            }*/
             console.log("THIS PHASE HAS THE FOLLOWING USERS OBJECT");
             console.log(phase.users);
             convertedPhases.push(new Phase({
-                users: JSON.stringify(phase.users), //The input users array is actually an array with a signle JSON strng
+                users: JSON.stringify(phase.users), //The input users array is actually an array with a single JSON string
                 description: phase.description,
-                //signingUserId: phase.signingUserId,
-                annotations: phase.annotations,
-                userAccepts: ""
+                annotations: phase.annotations
             }));
         })
 
@@ -110,11 +101,39 @@ export default class WorkflowController {
     }
 
     private async getUsersWorkflowData(req) {
+        //There is nothing to check for here. The only required parameter is the
+        //user parameter which is set by the middleware call to authenticate,which
+        //extracts this data from the input JWT.
         try{
             return await this.workflowService.getUsersWorkflowData(req.user);
         } catch(err) {
+            console.log(err);
             throw new ServerError(err.toString());
         }
+    }
+
+    /**
+     * This function is responsible for updating a phase of a workflow, the workflows document and, if certain conditions are met,
+     * the current phase and status of the workflow. The information we require in the request is:
+     * The workflow id
+     * The user who is updating the phase of this workflow
+     * Whether or not they accept
+     * (Optional) the new document that has been edited (only checked for if the user is a signing user)
+     * @param req
+     * @private
+     */
+    private async updatePhase(req) {
+        if(!req.body.workflowId || !req.body.accept){
+            throw new RequestError("There was something wrong with the request");
+        }
+
+        try{
+            return await this.workflowService.updatePhase(req.user, req.body.workflowId, req.body.accept, req.files.document);
+        } catch(err) {
+            console.log(err)
+            throw new ServerError(err.toString());
+        }
+
     }
 
     /*
@@ -144,7 +163,6 @@ export default class WorkflowController {
         });
 
         this.router.post('/getUserWorkflowsData', this.auth, async (req,res) =>{
-            console.log('getting wokflow data for a specific user');
             try {
                 res.status(200).json(await this.getUsersWorkflowData(req));
             } catch(err){
@@ -153,7 +171,15 @@ export default class WorkflowController {
             }
         });
 
-
+        this.router.post('/updatePhase', this.auth, async (req,res) =>{
+            console.log('getting wokflow data for a specific user');
+            try {
+                res.status(200).json(await this.updatePhase(req));
+            } catch(err){
+                console.log(err);
+                await handleErrors(err,res);
+            }
+        });
 
         /*
         this.router.post("/delete",this.auth, async(req,res)=>{
@@ -165,6 +191,7 @@ export default class WorkflowController {
         });*/
         return this.router;
     }
+
 }
 
 /*

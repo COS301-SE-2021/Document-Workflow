@@ -6,6 +6,7 @@ import UserService from "../user/UserService";
 import {PhaseProps, PhaseStatus} from "../phase/Phase";
 import { ObjectId } from "mongoose";
 import { PhaseService } from "../phase/PhaseService";
+import {RequestError, ServerError} from "../error/Error";
 
 @injectable()
 export default class WorkflowService{
@@ -241,6 +242,31 @@ export default class WorkflowService{
         catch(e){
             console.log(e);
             throw e;
+        }
+    }
+
+    async updatePhase(user, workflowId, accept, document) {//NOTE: document may be null
+        //first, retrieve the workflow based on the workflow id
+        try{
+            let workflow = await this.workflowRepository.getWorkflow(workflowId);
+            if(workflow === null || workflow === undefined)
+                throw new RequestError("The specified workflow does not exist");
+
+            //we now fetch the phase to edit based on the workflows current phase index and phases array
+            const currentPhaseID = workflow.currentPhase;
+            let currentPhase = await this.phaseService.getPhaseById(workflow.phases[currentPhaseID]);
+
+            //Next, a check is done to ensure that this user is actually a participant of this phase and
+            //if so, what their permissions are.
+            const phaseUsers = JSON.parse(currentPhase.users);
+
+
+
+            return {status:"success", data:{}, message:""};
+        }
+        catch(err){
+            console.log(err);
+            throw new ServerError(err);
         }
     }
 }
