@@ -214,6 +214,13 @@ export class WorkflowPage implements OnInit {
     }]);
   }
 
+  editDocument(id: string){
+    this.router.navigate(['/home/documentEdit', {
+      workflowId: id,
+      userEmail: this.user.email
+    }]);
+  }
+
   fixOrder(event: CustomEvent<ItemReorderEventDetail>){
     event.detail.complete();
   }

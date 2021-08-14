@@ -28,9 +28,16 @@
           <ion-card-subtitle style="font-size: 12px; padding-left: 10px;">Owner of the workflow: {{document.ownerEmail}}
           </ion-card-subtitle>
           <ion-fab vertical="top" horizontal="end">
-            <ion-fab-button (click)="viewWorkFlow(document._id, document.name)">
-              <ion-icon name="arrow-redo-outline" style="font-size: 22px;"></ion-icon>
-            </ion-fab-button>
+
+            <ion-fab-button>Tim</ion-fab-button>
+            <ion-fab-list side="down">
+              <ion-fab-button (click)="viewWorkFlow(document._id, document.name)">
+                <ion-icon name="arrow-redo-outline" style="font-size: 22px;"></ion-icon>
+              </ion-fab-button>
+              <ion-fab-button (click)="editDocument(document._id)">
+                <ion-icon name="construct-outline" style="font-size: 22px;"></ion-icon>
+              </ion-fab-button>
+            </ion-fab-list>
           </ion-fab>
         </ion-header>
         <ion-card-content style="width:100%">
@@ -57,13 +64,11 @@
                   <ion-col sizeXs='6' sizeSm='2' sizeMd='2' style="text-align: center;">
                     {{user.permission}}
                   </ion-col>
-
-                <ion-col sizeXs='6' sizeMd='2' sizeSm='2' style="text-align: right;">
-                  <ion-icon *ngIf="user.accepted" name="checkmark-circle-outline"></ion-icon>
+                  <ion-col sizeXs='6' sizeMd='2' sizeSm='2' style="text-align: right;">
+                    <ion-icon *ngIf="user.accepted" name="checkmark-circle-outline"></ion-icon>
                     <ion-icon *ngIf="!user.accepted" name="close-circle-outline"></ion-icon>
-                </ion-col>
-              </ion-row>
-
+                  </ion-col>
+                </ion-row>
               </ion-col>
             </ion-row>
           </ion-grid>

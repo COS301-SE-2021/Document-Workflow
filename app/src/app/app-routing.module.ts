@@ -29,8 +29,6 @@ pathMatch: 'full',
     redirectTo: 'login',
     pathMatch: 'full'
   },
-
-
 ];
 @NgModule({
   imports: [
