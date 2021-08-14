@@ -220,8 +220,12 @@ export class WorkFlowService {
           tempUser.push(tmpUser);
         }
         let tmpPhase: phaseFormat;
+        let tmpShowPhase: boolean = false;
+        if(phase['status']==='InProgress'){
+          tmpShowPhase = true;
+        }
         tmpPhase = {
-          showPhase: false,
+          showPhase: tmpShowPhase,
           status: phase['status'],
           annotations: phase['annotations'],
           description: phase['description'],
