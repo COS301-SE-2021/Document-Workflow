@@ -55,10 +55,12 @@ export default class WorkflowService{
 
             //Step 3 save document with workflowId:
             workflow.documentId = await this.documentService.uploadDocument(file, workflowId);
+            console.log("THE DOCUMENT HAS BEEN CREATED AND THE WORKFLOW SHOULD HAVE THE DOCUMENT ID NOW!!!");
+            console.log(workflow);
             console.log("Document saved, updating workflow");
 
             //Step 4 update workflow with documentId:
-            await this.workflowRepository.updateWorkflow(workflow);
+            await this.workflowRepository.saveWorkflow(workflow);
             console.log("Workflow updated, adding the workflow to the relevant users");
 
             console.log(workflow);
