@@ -136,22 +136,30 @@ export default class WorkflowController {
      * @private
      */
     private async updatePhase(req) {
-        if(!req.body.workflowId || !req.body.accept){
+        if(!req.body.workflowId || !req.body.accept || !req.files){
             throw new RequestError("There was something wrong with the request");
         }
-        if(req.files === null) {
-            const files = {document: null};
-            req.files = files;
-        }
+
         try{
             return await this.workflowService.updatePhase(req.user, req.body.workflowId, req.body.accept, req.files.document);
         } catch(err) {
             console.log(err)
             throw new ServerError(err.toString());
         }
-
     }
 
+    private async updatePhaseAnnotations(req) {
+        if(!req.body.workflowId ||  !req.body.annotations){
+            throw new RequestError("There was something wrong with the request");
+        }
+
+        try{
+            return await this.workflowService.updatePhaseAnnotations(req.user, req.body.workflowId, req.body.annotations);
+        } catch(err) {
+            console.log(err)
+            throw new ServerError(err.toString());
+        }
+    }
     /*
     private async deleteWorkFlow(req) {
         try{
@@ -208,6 +216,17 @@ export default class WorkflowController {
             }
         });
 
+        this.router.post('/updatePhaseAnnotations', this.auth, async (req,res) =>{
+            console.log('Retrieving the document for a specific workflow');
+            try {
+                res.status(200).json(await this.updatePhaseAnnotations(req));
+            } catch(err){
+                res.status(400).json({})
+                console.log(err);
+                await handleErrors(err,res);
+            }
+        });
+
         /*
         this.router.post("/delete",this.auth, async(req,res)=>{
             try {
@@ -218,6 +237,7 @@ export default class WorkflowController {
         });*/
         return this.router;
     }
+
 
 }
 

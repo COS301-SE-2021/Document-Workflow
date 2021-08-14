@@ -352,4 +352,8 @@ export default class WorkflowService{
 
         return false;
     }
+
+    async updatePhaseAnnotations(user, workflowId, annotations) {
+        return Promise.resolve(undefined);
+    }
 }

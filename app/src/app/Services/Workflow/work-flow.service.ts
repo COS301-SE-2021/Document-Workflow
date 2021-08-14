@@ -178,6 +178,10 @@ export class WorkFlowService {
 
   }
 
+  async updateCurrentPhaseAnnotations(workflowId, annotations, callback){
+
+  }
+
   async getUserWorkflowsData(callback) {
     const formData = new FormData();
     const token = Cookies.get('token');
