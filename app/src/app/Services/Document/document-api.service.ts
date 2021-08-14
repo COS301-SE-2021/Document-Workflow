@@ -15,7 +15,7 @@ export interface documentImage {
 }
 
 export interface phase {
-  completed: boolean;
+  status: string;
   annotations: string;
   description: string;
   phaseUsers: phaseUser[];
@@ -96,7 +96,7 @@ export class DocumentAPIService {
 
     let b: phase;
     b = {
-      completed: true,
+      status: 'InProgress',
       annotations: 'wfrnuiwrfbihwrvbihfwrebiuhwrfegwirfuygb',
       description: 'phase 1',
       phaseUsers: [f, g],
@@ -104,14 +104,14 @@ export class DocumentAPIService {
 
     let c: phase;
     c = {
-      completed: false,
+      status: 'Pending',
       annotations: 'dfbnhjiesfbdhdbfkjdbskjnbdvsfujbnrsfkjbsedkfrj',
       description: 'phase 2',
       phaseUsers: [e],
     };
     let d: phase;
     d={
-      completed: false,
+      status: 'Pending',
       annotations: 'wbihjfbwhbfrwhbf',
       description: 'phase 3',
       phaseUsers: [f, g],

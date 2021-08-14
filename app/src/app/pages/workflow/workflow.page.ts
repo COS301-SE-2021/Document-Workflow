@@ -43,7 +43,7 @@ export class WorkflowPage implements OnInit {
   }
 
   debug(str: any){
-    console.log(str)
+    console.log(str);
   }
 
   async ngOnInit() {
@@ -138,7 +138,7 @@ export class WorkflowPage implements OnInit {
     });
     await this.workFlowService.getUserWorkflowsData(response =>{
       console.log(response);
-    })
+    });
   }
 
   async deleteWorkFlow(id: string){

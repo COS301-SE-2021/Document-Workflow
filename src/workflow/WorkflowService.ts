@@ -3,7 +3,7 @@ import { WorkflowProps } from './Workflow';
 import WorkFlowRepository from './WorkflowRepository';
 import DocumentService from "../document/DocumentService";
 import UserService from "../user/UserService";
-import { PhaseProps } from "../phase/Phase";
+import {PhaseProps, PhaseStatus} from "../phase/Phase";
 import { ObjectId } from "mongoose";
 import { PhaseService } from "../phase/PhaseService";
 
@@ -37,7 +37,7 @@ export default class WorkflowService{
                 return {status: "error", data:{}, message: "A phase contains a user that does not exist"}
             }
             console.log("ALL PHASES ARE VALID");
-
+            phases[0].status = PhaseStatus.INPROGRESS;
 
             //Step 1 create Phases:
             console.log("Saving Phases");

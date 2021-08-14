@@ -1,8 +1,8 @@
 import { createSchema, ExtractDoc, ExtractProps, Type, typedModel } from "ts-mongoose";
 import { userSchema } from "../user/User";
 
-export const ActionAreaType = ["Date","Signature", "initial"];
-export const PhaseStatus = ["Pending", "InProgress", "Rejected", "Completed"];
+//export const ActionAreaType = ["Date","Signature", "initial"];
+export const PhaseStatus = Object.freeze({PENDING:"Pending", INPROGRESS:"InProgress", REJECTED:"Rejected", COMPLETED:"Completed"});
 
 /*const actionAreaSchema = createSchema({ //sort of scrapped
     coordinates: Type.array({maxlength: 2, minlength: 2, required: true}).of(Type.number),
@@ -23,7 +23,7 @@ export const phaseSchema = createSchema({
     description: Type.string({required: true}),
     //actionAreas: Type.array().of(actionAreaSchema), //annotations: string -> includes comments
     //signingUserId: Type.ref(Type.objectId({required:true})).to("User", userSchema),
-    //status: Type.string({enum: PhaseStatus, required: true}),
+    status: Type.string({ required: true, default: PhaseStatus.PENDING}),
     //userAccepts: Type.string({required: true})
 }, { _id: true, _v: false });
 
