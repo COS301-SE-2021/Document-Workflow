@@ -5,7 +5,7 @@ import { documentImage, phaseUser } from './../Document/document-api.service';
 import * as Cookies from 'js-cookie';
 
 export interface workflowFormat {
-  currentPercent?: number;
+  currentPercent: number;
   currentPhase: number;
   description: string;
   name: string;
@@ -13,10 +13,12 @@ export interface workflowFormat {
   ownerId: string;
   _v: number;
   _id: string;
+
   phases: phaseFormat[];
 }
 
 export interface phaseFormat {
+  showPhase?: boolean;
   status: string;
   annotations: string;
   description: string;
@@ -26,7 +28,7 @@ export interface phaseFormat {
 export interface phaseUserFormat {
   email: string;
   permission: string;
-  accepted: string;
+  accepted: boolean;
 }
 @Injectable({
   providedIn: 'root',
@@ -187,21 +189,22 @@ export class WorkFlowService {
       let tmpWorkflow: workflowFormat;
       for (let phase of document.phases) {
         let tempUser: phaseUserFormat[] = [];
-        let checker = true;
         for (let user of JSON.parse(phase['users'])) {
           let tmpUser: phaseUserFormat;
+          let a: boolean = true;
+          if(user.accepted === 'false'){
+            a= false;
+          }
           tmpUser = {
-            accepted: user.accepted,
+            accepted: a,
             email: user.user,
             permission: user.permission,
           };
-          if (tmpUser.accepted === "false") {
-            checker = false;
-          }
           tempUser.push(tmpUser);
         }
         let tmpPhase: phaseFormat;
         tmpPhase = {
+          showPhase: false,
           status: phase['status'],
           annotations: phase['annotations'],
           description: phase['description'],

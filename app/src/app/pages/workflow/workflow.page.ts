@@ -9,7 +9,7 @@ import {
   documentImage,
   DocumentAPIService,
 } from './../../Services/Document/document-api.service';
-import { workflowFormat, WorkFlowService } from '../../Services/Workflow/work-flow.service';
+import { phaseFormat, workflowFormat, WorkFlowService } from '../../Services/Workflow/work-flow.service';
 import { ConfirmDeleteWorkflowComponent } from 'src/app/components/confirm-delete-workflow/confirm-delete-workflow.component';
 import { ItemReorderEventDetail } from '@ionic/core';
 import * as Cookies from 'js-cookie';
@@ -251,6 +251,10 @@ export class WorkflowPage implements OnInit {
         this.documents.push(document);
       }
     }
+  }
+
+  showPhase(phase: phaseFormat){
+    phase.showPhase = !phase.showPhase;
   }
 }
 

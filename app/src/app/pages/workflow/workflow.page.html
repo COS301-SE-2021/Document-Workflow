@@ -26,21 +26,34 @@
           <ion-card-title>{{document.name}}</ion-card-title>
           <ion-card-subtitle>Owner of the workflow: {{document.ownerEmail}}</ion-card-subtitle>
           <p>{{document.description}}</p>
+
+          <ion-fab >
+            <ion-fab-button (click)="viewWorkFlow(document._id, document.name)">
+              <ion-icon name="arrow-redo-outline"></ion-icon>
+            </ion-fab-button>
+          </ion-fab>
         </ion-header>
         <ion-card-content>
-          <div>
+          <ion-item>
             Current Phase: {{document.currentPhase + 1}}
+          </ion-item>
+          <ion-item>
             <ion-grid>
-              <ion-row *ngFor="let phase of document.phases;  let i = index">
-                <ion-col sizeXs='12'>
-                Phase {{i+1}}
+              <ion-col sizeXs='12'>
+                <ion-card *ngFor="let phase of document.phases;  let i = index">
+                  <ion-card-header>
+                    <ion-card-title> Phase {{i+1}} </ion-card-title>
+                    {{phase.description}}
+                  </ion-card-header>
+                  <ion-card-content>
+                    <ion-row>
+
+                    </ion-row>
+                  </ion-card-content>
+                </ion-card>
               </ion-col>
-                <ion-col *ngFor="let user of phase['users']">
-                  {{user.email}}
-                </ion-col>
-              </ion-row>
             </ion-grid>
-          </div>
+          </ion-item>
           <ion-progress-bar [value]="document.currentPercent+0.01" buffer="0"></ion-progress-bar>
         </ion-card-content>
       </ion-card>
@@ -62,9 +75,7 @@
                 <ion-fab-button (click)="editWorkflow(doc._id)">
                   <ion-icon name="construct-outline"></ion-icon>
                 </ion-fab-button>
-                <ion-fab-button (click)="viewWorkFlow(doc.document_id, doc.name)">
-                  <ion-icon name="arrow-redo-outline"></ion-icon>
-                </ion-fab-button>
+
                 <ion-fab-button *ngIf="doc.ownerEmail === userEmail">
                   <ion-icon name="trash" (click)="deleteWorkFlow(doc._id)"></ion-icon>
                 </ion-fab-button>
