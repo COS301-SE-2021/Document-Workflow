@@ -245,7 +245,7 @@ export default class WorkflowService{
         }
     }
 
-    async updatePhase(user, workflowId, accept, document) {//NOTE: document may be null
+    async updatePhase(user, workflowId, accept, document) {//NOTE: document should always be sent through.
         //first, retrieve the workflow based on the workflow id
         try{
             let workflow = await this.workflowRepository.getWorkflow(workflowId);
@@ -284,12 +284,14 @@ export default class WorkflowService{
                 }
                 else{
                     workflow.currentPhase = currentPhase + 1;
-                    //this.documentService.putDocument()
+                    //Create the new folder in the S3 bucket for the next phases
+                    await this.documentService.putDocument(document, workflowId, currentPhase + 1);
                     console.log("NEED TO CREATE THE FILE FOR THE NEXT FACE!!!!");
                 }
             }
-            if(permission === 'sign'){ //TODO: make the permission field an enum.
 
+            if(permission === 'sign'){ //TODO: make the permission field an enum.
+                await this.documentService.putDocument(document, workflowId, currentPhase + 1);
             }
 
             //Save everything
@@ -310,5 +312,38 @@ export default class WorkflowService{
         }
 
         return true;
+    }
+
+    async retrieveDocument(workflowId, userEmail) {
+        console.log('Retrieving a document for viewing');
+        try{
+            const workflow = await this.workflowRepository.getWorkflow(workflowId);
+            if(!await this.isUserMemberOfWorkflow(workflow, userEmail)){
+                return {status:"error", data:{}, message:"You are not a member of this workflow"};
+            }
+
+            return await this.documentService.retrieveDocument(workflow.documentId, workflowId +'/phase' + workflow.currentPhase+'/' + workflow.documentId);
+        }
+        catch(err){
+            console.log(err);
+            throw new ServerError(err);
+        }
+    }
+
+    async isUserMemberOfWorkflow(workflow, email):Promise<boolean>{
+
+        if(workflow.ownerEmail === email)
+            return true;
+
+        for(let i=0; i<workflow.phases.length; ++i){
+            const phase = await this.phaseService.getPhaseById(workflow.phases[i]);
+            const phaseUsers = JSON.parse(phase.users);
+            for(let  k=0; k<phaseUsers.length; ++k){
+                if(phaseUsers.user == email)
+                    return true;
+            }
+        }
+
+        return false;
     }
 }

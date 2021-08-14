@@ -30,7 +30,6 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   pdfDoc: PDFDocument;
   showAnnotations = false;
 
-  @Input('id') documentId: string;
   @Input('documentname') docName: string;
   @Input('workflowId') workflowId: string;
   @ViewChild('viewer') viewerRef: ElementRef;
@@ -40,13 +39,13 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
     private navpar: NavParams,
     private route: ActivatedRoute,
     private docApi: DocumentAPIService,
-    private workFlowService: WorkFlowService,
+    private workflowService: WorkFlowService,
     private router: Router,
   ) {}
 
   async ngOnInit() {
     await this.route.params.subscribe((data) => {
-      this.documentId = data['id'];
+      this.workflowId = data['workflowId'];
       this.docName = data['documentname'];
       this.userEmail = data['userEmail'];
     });
@@ -60,7 +59,9 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   });
 
   async ngAfterViewInit(): Promise<void>{
-    await this.docApi.getDocument(this.documentId, async (response) => {
+    alert(this.workflowId);
+    await this.workflowService.retrieveDocument(this.workflowId, async (response) => {
+      console.log(response);
       if (response) {
         this.srcFileBase64 = response.data.filedata.Body.data;
         const arr = new Uint8Array(response.data.filedata.Body.data);

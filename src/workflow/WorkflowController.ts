@@ -112,6 +112,19 @@ export default class WorkflowController {
         }
     }
 
+    private async retrieveDocument(req) {
+
+        if(!req.body.workflowId){
+            throw new RequestError("There was something wrong with the request");
+        }
+
+        try{
+            return await this.workflowService.retrieveDocument(req.workflowId,req.user.email);
+        } catch(err) {
+            console.log(err);
+            throw new ServerError(err.toString());
+        }
+    }
     /**
      * This function is responsible for updating a phase of a workflow, the workflows document and, if certain conditions are met,
      * the current phase and status of the workflow. The information we require in the request is:
@@ -179,6 +192,17 @@ export default class WorkflowController {
             try {
                 res.status(200).json(await this.updatePhase(req));
             } catch(err){
+                console.log(err);
+                await handleErrors(err,res);
+            }
+        });
+
+        this.router.post('/retrieveDocument', this.auth, async (req,res) =>{
+            console.log('Retrieving the document for a specific workflow');
+            try {
+                res.status(200).json(await this.retrieveDocument(req));
+            } catch(err){
+                res.status(400).json('halp')
                 console.log(err);
                 await handleErrors(err,res);
             }
