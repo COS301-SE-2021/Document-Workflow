@@ -119,7 +119,7 @@ export default class WorkflowController {
         }
 
         try{
-            return await this.workflowService.retrieveDocument(req.workflowId,req.user.email);
+            return await this.workflowService.retrieveDocument(req.body.workflowId,req.user.email);
         } catch(err) {
             console.log(err);
             throw new ServerError(err.toString());

@@ -158,9 +158,15 @@ export class WorkFlowService {
   async retrieveDocument(workflowId, callback){
     const formData = new FormData();
     formData.append('workflowId', workflowId);
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
 
     this.http
-      .post(WorkFlowService.url + '/workflows/retrieveDocument', formData)
+      .post(WorkFlowService.url + '/workflows/retrieveDocument', formData, {
+        headers: httpHeaders,
+      })
       .subscribe((data) => {
         console.log(data);
         if (data != null) {

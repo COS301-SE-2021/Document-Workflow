@@ -318,6 +318,7 @@ export default class WorkflowService{
         console.log('Retrieving a document for viewing');
         try{
             const workflow = await this.workflowRepository.getWorkflow(workflowId);
+            console.log(workflow);
             if(!await this.isUserMemberOfWorkflow(workflow, userEmail)){
                 return {status:"error", data:{}, message:"You are not a member of this workflow"};
             }
