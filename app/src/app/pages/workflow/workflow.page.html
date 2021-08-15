@@ -33,11 +33,14 @@
               <ion-fab-button (click)="viewWorkFlow(document._id, document.name)">
                 <ion-icon name="arrow-redo-outline" style="font-size: 22px; color:white"></ion-icon>
               </ion-fab-button>
-              <ion-fab-button (click)="editDocument(document._id, document.name)">
+              <!-- <ion-fab-button (click)="editDocument(document._id, document.name)">
                 <ion-icon name="construct-outline" style="font-size: 22px;color:white"></ion-icon>
-              </ion-fab-button>
+              </ion-fab-button> -->
               <ion-fab-button (click)="editWorkflow(document._id)">
                 <ion-icon name="construct-outline" style="font-size: 22px;color:white"></ion-icon>
+              </ion-fab-button>
+              <ion-fab-button (click)="deleteWorkFlow(document._id)">
+                <ion-icon name="close-outline" style="font-size: 22px;color:white"></ion-icon>
               </ion-fab-button>
             </ion-fab-list>
           </ion-fab>

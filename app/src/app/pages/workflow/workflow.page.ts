@@ -30,6 +30,8 @@ import * as Cookies from 'js-cookie';
 export class WorkflowPage implements OnInit {
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   documents: workflowFormat[] = [];
+  editDocumentPermission: boolean[] = [];
+  viewDocumentPermission: boolean[] = [];
   userEmail: string;
   user;
   reOrder: boolean;
@@ -40,14 +42,12 @@ export class WorkflowPage implements OnInit {
   workflows = [];
 
   constructor(
-    private docService: DocumentAPIService,
     private modals: ModalController,
     private plat: Platform,
     private router: Router,
     private userApiService: UserAPIService,
     private workFlowService: WorkFlowService,
-    private loadctrl: LoadingController,
-    private navControl: NavController
+    private loadctrl: LoadingController
   ) {}
 
   async ngOnInit() {
@@ -108,7 +108,6 @@ export class WorkflowPage implements OnInit {
 
   async retrieveWorkflows() {
     await this.workFlowService.getUserWorkflowsData((response) => {
-      // console.log(response);
       if (response.status === 'success') {
         const ownedWorkflows = response.data.ownedWorkflows;
         const workflows = response.data.workflows;
@@ -153,25 +152,35 @@ export class WorkflowPage implements OnInit {
   }
 
   async deleteWorkFlow(id: string) {
-    const deleteMod = this.modals.create({
-      component: ConfirmDeleteWorkflowComponent,
-    });
-
-    (await deleteMod).present();
-    (await deleteMod).onDidDismiss().then(async (data) => {
-      const result = (await data).data.confirm;
-      if (result) {
-        this.workFlowService.deleteWorkFlow(id, (response) => {
-          console.log(response);
-          this.userApiService.displayPopOver(
-            'Deletion of workflow',
-            'Workflow has been successfully deleted'
-          );
-        });
-      } else {
-        //not delete
+    await this.userApiService.displayPopOverWithButtons(
+      'Confirmation of deletion',
+      'Are you sure you want to permanently delete this?',
+      (response) => {
+        console.log(response);
+        if (response.data.confirm === true) {
+          //todo tims stuff
+        }
       }
-    });
+    );
+    //   const deleteMod = this.modals.create({
+    //     component: ConfirmDeleteWorkflowComponent,
+    //   });
+
+    //   (await deleteMod).present();
+    //   (await deleteMod).onDidDismiss().then(async (data) => {
+    //     const result = (await data).data.confirm;
+    //     if (result) {
+    //       this.workFlowService.deleteWorkFlow(id, (response) => {
+    //         console.log(response);
+    //         this.userApiService.displayPopOver(
+    //           'Deletion of workflow',
+    //           'Workflow has been successfully deleted'
+    //         );
+    //       });
+    //     } else {
+    //       //not delete
+    //     }
+    //   });
   }
 
   async editWorkflow(id: string) {
