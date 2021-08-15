@@ -159,8 +159,9 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   }
 
   async back() {
-    await this.userApiService.displayPopOverWithButtons('signPhase','Are you sure you want to go back', (response) =>{
-      console.log(response);
+    await this.userApiService.displayPopOverWithButtons('Go back','Are you sure you want to go back? Any unsaved changes will be lost.', (response) =>{
+      if(response.data.confirm === true)
+        this.router.navigate(['home']);
     });
   }
 

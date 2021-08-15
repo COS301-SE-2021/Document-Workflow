@@ -399,7 +399,5 @@ export default class WorkflowService{
             console.log(err);
             throw new ServerError("Could not retrieve workflow");
         }
-
-
     }
 }

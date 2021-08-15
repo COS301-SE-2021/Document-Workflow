@@ -14,6 +14,8 @@ export class UserNotificationsComponent implements OnInit {
   displayButtons: boolean = false;
   constructor(private pop: PopoverController) {}
 
+  //TODO: take in an extra variable boolean that determines whether or not this popup should display buttons.
+  //Link this to the user services such that you can call one function for no buttons, and another for buttons
   ngOnInit() {
     if (this.title === 'termsOfService') {
       this.displayButtons = true;
@@ -25,9 +27,11 @@ export class UserNotificationsComponent implements OnInit {
         'rise to power through your indirect support of him by using our services.' +
         'All hail King Zuck.';
     }
-
-    if(this.title === 'signPhase'){
+    else if(this.title === 'signPhase'){
       this.title ='Accept Phase';
+      this.displayButtons = true;
+    }
+    else{
       this.displayButtons = true;
     }
   }

@@ -134,14 +134,16 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
     link.remove();
   }
   async back() {
-    await this.userApiService.displayPopOverWithButtons('signPhase','Are you sure you want to go back', (response) =>{
-      console.log(response);
+    await this.userApiService.displayPopOverWithButtons('Go back','Are you sure you want to go back? Any unsaved changes will be lost.', (response) =>{
+      if(response.data.confirm === true)
+        this.router.navigate(['home']);
     });
   }
 
   async acceptDocument(){
-    await this.userApiService.displayPopOverWithButtons('signPhase','Do you accept this phase', (response) =>{
-      console.log(response);
+    await this.userApiService.displayPopOverWithButtons('signPhase','Do you accept this phase as complete?', (response) =>{
+
+
     });
    }
 
