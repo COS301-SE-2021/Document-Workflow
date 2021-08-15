@@ -135,11 +135,11 @@ export default class DocumentRepository {
         }
     }
 
-    async deleteDocumentFromS3(workflow_id){ //workflow_id is the folder name
+    async deleteDocumentFromS3(workflowId){ //workflowId is the folder name
         try {
             const listParams = {
                 Bucket: process.env.AWS_BUCKET_NAME,
-                Prefix: workflow_id
+                Prefix: workflowId
             };
 
             const listedObjects = await s3.listObjectsV2(listParams).promise();
@@ -157,7 +157,7 @@ export default class DocumentRepository {
 
             await s3.deleteObjects(deleteParams).promise();
 
-            if (listedObjects.IsTruncated) await this.deleteDocument(workflow_id);
+            if (listedObjects.IsTruncated) await this.deleteDocument(workflowId);
         }
         catch(err){
             throw "Could not delete document from File Server";

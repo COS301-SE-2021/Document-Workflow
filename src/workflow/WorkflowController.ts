@@ -162,6 +162,7 @@ export default class WorkflowController {
     }
 
     private async retrieveWorkflow(req) {
+
         if(!req.body.workflowId){
             throw new RequestError("There was something wrong with the request");
         }
@@ -173,14 +174,17 @@ export default class WorkflowController {
             throw new ServerError(err.toString());
         }
     }
-    /*
+
     private async deleteWorkFlow(req) {
+        if(!req.body.workflowId)
+            throw new RequestError("There was something wrong with the request");
+
         try{
-            return await this.workflowService.deleteWorkFlow(req);
+            return await this.workflowService.deleteWorkFlow(req.body.workflowId, req.user.email);
         } catch(err) {
             throw new ServerError(err.toString());
         }
-    }*/
+    }
 
     routes() {
         this.router.post("",  this.authenticationService.Authenticate ,async (req, res) => { //TODO: re-enable authentication
@@ -249,14 +253,14 @@ export default class WorkflowController {
             }
         });
 
-        /*
+
         this.router.post("/delete",this.auth, async(req,res)=>{
             try {
                 res.status(200).json(await this.deleteWorkFlow(req));
             } catch(err){
                 await handleErrors(err,res);
             }
-        });*/
+        });
         return this.router;
     }
 }

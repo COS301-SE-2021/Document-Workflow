@@ -26,9 +26,9 @@ export default class WorkflowRepository{
     }
 
 
-    /*async deleteWorkflow(id: ObjectId): Promise<ObjectId> {
-        return Workflow.deleteOne({_id: id});
-    }*/
+    async deleteWorkflow(id: ObjectId) {
+        await Workflow.deleteOne({_id: id});
+    }
 
     async getWorkflow(id:string):Promise<WorkflowProps>{
         try{

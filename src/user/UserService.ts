@@ -33,6 +33,9 @@ export default class UserService {
         return jwt.sign({id: id, email: email}, process.env.SECRET, {expiresIn: "24h"});
     }
 
+    //TODO: check that its safe to save a user the way we are saving them here. We arent creating an entirely new
+    //User since we do pass through a valid id, but should probably use an updateOne function in the
+    //User repository to be safe.
     async updateUserWorkflows(user){
         await this.userRepository.saveUser(user);
     }

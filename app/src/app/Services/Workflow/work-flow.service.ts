@@ -71,9 +71,9 @@ export class WorkFlowService {
       );
   }
 
-  public async deleteWorkFlow(workflow_id, callback) {
+  public async deleteWorkFlow(workflowId, callback) {
     const formData = new FormData();
-    formData.append('id', workflow_id);
+    formData.append('workflowId', workflowId);
 
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({

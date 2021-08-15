@@ -19,4 +19,10 @@ export class PhaseService{
     async updatePhase(phase) :Promise<void>{
         await this.phaseRepository.updatePhase(phase);
     }
+
+    async deletePhaseById(id){
+        await this.phaseRepository.deletePhaseById(id);
+    }
+
+
 }

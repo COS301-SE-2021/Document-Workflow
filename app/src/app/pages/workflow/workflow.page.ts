@@ -158,7 +158,9 @@ export class WorkflowPage implements OnInit {
       (response) => {
         console.log(response);
         if (response.data.confirm === true) {
-          //todo tims stuff
+          this.workFlowService.deleteWorkFlow(id, (response2) =>{
+            console.log(response2);
+          });
         }
       }
     );

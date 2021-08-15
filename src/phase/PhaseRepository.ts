@@ -31,4 +31,8 @@ export class PhaseRepository{
             throw new ServerError(e);
         }
     }
+
+    async deletePhaseById(id) {
+       await Phase.findByIdAndDelete(id);
+    }
 }
