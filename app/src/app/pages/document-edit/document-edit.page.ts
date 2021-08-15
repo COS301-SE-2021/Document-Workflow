@@ -25,6 +25,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   showAnnotations = true;
   annotationManager: any;
   documentViewer: any;
+  PDFNet: any;
   documentMetadata: any;
   annotationSubjects = ['Note', 'Rectangle', 'Squiggly', 'Underline', 'Highlight', 'Strikeout'];
 
@@ -76,6 +77,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
         }, this.viewerRef.nativeElement).then(instance =>{
 
           this.annotationManager = instance.Core.annotationManager;
+          this.PDFNet = instance.Core.PDFNet;
           this.documentViewer = instance.Core.documentViewer;
 
           instance.UI.loadDocument(blob, {filename: this.docName});
@@ -185,11 +187,11 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
 
   async acceptDocument(){
     await this.userApiService.displayPopOverWithButtons('signPhase','Do you accept the phase as completed?', async (response) =>{
-      const doc = this.documentViewer.getDocument();
+
       this.removeActionAreasFromAnnotations();
       const xfdfString = await this.annotationManager.exportAnnotations();
-      const options = { xfdfString };
-      const data = await doc.getFileData(options);
+      const options = {xfdfString: xfdfString, flatten: true};
+      const data = await this.documentViewer.getDocument().getFileData(options);
       //TODO: only get annotations that are not used for action areas
       const arr = new Uint8Array(data);
       const blob = new Blob([arr], { type: 'application/pdf' });
@@ -221,4 +223,5 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
       console.log(response);
     });
   }
+
 }
