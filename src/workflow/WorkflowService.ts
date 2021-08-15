@@ -251,6 +251,7 @@ export default class WorkflowService{
     //TODO: finish implementing
     async updatePhase(user, workflowId, accept, document) {//NOTE: document should always be sent through.
         //first, retrieve the workflow based on the workflow id
+        console.log("Updating a phase of a document");
         try{
             let workflow = await this.workflowRepository.getWorkflow(workflowId);
             if(workflow === null || workflow === undefined)
@@ -258,11 +259,11 @@ export default class WorkflowService{
 
             //we now fetch the phase to edit based on the workflows current phase index and phases array
             const currentPhaseID = workflow.currentPhase;
-            let currentPhase = await this.phaseService.getPhaseById(workflow.phases[currentPhaseID]);
+            let currentPhaseObject = await this.phaseService.getPhaseById(workflow.phases[currentPhaseID]);
 
             //Next, a check is done to ensure that this user is actually a participant of this phase and
             //if so, what their permissions are.
-            let phaseUsers = JSON.parse(currentPhase.users);
+            let phaseUsers = JSON.parse(currentPhaseObject.users);
             let permission = '';
             let userFound = false;
             for(let i=0; i<phaseUsers.length; ++i){
@@ -272,7 +273,7 @@ export default class WorkflowService{
                     phaseUsers[i].accepted = accept;
                 }
             }
-            currentPhase.users = JSON.stringify(phaseUsers);
+            currentPhaseObject.users = JSON.stringify(phaseUsers);
             if(!userFound)
                 return {status:"error", data:{}, message:'You are not a part of this phase'};
 
@@ -281,21 +282,21 @@ export default class WorkflowService{
             //Progresses to the next phase. If this is the last phase of the workflow, the workflow must be considered
             //Completed
             //2) The document must be updated IFF the user's permission is to sign the document.
-            if(this.isPhaseComplete(currentPhase)){
+            if(this.isPhaseComplete(currentPhaseObject)){
                 console.log("Phase is complete");
-                if(workflow.phases.length === currentPhase + 1){
+                if(workflow.phases.length === workflow.currentPhase + 1){
                     workflow.status = WorkflowStatus.COMPLETED;
                 }
                 else{
-                    workflow.currentPhase = currentPhase + 1;
+                    workflow.currentPhase = workflow.currentPhase + 1;
                     //Create the new folder in the S3 bucket for the next phases
-                    await this.documentService.putDocument(document, workflowId, currentPhase + 1);
+                    await this.documentService.updateDocument(document, workflowId, workflow.currentPhase + 1);
                     console.log("NEED TO CREATE THE FILE FOR THE NEXT FACE!!!!");
                 }
             }
 
             if(permission === 'sign'){ //TODO: make the permission field an enum.
-                await this.documentService.putDocument(document, workflowId, currentPhase + 1);
+                await this.documentService.updateDocument(document, workflowId, workflow.currentPhase + 1);
             }
 
             //Save everything
@@ -309,6 +310,8 @@ export default class WorkflowService{
     }
     //my cat walked across my keyboard while I was typing this out. If there are any bugs, she is too blame.
     isPhaseComplete(phase){
+        console.log("Checking if phase is completed");
+        console.log(phase.users);
         const phaseUsers = JSON.parse(phase.users); //It is important to remember that the users of a phase are stored as a JSON string.
         for(let i=0; i<phaseUsers.length; ++i){
             if(phaseUsers[i].accepted === 'false')
