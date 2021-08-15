@@ -122,7 +122,7 @@ export class WorkflowEditPage implements OnInit {
 //todo add workflowId
   async getWorkflowData() {
     await this.workflowServices.retrieveWorkflow(
-      '611661feb394bb1d4cc91f3e',
+      this.workflowId,
       async (response) => {
         console.log(response.data);
         let phases: phaseFormat[] = [];

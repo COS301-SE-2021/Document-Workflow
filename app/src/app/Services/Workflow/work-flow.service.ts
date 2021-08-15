@@ -253,6 +253,7 @@ export class WorkFlowService {
     for (let document of documents) {
       let tempPhase: phaseFormat[] = [];
       let tmpWorkflow: workflowFormat;
+      let completedCounter: number = 0;
       for (let phase of document.phases) {
         let tempUser: phaseUserFormat[] = [];
         for (let user of JSON.parse(phase['users'])) {
@@ -272,6 +273,8 @@ export class WorkFlowService {
         let tmpShowPhase: boolean = false;
         if(phase['status']==='InProgress'){
           tmpShowPhase = true;
+        }else if(phase['status'] === 'Completed'){
+          completedCounter++;
         }
         tmpPhase = {
           showPhase: tmpShowPhase,
@@ -282,7 +285,7 @@ export class WorkFlowService {
         };
         tempPhase.push(tmpPhase);
       }
-      let percent = document['currentPhase']/tempPhase.length;
+      let percent = completedCounter/tempPhase.length;
       tmpWorkflow={
         currentPercent: percent,
         currentPhase: document['currentPhase'],
