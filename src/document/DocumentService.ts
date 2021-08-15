@@ -35,9 +35,9 @@ export default class DocumentService {
         }
     }
 
-    async putDocument(file: File, id: ObjectId, phaseNumber){
+    async updateDocument(file: File, id: ObjectId, phaseNumber){
         try{
-            await this.documentRepository.putDocumentS3(file, id, phaseNumber);
+            await this.documentRepository.updateDocumentS3(file, id, phaseNumber);
         }
         catch(err){
             console.log(err);

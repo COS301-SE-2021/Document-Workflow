@@ -296,7 +296,7 @@ export default class WorkflowService{
             }
 
             if(permission === 'sign'){ //TODO: make the permission field an enum.
-                await this.documentService.updateDocument(document, workflowId, workflow.currentPhase + 1);
+                await this.documentService.updateDocument(document, workflowId, workflow.currentPhase);
             }
 
             //Save everything

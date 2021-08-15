@@ -80,25 +80,23 @@ export default class DocumentRepository {
         return doc._id;
     }
 
-    async putDocumentS3(file, workflowId, phaseNumber){
+    async updateDocumentS3(file, workflowId, phaseNumber){
+        console.log("THIS FILE OBJECT HAS THE FOLLOWING NAME");
+        console.log(file.name);
         const uploadParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
             Body: file.data,
             Key: workflowId +"/phase"+phaseNumber +"/" + file.name
         }
         try{
-            await s3.upload(uploadParams, (err, data) => {
-                console.log(err)
-                if(err) {
-                    throw new Error("Error establishing connection to the cloud file server");
-                }
-                else console.log(data);
-            });
+            console.log(uploadParams);
+            let d = await s3.putObject(uploadParams).promise();
+            console.log("Finished updating s3 file");
+            console.log(d);
         }
         catch(e){
             console.log(e);
         }
-
     }
 
     async getDocument(id: Types.ObjectId): Promise<DocumentProps> {
