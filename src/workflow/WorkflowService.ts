@@ -54,13 +54,13 @@ export default class WorkflowService{
             console.log("Workflow saved, saving document");
 
             //Step 3 save document with workflowId:
-            workflow.documentId = await this.documentService.uploadDocument(file, workflowId);
+            const documentId = await this.documentService.uploadDocument(file, workflowId);
             console.log("THE DOCUMENT HAS BEEN CREATED AND THE WORKFLOW SHOULD HAVE THE DOCUMENT ID NOW!!!");
             console.log(workflow);
             console.log("Document saved, updating workflow");
 
             //Step 4 update workflow with documentId:
-            await this.workflowRepository.saveWorkflow(workflow);
+            await this.workflowRepository.addDocumentId(workflowId, documentId);
             console.log("Workflow updated, adding the workflow to the relevant users");
 
             console.log(workflow);
@@ -284,6 +284,7 @@ export default class WorkflowService{
             //2) The document must be updated IFF the user's permission is to sign the document.
             if(this.isPhaseComplete(currentPhaseObject)){
                 console.log("Phase is complete");
+                currentPhaseObject.status = PhaseStatus.COMPLETED;
                 if(workflow.phases.length === workflow.currentPhase + 1){
                     workflow.status = WorkflowStatus.COMPLETED;
                 }
@@ -300,6 +301,8 @@ export default class WorkflowService{
             }
 
             //Save everything
+            await this.phaseService.updatePhase(currentPhaseObject);
+            await this.workflowRepository.saveWorkflow(workflow);
 
             return {status:"success", data:{}, message:""};
         }
@@ -326,6 +329,8 @@ export default class WorkflowService{
         try{
             const workflow = await this.workflowRepository.getWorkflow(workflowId);
             console.log(workflow);
+            if(!workflow.documentId)
+                console.log("BIG ERROR THIS WORKFLOW DOES NOT HAVE A DOCUMEnt ID!!!");
             if(!await this.isUserMemberOfWorkflow(workflow, userEmail)){
                 console.log("REquesting user is NOT a member of this workflow");
                 return {status:"error", data:{}, message:"You are not a member of this workflow"};

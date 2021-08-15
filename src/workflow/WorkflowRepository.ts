@@ -8,12 +8,23 @@ export default class WorkflowRepository{
         await newWorkflow.save();
         return newWorkflow._id;
     }
-    /* This function does not work as intended. the updateOne function should take in the values to update eg {name: 'John Snow'}. See https://masteringjs.io/tutorials/mongoose/update
+    //This function does not work as intended. the updateOne function should take in the values to update eg {name: 'John Snow'}. See https://masteringjs.io/tutorials/mongoose/update
+
     async updateWorkflow(workflow: WorkflowProps): Promise<Boolean>{
-        const updated_workflow = await Workflow.updateOne({_id:workflow._id},workflow);
-        return !!updated_workflow;
+        console.log("Updating a workflow to have new values: ");
+        console.log(workflow);
+        Workflow.findByIdAndUpdate(workflow._id, {name: workflow.name,
+            ownerId: workflow.ownerId,
+            ownerEmail: workflow.ownerEmail,
+            documentId: workflow.documentId,
+            description: workflow.description,
+            phases: workflow.phases,
+            currentPhase: workflow.currentPhase,
+            status: workflow.status
+        });
+        return true;
     }
-     */
+
 
     /*async deleteWorkflow(id: ObjectId): Promise<ObjectId> {
         return Workflow.deleteOne({_id: id});
@@ -28,4 +39,8 @@ export default class WorkflowRepository{
         }
     }
 
+    async addDocumentId(workflowId, documentId){
+        console.log("Adding documentID: ", documentId, " to workflow of id: ", workflowId);
+        await Workflow.updateOne({_id: workflowId}, {$set: {documentId: documentId}}, {upsert: true});
+    }
 }
