@@ -350,14 +350,16 @@ export default class WorkflowService{
 
     async isUserMemberOfWorkflow(workflow, email):Promise<boolean>{
 
+        console.log('Checking if user: ', email, 'is a member of workflow ', workflow._id);
         if(workflow.ownerEmail === email)
             return true;
 
         for(let i=0; i<workflow.phases.length; ++i){
             const phase = await this.phaseService.getPhaseById(workflow.phases[i]);
             const phaseUsers = JSON.parse(phase.users);
+            console.log(phaseUsers);
             for(let  k=0; k<phaseUsers.length; ++k){
-                if(phaseUsers.user == email)
+                if(phaseUsers[k].user == email)
                     return true;
             }
         }
