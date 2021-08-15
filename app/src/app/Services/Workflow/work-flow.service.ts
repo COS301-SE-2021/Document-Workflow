@@ -13,7 +13,6 @@ export interface workflowFormat {
   ownerId: string;
   _v: number;
   _id: string;
-
   phases: phaseFormat[];
 }
 

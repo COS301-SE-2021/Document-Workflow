@@ -46,7 +46,7 @@
                     style="font-size: 30px;text-align:center"></ion-icon>
                 </ion-col>
                 <ion-col sizeXs='8'>
-                  <ion-item lines='none'>
+                  <ion-item lines='none' style="--border-color: #002060; --border-style:solid; --border-width:2px; --border-radius:15px">
                     <ion-label position="stacked">Description</ion-label>
                     <ion-textarea [formControl]="phase.controls.description"></ion-textarea>
                   </ion-item>
@@ -60,7 +60,10 @@
               <ion-text style="font-size: 18px;">Users:</ion-text>
               <ion-row *ngFor="let user of  phase.controls['users'].controls; let j = index">
                 <ion-col sizeXs='10'>
-                  <ion-input type="email" [formControl]="user.controls.user"></ion-input>
+                  <ion-item>
+                  <ion-label position="stacked">User email:</ion-label>
+                  <ion-input type="email" [formControl]="user.controls.user" ></ion-input>
+                </ion-item>
                 </ion-col>
                 <ion-col sizeXs='2'>
                   <ion-icon name="close-circle-outline" size="large" (click)="removeUser(phase.controls['users'],i, j)">
@@ -71,29 +74,32 @@
                     <ion-row>
                       <ion-col sizeXs='6'>
                         <ion-item (click)="changePermission(user.controls.permission, 'sign')" lines="none">
-                          <ion-label>Signer</ion-label>
+                          <ion-label position="fixed">Signer</ion-label>
                           <ion-radio value="sign" slot="end"></ion-radio>
                         </ion-item>
                       </ion-col>
                       <ion-col sizeXs='6'>
                         <ion-item (click)="changePermission(user.controls.permission, 'view')" lines="none">
-                          <ion-label>View </ion-label>
+                          <ion-label position="fixed">View </ion-label>
                           <ion-radio value="view" slot="end"></ion-radio>
                         </ion-item>
                       </ion-col>
                     </ion-row>
                     <ion-row>
-                      <ion-col sizeXs='12' sizeSm='6'>
-                        <ion-button style="width: 99%;" (click)="addUser(phase.controls['users'])">Add User</ion-button>
-                      </ion-col>
-                      <ion-col sizeXs='12' sizeSm='6'>
-                        <ion-button style="width: 99%;" (click)="includeActionArea(i,phase.controls.annotation)">Change Action Area</ion-button>
-                      </ion-col>
                     </ion-row>
                   </ion-radio-group>
                 </ion-col>
               </ion-row>
+              <ion-row>
+              <ion-col sizeXs='12' sizeSm='6'>
+                <ion-button style="width: 99%;" (click)="addUser(phase.controls['users'])">Add User</ion-button>
+              </ion-col>
+              <ion-col sizeXs='12' sizeSm='6'>
+                <ion-button style="width: 99%;" (click)="includeActionArea(i,phase.controls.annotation)">Change Action Area</ion-button>
+              </ion-col>
+            </ion-row>
             </ion-col>
+
           </ion-row>
           <ion-row>
             <ion-col sizeXs='12' sizeSm='6'>
