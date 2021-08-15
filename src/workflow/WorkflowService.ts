@@ -291,7 +291,7 @@ export default class WorkflowService{
                 else{
                     workflow.currentPhase = workflow.currentPhase + 1;
                     //Create the new folder in the S3 bucket for the next phases
-                    await this.documentService.updateDocument(document, workflowId, workflow.currentPhase + 1);
+                    await this.documentService.updateDocument(document, workflowId, workflow.currentPhase);
                     console.log("NEED TO CREATE THE FILE FOR THE NEXT FACE!!!!");
                 }
             }
