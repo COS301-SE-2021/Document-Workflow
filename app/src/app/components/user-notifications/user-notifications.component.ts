@@ -9,16 +9,16 @@ import { ModalController, PopoverController } from '@ionic/angular';
 export class UserNotificationsComponent implements OnInit {
   @Input() message: string;
   @Input() title: string;
+  @Input() displayButton: boolean
 
   accept: boolean;
-  displayButtons: boolean = false;
   constructor(private pop: PopoverController) {}
 
   //TODO: take in an extra variable boolean that determines whether or not this popup should display buttons.
   //Link this to the user services such that you can call one function for no buttons, and another for buttons
   ngOnInit() {
     if (this.title === 'termsOfService') {
-      this.displayButtons = true;
+      this.displayButton = true;
       this.message =
         'Note that by making use of the Document Workflow system, you are ' +
         'essentially giving your soul to our Lizard overlord JeffBezos. He will steal all of' +
@@ -26,13 +26,6 @@ export class UserNotificationsComponent implements OnInit {
         'robot uprising begins, you must understand that you are complicit in Jeff Bezos'  +
         'rise to power through your indirect support of him by using our services.' +
         'All hail King Zuck.';
-    }
-    else if(this.title === 'signPhase'){
-      this.title ='Accept Phase';
-      this.displayButtons = true;
-    }
-    else{
-      this.displayButtons = true;
     }
   }
 

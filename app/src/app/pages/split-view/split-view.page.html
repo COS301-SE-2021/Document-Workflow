@@ -1,5 +1,5 @@
 <ion-split-pane contentId="main" when="false">
-  <ion-menu contentId="main" >
+  <ion-menu contentId="main">
     <ion-header>
       <ion-grid>
         <ion-row>
@@ -35,8 +35,10 @@
           <ion-label>Contacts</ion-label>
         </ion-item>
       </ion-menu-toggle>
-      <ion-menu-toggle autoHide="false">
-        <ion-item (click)="logout()">Log out</ion-item>
+      <ion-menu-toggle autoHide="false" >
+        <ion-item (click)="logout()" routerLink="/login" routerDirection="root" routerLinkActive="active-link">
+          <ion-label>Log out </ion-label>
+        </ion-item>
       </ion-menu-toggle>
     </ion-content>
   </ion-menu>

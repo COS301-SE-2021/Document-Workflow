@@ -141,7 +141,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   }
 
   async acceptDocument(){
-    await this.userApiService.displayPopOverWithButtons('signPhase','Do you accept this phase as complete?', (response) =>{
+    await this.userApiService.displayPopOverWithButtons('Accept Phase','Do you accept this phase as complete?', (response) =>{
 
 
     });

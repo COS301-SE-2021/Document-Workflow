@@ -98,6 +98,7 @@ export class UserAPIService {
       componentProps: {
         title: title,
         message: message,
+        displayButton: false
       },
     });
 
@@ -114,6 +115,7 @@ export class UserAPIService {
       componentProps: {
         title: title,
         message: message,
+        displayButton: true
       },
     });
 
