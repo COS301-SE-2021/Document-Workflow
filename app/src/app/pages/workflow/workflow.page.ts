@@ -126,11 +126,38 @@ export class WorkflowPage implements OnInit {
         //for the searching and sorting so we wont waste users data.
         this.allUserDocuments = this.documents;
         console.log(this.documents);
+        this.sortPermission();
       } else {
         alert('Something went wrong');
       }
     });
   }
+
+  sortPermission() {
+    for (let document of this.documents) {
+      if (document.phases[document.currentPhase].status !== 'Completed') {
+        for (let user of document.phases[document.currentPhase].users) {
+          if (user.email === this.userEmail) {
+            if (user.permission === 'sign') {
+              this.editDocumentPermission.push(true);
+              this.viewDocumentPermission.push(false);
+            } else {
+              this.editDocumentPermission.push(false);
+              this.viewDocumentPermission.push(true);
+            }
+          } else {
+            this.editDocumentPermission.push(false);
+            this.viewDocumentPermission.push(false);
+          }
+        }
+      } else {
+        this.editDocumentPermission.push(false);
+        this.viewDocumentPermission.push(false);
+      }
+    }
+    console.log(this.editDocumentPermission)
+  }
+
   //todo move this to the spec.ts of workflow
   async testRetrieveWorkflow() {
     console.log('Testing the retrieve workflow function');
