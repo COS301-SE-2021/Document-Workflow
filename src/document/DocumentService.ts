@@ -45,11 +45,11 @@ export default class DocumentService {
         }
     }
 
-    async deleteDocument(workflow_id, document_id){
+    async deleteDocument(workflowId, documentId){
         console.log("Deleting document from CLoud server");
-        await this.documentRepository.deleteDocumentFromS3(workflow_id);
-        console.log("deleting document from metadata database ", document_id);
-        await this.documentRepository.deleteDocument(document_id);
+        await this.documentRepository.deleteDocumentFromS3(workflowId);
+        console.log("deleting document from metadata database ", documentId);
+        await this.documentRepository.deleteDocument(documentId);
     }
 
     //TODO: update this!! fetch documents based on their phase.

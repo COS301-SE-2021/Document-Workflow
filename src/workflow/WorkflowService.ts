@@ -152,31 +152,34 @@ export default class WorkflowService{
 
         return {status:"success", data: data, message:""};
     }
-    /*
-    async deleteWorkFlow(req) {
-        console.log("Attempting to delete workflow");
-        console.log(req.body);
+
+    async deleteWorkFlow(workflowId, userEmail) {
+        console.log("Attempting to delete workflow with id, ",workflowId);
         try {
-            let workflow_id = req.body.id;
-            const workflow = await this.workflowRepository.getWorkFlow(req.body.id);
+
+            const workflow = await this.workflowRepository.getWorkflow(workflowId);
             console.log(workflow);
             if(workflow === null)
                 return {status: "failed", data: {}, message: "Workflow does not exist"};
-            if(workflow.owner_email !== req.user.email)
+            if(workflow.ownerEmail !== userEmail)
                 return {status:"failed", data: {}, message: "Insufficient rights to delete"};
 
-            await this.documentService.deleteDocument(workflow_id, workflow.document_id);
+            await this.documentService.deleteDocument(workflowId, workflow.documentId);
             console.log("Document and metadata deleted");
-            await this.removeOwnedWorkFlowId(workflow.owner_email, workflow_id);
-            const phases = workflow.phases;
-            for(let i=0; i<phases.length; ++i){
-                const phase = phases[i];
-                for(let k=0; k<phase.length; ++k)
-                    if(phase[k] !== workflow.owner_email)
-                        await this.removeWorkFlowId(phase[k], workflow_id);
+            await this.removeOwnedWorkFlowId(workflow.ownerEmail, workflowId);
+            //TODO: workflow only gets deleted up until this point. More testing is needed.
+
+            for(let i=0; i<workflow.phases.length; ++i){
+                const phase = JSON.parse(await this.phaseService.getPhaseById(workflow.phases[i]));
+                for(let k=0; k<phase.length; ++k){
+                    await this.removeWorkFlowId(phase[k].user, workflowId);
+                }
+                console.log("Deleting phase from workflow, phaseId: ", phase._id);
+                await this.phaseService.deletePhaseById(phase._id);
             }
+
             console.log("Workflow ID removed from all participants");
-            await this.workflowRepository.deleteWorkFlow(workflow_id);
+            await this.workflowRepository.deleteWorkflow(workflowId);
         }
         catch(e){
             throw e;
@@ -185,23 +188,25 @@ export default class WorkflowService{
         return {status: "success", data:{}, message:""};
     }
 
-    async removeOwnedWorkFlowId(email, id){
-        let user = await this.usersRepository.getUser({email:email});
-        const index = user.owned_workflows.indexOf(id);
+    async removeOwnedWorkFlowId(email, workflowId){
+        let user = await this.userService.getUserByEmail(email);
+        const index = user.ownedWorkflows.indexOf(workflowId);
         if(index === -1)
             return;
-        user.owned_workflows.splice(index, 1);
-        await this.usersRepository.putUser(user);
+        user.ownedWorkflows.splice(index, 1);
+        await this.userService.updateUserWorkflows(user);
     }
 
-    async removeWorkFlowId(email, id){
-        let user = await this.usersRepository.getUser({email:email});
-        const index = user.workflows.indexOf(id);
+    async removeWorkFlowId(email, workflowId){
+        let user = await this.userService.getUserByEmail(email);
+        const index = user.workflows.indexOf(workflowId);
         if(index === -1)
             return;
         user.workflows.splice(index, 1);
-        await this.usersRepository.putUser(user);
-    }*/
+        await this.userService.updateUserWorkflows(user);
+    }
+
+
     async getUsersWorkflowData(usr) {
 
         //we have the user's email and id, but we need to fetch this user from the UserService
