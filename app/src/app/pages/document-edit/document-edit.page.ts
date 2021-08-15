@@ -24,6 +24,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   pdfDoc: PDFDocument;
   showAnnotations = true;
   annotationManager: any;
+  annotationsString: string;
   documentViewer: any;
   PDFNet: any;
   documentMetadata: any;
@@ -99,6 +100,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
 
           });
           instance.Core.documentViewer.addEventListener('documentLoaded', ()=>{
+            this.annotationsString = response.data.annotationsString;
             instance.Core.annotationManager.importAnnotations(response.data.annotations);
           });
 
@@ -192,7 +194,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
       const xfdfString = await this.annotationManager.exportAnnotations();
       const options = {xfdfString: xfdfString, flatten: true};
       const data = await this.documentViewer.getDocument().getFileData(options);
-      //TODO: only get annotations that are not used for action areas
+
       const arr = new Uint8Array(data);
       const blob = new Blob([arr], { type: 'application/pdf' });
       const file = new File([blob], this.documentMetadata.name);
@@ -202,6 +204,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
       await this.workflowService.updatePhase(this.workflowId, response.data.confirm, file, (response2) => {
         console.log(response2);
       });
+      await this.annotationManager.importAnnotations(this.annotationsString);
     });
    }
 

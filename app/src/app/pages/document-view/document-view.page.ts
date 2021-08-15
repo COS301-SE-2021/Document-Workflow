@@ -153,7 +153,13 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   async acceptDocument(){
     await this.userApiService.displayPopOverWithButtons('Accept Phase','Do you accept this phase as complete?', async (response) =>{
       await this.updateDocumentAnnotations(await this.annotationManager.exportAnnotations());
-      await this.workflowService.updatePhase(this.workflowId, response.data.confirm, null, (response2) => {
+
+      const data = await this.documentViewer.getDocument().getFileData({});
+      const arr = new Uint8Array(data);
+      const blob = new Blob([arr], { type: 'application/pdf' });
+      const file = new File([blob], this.documentMetadata.name);
+
+      await this.workflowService.updatePhase(this.workflowId, response.data.confirm, file, (response2) => {
         console.log(response2);
       });
     });
