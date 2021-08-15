@@ -57,7 +57,6 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
           header.getHeader('toolbarGroup-Annotate').delete('freeTextToolGroupButton');
           header.getHeader('toolbarGroup-Annotate').delete('freeHandToolGroupButton');
           header.getHeader('toolbarGroup-Annotate').delete('freeHandHighlightToolGroupButton');
-          header.getHeader('toolbarGroup-Annotate').delete('freeHandHighlightToolGroupButton');
         });
 
         /* Dont delete me yet.

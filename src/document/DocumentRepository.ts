@@ -81,8 +81,6 @@ export default class DocumentRepository {
     }
 
     async updateDocumentS3(file, workflowId, phaseNumber){
-        console.log("THIS FILE OBJECT HAS THE FOLLOWING NAME");
-        console.log(file.name);
         const uploadParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
             Body: file.data,

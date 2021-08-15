@@ -249,7 +249,7 @@ export default class WorkflowService{
     }
 
     //TODO: finish implementing
-    async updatePhase(user, workflowId, accept, document) {//NOTE: document should always be sent through.
+    async updatePhase(user, workflowId, accept, document) {//NOTE: document will be null in the event that a viewer is updating the phase
         //first, retrieve the workflow based on the workflow id
         console.log("Updating a phase of a document");
         try{
@@ -384,7 +384,7 @@ export default class WorkflowService{
             }
             let phase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
             phase.annotations = annotations;
-            console.log(phase);
+
             await this.phaseService.updatePhase(phase);
 
             return {status:'success', data:{}, message:''};

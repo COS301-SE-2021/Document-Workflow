@@ -22,10 +22,11 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   srcFile: any;
   srcFileBase64: any;
   pdfDoc: PDFDocument;
-  showAnnotations = false;
+  showAnnotations = true;
   annotationManager: any;
   documentViewer: any;
   documentMetadata: any;
+  annotationSubjects = ['Note', 'Rectangle', 'Squiggly', 'Underline', 'Highlight', 'Strikeout'];
 
   @Input('documentname') docName: string;
   @Input('workflowId') workflowId: string;
@@ -44,7 +45,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   async ngOnInit() {
     await this.route.params.subscribe((data) => {
       this.workflowId = data['workflowId'];
-      this.docName = data['documentname'];
+      //this.docName = data['documentname'];
       this.userEmail = data['userEmail'];
     });
   }
@@ -61,6 +62,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
       console.log(response);
       if (response) {
         this.documentMetadata = response.data.metadata;
+        this.docName = this.documentMetadata.name;
         this.srcFileBase64 = response.data.filedata.Body.data;
         const arr = new Uint8Array(response.data.filedata.Body.data);
         const blob = new Blob([arr], {type: 'application/pdf'});
@@ -78,6 +80,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
 
           instance.UI.loadDocument(blob, {filename: this.docName});
           instance.UI.disableElements(['toolbarGroup-Annotate']);
+          instance.UI.setToolbarGroup('toolbarGroup-Insert', false);
           instance.UI.setHeaderItems(header =>{
             header.push({
               type: 'actionButton',
@@ -86,6 +89,12 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
               onClick: () =>  { this.toggleAnnotations(instance.Core.annotationManager);
               }
             });
+
+            console.log(header.getItems()[11]);
+
+            console.log(header.get('menuButton'));
+            console.log(header.get('downloadButton'));
+
           });
           instance.Core.documentViewer.addEventListener('documentLoaded', ()=>{
             instance.Core.annotationManager.importAnnotations(response.data.annotations);
@@ -123,19 +132,16 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     link.remove();
   }
 
-  annotationSubjects = ["Note", 'Rectangle', 'Squiggly', 'Underline', 'Highlight', 'Strikeout'];
+
 
   toggleAnnotations(annotationManager){
-
+   console.log("TToggling annotations");
     this.showAnnotations = !this.showAnnotations;
     const annotations = annotationManager.getAnnotationsList();
     if(this.showAnnotations){
       //annotManager.showAnnotations(annotations); //use if you wihs to hide the associated comments that go with an annotation as well as the annotation.
       annotations.forEach(annot =>{
-        console.log(annot);
-        console.log(annot.Subject);
         this.annotationSubjects.forEach(a =>{
-          console.log(a);
           if(a === annot.Subject)
             annot.Hidden = false;
         });
@@ -145,10 +151,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     else{
       //annotManager.hideAnnotations(annotations);
       annotations.forEach(annot =>{
-        console.log(annot);
-        console.log(annot.Subject);
         this.annotationSubjects.forEach(a =>{
-          console.log(a);
           if(a === annot.Subject)
             annot.Hidden = true;
         });
@@ -183,6 +186,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   async acceptDocument(){
     await this.userApiService.displayPopOverWithButtons('signPhase','Do you accept the phase as completed?', async (response) =>{
       const doc = this.documentViewer.getDocument();
+      this.removeActionAreasFromAnnotations();
       const xfdfString = await this.annotationManager.exportAnnotations();
       const options = { xfdfString };
       const data = await doc.getFileData(options);
@@ -197,6 +201,19 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
         console.log(response2);
       });
     });
+   }
+
+   removeActionAreasFromAnnotations(){
+
+    const toDelete = [];
+    this.annotationManager.getAnnotationsList().forEach(annot =>{
+      this.annotationSubjects.forEach(a =>{
+        if(a === annot.Subject) {
+          toDelete.push(annot);
+        }
+      });
+    });
+    this.annotationManager.deleteAnnotations(toDelete);
    }
 
   async updateDocumentAnnotations(annotationsString){

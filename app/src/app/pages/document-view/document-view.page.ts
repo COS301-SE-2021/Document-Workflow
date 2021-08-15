@@ -29,7 +29,12 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   srcFile: any;
   srcFileBase64: any;
   pdfDoc: PDFDocument;
-  showAnnotations = false;
+  showAnnotations = true;
+  annotationManager: any;
+  documentViewer: any;
+  documentMetadata: any;
+  annotationSubjects = ['Note', 'Rectangle', 'Squiggly', 'Underline', 'Highlight', 'Strikeout'];
+
 
   @Input('documentname') docName: string;
   @Input('workflowId') workflowId: string;
@@ -48,7 +53,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   async ngOnInit() {
     await this.route.params.subscribe((data) => {
       this.workflowId = data['workflowId'];
-      this.docName = data['documentname'];
+      //this.docName = data['documentname'];
       this.userEmail = data['userEmail'];
     });
   }
@@ -64,6 +69,8 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
     await this.workflowService.retrieveDocument(this.workflowId, async (response) => {
       console.log(response);
       if (response) {
+        this.documentMetadata = response.data.metadata;
+        this.docName = this.documentMetadata.name;
         this.srcFileBase64 = response.data.filedata.Body.data;
         const arr = new Uint8Array(response.data.filedata.Body.data);
         const blob = new Blob([arr], {type: 'application/pdf'});
@@ -75,6 +82,9 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
           path: './../../../assets/lib',
           annotationUser: this.userEmail
         }, this.viewerRef.nativeElement).then(instance =>{
+
+            this.annotationManager = instance.Core.annotationManager;
+            this.documentViewer = instance.Core.documentViewer;
 
             instance.UI.loadDocument(blob, {filename: this.docName});
             instance.UI.disableElements(['ribbons']);
@@ -95,7 +105,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
               img: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>',
               onClick: async () => {
                 const xfdfString = await  instance.Core.annotationManager.exportAnnotations();
-                await this.updateDocumentAnnotations(xfdfString);
+                 await this.acceptDocument();
               }
             });
           });
@@ -141,9 +151,11 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   }
 
   async acceptDocument(){
-    await this.userApiService.displayPopOverWithButtons('Accept Phase','Do you accept this phase as complete?', (response) =>{
-
-
+    await this.userApiService.displayPopOverWithButtons('Accept Phase','Do you accept this phase as complete?', async (response) =>{
+      await this.updateDocumentAnnotations(await this.annotationManager.exportAnnotations());
+      await this.workflowService.updatePhase(this.workflowId, response.data.confirm, null, (response2) => {
+        console.log(response2);
+      });
     });
    }
 
@@ -180,8 +192,21 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
       }
     });
   }
+  removeActionAreasFromAnnotations(){
+
+    const toDelete = [];
+    this.annotationManager.getAnnotationsList().forEach(annot =>{
+      this.annotationSubjects.forEach(a =>{
+        if(a === annot.Subject) {
+          toDelete.push(annot);
+        }
+      });
+    });
+    this.annotationManager.deleteAnnotations(toDelete);
+  }
 
   async updateDocumentAnnotations(annotationsString){
+      console.log("Updating the annotations of this document");
       await this.workflowService.updateCurrentPhaseAnnotations(this.workflowId, annotationsString, (response)=>{
         console.log(response);
       });

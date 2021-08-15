@@ -136,9 +136,12 @@ export default class WorkflowController {
      * @private
      */
     private async updatePhase(req) {
-        if(!req.body.workflowId || !req.body.accept || !req.files){
+        if(!req.body.workflowId || !req.body.accept){
             throw new RequestError("There was something wrong with the request");
         }
+
+        if(!req.files)
+            req.files = {document: null};
 
         try{
             return await this.workflowService.updatePhase(req.user, req.body.workflowId, req.body.accept, req.files.document);
