@@ -123,6 +123,8 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     link.remove();
   }
 
+  annotationSubjects = ["Note", 'Rectangle', 'Squiggly', 'Underline', 'Highlight', 'Strikeout'];
+
   toggleAnnotations(annotationManager){
 
     this.showAnnotations = !this.showAnnotations;
@@ -130,13 +132,27 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     if(this.showAnnotations){
       //annotManager.showAnnotations(annotations); //use if you wihs to hide the associated comments that go with an annotation as well as the annotation.
       annotations.forEach(annot =>{
-        annot.Hidden = false;
+        console.log(annot);
+        console.log(annot.Subject);
+        this.annotationSubjects.forEach(a =>{
+          console.log(a);
+          if(a === annot.Subject)
+            annot.Hidden = false;
+        });
+
       });
     }
     else{
       //annotManager.hideAnnotations(annotations);
       annotations.forEach(annot =>{
-        annot.Hidden = true;
+        console.log(annot);
+        console.log(annot.Subject);
+        this.annotationSubjects.forEach(a =>{
+          console.log(a);
+          if(a === annot.Subject)
+            annot.Hidden = true;
+        });
+
       });
     }
     annotationManager.drawAnnotationsFromList(annotations);
@@ -170,6 +186,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
       const xfdfString = await this.annotationManager.exportAnnotations();
       const options = { xfdfString };
       const data = await doc.getFileData(options);
+      //TODO: only get annotations that are not used for action areas
       const arr = new Uint8Array(data);
       const blob = new Blob([arr], { type: 'application/pdf' });
       const file = new File([blob], this.documentMetadata.name);
