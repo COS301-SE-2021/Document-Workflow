@@ -16,9 +16,9 @@
     </ion-grid>
   </ion-toolbar>
 </ion-header>
-<ion-content style="height:95%" *ngIf="ready">
+<ion-content style="height:95%" *ngIf="ready" fullscreen="true" >
   <form [formGroup]="workflowForm" style="height:100%" (ngSubmit)="submit()">
-    <ion-card style="height: 96%;">
+    <ion-card style="height: auto;">
       <ion-card-header>
         <ion-item>
           <ion-label position="stacked">Workflow Name: </ion-label>

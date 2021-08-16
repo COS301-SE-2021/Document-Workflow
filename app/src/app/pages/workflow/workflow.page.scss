@@ -10,6 +10,10 @@ $color5: #002060;
 // ion-item,ion-grid{
 //   --background: #EEE2DC;
 // }
+ion-row{
+  --width: 100%;
+  width:100%;
+}
 
 ion-card{
   min-height: 250px;

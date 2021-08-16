@@ -27,13 +27,17 @@
           <ion-card-title style="font-size: 20px; padding-left: 10px;">{{document.name}}</ion-card-title>
           <ion-card-subtitle style="font-size: 12px; padding-left: 10px;">Owner of the workflow: {{document.ownerEmail}}
           </ion-card-subtitle>
-          <ion-fab vertical="top" horizontal="end">
-            <ion-fab-button><ion-icon name="apps-outline"></ion-icon></ion-fab-button>
+          <ion-fab vertical="top" horizontal="end" style="font-size: 25px;">
+            <ion-fab-button>
+              <ion-icon name="apps-outline"></ion-icon>
+            </ion-fab-button>
             <ion-fab-list side="down">
-              <ion-fab-button (click)="viewWorkFlow(document._id, document.name)" *ngIf='viewDocumentPermission[p] === true'>
+              <ion-fab-button (click)="viewWorkFlow(document._id, document.name)"
+                *ngIf='viewDocumentPermission[p] === true'>
                 <ion-icon name="arrow-redo-outline" style="font-size: 22px; color:white"></ion-icon>
               </ion-fab-button>
-              <ion-fab-button (click)="editDocument(document._id, document.name)" *ngIf='editDocumentPermission[p] === true'>
+              <ion-fab-button (click)="editDocument(document._id, document.name)"
+                *ngIf='editDocumentPermission[p] === true'>
                 <ion-icon name="construct-outline" style="font-size: 22px;color:white"></ion-icon>
               </ion-fab-button>
               <ion-fab-button (click)="editWorkflow(document._id)" *ngIf="document.ownerEmail === userEmail">
@@ -54,7 +58,8 @@
               <ion-col sizeXs='12'>
                 <ion-item style="width: 100%;" lines="none">
                   <div slot="start">
-                    <h1>Phases {{i + 1}}</h1>
+                    <h1>Phase {{i + 1}}</h1>
+                    <p>{{phase.description}}</p>
                   </div>
                   <div slot="end">
                     <ion-icon name="chevron-down-circle-outline" (click)='showPhase(phase)' slot='end'></ion-icon>
@@ -62,22 +67,23 @@
                 </ion-item>
               </ion-col>
               <ion-col *ngIf='phase.showPhase' lines="none" sizeXs='12'>
-                <ion-row *ngFor="let user of phase.users">
+                <ion-row *ngFor="let user of phase.users" >
+
                   <ion-col sizeXs='12' sizeMd='7' sizeSm='7' style="text-align: left;">
                     <ion-item lines="none">
-                      <ion-label position="stacked" style="width: 100%;">User email</ion-label>
+                      <ion-label position="stacked" style="width: 100%;">User email:</ion-label>
                       {{user.email}}
                     </ion-item>
                   </ion-col>
                   <ion-col sizeXs='9' sizeSm='3' sizeMd='3' style="text-align: center;">
                     <ion-item lines="none" style="width: 100%;">
-                      <ion-label position="stacked" style="width: 100%;">Permission</ion-label>
+                      <ion-label position="stacked" style="width: 100%;">Permission:</ion-label>
                       {{user.permission}}
                     </ion-item>
                   </ion-col>
                   <ion-col sizeXs='3' sizeMd='2' sizeSm='2' style="text-align: right;">
                     <ion-item lines="none">
-                      <ion-label position="stacked">Done</ion-label>
+                      <ion-label position="stacked">Done:</ion-label>
                       <ion-icon *ngIf="user.accepted" name="checkmark-circle-outline"></ion-icon>
                       <ion-icon *ngIf="!user.accepted" name="close-circle-outline"></ion-icon>
                     </ion-item>
@@ -102,12 +108,10 @@
       Test P
     </ion-fab-button>
   </ion-fab> -->
-<!--
+  <!--
 
   <ion-fab vertical="bottom" horizontal="start" slot="fixed">
     <ion-fab-button (click)="debug()">
       b test
     </ion-fab-button>
   </ion-fab> -->
-
-

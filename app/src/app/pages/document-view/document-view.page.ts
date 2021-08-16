@@ -5,19 +5,12 @@ import {Component, OnInit, Input, AfterViewInit, ElementRef, ViewChild} from '@a
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 
 import { ModalController, NavParams, Platform } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
-import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DocumentAPIService } from 'src/app/Services/Document/document-api.service';
 import {WorkFlowService} from 'src/app/Services/Workflow/work-flow.service';
-import { async } from '@angular/core/testing';
-import { ConfirmSignaturesComponent } from 'src/app/components/confirm-signatures/confirm-signatures.component';
 import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { DomSanitizer } from '@angular/platform-browser';
 import WebViewer from '@pdftron/webviewer';
-import {UserNotificationsComponent} from "../../components/user-notifications/user-notifications.component";
-import {DocumentActionAreaComponent} from "../../components/document-action-area/document-action-area.component";
-import {ErrorOccurredComponent} from "../../components/error-occurred/error-occurred.component";
 import { UserAPIService } from 'src/app/Services/User/user-api.service';
 
 @Component({
@@ -117,16 +110,18 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
         });
       }else {
         //TODO: style this ErrorOccurredPopup
-        const a = await this.modalCtrl.create({
-          component: ErrorOccurredComponent,
-          componentProps: {
-          },
-          cssClass: 'errorModalClass'
-        });
 
-        await (await a).present();
-        (await a).onDidDismiss().then(async (data) => {
-        });
+        await this.userApiService.displayPopOver('Oops','An unexpected error occurred. Please try again later');
+        // const a = await this.modalCtrl.create({
+        //   component: ErrorOccurredComponent,
+        //   componentProps: {
+        //   },
+        //   cssClass: 'errorModalClass'
+        // });
+
+        // await (await a).present();
+        // (await a).onDidDismiss().then(async (data) => {
+        // });
       }
     });
   }
