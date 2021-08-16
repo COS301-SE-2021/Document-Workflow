@@ -46,6 +46,9 @@
               <ion-fab-button (click)="deleteWorkFlow(document._id)" *ngIf="document.ownerEmail === userEmail">
                 <ion-icon name="close-outline" style="font-size: 22px;color:white"></ion-icon>
               </ion-fab-button>
+              <ion-fab-button (click)="revertPhase(document._id)" *ngIf="document.ownerEmail === userEmail">
+                <ion-icon name="git-pull-request-outline"></ion-icon>
+              </ion-fab-button>
             </ion-fab-list>
           </ion-fab>
         </ion-header>

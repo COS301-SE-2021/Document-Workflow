@@ -189,25 +189,14 @@ export class WorkflowPage implements OnInit {
         }
       }
     );
-    //   const deleteMod = this.modals.create({
-    //     component: ConfirmDeleteWorkflowComponent,
-    //   });
+  }
 
-    //   (await deleteMod).present();
-    //   (await deleteMod).onDidDismiss().then(async (data) => {
-    //     const result = (await data).data.confirm;
-    //     if (result) {
-    //       this.workFlowService.deleteWorkFlow(id, (response) => {
-    //         console.log(response);
-    //         this.userApiService.displayPopOver(
-    //           'Deletion of workflow',
-    //           'Workflow has been successfully deleted'
-    //         );
-    //       });
-    //     } else {
-    //       //not delete
-    //     }
-    //   });
+  revertPhase(id: string){
+    this.userApiService.displayPopOverWithButtons('Revert the phase','Are you sure you want to revert the phase?', (response)=>{
+      if(response.confirm === true){
+        //todo tim stuff
+      }
+    })
   }
 
   async editWorkflow(id: string) {
