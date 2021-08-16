@@ -301,14 +301,43 @@ export class WorkFlowService {
     }
     return temp;
   }
+
+  public async editWorkflow(workflowName, workflowDescription, phases, workflowId, callback){
+    const formData = new FormData();
+    formData.append("name", workflowName);
+    formData.append("description", workflowDescription);
+    formData.append("phases", JSON.stringify(phases));
+    formData.append("workflowId", workflowId);
+    //const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+
+    this.http
+      .post(WorkFlowService.url + '/workflows/edit', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe((data) => {
+          if (data) {
+            callback(data);
+          } else
+            callback({ status: 'error', message: 'Cannot connect to Server' });
+        },
+        (error) => {
+          alert('An unexpected error occurred');
+        }
+      );
+  }
+
   /**
    * This will likely stay a test function.
    * @param workflow_id
    * @param file
    */
-  public async updateDocument(document_id, file, callback) {
+  public async updateDocument(documentId, file, callback) {
     const formData = new FormData();
-    formData.append('documentId', document_id);
+    formData.append('documentId', documentId);
     formData.append('document', file);
 
     //const token = localStorage.getItem('token');
