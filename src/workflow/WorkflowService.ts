@@ -170,9 +170,12 @@ export default class WorkflowService{
             //TODO: workflow only gets deleted up until this point. More testing is needed.
 
             for(let i=0; i<workflow.phases.length; ++i){
-                const phase = JSON.parse(await this.phaseService.getPhaseById(workflow.phases[i]));
-                for(let k=0; k<phase.length; ++k){
-                    await this.removeWorkFlowId(phase[k].user, workflowId);
+                const phase = await this.phaseService.getPhaseById(workflow.phases[i]);
+                const phaseUsers = JSON.parse(phase.users);
+                console.log("deleting workflow id from members of current phase");
+                console.log(phaseUsers);
+                for(let k=0; k<phaseUsers.length; ++k){
+                    await this.removeWorkFlowId(phaseUsers[k].user, workflowId);
                 }
                 console.log("Deleting phase from workflow, phaseId: ", phase._id);
                 await this.phaseService.deletePhaseById(phase._id);
@@ -182,6 +185,7 @@ export default class WorkflowService{
             await this.workflowRepository.deleteWorkflow(workflowId);
         }
         catch(e){
+            console.log(e);
             throw e;
         }
 
