@@ -2,13 +2,14 @@
 <img src="Images/MyPost.jpg">
 <br>
 <br>
-<p> 
- <img alt="NodeJs" src="https://img.shields.io/badge/NodeJS-339933?logo=Node.js&logoColor=white&style=for-the-badge" />
+<div style="test-align: center">
+ <p> 
+  <img alt="NodeJs" src="https://img.shields.io/badge/NodeJS-339933?logo=Node.js&logoColor=white&style=for-the-badge" />
   <img alt="Amazon S3" src="https://img.shields.io/badge/AWS%20S3-569A31?logo=Amazon%20S3&logoColor=white&style=for-the-badge" />
- <img alt="MongoDB" src="https://img.shields.io/badge/MongoDB-47A248?logo=MongoDB&logoColor=white&style=for-the-badge" />
- <img alt="MySQL" src="https://img.shields.io/badge/MySQL-4479A1?logo=MySQL&logoColor=white&style=for-the-badge" />
- <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?logo=TypeScript&logoColor=white&style=for-the-badge" />
-</p>
+  <img alt="MongoDB" src="https://img.shields.io/badge/MongoDB-47A248?logo=MongoDB&logoColor=white&style=for-the-badge" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?logo=TypeScript&logoColor=white&style=for-the-badge" />
+ </p>
+ </div>
 
 ## Project Description 
 ### Due to the COVID-19 pandemic, many companies have been forced to move their op-erations onto online platforms. In light of this, it is more important than ever for companies to have access to web-based solutions that facilitate the reviewing, approval and signing of documents to facilitate the workflow process. While some document signing solutions such as DocuSign and HelloSign exist, Document Workflow aims to provide further functionality that these solutions are missing in conjunction to being free for any and all prospective clients to use. 
