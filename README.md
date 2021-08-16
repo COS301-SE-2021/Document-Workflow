@@ -16,7 +16,8 @@
 ### The overall goal would be to provide EPI-USE and their clients with an easy and convenient way to review, approve and sign important documents.This solution should provide a web-based and mobile platform where one can securelyupload documents for digital signing, determine approval workflows, and track the approval status of in-progress workflows. Simple approval should allow users to action adocument at the click of a button by making use of fingerprint authentication on theirmobile devices. The document setup process should be facilitated by image processingcombined with a trained machine learning model to identify and suggest areas whereinformation is required by approvers, such as names, dates, signatures, and initials.
 
 ## Code Quality
-![Repository's Stats](https://github-readme-stats.vercel.app/api?username=u17112592&show_icons=true)
+<!-- ![Repository's Stats](https://github-readme-stats.vercel.app/api?username=u17112592&show_icons=true) -->
+![GitHub Contributors Image](https://contrib.rocks/image?repo=u17112592/COS301-SE-2021/Document-Workflow)
 
 # Team Jar-gon
 ## Team Members
