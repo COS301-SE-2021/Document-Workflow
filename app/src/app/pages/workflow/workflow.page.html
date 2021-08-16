@@ -21,7 +21,7 @@
 <ion-content style="width:100%">
   <ion-reorder-group [disabled]="reOrder" (ionItemReorder)="fixOrder($event)" style="width:100%">
     <ion-reorder *ngFor="let document of documents; let p = index">
-      <ion-card>
+      <ion-card *ngIf="document.showWorkflow">
         <ion-header style="min-height: 80px;">
           <br />
           <ion-card-title style="font-size: 20px; padding-left: 10px;">{{document.name}}</ion-card-title>

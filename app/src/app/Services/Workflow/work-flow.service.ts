@@ -5,6 +5,7 @@ import { documentImage, phaseUser } from './../Document/document-api.service';
 import * as Cookies from 'js-cookie';
 
 export interface workflowFormat {
+  showWorkflow?: boolean;
   currentPercent: number;
   currentPhase: number;
   description: string;
@@ -285,6 +286,7 @@ export class WorkFlowService {
       }
       let percent = completedCounter/tempPhase.length;
       tmpWorkflow={
+        showWorkflow: true,
         currentPercent: percent,
         currentPhase: document['currentPhase'],
         description: document['description'],

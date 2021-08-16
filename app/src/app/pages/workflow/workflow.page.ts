@@ -37,7 +37,6 @@ export class WorkflowPage implements OnInit {
   reOrder: boolean;
   isBrowser: boolean;
   sizeMe: boolean;
-  allUserDocuments: workflowFormat[] = [];
   ownedWorkflows = [];
   workflows = [];
 
@@ -124,7 +123,6 @@ export class WorkflowPage implements OnInit {
           }
         }
         //for the searching and sorting so we wont waste users data.
-        this.allUserDocuments = this.documents;
         console.log(this.documents);
         this.sortPermission();
       } else {
@@ -255,9 +253,11 @@ export class WorkflowPage implements OnInit {
   showOnlyWorkflowOwned() {
     this.documents = [];
     console.log(this.documents);
-    for (const document of this.allUserDocuments) {
+    for (const document of this.documents) {
       if (document.ownerEmail === this.userEmail) {
-        this.documents.push(document);
+        document.showWorkflow= true;
+      }else{
+        document.showWorkflow = false;
       }
     }
     console.log(this.documents);
@@ -266,12 +266,14 @@ export class WorkflowPage implements OnInit {
   sortByNeededActions() {
     this.documents = [];
     // this.allUserDocuments.push(this.docService.createTestDocuments());
-    for (let document of this.allUserDocuments) {
+    for (let document of this.documents) {
       for (let phase of document.phases) {
         if (phase.status !== 'Completed') {
           for (let user of phase.users) {
             if (user.email === this.userEmail) {
-              this.documents.push(document);
+              document.showWorkflow = true;
+            }else{
+              document.showWorkflow =false;
             }
           }
         }
@@ -281,9 +283,11 @@ export class WorkflowPage implements OnInit {
 
   getByName(name: string) {
     this.documents = [];
-    for (let document of this.allUserDocuments) {
+    for (let document of this.documents) {
       if (document.name === name) {
-        this.documents.push(document);
+        document.showWorkflow = true;
+      }else{
+        document.showWorkflow = false;
       }
     }
   }
