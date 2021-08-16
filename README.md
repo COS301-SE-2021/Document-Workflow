@@ -9,10 +9,6 @@
  <img alt="MongoDB" src="https://img.shields.io/badge/MongoDB-47A248?logo=MongoDB&logoColor=white&style=for-the-badge" />
  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?logo=TypeScript&logoColor=white&style=for-the-badge" />
 </p>
-<p align="center">
- ![GitHub Contributors Image](https://contrib.rocks/image?repo=COS301-SE-2021/Document-Workflow)
- </p>
-
 
 ## Project Description 
 ### Due to the COVID-19 pandemic, many companies have been forced to move their op-erations onto online platforms. In light of this, it is more important than ever for companies to have access to web-based solutions that facilitate the reviewing, approval and signing of documents to facilitate the workflow process. While some document signing solutions such as DocuSign and HelloSign exist, Document Workflow aims to provide further functionality that these solutions are missing in conjunction to being free for any and all prospective clients to use. 
@@ -25,7 +21,8 @@
 # Team Jar-gon
 ## Team Members
 
-**Team Members**                                                                |                                                                                  **Profiles**                                                                                  |                                     **Profile Description**                                     |
+**Team Members**        
+ ![GitHub Contributors Image](https://contrib.rocks/image?repo=COS301-SE-2021/Document-Workflow)|                                                                                  **Profiles**                                                                                  |                                     **Profile Description**                                     |
 | :-------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: |
 |<img src="Images/delarey.jpeg" width="100" height="150"><br/> Delaray Botha <br/> u14011639 |       [GitHub](https://github.com/delareytuks) <br/> [Profile Page](https://delareytuks.github.io) <br/> [LinkedIn](https://www.linkedin.com/in/delarey-botha-82886820b/) <br/> | Full-time Backend debugger, part-time regretter of early design decisions |
 |<img src="Images/Brent.jpg" width="150" height="150" style="border-radius:30%;"> <br/> Brenton Stroberg <br/> u17015741 | [GitHub](https://github.com/u17015741) <br/> [Profile Page](https://u17015741.github.io) <br/> [LinkedIn](https://www.linkedin.com/in/brenton-stroberg-a15219172/) <br/> | Web developer, who enjoys the challenges of developing new software. Has more dogs than he has bugs in his code.<br>|
