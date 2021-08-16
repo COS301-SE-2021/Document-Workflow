@@ -11,7 +11,7 @@ import { Credentials, NativeBiometric } from 'capacitor-native-biometric';
 //popover
 
 import { ActivatedRoute, Router } from '@angular/router';
-import { match } from './../../Services/match.validator';
+import { match } from '../../Services/Validators/match.validator';
 
 //popover
 import { ModalController, PopoverController } from '@ionic/angular';

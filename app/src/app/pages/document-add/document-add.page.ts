@@ -13,6 +13,7 @@ import {
   FormGroup,
   Validators,
   AbstractControl,
+  AbstractControlOptions,
 } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
@@ -27,6 +28,8 @@ import { DocumentActionAreaComponent } from 'src/app/components/document-action-
 import { User, UserAPIService } from 'src/app/Services/User/user-api.service';
 import * as Cookies from 'js-cookie';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
+import { verifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
+import { validateLocaleAndSetLanguage } from 'typescript';
 
 @Component({
   selector: 'app-document-add',
@@ -95,6 +98,10 @@ export class DocumentAddPage implements OnInit {
       this.sizeMe = true;
     }
 
+    const formOptions: AbstractControlOptions = {
+      validators: verifyEmail('user', this.userApiService),
+    };
+
     this.next = false;
     this.rotated = 0;
     this.setZoom = 'false';
@@ -120,10 +127,11 @@ export class DocumentAddPage implements OnInit {
               user: new FormControl('', [
                 Validators.email,
                 Validators.required,
+                Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")
               ]),
               permission: new FormControl('', [Validators.required]),
               accepted: new FormControl('false', [Validators.required]),
-            }),
+            }, formOptions),
           ]),
         }),
       ]),
@@ -170,11 +178,14 @@ export class DocumentAddPage implements OnInit {
   }
 
   createNewUser(): FormGroup {
+    const formOptions: AbstractControlOptions = {
+      validators: verifyEmail('user', this.userApiService),
+    };
     return this.fb.group({
-      user: new FormControl('', [Validators.email, Validators.required]),
+      user: new FormControl('', [Validators.email, Validators.required, Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")]),
       permission: new FormControl('', [Validators.required]),
       accepted: new FormControl('false', [Validators.required]),
-    });
+    }, formOptions);
   }
 
   removeUser(control: FormArray, i: number, j: number) {
@@ -198,15 +209,22 @@ export class DocumentAddPage implements OnInit {
   }
 
   createPhase(): FormGroup {
+    const formOptions: AbstractControlOptions = {
+      validators: verifyEmail('user', this.userApiService),
+    };
     return this.fb.group({
       description: new FormControl('', Validators.required),
       annotations: new FormControl('', [Validators.required]),
       users: this.fb.array([
         this.fb.group({
-          user: new FormControl('', [Validators.email, Validators.required]),
+          user: new FormControl('', [
+            Validators.email,
+            Validators.required,
+            , Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")
+          ]),
           permission: new FormControl('', [Validators.required]),
           accepted: new FormControl('false', [Validators.required]),
-        }),
+        } , formOptions),
       ]),
     });
   }

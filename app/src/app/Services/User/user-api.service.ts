@@ -126,6 +126,11 @@ export class UserAPIService {
     });
   }
 
+  async verifyEmail(email: string): Promise<boolean>{
+    console.log(email);
+    return false;
+  }
+
   async getUserDetails(callback) {
     const formData = new FormData();
     //const token = localStorage.getItem('token');
