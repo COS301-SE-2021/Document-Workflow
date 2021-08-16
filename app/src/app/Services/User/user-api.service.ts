@@ -128,7 +128,8 @@ export class UserAPIService {
 
   async verifyEmail(email: string): Promise<boolean>{
     console.log(email);
-    return false;
+//todo help me here XD, ill wake upo early
+    return true;
   }
 
   async getUserDetails(callback) {
