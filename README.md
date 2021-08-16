@@ -17,7 +17,7 @@
 
 ## Code Quality
 <!-- ![Repository's Stats](https://github-readme-stats.vercel.app/api?username=u17112592&show_icons=true) -->
-![GitHub Contributors Image](https://contrib.rocks/image?repo=u17112592/COS301-SE-2021/Document-Workflow)
+![GitHub Contributors Image](https://contrib.rocks/image?repo=COS301-SE-2021/Document-Workflow)
 
 # Team Jar-gon
 ## Team Members
