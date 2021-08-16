@@ -69,14 +69,15 @@
                   </ion-col>
                   <ion-col>
                     <ion-title>Add Users:</ion-title>
-                    <ion-row *ngFor="let user of phase.controls['users'].controls; let j = index" style="border: 3px solid #002060; margin-bottom:5px; border-radius: 15px;">
-                      <ion-col sizeXs='11'>
+                    <ion-row *ngFor="let user of phase.controls['users'].controls; let j = index" style="border: 3
+                    px solid #002060; margin-bottom:5px; border-radius: 15px;">
+                      <ion-col sizeXs='10'>
                         <ion-item>
                           <ion-label position="floating">User email</ion-label>
                           <ion-input type="email" [formControl]="user.controls.user"></ion-input>
                         </ion-item>
                       </ion-col>
-                      <ion-col sizeXs='1'>
+                      <ion-col sizeXs='2'>
                         <ion-icon name="close-circle-outline" size="large"
                           (click)="removeUser(phase.controls['users'],i, j)">
                         </ion-icon>
@@ -84,7 +85,7 @@
                       <ion-col sizeXs='12'>
                         <ion-item>
                           <ion-label>Permission</ion-label>
-                          <ion-select placeholder="Please select one" [formControl]="user.controls.permission">
+                          <ion-select placeholder="Click here" [formControl]="user.controls.permission">
                             <ion-select-option value="signer">Signer
                             </ion-select-option>
                             <ion-select-option value="viewer">Viewer</ion-select-option>

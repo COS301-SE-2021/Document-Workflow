@@ -386,13 +386,11 @@ export class WorkflowEditPage implements OnInit {
   }
 
   submit() {
-    // console.log(this.workflowForm);
-    // this.workflowServices.createWorkflow(
-    //   this.workflowForm,
-    //   '',
-    //   this.file,
-    //   (response) => {}
-    // );
+    this.userApiService.displayPopOverWithButtons('Edited document','Are you happy with your changes?',(response)=>{
+      if(response.confirm){
+
+      }
+    })
   }
 
   viewPhase(i: number) {

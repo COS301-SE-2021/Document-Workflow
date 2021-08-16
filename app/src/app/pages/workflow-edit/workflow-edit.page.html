@@ -70,24 +70,14 @@
                   </ion-icon>
                 </ion-col>
                 <ion-col sizeXs='12'>
-                  <ion-radio-group [formControl]="user.controls.permission">
-                    <ion-row>
-                      <ion-col sizeXs='6'>
-                        <ion-item (click)="changePermission(user.controls.permission, 'sign')" lines="none">
-                          <ion-label position="fixed">Signer</ion-label>
-                          <ion-radio value="sign" slot="end"></ion-radio>
-                        </ion-item>
-                      </ion-col>
-                      <ion-col sizeXs='6'>
-                        <ion-item (click)="changePermission(user.controls.permission, 'view')" lines="none">
-                          <ion-label position="fixed">View </ion-label>
-                          <ion-radio value="view" slot="end"></ion-radio>
-                        </ion-item>
-                      </ion-col>
-                    </ion-row>
-                    <ion-row>
-                    </ion-row>
-                  </ion-radio-group>
+                  <ion-item>
+                    <ion-label>Permission:</ion-label>
+                    <ion-select placeholder="{{user.controls.permission.value}}"  [formControl]="user.controls.permission">
+                      <ion-select-option value="signer">Signer
+                      </ion-select-option>
+                      <ion-select-option value="viewer">Viewer</ion-select-option>
+                    </ion-select>
+                  </ion-item>
                 </ion-col>
               </ion-row>
               <ion-row>
@@ -106,7 +96,7 @@
               <ion-button style="width: 99%;" (click)="addPhase()">Add a new Phase</ion-button>
             </ion-col>
             <ion-col sizeXs='12' sizeSm='6'>
-              <ion-button type="submit"  (click)="saveChangesToWorkflow()" style="width: 99%;">Save changes</ion-button>
+              <ion-button type="submit"  (click)="saveChangesToWorkflow()" style="width: 99%;" [disabled]="!workflowForm">Save changes</ion-button>
             </ion-col>
           </ion-row>
         </ion-grid>
