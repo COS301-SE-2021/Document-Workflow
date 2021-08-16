@@ -9,6 +9,9 @@
  <img alt="MongoDB" src="https://img.shields.io/badge/MongoDB-47A248?logo=MongoDB&logoColor=white&style=for-the-badge" />
  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?logo=TypeScript&logoColor=white&style=for-the-badge" />
 </p>
+<p align="center">
+ ![GitHub Contributors Image](https://contrib.rocks/image?repo=COS301-SE-2021/Document-Workflow)
+ </p>
 
 
 ## Project Description 
@@ -17,7 +20,7 @@
 
 ## Code Quality
 <!-- ![Repository's Stats](https://github-readme-stats.vercel.app/api?username=u17112592&show_icons=true) -->
-![GitHub Contributors Image](https://contrib.rocks/image?repo=COS301-SE-2021/Document-Workflow)
+
 
 # Team Jar-gon
 ## Team Members
