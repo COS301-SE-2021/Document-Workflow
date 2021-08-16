@@ -16,6 +16,8 @@
 
 ## Code Quality
 <!-- ![Repository's Stats](https://github-readme-stats.vercel.app/api?username=u17112592&show_icons=true) -->
+[![GitHub issues](https://img.shields.io/github/issues/COS301-SE-2021/Document-Workflow)](https://github.com/COS301-SE-2021/Document-Workflow/issues)
+![GitHub Pull Requests](https://img.shields.io/github/issues-pr/COS301-SE-2021/Document-Workflow)
 
 
 # Team Jar-gon
