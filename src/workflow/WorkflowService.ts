@@ -183,13 +183,12 @@ export default class WorkflowService{
 
             console.log("Workflow ID removed from all participants");
             await this.workflowRepository.deleteWorkflow(workflowId);
+            return {status: "success", data:{}, message:""};
         }
         catch(e){
             console.log(e);
             throw e;
         }
-
-        return {status: "success", data:{}, message:""};
     }
 
     async removeOwnedWorkFlowId(email, workflowId){
