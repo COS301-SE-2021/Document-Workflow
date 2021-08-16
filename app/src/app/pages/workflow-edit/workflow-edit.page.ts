@@ -234,6 +234,19 @@ export class WorkflowEditPage implements OnInit {
     }
   }
 
+  async saveChangesToWorkflow() {
+    console.log(this.workflowForm);
+
+    const phases = this.workflowForm.controls.phases.value;
+    const name = this.workflowForm.controls.workflowName.value;
+    const description = this.workflowForm.controls.workflowDescription.value;
+    console.log(this.workflowId);
+
+    await this.workflowServices.editWorkflow(name, description, phases, this.workflowId, (response) => {
+        console.log(response);
+    });
+  }
+
   changeController() {
     this.controller = !this.controller;
   }

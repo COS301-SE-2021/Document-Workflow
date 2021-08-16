@@ -186,6 +186,54 @@ export default class WorkflowController {
         }
     }
 
+    private async editWorkflow(req) {
+        if(!req.body.name || !req.body.description
+             || !req.body.phases || !req.body.workflowId) { //owner ID will be added after the auth is used!!! dont check for it here
+            throw new RequestError("There was something wrong with the request");
+        }
+
+        //Check each phase for proper variables
+        const phases = JSON.parse(req.body.phases);
+        phases.forEach(phase => {
+            if(!phase.annotations || !phase.description || !phase.users){
+                throw new RequestError("There was something wrong with the request");
+            }
+        })
+
+        //parse request, setup WorkflowProps object to send through
+        const workflow: WorkflowProps = {
+            _id: undefined,
+            __v: undefined,
+            name: req.body.name,
+            ownerId: req.user._id,
+            ownerEmail: req.user.email,
+            documentId: undefined,
+            description: req.body.description,
+            phases: undefined
+        }
+
+        const convertedPhases = [];
+
+        phases.forEach( phase => {
+            console.log("THIS PHASE HAS THE FOLLOWING USERS OBJECT");
+            console.log(phase.users);
+            convertedPhases.push(new Phase({
+                users: JSON.stringify(phase.users), //The input users array is actually an array with a single JSON string
+                description: phase.description,
+                annotations: phase.annotations
+            }));
+        });
+
+        try{
+            return await this.workflowService.editWorkflow(workflow, convertedPhases, req.user.email, req.body.workflowId);
+        }
+        catch(err){
+
+        }
+    }
+
+    //----------------------------------------------------------------------------------
+
     routes() {
         this.router.post("",  this.authenticationService.Authenticate ,async (req, res) => { //TODO: re-enable authentication
             try {
@@ -253,6 +301,14 @@ export default class WorkflowController {
             }
         });
 
+        this.router.post("/edit",this.auth, async(req,res)=>{
+            try {
+                res.status(200).json(await this.editWorkflow(req));
+            } catch(err){
+                await handleErrors(err,res);
+            }
+        });
+
 
         this.router.post("/delete",this.auth, async(req,res)=>{
             try {
@@ -263,6 +319,8 @@ export default class WorkflowController {
         });
         return this.router;
     }
+
+
 }
 
 /*

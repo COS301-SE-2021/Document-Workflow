@@ -418,4 +418,23 @@ export default class WorkflowService{
             throw new ServerError("Could not retrieve workflow");
         }
     }
+
+    async editWorkflow(workflow: WorkflowProps, convertedPhases, requestingUser, workflowId) {
+        console.log("Attempting to update a workflow");
+
+        try{
+
+            //1) Retrieve the workflow that we are going to be editing based on the input workflowId
+            const workflowOriginal = await this.workflowRepository.getWorkflow(workflowId);
+            //2) Check that the requesting user has the correct permissions to edit this workflow
+            if(! workflowOriginal.ownerEmail === requestingUser)
+                return {status: "error", data: {}, message: "Only the workflow owner can edit the workflow"};
+
+            return {status: "success", data: {}, message: ''};
+        }
+        catch(err){
+            console.log(err);
+            throw err;
+        }
+    }
 }
