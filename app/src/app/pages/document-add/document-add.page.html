@@ -85,10 +85,11 @@
                       <ion-col sizeXs='12'>
                         <ion-item>
                           <ion-label>Permission</ion-label>
+                          <!--- TODO: use enums instead of hardcoded values here for sign and view -->
                           <ion-select placeholder="Click here" [formControl]="user.controls.permission" >
-                            <ion-select-option value="signer" (click)="changePermission(user.controls.permission, 'sign')">Signer
+                            <ion-select-option value="sign" (click)="changePermission(user.controls.permission, 'sign')">Signer
                             </ion-select-option>
-                            <ion-select-option value="viewer" (click)="changePermission(user.controls.permission, 'view')">Viewer</ion-select-option>
+                            <ion-select-option value="view" (click)="changePermission(user.controls.permission, 'view')">Viewer</ion-select-option>
                           </ion-select>
                         </ion-item>
                       </ion-col>

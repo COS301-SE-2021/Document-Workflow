@@ -192,12 +192,15 @@ export class WorkflowPage implements OnInit {
   }
 
   revertPhase(id: string) {
+
     this.userApiService.displayPopOverWithButtons(
       'Revert the phase',
       'Are you sure you want to revert the phase?',
       (response) => {
-        if (response.confirm === true) {
-          //todo tim stuff
+        if (response.data.confirm === true) {
+          this.workFlowService.revertPhase(id, (response2) =>{
+            console.log(response2);
+          });
         }
       }
     );
