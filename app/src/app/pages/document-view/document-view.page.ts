@@ -161,19 +161,27 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
    }
 
   toggleAnnotations(annotationManager){
-
+    console.log("TToggling annotations");
     this.showAnnotations = !this.showAnnotations;
     const annotations = annotationManager.getAnnotationsList();
     if(this.showAnnotations){
       //annotManager.showAnnotations(annotations); //use if you wihs to hide the associated comments that go with an annotation as well as the annotation.
       annotations.forEach(annot =>{
-        annot.Hidden = false;
+        this.annotationSubjects.forEach(a =>{
+          if(a === annot.Subject)
+            annot.Hidden = false;
+        });
+
       });
     }
     else{
       //annotManager.hideAnnotations(annotations);
       annotations.forEach(annot =>{
-        annot.Hidden = true;
+        this.annotationSubjects.forEach(a =>{
+          if(a === annot.Subject)
+            annot.Hidden = true;
+        });
+
       });
     }
     annotationManager.drawAnnotationsFromList(annotations);

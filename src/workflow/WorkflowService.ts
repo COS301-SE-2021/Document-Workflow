@@ -298,6 +298,9 @@ export default class WorkflowService{
                 }
                 else{
                     workflow.currentPhase = workflow.currentPhase + 1;
+                    let newPhase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
+                    newPhase.status = PhaseStatus.INPROGRESS;
+                    await this.phaseService.updatePhase(newPhase);
                     //Create the new folder in the S3 bucket for the next phases
                     await this.documentService.updateDocument(document, workflowId, workflow.currentPhase);
                     console.log("NEED TO CREATE THE FILE FOR THE NEXT FACE!!!!");
@@ -442,7 +445,7 @@ export default class WorkflowService{
         console.log("Attempting to revert the phase of a workflow");
         try{
 
-            const workflow = await this.workflowRepository.getWorkflow(workflowId);
+            let workflow = await this.workflowRepository.getWorkflow(workflowId);
             console.log(workflow);
 
             if(workflow.ownerEmail !== email){
@@ -460,25 +463,27 @@ export default class WorkflowService{
             if(workflow.currentPhase === 0){
                 let currentPhase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
                 console.log("Setting currentPhase acceptances to false");
-                await this.setPhaseAcceptancesToFalseAndSave(currentPhase);
+                await this.resetPhaseAndSave(currentPhase, PhaseStatus.INPROGRESS);
                 await this.documentService.resetFirstPhaseDocument(workflowId, String(workflow.documentId));
             }
             else{
                 //reset the acceptance values for members of the current phase and new phase
                 let currentPhase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
                 console.log("Setting currentPhase acceptances to false");
-                await this.setPhaseAcceptancesToFalseAndSave(currentPhase);
+                await this.resetPhaseAndSave(currentPhase, PhaseStatus.PENDING);
                 console.log("Setting new phase acceptances to false");
                 let newPhase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase -1]);
-                await this.setPhaseAcceptancesToFalseAndSave(newPhase);
+                await this.resetPhaseAndSave(newPhase, PhaseStatus.INPROGRESS);
 
-                workflow.currentPhase --; //set the phaseId
-            }
-            if(workflow.status === WorkflowStatus.COMPLETED) {
-                workflow.status = WorkflowStatus.INPROGRESS;
-                await this.workflowRepository.updateWorkflow(workflow);
+                workflow.currentPhase = workflow.currentPhase - 1; //set the currentPhase to be one prior
             }
 
+            workflow.status = WorkflowStatus.INPROGRESS;
+            console.log('Updating the workflow values')
+            await this.workflowRepository.updateWorkflow(workflow); //the update workflow function does not appear to work
+            console.log('Workflow in database looks as follows: ');
+            console.log(await this.workflowRepository.getWorkflow(workflow._id));
+            //await this.workflowRepository.saveWorkflow(workflow); //But thankfully the saveWorkflow function fills the correct role
 
             return {status:"success", data: {}, message: ""}
         }
@@ -489,14 +494,14 @@ export default class WorkflowService{
     }
 
 
-    async setPhaseAcceptancesToFalseAndSave(phase) {
+    async resetPhaseAndSave(phase, status) {
 
         let phaseUsers = JSON.parse(phase.users);
         for (let i = 0; i < phaseUsers.length; ++i) {
             console.log(phaseUsers[i]);
             phaseUsers[i].accepted = 'false';
         }
-
+        phase.status = status;
         phase.users = JSON.stringify(phaseUsers);
         await this.phaseService.updatePhase(phase);
     }

@@ -13,7 +13,7 @@ export default class WorkflowRepository{
     async updateWorkflow(workflow: WorkflowProps): Promise<Boolean>{
         console.log("Updating a workflow to have new values: ");
         console.log(workflow);
-        Workflow.findByIdAndUpdate(workflow._id, {name: workflow.name,
+        await Workflow.updateOne({_id: workflow._id}, {name: workflow.name,
             ownerId: workflow.ownerId,
             ownerEmail: workflow.ownerEmail,
             documentId: workflow.documentId,
