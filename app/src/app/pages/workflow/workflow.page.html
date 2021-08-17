@@ -53,11 +53,11 @@
               </ion-fab-button>
               <ion-fab-list side="down">
                 <ion-fab-button (click)="viewWorkFlow(document._id, document.name)"
-                  *ngIf='viewDocumentPermission[p] === true'>
+                  *ngIf='documentPermission[p] === 2'>
                   <ion-icon name="arrow-redo-outline" style="font-size: 22px; color:white"></ion-icon>
                 </ion-fab-button>
                 <ion-fab-button (click)="editDocument(document._id, document.name)"
-                  *ngIf='editDocumentPermission[p] === true'>
+                  *ngIf='documentPermission[p] === 1'>
                   <ion-icon name="construct-outline" style="font-size: 22px;color:white"></ion-icon>
                 </ion-fab-button>
                 <ion-fab-button (click)="editWorkflow(document._id)" *ngIf="document.ownerEmail === userEmail">

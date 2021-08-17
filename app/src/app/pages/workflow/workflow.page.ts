@@ -30,8 +30,7 @@ import * as Cookies from 'js-cookie';
 export class WorkflowPage implements OnInit {
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   documents: workflowFormat[] = [];
-  editDocumentPermission: boolean[] = [];
-  viewDocumentPermission: boolean[] = [];
+  documentPermission: number[] = [];
   userEmail: string;
   user;
   reOrder: boolean;
@@ -133,31 +132,24 @@ export class WorkflowPage implements OnInit {
 
   //TODO: clean up this function, the logic behind it isn't entirely clear
   sortPermission() {
+    let i: number =0;
     for (const document of this.documents) {
-      if (document.phases[document.currentPhase].status !== 'Completed') { //TODO: use enum here
-        console.log(document.phases);
-        for (const user of document.phases[document.currentPhase].users) {
+      this.documentPermission[i] =0;
+      if (document.phases[document.currentPhase].status !== 'Completed') {
+        for (let user of document.phases[document.currentPhase].users) {
           if (user.email === this.userEmail) {
-            console.log("I am in this phase");
-            if (user.permission === 'sign') { //TODO: use enum here
-              this.editDocumentPermission.push(true);
-              this.viewDocumentPermission.push(false);
-            } else {
-              console.log('I am a viewer now a signer of workflow with name: ', document.name);
-              this.editDocumentPermission.push(false);
-              this.viewDocumentPermission.push(true);
+            if(user.permission === "view"){
+              this.documentPermission[i] = 2;
+            }else{
+              this.documentPermission[i] = 1;
             }
-          } else {
-            this.editDocumentPermission.push(false);
-            this.viewDocumentPermission.push(false);
+
           }
         }
-      } else {
-        this.editDocumentPermission.push(false);
-        this.viewDocumentPermission.push(false);
       }
+      i++;
     }
-    console.log(this.editDocumentPermission);
+    console.warn(this.documentPermission)
   }
 
   //todo move this to the spec.ts of workflow
@@ -196,13 +188,12 @@ export class WorkflowPage implements OnInit {
   }
 
   revertPhase(id: string) {
-
     this.userApiService.displayPopOverWithButtons(
       'Revert the phase',
       'Are you sure you want to revert the phase?',
       (response) => {
         if (response.data.confirm === true) {
-          this.workFlowService.revertPhase(id, (response2) =>{
+          this.workFlowService.revertPhase(id, (response2) => {
             console.log(response2);
           });
         }
@@ -302,9 +293,9 @@ export class WorkflowPage implements OnInit {
   async debug(str: any) {
     console.log(str);
   }
-  showAll(){
+  showAll() {
     for (let document of this.documents) {
-      document.showWorkflow= true;
+      document.showWorkflow = true;
     }
   }
 }
