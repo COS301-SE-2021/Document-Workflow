@@ -335,6 +335,14 @@ export default class WorkflowService{
         return true;
     }
 
+    /**
+     * h function is user to retrieve the data and metadata of a document for a workflow for a specific phase.
+     * While there will exists a copy of the document for each phase of the workflow, the one that is fetched
+     * by this function is determined by the currentPhase member/feature of a workflow. Doing this prevents
+     * users from potentially inputting their own phaseNumber into the request and breaking the server.
+     * @param workflowId
+     * @param userEmail
+     */
     async retrieveDocument(workflowId, userEmail) {
         console.log('Retrieving a document for viewing');
         try{
@@ -359,6 +367,14 @@ export default class WorkflowService{
         }
     }
 
+    /**
+     * This function checks that a given user (email) is actually a member of the given workflow
+     * by fetching each phase of the workflow and checking that the user is present in at least one phase
+     * of the workflow.
+     * @param workflow
+     * @param email
+     * //TODO: if this function can be made more efficient it would help a lot of other functions
+     */
     async isUserMemberOfWorkflow(workflow, email):Promise<boolean>{
 
         console.log('Checking if user: ', email, 'is a member of workflow ', workflow._id);
@@ -380,7 +396,8 @@ export default class WorkflowService{
 
     /**
      * This function will be used to update the annotations of the current phase of the workflow to allow users
-     * to comment on the phase regardless of whether or not they are viewers or signers.
+     * to comment on the phase regardless of whether or not they are viewers or signers. In essence, it allows
+     * us to keep track of a document's history.
      * @param userEmail
      * @param workflowId
      * @param annotations
@@ -406,7 +423,14 @@ export default class WorkflowService{
         }
     }
 
-    //This function is not efficient
+    /**
+     * This function is used to retrieve a specific workflow and its data (excluding the file data)
+     * for a corresponding workflowId. The input email is that of the requesting user, and is used to
+     * verify that the requesting user is part of the workflow and may actually view the details of this workflow.
+     * @param workflowId
+     * @param email
+     * //TODO: look at making this function more efficient
+     */
     async retrieveWorkflow(workflowId, email) {
 
         try {
@@ -422,6 +446,13 @@ export default class WorkflowService{
         }
     }
 
+    /**
+     *
+     * @param workflow
+     * @param convertedPhases
+     * @param requestingUser
+     * @param workflowId
+     */
     async editWorkflow(workflow: WorkflowProps, convertedPhases, requestingUser, workflowId) {
         console.log("Attempting to update a workflow");
 
@@ -441,6 +472,15 @@ export default class WorkflowService{
         }
     }
 
+    /**
+     * The aim of this function is as follows: an owner of a workflow is unhappy with the current edits done
+     * to a document and wants them to be redone. To do this, the reject the current phase and move the workflow
+     * back to a previous phase. To do this, the necessary phases must be updated, documents updated in the
+     * file server and all user's acceptance status's reset. This function handles the editing of the workflow
+     * data, phase data and documents to achieve this effect.
+     * @param workflowId
+     * @param email
+     */
     async revertWorkflowPhase(workflowId, email) {
         console.log("Attempting to revert the phase of a workflow");
         try{
@@ -463,17 +503,17 @@ export default class WorkflowService{
             if(workflow.currentPhase === 0){
                 let currentPhase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
                 console.log("Setting currentPhase acceptances to false");
-                await this.resetPhaseAndSave(currentPhase, PhaseStatus.INPROGRESS);
+                await this.phaseService.resetPhaseAndSave(currentPhase, PhaseStatus.INPROGRESS);
                 await this.documentService.resetFirstPhaseDocument(workflowId, String(workflow.documentId));
             }
             else{
                 //reset the acceptance values for members of the current phase and new phase
                 let currentPhase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
                 console.log("Setting currentPhase acceptances to false");
-                await this.resetPhaseAndSave(currentPhase, PhaseStatus.PENDING);
+                await this.phaseService.resetPhaseAndSave(currentPhase, PhaseStatus.PENDING);
                 console.log("Setting new phase acceptances to false");
                 let newPhase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase -1]);
-                await this.resetPhaseAndSave(newPhase, PhaseStatus.INPROGRESS);
+                await this.phaseService.resetPhaseAndSave(newPhase, PhaseStatus.INPROGRESS);
 
                 workflow.currentPhase = workflow.currentPhase - 1; //set the currentPhase to be one prior
             }
@@ -494,15 +534,4 @@ export default class WorkflowService{
     }
 
 
-    async resetPhaseAndSave(phase, status) {
-
-        let phaseUsers = JSON.parse(phase.users);
-        for (let i = 0; i < phaseUsers.length; ++i) {
-            console.log(phaseUsers[i]);
-            phaseUsers[i].accepted = 'false';
-        }
-        phase.status = status;
-        phase.users = JSON.stringify(phaseUsers);
-        await this.phaseService.updatePhase(phase);
-    }
 }
