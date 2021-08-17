@@ -13,6 +13,7 @@ export interface workflowFormat {
   name: string;
   ownerEmail: string;
   ownerId: string;
+  status?: string;
   _v: number;
   _id: string;
   phases: phaseFormat[];
@@ -258,7 +259,7 @@ export class WorkFlowService {
         }
       );
   }
-  //todo ugly maybe but itsworks and will make the frontend processing so much easier
+
   formatWorkflows(documents: any): workflowFormat[] {
     let temp: workflowFormat[] = [];
     for (let document of documents) {
@@ -307,6 +308,7 @@ export class WorkFlowService {
         _v: document['_v'],
         _id: document['_id'],
         name: document['name'],
+        status: document['status'],
         phases: tempPhase,
       };
       temp.push(tmpWorkflow);
@@ -376,7 +378,6 @@ export class WorkFlowService {
   }
 
   displayLoading(){
-    console.warn('here')
     const loading = this.loadingCtrl.create({
       message: 'Please wait...',
     }).then((response)=>{
@@ -385,7 +386,6 @@ export class WorkFlowService {
   }
 
   dismissLoading(){
-    console.warn('here');
     this.loadingCtrl.dismiss().then((response) => {
       console.log('Loader closed!', response);
     }).catch((err) => {

@@ -83,13 +83,9 @@ export class WorkflowPage implements OnInit {
 
   async getUser() {
     await this.userApiService.getUserDetails(async (response) => {
-      console.log(response);
       if (response) {
         this.user = response.data;
-        console.log('Our user looks like: ');
-        console.log(this.user);
         this.userEmail = this.user.email;
-        console.log('Finished fetching the user');
         await this.retrieveWorkflows();
       } else {
         await this.userApiService.displayPopOver('Error', 'Cannot find user');
@@ -117,7 +113,6 @@ export class WorkflowPage implements OnInit {
           }
         }
         //for the searching and sorting so we wont waste users data.
-        console.log(this.documents);
         this.sortPermission();
       } else {
         alert('Something went wrong');
@@ -128,19 +123,29 @@ export class WorkflowPage implements OnInit {
 
   //TODO: clean up this function, the logic behind it isn't entirely clear
   sortPermission() {
+    console.log('here')
     let i: number =0;
     for (const document of this.documents) {
+      console.log(document.status)
       this.documentPermission[i] =0;
-      if (document.phases[document.currentPhase].status !== 'Completed') {
-        for (let user of document.phases[document.currentPhase].users) {
-          if (user.email === this.userEmail) {
-            if(user.permission === "view"){
-              this.documentPermission[i] = 2;
-            }else{
-              this.documentPermission[i] = 1;
+      if(document.status !== 'Completed'){
+        if (document.phases[document.currentPhase].status !== 'Completed') {
+          for (let user of document.phases[document.currentPhase].users) {
+            if (user.email === this.userEmail) {
+              console.warn(user)
+              if(user.accepted === false){
+                console.warn(user)
+                if(user.permission === "view"){
+                  this.documentPermission[i] = 2;
+                }else{
+                  this.documentPermission[i] = 1;
+                }
+              }
             }
           }
         }
+      }else{
+        this.documentPermission[i] = 2;
       }
       i++;
     }
