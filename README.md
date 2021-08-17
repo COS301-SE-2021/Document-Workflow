@@ -51,7 +51,10 @@
 ## Software Requirements Specification
 ### [Software Requirement Specifications](https://www.overleaf.com/read/wdkdstnqdrbq)
 ### [Architectural Requirements Document](https://www.overleaf.com/read/ysxrgzkpvwwy)
-### Previous Versions
+### [Installation Guide](https://www.overleaf.com/read/xqggmbwpgxjq)
+### [User Manual ]
+### [Coding Standards](https://www.overleaf.com/read/pqpbcypgydjh)
+<!--- ### Previous Versions --->
 
 ## Technology Frameworks
 ### Client Side: Ionic and Angular
