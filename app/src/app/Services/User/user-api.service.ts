@@ -127,8 +127,33 @@ export class UserAPIService {
   }
 
   async verifyEmail(email: string): Promise<boolean>{
-    console.log(email);
-//todo help me here XD, ill wake upo early
+    const formData = new FormData();
+    //const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+
+    this.http
+      .post(UserAPIService.url + '/users/verifyEmailExistence', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          //TODO: change url
+
+          if (data) {
+            console.log(data);
+          }
+        },
+        async (error) => {
+          await this.displayPopOver(
+            'Error',
+            'The Document Workflow server could not be reached at this time'
+          );
+        }
+      );
+
     return true;
   }
 

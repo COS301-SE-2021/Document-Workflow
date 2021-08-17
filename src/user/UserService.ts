@@ -268,4 +268,8 @@ export default class UserService {
         }
 
     }
+
+    async verifyEmailExistence(email, requestingUserId) {
+        return Promise.resolve(undefined);
+    }
 }

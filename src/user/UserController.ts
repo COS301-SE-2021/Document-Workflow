@@ -3,7 +3,7 @@ import { injectable } from "tsyringe";
 import UserService from "./UserService";
 import { UserProps } from "./User";
 import sanitize from "../security/Sanitize";
-import {ServerError} from "../error/Error";
+import {RequestError, ServerError} from "../error/Error";
 import { handleErrors } from "../error/ErrorHandler";
 import Authenticator from "../security/Authenticate";
 
@@ -102,7 +102,18 @@ export default class UserController{
         catch(err){
             throw new ServerError(err.toString());
         }
+    }
 
+    private async verifyEmailExistence(req) {
+        if(!req.body.email)
+            throw new RequestError("Cannot verify existence of null email");
+
+        try{
+            return await this.userService.verifyEmailExistence(req.body.email, req.user._id);
+        }
+        catch(e){
+            throw e;
+        }
     }
 
     routes() {
@@ -208,6 +219,16 @@ export default class UserController{
             }
         });
 
+        this.router.post("/verifyEmailExistence", this.auth, async (req, res) => {
+            try {
+                return await this.verifyEmailExistence(req);
+            } catch(err){
+                res.status(200).json({status:"error", data: {}, message: ""});
+                await handleErrors(err,res);
+            }
+        });
+
         return this.router;
     }
+
 }
