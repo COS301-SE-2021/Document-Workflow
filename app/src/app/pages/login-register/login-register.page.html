@@ -24,11 +24,11 @@
               <form [formGroup]="loginForm" (ngSubmit)="login()">
                 <ion-item>
                   <ion-label position="stacked">Email Address:</ion-label>
-                  <ion-input inputmode="email" formControlName="loginEmail"></ion-input>
+                  <ion-input inputmode="email" formControlName="loginEmail" id="loginEmail"></ion-input>
                 </ion-item>
                 <ion-item>
                   <ion-label position="stacked">Password:</ion-label>
-                  <ion-input type="password" formControlName="loginPassword"></ion-input>
+                  <ion-input type="password" formControlName="loginPassword" id="loginPassword"></ion-input>
                 </ion-item>
                 <div style="text-align: center;">
                   <span>
@@ -39,7 +39,7 @@
                   <span>Register a new Account <a (click)="changeOver()">here</a></span>
                 </div>
                 <ion-button padding expand="block" color="primary" fill="outline" [disabled]="!loginForm.valid"
-                  type="submit">Login</ion-button>
+                  type="submit" id="login">Login</ion-button>
               </form>
             </ion-card-content>
 

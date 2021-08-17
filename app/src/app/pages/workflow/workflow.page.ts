@@ -235,6 +235,7 @@ export class WorkflowPage implements OnInit {
         userEmail: this.user.email,
       },
     ]);
+
   }
 
   fixOrder(event: CustomEvent<ItemReorderEventDetail>) {
@@ -270,8 +271,8 @@ export class WorkflowPage implements OnInit {
         document.showWorkflow = false;
       }
     }
-    console.log(this.documents);
   }
+
   reOrderWorkflows() {
     this.reOrder = !this.reOrder;
   }
@@ -285,7 +286,6 @@ export class WorkflowPage implements OnInit {
         document.showWorkflow = false;
       }
     }
-    console.log(this.documents);
   }
 
   sortByNeededActions() {
@@ -302,7 +302,6 @@ export class WorkflowPage implements OnInit {
         }
       }
     }
-    console.log(this.documents);
   }
 
   getByName(name: string) {
@@ -333,6 +332,7 @@ export class WorkflowPage implements OnInit {
       this.workFlowService.dismissLoading();
     }
   }
+
   showAll() {
     for (let document of this.documents) {
       document.showWorkflow = true;
