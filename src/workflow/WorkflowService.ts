@@ -125,7 +125,6 @@ export default class WorkflowService{
         await this.userService.updateUserWorkflows(user);
     }
 
-    //TODO: this function is strange and requires verification, also the way in which it returns data is strange
     async getWorkFlowById(id) {
 
         const workflow = await this.workflowRepository.getWorkflow(id);
@@ -256,8 +255,8 @@ export default class WorkflowService{
         }
     }
 
-    //TODO: finish implementing
     async updatePhase(user, workflowId, accept, document) {//NOTE: document will be null in the event that a viewer is updating the phase
+
         //first, retrieve the workflow based on the workflow id
         console.log("Updating a phase of a document");
         try{
@@ -336,7 +335,7 @@ export default class WorkflowService{
     }
 
     /**
-     * h function is user to retrieve the data and metadata of a document for a workflow for a specific phase.
+     * This function is used to retrieve the data and metadata of a document for a workflow for a specific phase.
      * While there will exists a copy of the document for each phase of the workflow, the one that is fetched
      * by this function is determined by the currentPhase member/feature of a workflow. Doing this prevents
      * users from potentially inputting their own phaseNumber into the request and breaking the server.
@@ -464,12 +463,56 @@ export default class WorkflowService{
             if(! workflowOriginal.ownerEmail === requestingUser)
                 return {status: "error", data: {}, message: "Only the workflow owner can edit the workflow"};
 
+            //3) Only phases up to and including the current phase can be edited. We extract these ids from the workflow.phases
+            const preservePhasesIds = workflow.phases.slice(0, workflow.currentPhase +1); //+1 since slice does not include the end index
+            //4) check that the user is not attempting to edit any of the phases they may not edit
+            if(!this.allPhasesCanBeEdited(convertedPhases, preservePhasesIds)){
+                return {status:"error", data:{}, message:""};
+            }
+
+            //5) For each phase, either create, edit, or delete.
+            let addPhaseIds = [];
+            for(let i=0; i<convertedPhases.length; ++i){
+                if(convertedPhases[i].status === "Edit"){
+                    addPhaseIds.push(convertedPhases[i]._id);
+
+                }
+                else if(convertedPhases[i].status === "Create"){
+
+                }
+                else if(convertedPhases[i].status === "Delete"){
+
+                }
+                else{
+                    //TODO: throw error
+                }
+
+            }
+
             return {status: "success", data: {}, message: ''};
         }
         catch(err){
             console.log(err);
             throw err;
         }
+    }
+
+    /**
+     * This function checks whether any of the phases to be edited occur in the array of phase ids that may
+     * noot be edited.
+     * @param phases
+     * @param preservePhases
+     */
+    allPhasesCanBeEdited(phases, preservePhasesIds){
+
+        for(let i=0; i<preservePhasesIds.length; ++i){
+            for(let k=0; k<phases.length; ++k){
+                if(preservePhasesIds[i]=== phases[k]._id)
+                    return false;
+            }
+        }
+
+        return true;
     }
 
     /**

@@ -2,7 +2,7 @@ import { createSchema, ExtractDoc, ExtractProps, Type, typedModel } from "ts-mon
 import { userSchema } from "../user/User";
 
 //export const ActionAreaType = ["Date","Signature", "initial"];
-export const PhaseStatus = Object.freeze({PENDING:"Pending", INPROGRESS:"InProgress", REJECTED:"Rejected", COMPLETED:"Completed"});
+export const PhaseStatus = Object.freeze({PENDING:"Pending", INPROGRESS:"InProgress", REJECTED:"Rejected", COMPLETED:"Completed", CREATE: "Create", DELETE: "Delete", EDIT:"Edit"});
 
 /*const actionAreaSchema = createSchema({ //sort of scrapped
     coordinates: Type.array({maxlength: 2, minlength: 2, required: true}).of(Type.number),
