@@ -22,12 +22,14 @@ import {
 import { ConfirmDeleteWorkflowComponent } from 'src/app/components/confirm-delete-workflow/confirm-delete-workflow.component';
 import { ItemReorderEventDetail } from '@ionic/core';
 import * as Cookies from 'js-cookie';
+import { FormBuilder, FormGroup } from '@angular/forms';
 @Component({
   selector: 'app-workflow',
   templateUrl: './workflow.page.html',
   styleUrls: ['./workflow.page.scss'],
 })
 export class WorkflowPage implements OnInit {
+  sortForm: FormGroup;
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   documents: workflowFormat[] = [];
   documentPermission: number[] = [];
@@ -40,15 +42,17 @@ export class WorkflowPage implements OnInit {
   workflows = [];
 
   constructor(
-    private modals: ModalController,
     private plat: Platform,
     private router: Router,
     private userApiService: UserAPIService,
     private workFlowService: WorkFlowService,
-    private loadctrl: LoadingController
+    private fb: FormBuilder
   ) {}
 
   async ngOnInit() {
+    this.sortForm = this.fb.group({
+      sortBy: [''],
+    });
     this.workFlowService.displayLoading();
     this.reOrder = true;
 
@@ -57,8 +61,6 @@ export class WorkflowPage implements OnInit {
     } else {
       this.sizeMe = true;
     }
-
-
 
     if (Cookies.get('token') === undefined) {
       await this.router.navigate(['/login']);
@@ -78,7 +80,6 @@ export class WorkflowPage implements OnInit {
       );
     }
     await this.getUser();
-
   }
 
   async getUser() {
@@ -123,27 +124,27 @@ export class WorkflowPage implements OnInit {
 
   //TODO: clean up this function, the logic behind it isn't entirely clear
   sortPermission() {
-    let i: number =0;
+    let i: number = 0;
     for (const document of this.documents) {
-      console.log(document.status)
-      this.documentPermission[i] =0;
-      if(document.status !== 'Completed'){
+      console.log(document.status);
+      this.documentPermission[i] = 0;
+      if (document.status !== 'Completed') {
         if (document.phases[document.currentPhase].status !== 'Completed') {
           for (let user of document.phases[document.currentPhase].users) {
             if (user.email === this.userEmail) {
-              console.warn(user)
-              if(user.accepted === false){
-                console.warn(user)
-                if(user.permission === "view"){
+              console.warn(user);
+              if (user.accepted === false) {
+                console.warn(user);
+                if (user.permission === 'view') {
                   this.documentPermission[i] = 2;
-                }else{
+                } else {
                   this.documentPermission[i] = 1;
                 }
               }
             }
           }
         }
-      }else{
+      } else {
         this.documentPermission[i] = 2;
       }
       i++;
@@ -220,7 +221,7 @@ export class WorkflowPage implements OnInit {
         workflowId: id,
         documentname: name,
         userEmail: this.user.email,
-        status: status
+        status: status,
       },
     ]);
   }
@@ -240,7 +241,43 @@ export class WorkflowPage implements OnInit {
     event.detail.complete();
   }
 
+  sortBy() {
+    console.log(typeof this.sortForm.controls.sortBy.value);
+    switch (parseInt(this.sortForm.controls.sortBy.value)) {
+      case 1:
+        this.showOnlyWorkflowOwned();
+        break;
+      case 2:
+        this.sortByNeededActions();
+        break;
+      case 3:
+        this.showAll();
+        break;
+      case 4:
+        this.reOrderWorkflows();
+        break;
+      case 5:
+        this.showNonOwnedWorkflows();
+        break;
+    }
+  }
+
+  showNonOwnedWorkflows() {
+    for (const document of this.documents) {
+      if (document.ownerEmail !== this.userEmail) {
+        document.showWorkflow = true;
+      } else {
+        document.showWorkflow = false;
+      }
+    }
+    console.log(this.documents);
+  }
+  reOrderWorkflows() {
+    this.reOrder = !this.reOrder;
+  }
+
   showOnlyWorkflowOwned() {
+    console.log('here')
     for (const document of this.documents) {
       if (document.ownerEmail === this.userEmail) {
         document.showWorkflow = true;
@@ -289,10 +326,10 @@ export class WorkflowPage implements OnInit {
     });
   }
 
- debug(num: number) {
-    if(num === 1){
+  debug(num: number) {
+    if (num === 1) {
       this.workFlowService.displayLoading();
-    }else{
+    } else {
       this.workFlowService.dismissLoading();
     }
   }

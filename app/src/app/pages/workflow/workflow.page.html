@@ -19,23 +19,21 @@
 </ion-header>
 
 <ion-content style="width:100%">
-  <div style="border-radius: 15px; border: 5px solid #002060; margin:5px ;">
-    <h3>Sort by: </h3>
-    <ion-grid>
-      <ion-row>
-        <ion-col sizeXs='4' sizeSm='4'>
-          <ion-button style="width: 100%;" (click)="showOnlyWorkflowOwned()">workflow owned</ion-button>
-        </ion-col>
-        <ion-col sizeXs='4' sizeSm='4'>
-          <ion-button style="width: 100%;" (click)="sortByNeededActions()">Actions needed
-          </ion-button>
-        </ion-col>
-        <ion-col sizeXs='4' sizeSm='4'>
-          <ion-button style="width: 100%;" (click)="showAll()">Show all</ion-button>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </div>
+  <form [formGroup]="sortForm">
+  <ion-item>
+    <ion-label>Sort by: </ion-label>
+    <ion-select (ionChange)='sortBy()' formControlName='sortBy'>
+      <ion-select-option value="1">Show all owned workflows</ion-select-option>
+      <ion-select-option value="2">Actions needed</ion-select-option>
+      <ion-select-option value="3">Show all workflows</ion-select-option>
+      <ion-select-option value="4">Reorder the workflows</ion-select-option>
+      <ion-select-option value="5">Show all non-owned workflows</ion-select-option>
+    </ion-select>
+  </ion-item>
+  <ion-item *ngIf="!reOrder">
+    <ion-button (click)="reOrderWorkflows()" style="width: 99%;">Done with reorder?</ion-button>
+  </ion-item>
+</form>
 
   <ion-reorder-group [disabled]="reOrder" (ionItemReorder)="fixOrder($event)" style="width:100%">
     <div *ngFor="let document of documents; let p = index">
@@ -56,11 +54,11 @@
                   *ngIf='documentPermission[p] === 2'>
                   <ion-icon name="arrow-redo-outline" style="font-size: 22px; color:white"></ion-icon>
                 </ion-fab-button>
-                <ion-fab-button (click)="editDocument(document._id, document.name)"
-                  *ngIf='documentPermission[p] === 1'>
+                <ion-fab-button (click)="editDocument(document._id, document.name)" *ngIf='documentPermission[p] === 1'>
                   <ion-icon name="construct-outline" style="font-size: 22px;color:white"></ion-icon>
                 </ion-fab-button>
-                <ion-fab-button (click)="editWorkflow(document._id)" *ngIf="document.ownerEmail === userEmail && document.status !=='Completed'">
+                <ion-fab-button (click)="editWorkflow(document._id)"
+                  *ngIf="document.ownerEmail === userEmail && document.status !=='Completed'">
                   <ion-icon name="construct-outline" style="font-size: 22px;color:white"></ion-icon>
                 </ion-fab-button>
                 <ion-fab-button (click)="deleteWorkFlow(document._id)" *ngIf="document.ownerEmail === userEmail">
