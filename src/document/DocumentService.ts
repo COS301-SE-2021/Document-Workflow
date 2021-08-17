@@ -51,6 +51,13 @@ export default class DocumentService {
         await this.documentRepository.deleteDocument(documentId);
     }
 
+    async retrieveOriginalDocument(docId, workflowId){
+        const documentMetadata = await this.documentRepository.getDocument(docId);
+        const filedata = await this.documentRepository.getDocumentFromS3(workflowId + '/' + documentMetadata.name);
+
+        return {status:"success", data:{filedata: filedata, metadata: documentMetadata}, message: ""};
+    }
+
     async retrieveDocument(docId, workflowId, currentPhase) : Promise<any> {
         console.log("retrieving a document");
         console.log(docId);

@@ -456,7 +456,6 @@ export default class WorkflowService{
         console.log("Attempting to update a workflow");
 
         try{
-
             //1) Retrieve the workflow that we are going to be editing based on the input workflowId
             const workflowOriginal = await this.workflowRepository.getWorkflow(workflowId);
             //2) Check that the requesting user has the correct permissions to edit this workflow
@@ -577,4 +576,18 @@ export default class WorkflowService{
     }
 
 
+    async getOriginalDocument(workflowId, email) {
+        console.log("Retrieving the original document for workflow id: ", workflowId);
+        try{
+            const workflow = await this.workflowRepository.getWorkflow(workflowId);
+            if(email !== workflow.ownerEmail)
+                return {status: "error", data: {}, message: "Insufficient rights to retrieve this document"};
+
+            return await this.documentService.retrieveOriginalDocument(workflow.documentId, workflowId);
+        }
+        catch(err){
+            console.log(err);
+            throw err;
+        }
+    }
 }

@@ -74,6 +74,7 @@ export class WorkflowEditPage implements OnInit {
   phaseViewers: boolean[] = [];
 
   document: workflowFormat;
+  originalFile: File;
 
   constructor(
     private plat: Platform,
@@ -118,6 +119,14 @@ export class WorkflowEditPage implements OnInit {
     await this.getWorkflowData();
 
     await this.getUser();
+
+    await this.workflowServices.getOriginalDocument(this.workflowId, (response) =>{
+      console.log("Got the original document");
+      const arr = new Uint8Array(response.data.filedata.Body.data);
+      const blob = new Blob([arr], {type: 'application/pdf'});
+      this.originalFile = new File([blob], response.data.metadata.name);
+      console.log(response);
+    });
   }
   //todo add workflowId
   async getWorkflowData() {
@@ -390,7 +399,7 @@ export class WorkflowEditPage implements OnInit {
     const a = await this.modal.create({
       component: DocumentActionAreaComponent,
       componentProps: {
-        file: this.blob,
+        file: this.originalFile,
         ownerEmail: this.ownerEmail,
         phaseNumber: i,
       },
