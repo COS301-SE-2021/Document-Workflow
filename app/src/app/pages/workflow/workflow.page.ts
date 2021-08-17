@@ -131,15 +131,19 @@ export class WorkflowPage implements OnInit {
     });
   }
 
+  //TODO: clean up this function, the logic behind it isn't entirely clear
   sortPermission() {
-    for (let document of this.documents) {
-      if (document.phases[document.currentPhase].status !== 'Completed') {
-        for (let user of document.phases[document.currentPhase].users) {
+    for (const document of this.documents) {
+      if (document.phases[document.currentPhase].status !== 'Completed') { //TODO: use enum here
+        console.log(document.phases);
+        for (const user of document.phases[document.currentPhase].users) {
           if (user.email === this.userEmail) {
-            if (user.permission === 'sign') {
+            console.log("I am in this phase");
+            if (user.permission === 'sign') { //TODO: use enum here
               this.editDocumentPermission.push(true);
               this.viewDocumentPermission.push(false);
             } else {
+              console.log('I am a viewer now a signer of workflow with name: ', document.name);
               this.editDocumentPermission.push(false);
               this.viewDocumentPermission.push(true);
             }

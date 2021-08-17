@@ -474,9 +474,10 @@ export default class WorkflowService{
 
                 workflow.currentPhase --; //set the phaseId
             }
-            workflow.status = WorkflowStatus.INPROGRESS;
-
-            await this.workflowRepository.updateWorkflow(workflow);
+            if(workflow.status === WorkflowStatus.COMPLETED) {
+                workflow.status = WorkflowStatus.INPROGRESS;
+                await this.workflowRepository.updateWorkflow(workflow);
+            }
 
 
             return {status:"success", data: {}, message: ""}
