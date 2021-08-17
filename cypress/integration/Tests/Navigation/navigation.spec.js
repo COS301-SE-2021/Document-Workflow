@@ -15,7 +15,7 @@ describe("testing navigation without logging in", () => {
     cy.url().should("eq", "http://localhost:8100/login");
   });
 
-  it("url tries with different routes(home)", () => {
+  it("url tries with different routes(documentView)", () => {
     cy.visit("http://localhost:8100/documentView");
     cy.url().should("eq", "http://localhost:8100/login");
   });
@@ -34,14 +34,19 @@ describe("testing navigation without logging in", () => {
     cy.visit("http://localhost:8100/archive");
     cy.url().should("eq", "http://localhost:8100/login");
   });
+
+  it("url tries with different routes(werfrihfbeihferbiwfehbiwesrfub)", () => {
+    cy.visit("http://localhost:8100/werfrihfbeihferbiwfehbiwesrfub");
+    cy.url().should("eq", "http://localhost:8100/login");
+  });
 });
 
 describe("Navigation when user is logged in", () => {
   beforeEach(() => {
     cy.clearCookies();
     cy.visit("http://localhost:8100");
-    // cy.get("#loginEmail").type("brenton.stroberg@yahoo.co.za");
-    // cy.get("#loginPassword").type("Password#1");
+    cy.get("#loginEmail").type("brenton.stroberg@yahoo.co.za");
+    cy.get("#loginPassword").type("Password#1");
     cy.get("#login").click();
     cy.wait(3000);
   });
@@ -78,7 +83,10 @@ describe("Navigation when user is logged in", () => {
     cy.url().should("eq", "http://localhost:8100/home/addWorkflow");
   });
   
-
+  it("Navigating to random page +> faceboook", () => {
+    cy.visit("http://localhost:8100/home/faceboook");
+    cy.url().should("eq", "http://localhost:8100/home/faceboook");
+  });
  
   // it("navigating to archive", () => {
   //   cy.visit("http://localhost:8100/home/archive");
