@@ -20,6 +20,7 @@ export interface workflowFormat {
 }
 
 export interface phaseFormat {
+  phaseNumber?: number;
   showPhase?: boolean;
   status: string;
   annotations: string;

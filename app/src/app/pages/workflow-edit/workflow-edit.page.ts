@@ -51,7 +51,7 @@ export class WorkflowEditPage implements OnInit {
   phases: FormArray;
   file: File;
 
-  ready:boolean;
+  ready: boolean;
   addFile: boolean;
   addName: boolean;
   addDescription: boolean;
@@ -119,14 +119,19 @@ export class WorkflowEditPage implements OnInit {
 
     await this.getUser();
   }
-//todo add workflowId
+  //todo add workflowId
   async getWorkflowData() {
     await this.workflowServices.retrieveWorkflow(
       this.workflowId,
       async (response) => {
         console.log(response.data);
+        let i: number = 0;
         let phases: phaseFormat[] = [];
         for (let phase of response.data.phases) {
+          let tmpShow = false;
+          if (phase.status === 'Pending') {
+            tmpShow = true;
+          }
           let tmpPhase: phaseFormat;
           let tempUser: phaseUserFormat[] = [];
           for (let user of JSON.parse(phase.users)) {
@@ -143,6 +148,8 @@ export class WorkflowEditPage implements OnInit {
             tempUser.push(tmpUser);
           }
           tmpPhase = {
+            showPhase: tmpShow,
+            phaseNumber: i,
             annotations: phase.annotations,
             description: phase.description,
             status: phase.status,
@@ -150,6 +157,8 @@ export class WorkflowEditPage implements OnInit {
           };
           phases.push(tmpPhase);
         }
+        i++;
+
         this.document = {
           currentPercent: 0,
           currentPhase: response.data.currentPhase,
@@ -196,6 +205,9 @@ export class WorkflowEditPage implements OnInit {
     return this.fb.group({
       description: new FormControl(phase.description, Validators.required),
       annotations: new FormControl(phase.annotations, [Validators.required]),
+      status: new FormControl('Create'),
+      showPhases: new FormControl(phase.showPhase),
+      phaseNumber: new FormControl(phase.phaseNumber),
       users: this.fb.array([]),
     });
   }
@@ -242,9 +254,15 @@ export class WorkflowEditPage implements OnInit {
     const description = this.workflowForm.controls.workflowDescription.value;
     console.log(this.workflowId);
 
-    await this.workflowServices.editWorkflow(name, description, phases, this.workflowId, (response) => {
+    await this.workflowServices.editWorkflow(
+      name,
+      description,
+      phases,
+      this.workflowId,
+      (response) => {
         console.log(response);
-    });
+      }
+    );
   }
 
   changeController() {
@@ -285,10 +303,13 @@ export class WorkflowEditPage implements OnInit {
     control.setValue(str);
   }
 
-  createPhase(): FormGroup {
+  createPhase(i: number): FormGroup {
     return this.fb.group({
       description: new FormControl('', Validators.required),
       annotations: new FormControl('', [Validators.required]),
+      status: new FormControl('Create'),
+      showPhases: new FormControl(true),
+      phaseNumber: new FormControl(i),
       users: this.fb.array([
         this.fb.group({
           user: new FormControl('', [Validators.email, Validators.required]),
@@ -300,12 +321,13 @@ export class WorkflowEditPage implements OnInit {
 
   addPhase() {
     let phase = this.workflowForm.get('phases') as FormArray;
-    phase.push(this.createPhase());
+    phase.push(this.createPhase(phase.length + 1));
   }
 
   removePhase(i: number) {
     let phase = this.workflowForm.get('phases') as FormArray;
-    phase.removeAt(i);
+    phase.at(i)['controls'].status.value = 'Delete';
+    phase.at(i)['controls'].showPhase = 'false';
   }
 
   async selectImageSource() {
@@ -386,11 +408,14 @@ export class WorkflowEditPage implements OnInit {
   }
 
   submit() {
-    this.userApiService.displayPopOverWithButtons('Edited document','Are you happy with your changes?',(response)=>{
-      if(response.confirm){
-
+    this.userApiService.displayPopOverWithButtons(
+      'Edited document',
+      'Are you happy with your changes?',
+      (response) => {
+        if (response.confirm) {
+        }
       }
-    })
+    );
   }
 
   viewPhase(i: number) {
@@ -416,31 +441,12 @@ export class WorkflowEditPage implements OnInit {
 
     this.ready = false;
   }
+
+  setPhase(i: number) {
+    let phase = this.workflowForm.get('phases') as FormArray;
+    if (phase.at(i)['controls'].status.value === 'Create') {
+      phase.at(i)['controls'].status.value = 'Create';
+    }
+    phase.at(i)['controls'].status.value = 'Edit';
+  }
 }
-
-// export interface workflowFormat {
-//   currentPercent: number;
-//   currentPhase: number;
-//   description: string;
-//   name: string;
-//   ownerEmail: string;
-//   ownerId: string;
-//   _v: number;
-//   _id: string;
-
-//   phases: phaseFormat[];
-// }
-
-// export interface phaseFormat {
-//   showPhase?: boolean;
-//   status: string;
-//   annotations: string;
-//   description: string;
-//   users: phaseUserFormat[];
-// }
-
-// export interface phaseUserFormat {
-//   email: string;
-//   permission: string;
-//   accepted: boolean;
-// }

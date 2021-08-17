@@ -354,8 +354,10 @@ export class DocumentAddPage implements OnInit {
         this.workflowService.dismissLoading();
         if(response.status === 'success'){
           this.userApiService.displayPopOver('Success','You have successfully created a workflow');
+          this.router.navigate(['/home']);
         }else{
           this.userApiService.displayPopOver('Error','something has gone wrong, please try again');
+          this.router.navigate(['/home']);
         }
       }
     );
