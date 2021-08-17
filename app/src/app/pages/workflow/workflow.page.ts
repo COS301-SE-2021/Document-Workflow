@@ -100,7 +100,6 @@ export class WorkflowPage implements OnInit {
       if (response.status === 'success') {
         const ownedWorkflows = response.data.ownedWorkflows;
         const workflows = response.data.workflows;
-
         for (let tmpDoc of ownedWorkflows) {
           if (tmpDoc != null) {
             this.documents.push(tmpDoc);
@@ -112,6 +111,7 @@ export class WorkflowPage implements OnInit {
             this.documents.push(tmpDoc);
           }
         }
+        console.log(this.documents);
         //for the searching and sorting so we wont waste users data.
         this.sortPermission();
       } else {
@@ -123,7 +123,6 @@ export class WorkflowPage implements OnInit {
 
   //TODO: clean up this function, the logic behind it isn't entirely clear
   sortPermission() {
-    console.log('here')
     let i: number =0;
     for (const document of this.documents) {
       console.log(document.status)
@@ -213,7 +212,7 @@ export class WorkflowPage implements OnInit {
     this.router.navigate(['home/addWorkflow']);
   }
 
-  viewWorkFlow(id: string, name: string) {
+  viewWorkFlow(id: string, name: string, status) {
     // this.navControl.navigateForward
     this.router.navigate([
       '/home/documentView',
@@ -221,6 +220,7 @@ export class WorkflowPage implements OnInit {
         workflowId: id,
         documentname: name,
         userEmail: this.user.email,
+        status: status
       },
     ]);
   }
