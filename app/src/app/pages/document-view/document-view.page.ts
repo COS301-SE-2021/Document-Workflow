@@ -28,7 +28,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   documentMetadata: any;
   annotationSubjects = ['Note', 'Rectangle', 'Squiggly', 'Underline', 'Highlight', 'Strikeout'];
 
-
+  @Input('workflowStatus') workflowStatus:string;
   @Input('documentname') docName: string;
   @Input('workflowId') workflowId: string;
   @ViewChild('viewer') viewerRef: ElementRef;
@@ -47,6 +47,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
     await this.route.params.subscribe((data) => {
       this.workflowId = data['workflowId'];
       //this.docName = data['documentname'];
+      this.workflowStatus = data['status'];
       this.userEmail = data['userEmail'];
     });
   }
@@ -104,7 +105,11 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
           });
 
             instance.Core.documentViewer.addEventListener('documentLoaded', ()=>{
-              instance.Core.annotationManager.importAnnotations(response.data.annotations);
+              //For now, to work around not having full api functions with the free version of PDFTron
+              //We disable the action areas from showing through a check of the workflow status
+              //This is to ensure pringint of the document does not include action areas.
+              if(this.workflowStatus === 'Complete') //TODO: swap with enum
+                instance.Core.annotationManager.importAnnotations(response.data.annotations);
             });
 
         });
