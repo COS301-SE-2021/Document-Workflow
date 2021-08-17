@@ -131,7 +131,7 @@ export class DocumentAddPage implements OnInit {
               ]),
               permission: new FormControl('', [Validators.required]),
               accepted: new FormControl('false', [Validators.required]),
-            }, formOptions),
+            }),
           ]),
         }),
       ]),
@@ -185,7 +185,7 @@ export class DocumentAddPage implements OnInit {
       user: new FormControl('', [Validators.email, Validators.required, Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")]),
       permission: new FormControl('', [Validators.required]),
       accepted: new FormControl('false', [Validators.required]),
-    }, formOptions);
+    });
   }
 
   removeUser(control: FormArray, i: number, j: number) {
@@ -224,7 +224,7 @@ export class DocumentAddPage implements OnInit {
           ]),
           permission: new FormControl('', [Validators.required]),
           accepted: new FormControl('false', [Validators.required]),
-        } , formOptions),
+        } ),
       ]),
     });
   }
@@ -302,7 +302,7 @@ export class DocumentAddPage implements OnInit {
   }
 
   debug(str: any) {
-    console.log(str);
+    console.log(this.workflowForm);
   }
 
   async includeActionArea(i: number, form: FormControl) {

@@ -23,8 +23,8 @@
 <ion-content style="height: auto;" [fullscreen]="true">
   <form [formGroup]="workflowForm" (ngSubmit)="submit()">
     <!-- first card -->
-    <ion-card *ngIf="!next" style="height:auto; width: 98%;">
-      <ion-card-content style="height: auto;">
+    <ion-card *ngIf="!next" style="height:100%; width: 98%;">
+      <ion-card-content style="height: 100%;">
         <ion-item>
           <ion-label position="floating">Workflow Name</ion-label>
           <ion-input formControlName="workflowName" inputmode="text" (input)="checkStatus()"></ion-input>
@@ -85,10 +85,10 @@
                       <ion-col sizeXs='12'>
                         <ion-item>
                           <ion-label>Permission</ion-label>
-                          <ion-select placeholder="Click here" [formControl]="user.controls.permission">
-                            <ion-select-option value="signer">Signer
+                          <ion-select placeholder="Click here" [formControl]="user.controls.permission" >
+                            <ion-select-option value="signer" (click)="changePermission(user.controls.permission, 'sign')">Signer
                             </ion-select-option>
-                            <ion-select-option value="viewer">Viewer</ion-select-option>
+                            <ion-select-option value="viewer" (click)="changePermission(user.controls.permission, 'view')">Viewer</ion-select-option>
                           </ion-select>
                         </ion-item>
                       </ion-col>
@@ -128,6 +128,9 @@
       </ion-row>
     </ion-reorder-group>
   </form>
+  <ion-fab>
+    <ion-fab-button (click)='debug("")'></ion-fab-button>
+  </ion-fab>
 </ion-content>
 
 

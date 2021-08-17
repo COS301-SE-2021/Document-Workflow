@@ -12,7 +12,7 @@ export function verifyEmail(controlName: string, userService: UserAPIService){
     }
     // // set error on matchingControl if validation fails
     if (await userService.verifyEmail(control.value) === false) {
-      control.setErrors({verifyEmail: false});
+      control.setErrors({verifyEmail: true});
     } else {
       control.setErrors(null);
     }

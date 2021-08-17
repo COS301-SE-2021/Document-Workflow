@@ -19,24 +19,28 @@
 </ion-header>
 
 <ion-content style="width:100%">
-  <ion-grid>
-    <ion-row>
-      <ion-col sizeXs='12' sizeSm='12'>
-        <ion-button style="width: 100%;" (click)="showOnlyWorkflowOwned()">Sort by workflow owned</ion-button>
-      </ion-col>
-      <ion-col sizeXs='12' sizeSm='12'>
-        <ion-button style="width: 100%;" (click)="sortByNeededActions()">workflows that need your attention</ion-button>
-      </ion-col>
-      <ion-col sizeXs='12' sizeSm='12'>
-        <ion-button style="width: 100%;" (click)="showAll()">Show all</ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+  <div style="border-radius: 15px; border: 5px solid #002060; margin:5px ;">
+    <h3>Sort by: </h3>
+    <ion-grid>
+      <ion-row>
+        <ion-col sizeXs='4' sizeSm='4'>
+          <ion-button style="width: 100%;" (click)="showOnlyWorkflowOwned()">workflow owned</ion-button>
+        </ion-col>
+        <ion-col sizeXs='4' sizeSm='4'>
+          <ion-button style="width: 100%;" (click)="sortByNeededActions()">Actions needed
+          </ion-button>
+        </ion-col>
+        <ion-col sizeXs='4' sizeSm='4'>
+          <ion-button style="width: 100%;" (click)="showAll()">Show all</ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
 
   <ion-reorder-group [disabled]="reOrder" (ionItemReorder)="fixOrder($event)" style="width:100%">
     <div *ngFor="let document of documents; let p = index">
-      <ion-reorder *ngIf="document.showWorkflow" >
-        <ion-card >
+      <ion-reorder *ngIf="document.showWorkflow">
+        <ion-card>
           <ion-header style="min-height: 80px;">
             <br />
             <ion-card-title style="font-size: 20px; padding-left: 10px;">{{document.name}}</ion-card-title>
