@@ -17,5 +17,5 @@ export const workflowSchema = createSchema({
     phases: Type.array({required: false}).of(Type.ref(Type.objectId({required: true})).to("Phase", phaseSchema))
 }, {_id: true, _v: false});
 
-export const Workflow = typedModel('WorkFlowModel', workflowSchema);
+export const Workflow = typedModel('Workflow', workflowSchema);
 export type WorkflowProps = ExtractProps<typeof workflowSchema>;
