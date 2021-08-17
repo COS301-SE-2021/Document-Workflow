@@ -153,7 +153,7 @@ export class WorkflowPage implements OnInit {
         this.viewDocumentPermission.push(false);
       }
     }
-    console.log(this.editDocumentPermission)
+    console.log(this.editDocumentPermission);
   }
 
   //todo move this to the spec.ts of workflow
@@ -183,7 +183,7 @@ export class WorkflowPage implements OnInit {
       (response) => {
         console.log(response);
         if (response.data.confirm === true) {
-          this.workFlowService.deleteWorkFlow(id, (response2) =>{
+          this.workFlowService.deleteWorkFlow(id, (response2) => {
             console.log(response2);
           });
         }
@@ -191,16 +191,16 @@ export class WorkflowPage implements OnInit {
     );
   }
 
-  revertPhase(id: string){
-    console.log("Reverting phase with id: ", id);
-    this.userApiService.displayPopOverWithButtons('Revert the phase','Are you sure you want to revert the phase?', (response)=>{
-      console.log(response);
-      if(response.data.confirm === true){
-        this.workFlowService.revertPhase(id, (response2) =>{
-          console.log(response2);
-        });
+  revertPhase(id: string) {
+    this.userApiService.displayPopOverWithButtons(
+      'Revert the phase',
+      'Are you sure you want to revert the phase?',
+      (response) => {
+        if (response.confirm === true) {
+          //todo tim stuff
+        }
       }
-    })
+    );
   }
 
   async editWorkflow(id: string) {
@@ -244,12 +244,10 @@ export class WorkflowPage implements OnInit {
   }
 
   showOnlyWorkflowOwned() {
-    this.documents = [];
-    console.log(this.documents);
     for (const document of this.documents) {
       if (document.ownerEmail === this.userEmail) {
-        document.showWorkflow= true;
-      }else{
+        document.showWorkflow = true;
+      } else {
         document.showWorkflow = false;
       }
     }
@@ -257,29 +255,27 @@ export class WorkflowPage implements OnInit {
   }
 
   sortByNeededActions() {
-    this.documents = [];
-    // this.allUserDocuments.push(this.docService.createTestDocuments());
     for (let document of this.documents) {
-      for (let phase of document.phases) {
-        if (phase.status !== 'Completed') {
-          for (let user of phase.users) {
-            if (user.email === this.userEmail) {
-              document.showWorkflow = true;
-            }else{
-              document.showWorkflow =false;
-            }
+      for (let user of document.phases[document.currentPhase].users) {
+        if (user.email === this.userEmail) {
+          if (user.accepted === true) {
+            document.showWorkflow = false;
+          } else {
+            document.showWorkflow = true;
           }
+        } else {
+          document.showWorkflow = false;
         }
       }
     }
+    console.log(this.documents);
   }
 
   getByName(name: string) {
-    this.documents = [];
     for (let document of this.documents) {
       if (document.name === name) {
         document.showWorkflow = true;
-      }else{
+      } else {
         document.showWorkflow = false;
       }
     }
@@ -296,13 +292,12 @@ export class WorkflowPage implements OnInit {
     });
   }
 
-  async debug() {
-    await this.userApiService.displayPopOverWithButtons(
-      'signPhase',
-      'Do you accept this phase',
-      (response) => {
-        console.log(response);
-      }
-    );
+  async debug(str: any) {
+    console.log(str);
+  }
+  showAll(){
+    for (let document of this.documents) {
+      document.showWorkflow= true;
+    }
   }
 }
