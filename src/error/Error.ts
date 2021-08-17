@@ -19,6 +19,13 @@ export class CloudError extends Error{
     }
 }
 
+export class DatabaseError extends Error{
+    constructor(msg?: string) {
+        if(msg) super(msg)
+        else super();
+    }
+}
+
 export class RequestError extends Error{
     constructor(msg?: string) {
         if(msg) super(msg)
