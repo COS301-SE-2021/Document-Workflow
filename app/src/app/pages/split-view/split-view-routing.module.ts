@@ -41,15 +41,6 @@ const routes: Routes = [
         pathMatch: 'full',
       },
       {
-        path: 'intro',
-        loadChildren: () =>
-          import('./../intro/intro-routing.module').then(
-            (m) => m.IntroPageRoutingModule
-          ),
-        pathMatch: 'full',
-      },
-
-      {
         path: 'workflowEdit',
         loadChildren: () =>
           import('./../workflow-edit/workflow-edit.module').then(
