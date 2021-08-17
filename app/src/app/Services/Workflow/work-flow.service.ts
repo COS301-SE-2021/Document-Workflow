@@ -330,6 +330,32 @@ export class WorkFlowService {
       );
   }
 
+  public async revertPhase(workflowId, callback){
+    const formData = new FormData();
+    formData.append("workflowId", workflowId);
+    //const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+
+    this.http
+      .post(WorkFlowService.url + '/workflows/revertPhase', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe((data) => {
+          if (data) {
+            callback(data);
+          } else
+            callback({ status: 'error', message: 'Cannot connect to Server' });
+        },
+        (error) => {
+          alert('An unexpected error occurred');
+        }
+      );
+
+  }
+
   /**
    * This will likely stay a test function.
    * @param workflow_id

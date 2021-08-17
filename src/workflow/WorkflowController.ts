@@ -228,7 +228,21 @@ export default class WorkflowController {
             return await this.workflowService.editWorkflow(workflow, convertedPhases, req.user.email, req.body.workflowId);
         }
         catch(err){
+            console.log(err);
+            throw err;
+        }
+    }
 
+    private async revertWorkflowPhase(req) {
+        if(!req.body.workflowId)
+            throw new RequestError("An id must be supplied to revert the phase of a workflow");
+
+        try{
+            return await this.workflowService.revertWorkflowPhase(req.body.workflowId, req.user.email);
+        }
+        catch(err){
+            console.log(err);
+            throw err;
         }
     }
 
@@ -305,6 +319,16 @@ export default class WorkflowController {
             try {
                 res.status(200).json(await this.editWorkflow(req));
             } catch(err){
+                res.status(500).json({})
+                await handleErrors(err,res);
+            }
+        });
+
+        this.router.post("/revertPhase",this.auth, async(req,res)=>{
+            try {
+                res.status(200).json(await this.revertWorkflowPhase(req));
+            } catch(err){
+                res.status(500).json({})
                 await handleErrors(err,res);
             }
         });
@@ -319,7 +343,6 @@ export default class WorkflowController {
         });
         return this.router;
     }
-
 
 }
 

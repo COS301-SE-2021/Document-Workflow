@@ -437,4 +437,64 @@ export default class WorkflowService{
             throw err;
         }
     }
+
+    async revertWorkflowPhase(workflowId, email) {
+        console.log("Attempting to revert the phase of a workflow");
+        try{
+
+            const workflow = await this.workflowRepository.getWorkflow(workflowId);
+            console.log(workflow);
+            await this.documentService.resetFirstPhaseDocument(workflowId, workflow.documentId);
+            console.log("Should print this after resetting the first phase");
+            return {status:"success", data: {}, message: ""}
+            if(workflow.ownerEmail === email){
+                return {status: "error", data: {}, message: "Insufficient privileges to revert a workflow phase"};
+            }
+
+            //There are two phases when it comes to reverting a phase
+            //1) The currentPhase is the start phase
+            //2) The currentPhase is not the start phase
+            //If the current phase is the start phase, all that need be done is fetch the original document from the S3
+            //Bucket and then save it as the document for phase0
+            //If the current phase is not the start phase then we set the currentPhase to be one less than it is
+            //In both cases, the acceptance values of phase users need to change.
+
+            if(workflow.currentPhase === 0){
+                let currentPhase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
+                console.log("Setting currentPhase acceptances to false");
+                await this.setPhaseAcceptancesToFalse(currentPhase);
+                await this.documentService.resetFirstPhaseDocument(workflowId, String(workflow.documentId));
+            }
+            else{
+                //reset the acceptance values for members of the current phase and new phase
+                let currentPhase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
+                console.log("Setting currentPhase acceptances to false");
+                await this.setPhaseAcceptancesToFalse(currentPhase);
+                console.log("Setting new phase acceptances to false");
+                let newPhase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase -1]);
+                await this.setPhaseAcceptancesToFalse(newPhase);
+
+                workflow.currentPhase --; //set the phaseId
+            }
+
+
+            return {status:"success", data: {}, message: ""}
+        }
+        catch(err){
+            console.log(err);
+            throw err;
+        }
+    }
+
+    async setPhaseAcceptancesToFalse(phase) {
+
+        let phaseUsers = JSON.parse(phase.users);
+        for (let i = 0; i < phaseUsers.length; ++i) {
+            phaseUsers.accepted = 'false';
+        }
+
+        phase.users = JSON.stringify(phaseUsers);
+        await this.phaseService.updatePhase(phase);
+
+    }
 }

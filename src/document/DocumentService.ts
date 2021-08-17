@@ -18,7 +18,6 @@ export default class DocumentService {
         }
     }
 
-    //TODO: Check if type is PDF
     async uploadDocument(file: File, id: ObjectId): Promise<ObjectId>{
         try{
             const doc = new Document({
@@ -52,7 +51,6 @@ export default class DocumentService {
         await this.documentRepository.deleteDocument(documentId);
     }
 
-    //TODO: update this!! fetch documents based on their phase.
     async retrieveDocument(docId, workflowId, currentPhase) : Promise<any> {
         console.log("retrieving a document");
         console.log(docId);
@@ -90,6 +88,14 @@ export default class DocumentService {
                 });
             });
         });
+    }
+
+    async resetFirstPhaseDocument(workflowId, documentId) {
+        const metadata = await this.documentRepository.getDocument(documentId);
+        console.log("Resetting first phase document to original, path to original: ",workflowId + '/' + metadata.name);
+        const originalDocument = await this.documentRepository.getDocumentFromS3(workflowId + '/' + metadata.name);
+        await this.documentRepository.updateDocumentS3WithBuffer(workflowId +'/phase0/' + metadata.name, originalDocument.body);
+        console.log(originalDocument);
     }
 }
 
