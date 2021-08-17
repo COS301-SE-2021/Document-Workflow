@@ -444,10 +444,8 @@ export default class WorkflowService{
 
             const workflow = await this.workflowRepository.getWorkflow(workflowId);
             console.log(workflow);
-            await this.documentService.resetFirstPhaseDocument(workflowId, workflow.documentId);
-            console.log("Should print this after resetting the first phase");
-            return {status:"success", data: {}, message: ""}
-            if(workflow.ownerEmail === email){
+
+            if(workflow.ownerEmail !== email){
                 return {status: "error", data: {}, message: "Insufficient privileges to revert a workflow phase"};
             }
 
@@ -462,20 +460,23 @@ export default class WorkflowService{
             if(workflow.currentPhase === 0){
                 let currentPhase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
                 console.log("Setting currentPhase acceptances to false");
-                await this.setPhaseAcceptancesToFalse(currentPhase);
+                await this.setPhaseAcceptancesToFalseAndSave(currentPhase);
                 await this.documentService.resetFirstPhaseDocument(workflowId, String(workflow.documentId));
             }
             else{
                 //reset the acceptance values for members of the current phase and new phase
                 let currentPhase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
                 console.log("Setting currentPhase acceptances to false");
-                await this.setPhaseAcceptancesToFalse(currentPhase);
+                await this.setPhaseAcceptancesToFalseAndSave(currentPhase);
                 console.log("Setting new phase acceptances to false");
                 let newPhase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase -1]);
-                await this.setPhaseAcceptancesToFalse(newPhase);
+                await this.setPhaseAcceptancesToFalseAndSave(newPhase);
 
                 workflow.currentPhase --; //set the phaseId
             }
+            workflow.status = WorkflowStatus.INPROGRESS;
+
+            await this.workflowRepository.updateWorkflow(workflow);
 
 
             return {status:"success", data: {}, message: ""}
@@ -486,15 +487,16 @@ export default class WorkflowService{
         }
     }
 
-    async setPhaseAcceptancesToFalse(phase) {
+
+    async setPhaseAcceptancesToFalseAndSave(phase) {
 
         let phaseUsers = JSON.parse(phase.users);
         for (let i = 0; i < phaseUsers.length; ++i) {
-            phaseUsers.accepted = 'false';
+            console.log(phaseUsers[i]);
+            phaseUsers[i].accepted = 'false';
         }
 
         phase.users = JSON.stringify(phaseUsers);
         await this.phaseService.updatePhase(phase);
-
     }
 }

@@ -94,8 +94,8 @@ export default class DocumentService {
         const metadata = await this.documentRepository.getDocument(documentId);
         console.log("Resetting first phase document to original, path to original: ",workflowId + '/' + metadata.name);
         const originalDocument = await this.documentRepository.getDocumentFromS3(workflowId + '/' + metadata.name);
-        await this.documentRepository.updateDocumentS3WithBuffer(workflowId +'/phase0/' + metadata.name, originalDocument.body);
-        console.log(originalDocument);
+        await this.documentRepository.updateDocumentS3WithBuffer(workflowId +'/phase0/' + metadata.name, originalDocument.Body);
+        //console.log(originalDocument);
     }
 }
 
