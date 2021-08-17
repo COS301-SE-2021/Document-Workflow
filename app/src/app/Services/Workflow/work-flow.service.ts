@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { User } from './../User/user-api.service';
 import { documentImage, phaseUser } from './../Document/document-api.service';
 import * as Cookies from 'js-cookie';
+import { LoadingController } from '@ionic/angular';
 
 export interface workflowFormat {
   showWorkflow?: boolean;
@@ -35,7 +36,10 @@ export interface phaseUserFormat {
 })
 export class WorkFlowService {
   static url = 'http://localhost:3000/api'; //TODO: change this url
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    public loadingCtrl: LoadingController
+  ) {}
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   public async createWorkflow(
@@ -126,7 +130,7 @@ export class WorkFlowService {
       );
   }
 
-  async updatePhase(workflowId, accept, document, callback){
+  async updatePhase(workflowId, accept, document, callback) {
     const formData = new FormData();
     formData.append('workflowId', workflowId);
     formData.append('accept', accept);
@@ -155,7 +159,7 @@ export class WorkFlowService {
       );
   }
 
-  async retrieveDocument(workflowId, callback){
+  async retrieveDocument(workflowId, callback) {
     const formData = new FormData();
     formData.append('workflowId', workflowId);
     const token = Cookies.get('token');
@@ -177,7 +181,7 @@ export class WorkFlowService {
       });
   }
 
-  async retrieveWorkflow(workflowId, callback){
+  async retrieveWorkflow(workflowId, callback) {
     const formData = new FormData();
     formData.append('workflowId', workflowId);
     const token = Cookies.get('token');
@@ -198,7 +202,7 @@ export class WorkFlowService {
       });
   }
 
-  async updateCurrentPhaseAnnotations(workflowId, annotations, callback){
+  async updateCurrentPhaseAnnotations(workflowId, annotations, callback) {
     const formData = new FormData();
     formData.append('workflowId', workflowId);
     formData.append('annotations', annotations);
@@ -208,9 +212,13 @@ export class WorkFlowService {
     });
 
     this.http
-      .post(WorkFlowService.url + '/workflows/updatePhaseAnnotations', formData, {
-        headers: httpHeaders,
-      })
+      .post(
+        WorkFlowService.url + '/workflows/updatePhaseAnnotations',
+        formData,
+        {
+          headers: httpHeaders,
+        }
+      )
       .subscribe((data) => {
         if (data != null) {
           callback(data);
@@ -234,8 +242,12 @@ export class WorkFlowService {
       .subscribe(
         (data) => {
           if (data) {
-            data['data'].ownedWorkflows = this.formatWorkflows(data['data'].ownedWorkflows);
-            data['data'].workflows = this.formatWorkflows(data['data'].workflows);
+            data['data'].ownedWorkflows = this.formatWorkflows(
+              data['data'].ownedWorkflows
+            );
+            data['data'].workflows = this.formatWorkflows(
+              data['data'].workflows
+            );
             callback(data);
           } else
             callback({ status: 'error', message: 'Cannot connect to Server' });
@@ -258,8 +270,8 @@ export class WorkFlowService {
         for (let user of JSON.parse(phase['users'])) {
           let tmpUser: phaseUserFormat;
           let a: boolean = true;
-          if(user.accepted === 'false'){
-            a= false;
+          if (user.accepted === 'false') {
+            a = false;
           }
           tmpUser = {
             accepted: a,
@@ -270,9 +282,9 @@ export class WorkFlowService {
         }
         let tmpPhase: phaseFormat;
         let tmpShowPhase: boolean = false;
-        if(phase['status']==='InProgress'){
+        if (phase['status'] === 'InProgress') {
           tmpShowPhase = true;
-        }else if(phase['status'] === 'Completed'){
+        } else if (phase['status'] === 'Completed') {
           completedCounter++;
         }
         tmpPhase = {
@@ -284,8 +296,8 @@ export class WorkFlowService {
         };
         tempPhase.push(tmpPhase);
       }
-      let percent = completedCounter/tempPhase.length;
-      tmpWorkflow={
+      let percent = completedCounter / tempPhase.length;
+      tmpWorkflow = {
         showWorkflow: true,
         currentPercent: percent,
         currentPhase: document['currentPhase'],
@@ -296,18 +308,24 @@ export class WorkFlowService {
         _id: document['_id'],
         name: document['name'],
         phases: tempPhase,
-      }
+      };
       temp.push(tmpWorkflow);
     }
     return temp;
   }
 
-  public async editWorkflow(workflowName, workflowDescription, phases, workflowId, callback){
+  public async editWorkflow(
+    workflowName,
+    workflowDescription,
+    phases,
+    workflowId,
+    callback
+  ) {
     const formData = new FormData();
-    formData.append("name", workflowName);
-    formData.append("description", workflowDescription);
-    formData.append("phases", JSON.stringify(phases));
-    formData.append("workflowId", workflowId);
+    formData.append('name', workflowName);
+    formData.append('description', workflowDescription);
+    formData.append('phases', JSON.stringify(phases));
+    formData.append('workflowId', workflowId);
     //const token = localStorage.getItem('token');
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
@@ -318,7 +336,8 @@ export class WorkFlowService {
       .post(WorkFlowService.url + '/workflows/edit', formData, {
         headers: httpHeaders,
       })
-      .subscribe((data) => {
+      .subscribe(
+        (data) => {
           if (data) {
             callback(data);
           } else
@@ -330,9 +349,9 @@ export class WorkFlowService {
       );
   }
 
-  public async revertPhase(workflowId, callback){
+  public async revertPhase(workflowId, callback) {
     const formData = new FormData();
-    formData.append("workflowId", workflowId);
+    formData.append('workflowId', workflowId);
     //const token = localStorage.getItem('token');
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
@@ -343,7 +362,8 @@ export class WorkFlowService {
       .post(WorkFlowService.url + '/workflows/revertPhase', formData, {
         headers: httpHeaders,
       })
-      .subscribe((data) => {
+      .subscribe(
+        (data) => {
           if (data) {
             callback(data);
           } else
@@ -353,7 +373,24 @@ export class WorkFlowService {
           alert('An unexpected error occurred');
         }
       );
+  }
 
+  displayLoading(){
+    console.warn('here')
+    const loading = this.loadingCtrl.create({
+      message: 'Please wait...',
+    }).then((response)=>{
+      response.present();
+    });
+  }
+
+  dismissLoading(){
+    console.warn('here');
+    this.loadingCtrl.dismiss().then((response) => {
+      console.log('Loader closed!', response);
+    }).catch((err) => {
+      console.log('Error occured : ', err);
+    });;
   }
 
   /**

@@ -333,6 +333,7 @@ export class DocumentAddPage implements OnInit {
   }
 
   async createWorkflow() {
+    this.workflowService.displayLoading();
     console.log('Extracting form data ------------------------------');
     console.log('Name: ', this.workflowForm.controls.workflowName.value);
     console.log(
@@ -350,6 +351,7 @@ export class DocumentAddPage implements OnInit {
       phases,
       this.file,
       (response) => {
+        this.workflowService.dismissLoading();
         console.log(response);
       }
     );

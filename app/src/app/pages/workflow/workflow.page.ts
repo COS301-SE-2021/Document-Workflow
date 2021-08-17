@@ -49,6 +49,7 @@ export class WorkflowPage implements OnInit {
   ) {}
 
   async ngOnInit() {
+    this.workFlowService.displayLoading();
     this.reOrder = true;
 
     if (this.plat.width() > 572) {
@@ -57,17 +58,11 @@ export class WorkflowPage implements OnInit {
       this.sizeMe = true;
     }
 
-    const load = await this.loadctrl.create({
-      message: 'Hang in there... we are almost done',
-      duration: 5000,
-      showBackdrop: false,
-      spinner: 'bubbles',
-    });
-    await load.present();
+
 
     if (Cookies.get('token') === undefined) {
       await this.router.navigate(['/login']);
-      await load.dismiss();
+      this.workFlowService.dismissLoading();
       return;
     } else {
       this.userApiService.checkIfAuthorized().subscribe(
@@ -77,13 +72,13 @@ export class WorkflowPage implements OnInit {
         async (error) => {
           console.log(error);
           await this.router.navigate(['/login']);
-          await load.dismiss();
+          this.workFlowService.dismissLoading();
           return;
         }
       );
     }
     await this.getUser();
-    await load.dismiss();
+
   }
 
   async getUser() {
@@ -127,6 +122,7 @@ export class WorkflowPage implements OnInit {
       } else {
         alert('Something went wrong');
       }
+      this.workFlowService.dismissLoading();
     });
   }
 
@@ -143,13 +139,11 @@ export class WorkflowPage implements OnInit {
             }else{
               this.documentPermission[i] = 1;
             }
-
           }
         }
       }
       i++;
     }
-    console.warn(this.documentPermission)
   }
 
   //todo move this to the spec.ts of workflow
@@ -290,8 +284,12 @@ export class WorkflowPage implements OnInit {
     });
   }
 
-  async debug(str: any) {
-    console.log(str);
+ debug(num: number) {
+    if(num === 1){
+      this.workFlowService.displayLoading();
+    }else{
+      this.workFlowService.dismissLoading();
+    }
   }
   showAll() {
     for (let document of this.documents) {
