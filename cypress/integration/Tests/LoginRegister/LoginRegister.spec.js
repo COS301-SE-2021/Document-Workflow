@@ -56,17 +56,21 @@ describe('Registering a new user', ()=>{
         cy.get('#changeover').click();
     })
 
-    it('Registering am exisiting user',()=>{
+    it('Registering a user',()=>{
         cy.get('#firstname').type("Brenton");
         cy.get('#lastname').type("Stroberg");
         cy.get('#initials').type("BP");
-        cy.get('#email').type("brenton.stroberg@yahoo.co.za");
+        cy.get('#email').type("u17015741@tuks.co.za");
         cy.get('#phoneNumber').type("0763398714");
         cy.get('#password').type("Password#1");
         cy.get('#confirmPassword').type("Password#1");
         cy.get("#addSignature").click();
         cy.get(".action-sheet-group>:nth-child(2)").click();
-        cy.wait(1000);
-        // cy.get('#register').click();
+        cy.wait(500);
+        cy.get(".signature-pad-canvas").click()
+        cy.get('#save').click();
+        cy.get('#done').click();
+        cy.get('#register').click();
+        cy.get('ion-row.md > :nth-child(1) > .md').eq(1).click();
     });
 });

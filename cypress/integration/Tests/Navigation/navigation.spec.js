@@ -87,19 +87,4 @@ describe("Navigation when user is logged in", () => {
     cy.visit("http://localhost:8100/home/faceboook");
     cy.url().should("eq", "http://localhost:8100/home/faceboook");
   });
- 
-  // it("navigating to archive", () => {
-  //   cy.visit("http://localhost:8100/home/archive");
-  //   cy.url().should("eq", "http://localhost:8100/archive");
-  // });
-
-  // it("navigating to view document", () => {
-  //   cy.visit("http://localhost:8100/home/documentView");
-  //   cy.url().should("eq", "http://localhost:8100/documentView");
-  // });
-
-  // it("navigating to home", () => {
-  //   cy.visit("http://localhost:8100/home");
-  //   cy.url().should("eq", "http://localhost:8100/home");
-  // });
 });
