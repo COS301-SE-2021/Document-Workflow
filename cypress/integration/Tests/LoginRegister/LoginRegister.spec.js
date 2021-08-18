@@ -34,7 +34,6 @@ describe('Logging in',()=>{
       // cy.url().should('eq','')
     })
 
-
     it('logs in with the correct email and password', ()=>{
         cy.get('#loginEmail').type('brenton.stroberg@yahoo.co.za')
         cy.get('#loginPassword').type('Password#1')

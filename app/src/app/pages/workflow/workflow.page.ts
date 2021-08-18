@@ -1,10 +1,5 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import {
-  IonReorderGroup,
-  LoadingController,
-  ModalController,
-  NavController,
-} from '@ionic/angular';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { IonReorderGroup } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 
@@ -15,7 +10,6 @@ import {
   workflowFormat,
   WorkFlowService,
 } from '../../Services/Workflow/work-flow.service';
-import { ConfirmDeleteWorkflowComponent } from 'src/app/components/confirm-delete-workflow/confirm-delete-workflow.component';
 import { ItemReorderEventDetail } from '@ionic/core';
 import * as Cookies from 'js-cookie';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -36,6 +30,7 @@ export class WorkflowPage implements OnInit {
   sizeMe: boolean;
   ownedWorkflows = [];
   workflows = [];
+  leave: boolean = false;
 
   constructor(
     private plat: Platform,
@@ -44,6 +39,20 @@ export class WorkflowPage implements OnInit {
     private workFlowService: WorkFlowService,
     private fb: FormBuilder
   ) {}
+
+  ngOnDestroy(): void {
+    //Called once, before the instance is destroyed.
+    //Add 'implements OnDestroy' to the class.
+    console.log("hfijbnrfijbfrijbwfijb")
+  }
+
+  ionViewDidEnter(){
+    if(this.leave === true){
+      this.documents =[];
+      this.ngOnInit();
+      this.leave = false;
+    }
+  }
 
   async ngOnInit() {
     this.sortForm = this.fb.group({
@@ -125,11 +134,12 @@ export class WorkflowPage implements OnInit {
       this.documentPermission[i] = 0;
       if (document.status !== 'Completed') {
         if (document.phases[document.currentPhase].status !== 'Completed') {
-          if(document.ownerEmail === this.userEmail)
+          if (document.ownerEmail === this.userEmail)
             this.documentPermission[i] = 2;
           for (let user of document.phases[document.currentPhase].users) {
             if (user.user === this.userEmail) {
-              if (user.accepted === "false" ){ //TODO: swap to boolean once changes in backend made
+              if (user.accepted === 'false') {
+                //TODO: swap to boolean once changes in backend made
                 if (user.permission === 'view') {
                   this.documentPermission[i] = 2;
                 } else {
@@ -196,6 +206,7 @@ export class WorkflowPage implements OnInit {
   }
 
   async editWorkflow(id: string) {
+    this.leave=true;
     this.router.navigate([
       'home/workflowEdit',
       {
@@ -210,6 +221,7 @@ export class WorkflowPage implements OnInit {
 
   viewWorkFlow(id: string, name: string, status) {
     // this.navControl.navigateForward
+    this.leave=true;
     this.router.navigate([
       '/home/documentView',
       {
@@ -222,6 +234,7 @@ export class WorkflowPage implements OnInit {
   }
 
   editDocument(id: string, name: string) {
+    this.leave=true;
     this.router.navigate([
       '/home/documentEdit',
       {
@@ -273,7 +286,7 @@ export class WorkflowPage implements OnInit {
   }
 
   showOnlyWorkflowOwned() {
-    console.log('here')
+    console.log('here');
     for (const document of this.documents) {
       if (document.ownerEmail === this.userEmail) {
         document.showWorkflow = true;
@@ -287,7 +300,7 @@ export class WorkflowPage implements OnInit {
     for (let document of this.documents) {
       for (let user of document.phases[document.currentPhase].users) {
         if (user.user === this.userEmail) {
-          if (user.accepted === "true") {
+          if (user.accepted === 'true') {
             document.showWorkflow = false;
           } else {
             document.showWorkflow = true;
