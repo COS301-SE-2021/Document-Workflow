@@ -1,7 +1,7 @@
 import { Document, DocumentProps } from "./Document";
 import * as AWS from 'aws-sdk';
 import { ObjectId, Types } from "mongoose";
-import { CloudError } from "../error/Error";
+import { CloudError, DatabaseError } from "../error/Error";
 
 const s3 = new AWS.S3({
     region: process.env.AWS_REGION,
@@ -17,7 +17,7 @@ export default class DocumentRepository {
             await newDoc.save();
         }
         catch(err) {
-            throw new Error("Could not save Document data");
+            throw new DatabaseError("Could not save Document data");
         }
 
         const uploadParams = {
