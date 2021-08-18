@@ -501,11 +501,11 @@ export default class WorkflowService{
                 }
                 else if(convertedPhases[i].status === PhaseStatus.DELETE){
                     console.log("Deleting a phase with id: ", convertedPhases[i]._id);
+                    await this.phaseService.deletePhaseById(convertedPhases[i]._id);
                 }
                 else{
                     //TODO: throw error
                 }
-
             }
 
             workflowOriginal.phases = preservePhasesIds.concat(addPhaseIds);
