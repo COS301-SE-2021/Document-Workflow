@@ -201,31 +201,21 @@ export default class WorkflowController {
         })
 
         //parse request, setup WorkflowProps object to send through
-        const workflow: WorkflowProps = {
-            _id: undefined,
-            __v: undefined,
-            name: req.body.name,
-            ownerId: req.user._id,
-            ownerEmail: req.user.email,
-            documentId: undefined,
-            description: req.body.description,
-            phases: undefined
-        }
 
         const convertedPhases = [];
 
         phases.forEach( phase => {
-            console.log("THIS PHASE HAS THE FOLLOWING USERS OBJECT");
-            console.log(phase.users);
             convertedPhases.push(new Phase({
                 users: JSON.stringify(phase.users), //The input users array is actually an array with a single JSON string
                 description: phase.description,
-                annotations: phase.annotations
+                annotations: phase.annotations,
+                status: phase.status,
+                _id: phase._id
             }));
         });
 
         try{
-            return await this.workflowService.editWorkflow(workflow, convertedPhases, req.user.email, req.body.workflowId);
+            return await this.workflowService.editWorkflow(req.body.description, req.body.name, convertedPhases, req.user.email, req.body.workflowId);
         }
         catch(err){
             console.log(err);

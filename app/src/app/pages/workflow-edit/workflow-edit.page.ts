@@ -259,28 +259,6 @@ export class WorkflowEditPage implements OnInit {
     }
   }
 
-  async saveChangesToWorkflow() {
-    console.log(this.workflowForm);
-    alert(
-      'This function needs to be looked at, the request is sent before we confirm it'
-    );
-
-    const phases = this.workflowForm.controls.phases.value;
-    const name = this.workflowForm.controls.workflowName.value;
-    const description = this.workflowForm.controls.workflowDescription.value;
-    console.log(phases);
-
-    await this.workflowServices.editWorkflow(
-      name,
-      description,
-      phases,
-      this.workflowId,
-      (response) => {
-        console.log(response);
-      }
-    );
-  }
-
   changeController() {
     this.controller = !this.controller;
   }
@@ -436,10 +414,27 @@ export class WorkflowEditPage implements OnInit {
     this.userApiService.displayPopOverWithButtons(
       'Edited document',
       'Are you happy with your changes?',
-      (response) => {
-        if (response.confirm) {
-          //TODO: extract data from form and send it to the backend.
+      async (response) => {
+        if (response.data.confirm) {
+          await this.saveChangesToWorkflow();
         }
+      }
+    );
+  }
+
+  async saveChangesToWorkflow() {
+    const phases = this.workflowForm.controls.phases.value;
+    const name = this.workflowForm.controls.workflowName.value;
+    const description = this.workflowForm.controls.workflowDescription.value;
+    console.log(phases);
+
+    await this.workflowServices.editWorkflow(
+      name,
+      description,
+      phases,
+      this.workflowId,
+      (response) => {
+        console.log(response);
       }
     );
   }
