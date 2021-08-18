@@ -434,6 +434,7 @@ export class WorkflowEditPage implements OnInit {
         'Are you happy with your changes?',
         async (response) => {
           if (response.data.confirm) {
+            this.workflowServices.displayLoading();
             await this.saveChangesToWorkflow();
           }
         }
@@ -480,15 +481,21 @@ export class WorkflowEditPage implements OnInit {
     const name = this.workflowForm.controls.workflowName.value;
     const description = this.workflowForm.controls.workflowDescription.value;
 
-    // await this.workflowServices.editWorkflow(
-    //   name,
-    //   description,
-    //   phases,
-    //   this.workflowId,
-    //   (response) => {
-    //     console.log(response);
-    //   }
-    // );
+    await this.workflowServices.editWorkflow(
+      name,
+      description,
+      phases,
+      this.workflowId,
+      (response) => {
+        this.workflowServices.dismissLoading();
+        console.log(response);
+        if(response.status === "success"){
+          this.router.navigate(['/home'])
+        }else{
+          this.userApiService.displayPopOver('an error occured','Please try again later')
+        }
+      }
+    );
   }
 
   viewPhase(i: number) {
