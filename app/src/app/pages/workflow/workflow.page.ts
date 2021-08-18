@@ -183,8 +183,11 @@ export class WorkflowPage implements OnInit {
       (response) => {
         console.log(response);
         if (response.data.confirm === true) {
+          this.workFlowService.displayLoading();
           this.workFlowService.deleteWorkFlow(id, (response2) => {
+
             console.log(response2);
+            this.workFlowService.dismissLoading();
           });
         }
       }
@@ -197,8 +200,11 @@ export class WorkflowPage implements OnInit {
       'Are you sure you want to revert the phase?',
       (response) => {
         if (response.data.confirm === true) {
-          this.workFlowService.revertPhase(id, (response2) => {
+          this.workFlowService.revertPhase(id, async (response2) => {
             console.log(response2);
+            if(response2.status === "success") {
+              await this.userApiService.displayPopOver("Success", "The workflow was successfully deleted");
+            }
           });
         }
       }

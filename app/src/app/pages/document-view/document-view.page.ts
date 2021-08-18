@@ -222,8 +222,16 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
 
   async updateDocumentAnnotations(annotationsString){
       console.log("Updating the annotations of this document");
+      this.workflowService.displayLoading();
       await this.workflowService.updateCurrentPhaseAnnotations(this.workflowId, annotationsString, (response)=>{
         console.log(response);
+
+        if(response.status === "success"){
+          this.userApiService.displayPopOver("Success", "Your response has been saved");
+          this.router.navigate(['home']);
+        }
+
+        this.workflowService.dismissLoading();
       });
   }
 }

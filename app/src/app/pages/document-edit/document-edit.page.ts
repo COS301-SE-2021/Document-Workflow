@@ -198,8 +198,16 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
       console.log(response.data.confirm);
       console.log(this.documentMetadata.name);
       console.log(file.name);
+      this.workflowService.displayLoading();
       await this.workflowService.updatePhase(this.workflowId, response.data.confirm, file, (response2) => {
         console.log(response2);
+
+        this.workflowService.dismissLoading();
+
+        if(response2.status === "success"){
+          this.userApiService.displayPopOver("Success", "The document has been edited");
+          this.router.navigate(['home']);
+        }
       });
       await this.annotationManager.importAnnotations(this.annotationsString);
     });

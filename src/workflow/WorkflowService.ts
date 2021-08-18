@@ -152,6 +152,14 @@ export default class WorkflowService{
         return {status:"success", data: data, message:""};
     }
 
+    /**
+     * This function deletes a workflow by first deleting the document metadata and all files in the cloud server.
+     * It then removes the id of this workflow from all participating users. Finally, it deletes the workflow itself.
+     * @param workflowId
+     * @param userEmail
+     * TODO: ensure this function is robust in the event of network failure
+     * TODO: remove the id from participants before deleting anything.
+     */
     async deleteWorkFlow(workflowId, userEmail) {
         console.log("Attempting to delete workflow with id, ",workflowId);
         try {
