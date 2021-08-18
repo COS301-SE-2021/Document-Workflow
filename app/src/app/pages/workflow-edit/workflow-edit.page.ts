@@ -218,7 +218,7 @@ export class WorkflowEditPage implements OnInit {
     return this.fb.group({
       description: new FormControl(phase.description, Validators.required),
       annotations: new FormControl(phase.annotations, [Validators.required]),
-      status: new FormControl('Edit'),
+      phaseStatus: new FormControl('Edit'),
       showPhases: new FormControl(phase.showPhase),
       phaseNumber: new FormControl(phase.phaseNumber),
       users: this.fb.array([]),
@@ -232,6 +232,7 @@ export class WorkflowEditPage implements OnInit {
         Validators.required,
       ]),
       permission: new FormControl(user.permission, [Validators.required]),
+      accepted: new FormControl(user.accepted, [Validators.required]),
     });
   }
 
@@ -259,7 +260,6 @@ export class WorkflowEditPage implements OnInit {
     }
   }
 
-
   changeController() {
     this.controller = !this.controller;
   }
@@ -270,13 +270,13 @@ export class WorkflowEditPage implements OnInit {
 
   addUser(form: FormArray, i: number) {
     form.push(this.createNewUser());
-    this.setPhase(i);
   }
 
   createNewUser(): FormGroup {
     return this.fb.group({
       user: new FormControl('', [Validators.email, Validators.required]),
       permission: new FormControl('', [Validators.required]),
+      accepted: new FormControl(false, [Validators.required]),
     });
   }
 
@@ -293,11 +293,9 @@ export class WorkflowEditPage implements OnInit {
         );
       }
     }
-    this.setPhase(i);
   }
 
   changePermission(control: any, str: string, i: number) {
-    this.setPhase(i);
     control.setValue(str);
   }
 
@@ -305,13 +303,14 @@ export class WorkflowEditPage implements OnInit {
     return this.fb.group({
       description: new FormControl('', Validators.required),
       annotations: new FormControl('', [Validators.required]),
-      status: new FormControl('Create'),
+      phaseStatus: new FormControl('Create'),
       showPhases: new FormControl(true),
       phaseNumber: new FormControl(i),
       users: this.fb.array([
         this.fb.group({
           user: new FormControl('', [Validators.email, Validators.required]),
           permission: new FormControl('', [Validators.required]),
+          accepted: new FormControl(false, [Validators.required])
         }),
       ]),
     });
@@ -324,10 +323,10 @@ export class WorkflowEditPage implements OnInit {
 
   removePhase(i: number, phas: phaseFormat) {
     let phase = this.workflowForm.get('phases') as FormArray;
-    if (phase.at(i)['controls'].status.value === 'Create') {
+    if (phase.at(i)['controls'].phaseStatus.value === 'Create') {
       phase.removeAt(i);
     } else {
-      phase.at(i)['controls'].status.setValue('Delete') ;
+      phase.at(i)['controls'].phaseStatus.setValue('Delete');
       phase.at(i)['controls'].showPhases = false;
     }
     console.warn(this.workflowForm);
@@ -410,37 +409,56 @@ export class WorkflowEditPage implements OnInit {
     });
   }
 
-  submit() {
+  tmempsubmit() {
     this.userApiService.displayPopOverWithButtons(
       'Edited document',
       'Are you happy with your changes?',
       async (response) => {
         if (response.data.confirm) {
-          await this.saveChangesToWorkflow();
+          // await this.saveChangesToWorkflow();
         }
       }
     );
   }
 
-  async saveChangesToWorkflow() {
-    const phases = this.workflowForm.controls.phases.value;
-    const tmp = this.workflowForm.controls.phases.value;
-    let phases:phaseFormat[] =[];
-    console.warn(tmp);
-    let i: number =0;
-    console.log(this.document.currentPhase)
-    for(let phase of tmp){
-      if(this.document.currentPhase < i){
-        console.log(phase);
-        phases.push(phase);
+  async submit() {
+    console.log(this.workflowForm.controls.phases['controls'][1].controls);
+    let phases: phaseFormat[] = [];
+    // console.warn(tmp);
+    let i: number = 0;
+    console.log(this.document.currentPhase);
+    for (let phase of this.workflowForm.controls.phases['controls']) {
+      if (this.document.currentPhase < i) {
+        let tmpPhase: phaseFormat;
+        let tmpUsr: phaseUserFormat[] = [];
+        console.log(phase.controls.users['controls']);
+        for (let user of phase.controls.users['controls']) {
+          let tempUser: phaseUserFormat;
+          tempUser = {
+            email: user.controls.user,
+            permission: user.controls.permission,
+            accepted: user.controls.accepted,
+          };
+          tmpUsr.push(tempUser);
+        }
+        tmpPhase={
+          status: phase.controls.phaseStatus,
+          annotations: phase.controls.annotations,
+          description: phase.controls.description,
+          users: tmpUsr,
+        }
+        phases.push(tmpPhase);
       }
       i++;
     }
-    // const name = this.workflowForm.controls.workflowName.value;
-    // const description = this.workflowForm.controls.workflowDescription.value;
+
+    console.log(phases)
+    const name = this.workflowForm.controls.workflowName.value;
+    const description = this.workflowForm.controls.workflowDescription.value;
+
+    console.log(name + description)
     // console.log(phases);
 
-    
     // const name = this.workflowForm.controls.workflowName.value;
     // const description = this.workflowForm.controls.workflowDescription.value;
     // console.log(phases);
@@ -480,16 +498,5 @@ export class WorkflowEditPage implements OnInit {
     this.ready = false;
   }
 
-  setPhase(i: number) {
-    let phase = this.workflowForm.get('phases') as FormArray;
-    let helper = phase.at(i)['controls'].status;
-    console.warn(helper);
-    if (helper === 'Create') {
-      phase.at(i)['controls'].status.setValue('Create') ;
-    } else if (helper === 'Delete') {
-      phase.at(i)['controls'].status.setValue('Delete') ;
-    } else {
-      phase.at(i)['controls'].status.setValue('Edit');
-    }
-  }
+
 }

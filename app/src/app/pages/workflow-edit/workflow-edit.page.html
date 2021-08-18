@@ -17,7 +17,7 @@
   </ion-toolbar>
 </ion-header>
 <ion-content style="height:95%" *ngIf="ready" fullscreen="true">
-  <form [formGroup]="workflowForm" style="height:100%" (ngSubmit)="saveChangesToWorkflow()">
+  <form [formGroup]="workflowForm" style="height:100%" (ngSubmit)="submit()">
     <ion-card style="height: auto;">
       <ion-card-header>
         <ion-item>
@@ -82,10 +82,10 @@
                       <ion-select placeholder="{{user.controls.permission.value}}"
                         [formControl]="user.controls.permission">
                         <!-- (click)="setPhase(phase.controls.phaseNumber.value)" -->
-                        <ion-select-option value="signer" >Signer
+                        <ion-select-option value="sign" >Signer
                         </ion-select-option>
                         <!-- (click)="setPhase(phase.controls.phaseNumber.value)" -->
-                        <ion-select-option value="viewer" >Viewer
+                        <ion-select-option value="view" >Viewer
                         </ion-select-option>
                       </ion-select>
                     </ion-item>
