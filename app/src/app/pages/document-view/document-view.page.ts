@@ -108,7 +108,8 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
               //For now, to work around not having full api functions with the free version of PDFTron
               //We disable the action areas from showing through a check of the workflow status
               //This is to ensure pringint of the document does not include action areas.
-              if(this.workflowStatus === 'Complete') //TODO: swap with enum
+              console.log(this.workflowStatus);
+              if(this.workflowStatus !== 'Complete') //TODO: swap with enum
                 instance.Core.annotationManager.importAnnotations(response.data.annotations);
             });
 
