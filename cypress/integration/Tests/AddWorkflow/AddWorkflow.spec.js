@@ -19,23 +19,25 @@ describe("testing the add workflow functionality", () => {
         cy.visit('http://localhost:8100/home/addWorkflow');
     });
 
-    it('Check if next is active',()=>{
-        // !cy.get('#changeOver').click();
-    });
-
     it("input the data", ()=>{
         cy.get('#workflowName').type('This is a document name');
-        cy.get('#workflowDescription').type("This is the workflow description")
-        const fileName='Timesheet-Template.pdf';
-        cy.fixture(fileName).then(fileContent =>{
-            cy.get('input[type=file]').upload({fileContent, fileName, mimeType: 'application/pdf'})
-        })
+        cy.get('#workflowDescription').type("This is the workflow description");
+        cy.wait(10000);
+        cy.get("#changeOver").click();
 
-        cy.wait(3000)
+        cy.get('ion-textarea').eq(0).type('this is a phase text');
+        cy.get('ion-input').eq(0).type('brenton.stroberg@yahoo.co.za');
 
-     //click close button
-     cy.get('.mfp-close').click()
-     cy.get('#changeover').click();
+        cy.get('ion-select').eq(0).click();
+        cy.get('#alert-input-1-0').eq(0).click();
+        cy.get('.alert-button-group > :nth-child(2)').click();
+
+        cy.get('ion-button').eq(1).click();
+        cy.wait(10000);
+
+        cy.get('ion-icon').eq(0).click();
+        cy.get('ion-button').eq(1).click();
+
     });
     
 });
