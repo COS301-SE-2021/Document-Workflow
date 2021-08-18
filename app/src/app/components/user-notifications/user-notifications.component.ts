@@ -18,7 +18,6 @@ export class UserNotificationsComponent implements OnInit {
   //Link this to the user services such that you can call one function for no buttons, and another for buttons
   ngOnInit() {
     if (this.title === 'termsOfService') {
-      this.displayButton = true;
       this.message =
         'Note that by making use of the Document Workflow system, you are ' +
         'essentially giving your soul to our Lizard overlord JeffBezos. He will steal all of' +

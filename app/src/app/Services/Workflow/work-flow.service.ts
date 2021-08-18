@@ -387,9 +387,7 @@ export class WorkFlowService {
 
   dismissLoading(){
     this.loadingCtrl.dismiss().then((response) => {
-      console.log('Loader closed!', response);
     }).catch((err) => {
-      console.log('Error occured : ', err);
     });;
   }
 

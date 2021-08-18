@@ -162,7 +162,7 @@ export class WorkflowEditPage implements OnInit {
             };
             tempUser.push(tmpUser);
           }
-          console.log(phase);
+          console.log(phase._id);
           tmpPhase = {
             showPhase: tmpShow,
             phaseNumber: i,
@@ -175,7 +175,7 @@ export class WorkflowEditPage implements OnInit {
           phases.push(tmpPhase);
         }
         i++;
-
+        console.log(response.data._id);
         this.document = {
           currentPercent: 0,
           currentPhase: response.data.currentPhase,
@@ -490,9 +490,10 @@ export class WorkflowEditPage implements OnInit {
         this.workflowServices.dismissLoading();
         console.log(response);
         if(response.status === "success"){
-          this.router.navigate(['/home'])
+          this.userApiService.displayPopOver('Success','Workflow edited')
+          this.router.navigate(['/home']);
         }else{
-          this.userApiService.displayPopOver('an error occured','Please try again later')
+          this.userApiService.displayPopOver('an error occured','Please try again later');
         }
       }
     );

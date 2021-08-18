@@ -11,10 +11,6 @@ import { Platform } from '@ionic/angular';
 //interface and services
 import { User, UserAPIService } from './../../Services/User/user-api.service';
 import {
-  documentImage,
-  DocumentAPIService,
-} from './../../Services/Document/document-api.service';
-import {
   phaseFormat,
   workflowFormat,
   WorkFlowService,
@@ -126,15 +122,12 @@ export class WorkflowPage implements OnInit {
   sortPermission() {
     let i: number = 0;
     for (const document of this.documents) {
-      console.log(document.status);
       this.documentPermission[i] = 0;
       if (document.status !== 'Completed') {
         if (document.phases[document.currentPhase].status !== 'Completed') {
           for (let user of document.phases[document.currentPhase].users) {
             if (user.email === this.userEmail) {
-              console.warn(user);
-              if (user.accepted === false) {
-                console.warn(user);
+              if (user.accepted === false){
                 if (user.permission === 'view') {
                   this.documentPermission[i] = 2;
                 } else {
