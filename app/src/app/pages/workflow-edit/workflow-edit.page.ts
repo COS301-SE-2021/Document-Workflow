@@ -259,33 +259,6 @@ export class WorkflowEditPage implements OnInit {
     }
   }
 
-  async saveChangesToWorkflow() {
-    const tmp = this.workflowForm.controls.phases.value;
-    let phases:phaseFormat[] =[];
-    console.warn(tmp);
-    let i: number =0;
-    console.log(this.document.currentPhase)
-    for(let phase of tmp){
-      if(this.document.currentPhase < i){
-        console.log(phase);
-        // phases.push(phase);
-      }
-      i++;
-    }
-    const name = this.workflowForm.controls.workflowName.value;
-    const description = this.workflowForm.controls.workflowDescription.value;
-    console.log(phases);
-
-    // await this.workflowServices.editWorkflow(
-    //   name,
-    //   description,
-    //   phases,
-    //   this.workflowId,
-    //   (response) => {
-    //     console.log(response);
-    //   }
-    // );
-  }
 
   changeController() {
     this.controller = !this.controller;
@@ -435,6 +408,52 @@ export class WorkflowEditPage implements OnInit {
         //not delete
       }
     });
+  }
+
+  submit() {
+    this.userApiService.displayPopOverWithButtons(
+      'Edited document',
+      'Are you happy with your changes?',
+      async (response) => {
+        if (response.data.confirm) {
+          await this.saveChangesToWorkflow();
+        }
+      }
+    );
+  }
+
+  async saveChangesToWorkflow() {
+    const phases = this.workflowForm.controls.phases.value;
+    const tmp = this.workflowForm.controls.phases.value;
+    let phases:phaseFormat[] =[];
+    console.warn(tmp);
+    let i: number =0;
+    console.log(this.document.currentPhase)
+    for(let phase of tmp){
+      if(this.document.currentPhase < i){
+        console.log(phase);
+        phases.push(phase);
+      }
+      i++;
+    }
+    // const name = this.workflowForm.controls.workflowName.value;
+    // const description = this.workflowForm.controls.workflowDescription.value;
+    // console.log(phases);
+
+    
+    // const name = this.workflowForm.controls.workflowName.value;
+    // const description = this.workflowForm.controls.workflowDescription.value;
+    // console.log(phases);
+
+    // await this.workflowServices.editWorkflow(
+    //   name,
+    //   description,
+    //   phases,
+    //   this.workflowId,
+    //   (response) => {
+    //     console.log(response);
+    //   }
+    // );
   }
 
   viewPhase(i: number) {

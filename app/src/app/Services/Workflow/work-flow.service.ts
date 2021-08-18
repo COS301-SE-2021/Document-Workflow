@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { User } from './../User/user-api.service';
-import { documentImage, phaseUser } from './../Document/document-api.service';
 import * as Cookies from 'js-cookie';
 import { LoadingController } from '@ionic/angular';
 
