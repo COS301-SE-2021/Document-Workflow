@@ -409,20 +409,24 @@ export class WorkflowEditPage implements OnInit {
     });
   }
 
-  tmempsubmit() {
+  checkIfValid(){
+
+  }
+
+  submit() {
+    this.checkIfValid();
     this.userApiService.displayPopOverWithButtons(
       'Edited document',
       'Are you happy with your changes?',
       async (response) => {
         if (response.data.confirm) {
-          // await this.saveChangesToWorkflow();
+          await this.saveChangesToWorkflow();
         }
       }
     );
   }
 
-  async submit() {
-    console.log(this.workflowForm.controls.phases['controls'][1].controls);
+  async saveChangesToWorkflow() {
     let phases: phaseFormat[] = [];
     // console.warn(tmp);
     let i: number = 0;
@@ -456,22 +460,15 @@ export class WorkflowEditPage implements OnInit {
     const name = this.workflowForm.controls.workflowName.value;
     const description = this.workflowForm.controls.workflowDescription.value;
 
-    console.log(name + description)
-    // console.log(phases);
-
-    // const name = this.workflowForm.controls.workflowName.value;
-    // const description = this.workflowForm.controls.workflowDescription.value;
-    // console.log(phases);
-
-    // await this.workflowServices.editWorkflow(
-    //   name,
-    //   description,
-    //   phases,
-    //   this.workflowId,
-    //   (response) => {
-    //     console.log(response);
-    //   }
-    // );
+    await this.workflowServices.editWorkflow(
+      name,
+      description,
+      phases,
+      this.workflowId,
+      (response) => {
+        console.log(response);
+      }
+    );
   }
 
   viewPhase(i: number) {
