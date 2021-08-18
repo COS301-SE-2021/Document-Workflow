@@ -126,7 +126,7 @@ export class WorkflowPage implements OnInit {
       if (document.status !== 'Completed') {
         if (document.phases[document.currentPhase].status !== 'Completed') {
           for (let user of document.phases[document.currentPhase].users) {
-            if (user.email === this.userEmail) {
+            if (user.user === this.userEmail) {
               if (user.accepted === false){
                 if (user.permission === 'view') {
                   this.documentPermission[i] = 2;
@@ -284,7 +284,7 @@ export class WorkflowPage implements OnInit {
   sortByNeededActions() {
     for (let document of this.documents) {
       for (let user of document.phases[document.currentPhase].users) {
-        if (user.email === this.userEmail) {
+        if (user.user === this.userEmail) {
           if (user.accepted === true) {
             document.showWorkflow = false;
           } else {
