@@ -3,4 +3,5 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install -f
 COPY . .
-CMD ["npm", "run","build:server"]
+EXPOSE 3000
+CMD ["npm", "run","test"]
