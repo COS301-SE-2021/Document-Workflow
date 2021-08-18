@@ -1,8 +1,8 @@
 import { createSchema, ExtractDoc, ExtractProps, Type, typedModel } from "ts-mongoose";
 import { userSchema } from "../user/User";
 
-export const ActionAreaType = ["Date","Signature", "initial"];
-export const PhaseStatus = ["Pending", "InProgress", "Rejected", "Completed"];
+//export const ActionAreaType = ["Date","Signature", "initial"];
+export const PhaseStatus = Object.freeze({PENDING:"Pending", INPROGRESS:"InProgress", REJECTED:"Rejected", COMPLETED:"Completed", CREATE: "Create", DELETE: "Delete", EDIT:"Edit"});
 
 /*const actionAreaSchema = createSchema({ //sort of scrapped
     coordinates: Type.array({maxlength: 2, minlength: 2, required: true}).of(Type.number),
@@ -17,14 +17,14 @@ const commentSchema = createSchema({ //sort of scrapped
 }, { _id: false, _v: false });*/
 
 export const phaseSchema = createSchema({
-    users: Type.array({required: true}).of(Type.ref(Type.objectId()).to("User", userSchema)),
+    users: String,
     //comments: Type.array().of(commentSchema),
     annotations: Type.string({required: true}),
     description: Type.string({required: true}),
     //actionAreas: Type.array().of(actionAreaSchema), //annotations: string -> includes comments
-    signingUserId: Type.ref(Type.objectId({required:true})).to("User", userSchema),
-    //status: Type.string({enum: PhaseStatus, required: true}),
-    //userAccepts: Type.array().of(Type.array({maxlength: 2, minlength: 2, required: false}).of(Type.string()))
+    //signingUserId: Type.ref(Type.objectId({required:true})).to("User", userSchema),
+    status: Type.string({ required: true, default: PhaseStatus.PENDING}),
+    //userAccepts: Type.string({required: true})
 }, { _id: true, _v: false });
 
 export const Phase = typedModel('Phase', phaseSchema);

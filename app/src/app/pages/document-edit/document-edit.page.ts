@@ -1,343 +1,240 @@
-import { TypeModifier } from '@angular/compiler/src/output/output_ast';
-import {
-  Component,
-  ElementRef,
-  OnInit,
-  Sanitizer,
-  ViewChild,
-} from '@angular/core';
-import {
-  FormArray,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-  AbstractControl,
-} from '@angular/forms';
-import { DomSanitizer } from '@angular/platform-browser';
-import { Router } from '@angular/router';
-import {
-  ActionSheetController,
-  IonReorderGroup,
-  ModalController,
-  Platform,
-} from '@ionic/angular';
-import { ItemReorderEventDetail } from '@ionic/core';
-import { DocumentActionAreaComponent } from 'src/app/components/document-action-area/document-action-area.component';
-import { User, UserAPIService } from 'src/app/Services/User/user-api.service';
-import * as Cookies from 'js-cookie';
-import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
-import {
-  DocumentAPIService,
-  documentImage, phase, phaseUser
-} from 'src/app/Services/Document/document-api.service';
-import { formattedError } from '@angular/compiler';
+/* eslint-disable @angular-eslint/no-input-rename */
+/* eslint-disable @typescript-eslint/member-ordering */
+/* eslint-disable @typescript-eslint/dot-notation */
+import {Component, OnInit, Input, AfterViewInit, ElementRef, ViewChild} from '@angular/core';
+
+import { ModalController, NavParams, Platform, PopoverController } from '@ionic/angular';
+import { ActivatedRoute, Router } from '@angular/router';
+import { DocumentAPIService } from 'src/app/Services/Document/document-api.service';
+import {WorkFlowService} from 'src/app/Services/Workflow/work-flow.service';
+import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import WebViewer from '@pdftron/webviewer';
+import { UserAPIService } from 'src/app/Services/User/user-api.service';
+import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
+
 
 @Component({
   selector: 'app-document-edit',
   templateUrl: './document-edit.page.html',
   styleUrls: ['./document-edit.page.scss'],
 })
-export class DocumentEditPage implements OnInit {
-  document: documentImage;
-
-  workflowForm: FormGroup;
-  private userCount = 1;
-  phases: FormArray;
-  file: File;
-
-  addFile: boolean;
-  addName: boolean;
-  addDescription: boolean;
-
-  reOrder: boolean;
-
+export class DocumentEditPage implements OnInit, AfterViewInit {
   srcFile: any;
-  rotated: number;
-  setZoom: any;
-  zoomLevel: number;
+  srcFileBase64: any;
+  pdfDoc: PDFDocument;
+  showAnnotations = true;
+  annotationManager: any;
+  annotationsString: string;
+  documentViewer: any;
+  PDFNet: any;
+  documentMetadata: any;
+  //This array is used to determine what annotations are and are not a part of action areas.
+  //It is here in case the stakeholders of this project decide they want more action areas as part of the application
+  annotationSubjects = ['Note' ]; //, 'Rectangle', 'Squiggly', 'Underline', 'Highlight', 'Strikeout'];
 
-  blob: Blob;
-
-  next: boolean;
-  user: User;
-  ownerEmail: any;
-  sizeMe: boolean;
-  controller: boolean;
-
-  phaseViewers: boolean[] = [];
-
-  @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
-  @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
-  workflowServices: any;
+  @Input('documentname') docName: string;
+  @Input('workflowId') workflowId: string;
+  @ViewChild('viewer') viewerRef: ElementRef;
+  @Input('userEmail') userEmail: string;
   constructor(
-    private plat: Platform,
-    private fb: FormBuilder,
-    private actionSheetController: ActionSheetController,
-    private modal: ModalController,
+    private navpar: NavParams,
+    private route: ActivatedRoute,
+    private docApi: DocumentAPIService,
+    private workflowService: WorkFlowService,
     private router: Router,
     private userApiService: UserAPIService,
-    private sanitizer: DomSanitizer,
-    private docServices: DocumentAPIService
+    private pop: PopoverController,
   ) {}
 
   async ngOnInit() {
-    this.document = this.docServices.createTestDocuments();
-
-    if (Cookies.get('token') === undefined) {
-      await this.router.navigate(['/login']);
-      return;
-    } else {
-      this.userApiService.checkIfAuthorized().subscribe(
-        (response) => {
-          console.log('Successfully authorized user');
-        },
-        async (error) => {
-          console.log(error);
-          await this.router.navigate(['/login']);
-          return;
-        }
-      );
-    }
-    if (this.plat.width() > 572) {
-      this.sizeMe = false;
-    } else {
-      this.sizeMe = true;
-    }
-
-    this.next = false;
-    this.rotated = 0;
-    this.setZoom = 'false';
-    this.zoomLevel = 1;
-
-    this.reOrder = true;
-
-    this.addFile = false;
-    this.addDescription = false;
-    this.addName = false;
-    this.controller = false;
-
-    await this.getDocumentData();
-
-    await this.getUser();
-  }
-
-  async getDocumentData() {
-    this.workflowForm = this.fb.group({
-      workflowName: [this.document.name, [Validators.required]],
-      workflowDescription: [this.document.description, [Validators.required]],
-      workflowFile:['',[Validators.required]],
-      phases: this.fb.array([]),
-    }),
-    this.fillPhases();
-  }
-
-  fillPhases() {
-    let i =0;
-    for(let phase of this.document.phases){
-      this.workflowForm.controls.phases['controls'].push(this.fillPhase(phase));
-      for(let user of phase.phaseUsers){
-        this.workflowForm.controls.phases['controls'][i].controls.users['controls'].push(this.fillUser(user));
-      }
-      this.phaseViewers.push(false);
-      i++;
-    }
-  }
-
-  fillPhase(phase: phase): FormGroup {
-    return this.fb.group({
-      description: new FormControl(phase.phaseDescription, Validators.required),
-      annotations: new FormControl(phase.annotations, [Validators.required]),
-      users: this.fb.array([]),
+    await this.route.params.subscribe((data) => {
+      this.workflowId = data['workflowId'];
+      //this.docName = data['documentname'];
+      this.userEmail = data['userEmail'];
     });
   }
 
-  fillUser(user: phaseUser): FormGroup{
-    return this.fb.group({
-      user: new FormControl(user.email, [Validators.email, Validators.required]),
-      permission: new FormControl(user.permission, [Validators.required]),
-    });
-  }
+  toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
 
-  async getUser() {
-    await this.userApiService.getUserDetails(async (response) => {
+  async ngAfterViewInit(): Promise<void>{
+    await this.workflowService.retrieveDocument(this.workflowId, async (response) => {
+      console.log(response);
       if (response) {
-        this.user = response.data;
-        this.ownerEmail = this.user.email;
+        this.documentMetadata = response.data.metadata;
+        this.docName = this.documentMetadata.name;
+        this.srcFileBase64 = response.data.filedata.Body.data;
+        const arr = new Uint8Array(response.data.filedata.Body.data);
+        const blob = new Blob([arr], {type: 'application/pdf'});
+
+        this.pdfDoc = await PDFDocument.load(arr);
+        const pdfBytes = await this.pdfDoc.save();
+        this.srcFile = pdfBytes;
+        WebViewer({
+          path: './../../../assets/lib',
+          annotationUser: this.userEmail
+        }, this.viewerRef.nativeElement).then(instance =>{
+
+          this.annotationManager = instance.Core.annotationManager;
+          this.PDFNet = instance.Core.PDFNet;
+          this.documentViewer = instance.Core.documentViewer;
+
+          instance.UI.loadDocument(blob, {filename: this.docName});
+          instance.UI.disableElements(['toolbarGroup-Annotate']);
+          instance.UI.setToolbarGroup('toolbarGroup-Insert', false);
+          instance.UI.setHeaderItems(header =>{
+            header.push({
+              type: 'actionButton',
+              // eslint-disable-next-line max-len
+              img: '<svg xmlns=\'http://www.w3.org/2000/svg\' class=\'ionicon\' viewBox=\'0 0 512 512\'><title>Eye</title><path d=\'M255.66 112c-77.94 0-157.89 45.11-220.83 135.33a16 16 0 00-.27 17.77C82.92 340.8 161.8 400 255.66 400c92.84 0 173.34-59.38 221.79-135.25a16.14 16.14 0 000-17.47C428.89 172.28 347.8 112 255.66 112z\' fill=\'none\' stroke=\'currentColor\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'32\'/><circle cx=\'256\' cy=\'256\' r=\'80\' fill=\'none\' stroke=\'currentColor\' stroke-miterlimit=\'10\' stroke-width=\'32\'/></svg>',
+              onClick: () =>  { this.toggleAnnotations(instance.Core.annotationManager) ;
+             }
+            });
+
+          });
+          instance.Core.documentViewer.addEventListener('documentLoaded', ()=>{
+            this.annotationsString = response.data.annotationsString;
+            instance.Core.annotationManager.importAnnotations(response.data.annotations);
+          });
+
+          instance.UI.setHeaderItems(header =>{
+            header.push({
+              type: 'actionButton',
+              img: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>',
+              onClick: async () => {
+                await this.acceptDocument();
+              }
+            });
+          });
+
+        });
+      }else {
+
+
+      }
+    });
+
+  }
+
+  download() {
+    const blob = new Blob([this.srcFile], { type: 'application/pdf' });
+    const objUrl = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = objUrl;
+    link.download = this.docName;
+    document.body.appendChild(link);
+
+    link.click();
+    link.remove();
+  }
+
+
+
+  toggleAnnotations(annotationManager){
+   console.log("TToggling annotations");
+    this.showAnnotations = !this.showAnnotations;
+    const annotations = annotationManager.getAnnotationsList();
+    if(this.showAnnotations){
+      //annotManager.showAnnotations(annotations); //use if you wihs to hide the associated comments that go with an annotation as well as the annotation.
+      annotations.forEach(annot =>{
+        this.annotationSubjects.forEach(a =>{
+          if(a === annot.Subject)
+            annot.Hidden = false;
+        });
+
+      });
+    }
+    else{
+      //annotManager.hideAnnotations(annotations);
+      annotations.forEach(annot =>{
+        this.annotationSubjects.forEach(a =>{
+          if(a === annot.Subject)
+            annot.Hidden = true;
+        });
+
+      });
+    }
+    annotationManager.drawAnnotationsFromList(annotations);
+  }
+
+  async getDocument(id: string) {
+    await this.docApi.getDocument(id, async (response) => {
+      if (response) {
+        const buff = response.data.filedata.Body.data;
+        this.srcFileBase64 = response.data.filedata.Body.data;
+        const a = new Uint8Array(buff);
+
+        this.pdfDoc = await PDFDocument.load(a);
+        const pdfBytes = await this.pdfDoc.save();
+        this.srcFile = pdfBytes;
       } else {
-        this.userApiService.displayPopOver('Error', 'Cannot find user');
       }
     });
   }
 
-  checkStatus() {
-    if (this.workflowForm.get('workflowName').valid) {
-      this.addName = true;
-    } else {
-      this.addName = false;
-    }
-    if (this.workflowForm.get('workflowDescription').valid) {
-      this.addDescription = true;
-    } else {
-      this.addDescription = false;
-    }
-  }
-
-  changeController() {
-    this.controller = !this.controller;
-  }
-
-  changeOver() {
-    this.next = !this.next;
-  }
-
-  addUser(form: FormArray) {
-    form.push(this.createNewUser());
-  }
-
-  createNewUser(): FormGroup {
-    return this.fb.group({
-      user: new FormControl('', [Validators.email, Validators.required]),
-      permission: new FormControl('', [Validators.required]),
+  async back() {
+    await this.userApiService.displayPopOverWithButtons('Go back','Are you sure you want to go back? Any unsaved changes will be lost.', (response) =>{
+      if(response.data.confirm === true)
+        this.router.navigate(['home']);
     });
   }
 
-  removeUser(control: FormArray, i: number, j: number) {
-    if (control.length > 1) {
-      control.removeAt(j);
-    } else {
-      if (this.workflowForm.controls.phases['controls'].length > 1) {
-        this.removePhase(i);
-      } else {
-        this.userApiService.displayPopOver(
-          'Error',
-          'you need at least one user and phase'
-        );
-      }
-    }
-  }
+  async acceptDocument(){
+    await this.userApiService.displayPopOverWithButtons('signPhase','Do you accept the phase as completed?', async (response) =>{
 
-  changePermission(control: any, str: string) {
-    control.setValue(str);
-  }
+      this.removeActionAreasFromAnnotations();
+      const xfdfString = await this.annotationManager.exportAnnotations();
+      const options = {xfdfString: xfdfString, flatten: true};
+      const data = await this.documentViewer.getDocument().getFileData(options);
 
+      const arr = new Uint8Array(data);
+      const blob = new Blob([arr], { type: 'application/pdf' });
+      const file = new File([blob], this.documentMetadata.name);
+      console.log(response.data.confirm);
+      console.log(this.documentMetadata.name);
+      console.log(file.name);
+      this.workflowService.displayLoading();
+      await this.workflowService.updatePhase(this.workflowId, response.data.confirm, file, (response2) => {
+        console.log(response2);
 
+        this.workflowService.dismissLoading();
 
-  createPhase(): FormGroup {
-    return this.fb.group({
-      description: new FormControl('', Validators.required),
-      annotations: new FormControl('', [Validators.required]),
-      users: this.fb.array([
-        this.fb.group({
-          user: new FormControl('', [Validators.email, Validators.required]),
-          permission: new FormControl('', [Validators.required]),
-        }),
-      ]),
+        if(response2.status === "success"){
+          this.userApiService.displayPopOver("Success", "The document has been edited");
+          this.router.navigate(['home']);
+        }
+      });
+      await this.annotationManager.importAnnotations(this.annotationsString);
+    });
+   }
+
+   removeActionAreasFromAnnotations(){
+
+    const toDelete = [];
+    this.annotationManager.getAnnotationsList().forEach(annot =>{
+      this.annotationSubjects.forEach(a =>{
+        if(a === annot.Subject) {
+          toDelete.push(annot);
+        }
+      });
+    });
+    this.annotationManager.deleteAnnotations(toDelete);
+   }
+
+  async updateDocumentAnnotations(annotationsString){
+    await this.workflowService.updateCurrentPhaseAnnotations(this.workflowId, annotationsString, (response)=>{
+      console.log(response);
     });
   }
 
-  addPhase() {
-    let phase = this.workflowForm.get('phases') as FormArray;
-    phase.push(this.createPhase());
-  }
+private
+downloadFile()
+{
 
-  removePhase(i: number) {
-    let phase = this.workflowForm.get('phases') as FormArray;
-    phase.removeAt(i);
-  }
-
-  async selectImageSource() {
-    const buttons = [
-      {
-        text: 'Choose a file',
-        icon: 'attach',
-        handler: () => {
-          this.fileInput.nativeElement.click();
-        },
-      },
-    ];
-
-    const actionSheet = await this.actionSheetController.create({
-      header: 'Select PDF',
-      buttons,
-    });
-
-    await actionSheet.present();
-  }
-
-  async uploadFile(event: EventTarget) {
-    const eventObj: MSInputMethodContext = event as MSInputMethodContext;
-    const target: HTMLInputElement = eventObj.target as HTMLInputElement;
-    if (this.plat.is('desktop')) {
-    }
-    this.file = target.files[0];
-    console.log(typeof this.file);
-    console.log('file', this.file.arrayBuffer());
-    // const buff = response.data.filedata.Body.data; //wut
-    const a = new Uint8Array(await this.file.arrayBuffer());
-    this.srcFile = a;
-    //todo
-    this.workflowForm.get('workflowFile').setValue(this.file);
-    this.blob = new Blob([this.file], { type: 'application/pdf;base64' });
-    console.log(this.blob.arrayBuffer());
-    const obj = URL.createObjectURL(this.blob);
-    console.log(obj);
-    this.srcFile = this.sanitizer.bypassSecurityTrustResourceUrl(obj);
-    this.addFile = true;
-  }
-
-  fixOrder(ev: CustomEvent<ItemReorderEventDetail>) {
-    let phase = this.workflowForm.get('phases') as FormArray;
-    let a = phase.controls.splice(ev.detail.from, 1);
-    phase.controls.splice(ev.detail.to, 0, a[0]);
-    ev.detail.complete();
-  }
-
-  reOrderTime() {
-    this.reOrder = !this.reOrder;
-  }
-
-  debug(str: any) {
-    console.log(str);
-  }
-
-  async includeActionArea(i: number, form: FormControl) {
-    console.log(i);
-    const a = await this.modal.create({
-      component: DocumentActionAreaComponent,
-      componentProps: {
-        file: this.blob,
-        ownerEmail: this.ownerEmail,
-        phaseNumber: i,
-      },
-    });
-
-    await (await a).present();
-    (await a).onDidDismiss().then(async (data) => {
-      const result = (await data).data['xfdfString'];
-      if (result) {
-        form.setValue(result);
-      } else {
-        //not delete
-      }
-    });
-  }
-
-  submit() {
-    console.log(this.workflowForm);
-    this.workflowServices.createWorkflow(
-      this.workflowForm,
-      '',
-      this.file,
-      (response) => {}
-    );
-  }
-
-  viewPhase(i: number){
-    this.phaseViewers[i] = !this.phaseViewers[i];
-  }
-
-  printForm() {
-    console.log(this.workflowForm);
-  }
+}
 }

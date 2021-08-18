@@ -1,4 +1,4 @@
-import { autoInjectable, injectable } from "tsyringe";
+import { injectable } from "tsyringe";
 import UserService from "../user/UserService";
 import jwt from "jsonwebtoken";
 import { AuthenticationError } from "../error/Error";

@@ -11,7 +11,7 @@ import { Credentials, NativeBiometric } from 'capacitor-native-biometric';
 //popover
 
 import { ActivatedRoute, Router } from '@angular/router';
-import { match } from './../../Services/match.validator';
+import { match } from '../../Services/Validators/match.validator';
 
 //popover
 import { ModalController, PopoverController } from '@ionic/angular';
@@ -34,6 +34,7 @@ import { LoadingController } from '@ionic/angular';
 import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
 import { ResetPasswordComponent } from 'src/app/components/reset-password/reset-password.component';
 import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
+import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 
 @Component({
   selector: 'app-login-register',
@@ -56,13 +57,15 @@ export class LoginRegisterPage implements OnInit {
     private actionSheetController: ActionSheetController,
     private loadCtrl: LoadingController,
     private modal: ModalController,
-    private pop: PopoverController
+    private workFlowService: WorkFlowService
   ) {}
 
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
-      loginEmail: ['brenton.stroberg@yahoo.co.za', [Validators.required, Validators.email]],
-      loginPassword: ['Password#1', [Validators.required, Validators.minLength(8)]],
+      loginEmail: ['', [Validators.required, Validators.email]],
+      loginPassword: ['', [Validators.required, Validators.minLength(8)]],
+      // loginEmail: ['brenton.stroberg@yahoo.co.za', [Validators.required, Validators.email]],
+      // loginPassword: ['Password#1', [Validators.required, Validators.minLength(8)]],
     });
     const formOptions: AbstractControlOptions = {
       validators: match('password', 'confirmPassword'),
@@ -98,7 +101,7 @@ export class LoginRegisterPage implements OnInit {
     this.userAPIService.login(loginData, (response) => {
       if (response.status === 'success') {
         //localStorage.setItem('token', response.data.token);
-        Cookies.set('token', response.data.token, {expires: 1});
+        Cookies.set('token', response.data.token, { expires: 1 });
         this.userAPIService.displayPopOver('Success', 'login was successful');
         this.router.navigate(['home']);
       } else {
@@ -119,56 +122,50 @@ export class LoginRegisterPage implements OnInit {
   }
 
   async register(): Promise<void> {
+    this.userAPIService.displayPopOverWithButtons(
+      'termsOfService',
+      '',
+      (response) => {
+        if (response.confirm === 'true') {
+          this.workFlowService.displayLoading();
+          const userdata = this.registerForm.value;
+          console.log('Printing file:');
+          console.log(this.file);
 
-    const a = await this.modal.create({
-      component: UserNotificationsComponent,
-      componentProps:{
-        'title' : 'termsOfService',
+          if (this.file === undefined) {
+            //We don't allow users to register if they dont specify a signature.
+            this.fileUnspecified();
+            return;
+          }
+
+          console.log(userdata);
+          const user: User = {
+            Fname: userdata.Fname,
+            Lname: userdata.Lname,
+            initials: userdata.initials,
+            email: userdata.email,
+            password: userdata.password,
+          };
+
+          this.userAPIService.register(user, this.file, (response) => {
+            if (response.status === 'success') {
+              this.userAPIService.displayPopOver(
+                'Successfully created new user account',
+                'check your email for account verification'
+              );
+              this.workFlowService.dismissLoading();
+              this.router.navigate(['login']);
+            } else {
+              this.workFlowService.dismissLoading();
+              this.userAPIService.displayPopOver(
+                'Failed to make a new account:',
+                response.message
+              );
+            }
+          });
+        }
       }
-    });
-
-    await (await a).present();
-    const data = (await a).onDidDismiss();
-    if(await (await data).data['confirm']){
-      //still to do
-    }
-    console.log(a);
-    this.loadingRegister();
-    const userdata = this.registerForm.value;
-    console.log('Printing file:');
-    console.log(this.file);
-
-    if (this.file === undefined) {
-      //We don't allow users to register if they dont specify a signature.
-      this.fileUnspecified();
-      return;
-    }
-
-    console.log(userdata);
-    const user: User = {
-      Fname: userdata.Fname,
-      Lname: userdata.Lname,
-      initials: userdata.initials,
-      email: userdata.email,
-      password: userdata.password,
-    };
-
-    await this.loadingRegister();
-    this.userAPIService.register(user, this.file, (response) => {
-      if (response.status === 'success') {
-        this.userAPIService.displayPopOver(
-          'Successfully created new user account',
-          'check your email for account verification'
-        );
-        this.router.navigate(['login']);
-      } else {
-        this.userAPIService.displayPopOver(
-          'Failed to make a new account:',
-          response.message
-        );
-      }
-    });
-    await this.loadCtrl.dismiss();
+    );
   }
 
   changeOver(): boolean {
@@ -241,55 +238,5 @@ export class LoginRegisterPage implements OnInit {
     (await mod).present();
 
     (await mod).onDidDismiss();
-  }
-
-  //  Loading Control for Register buttons
-  async loadingRegister() {
-    const load = await this.loadCtrl.create({
-      message: 'Hang in there... we are almost done',
-      duration: 5000,
-      showBackdrop: false,
-      spinner: 'bubbles',
-    });
-
-    await load.present();
-  }
-
-  debug() {
-    NativeBiometric.isAvailable().then(
-      (result: AvailableResult) => {
-        const isAvailable = result.isAvailable;
-        const isFaceId = result.biometryType === BiometryType.FACE_ID;
-
-        if (isAvailable) {
-          // Get user's credentials
-          NativeBiometric.getCredentials({
-            server: 'www.example.com',
-          }).then((credentials: Credentials) => {
-            // Authenticate using biometrics before logging the user in
-            NativeBiometric.verifyIdentity({
-              reason: 'For easy log in',
-              title: 'Log in',
-              subtitle: 'Maybe add subtitle here?',
-              description: 'Maybe a description too?',
-            }).then(
-              () => {
-                // Authentication successful
-                console.log('log in');
-                // this.login(credentials.username, credentials.password);
-              },
-
-              (error) => {
-                // Failed to authenticate
-              }
-            );
-          });
-        }
-      },
-      (error) => {
-        console.log('here');
-        alert('here');
-      }
-    );
   }
 }

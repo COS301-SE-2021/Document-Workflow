@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, PopoverController } from '@ionic/angular';
 
 @Component({
   selector: 'app-user-notifications',
@@ -9,14 +9,15 @@ import { ModalController } from '@ionic/angular';
 export class UserNotificationsComponent implements OnInit {
   @Input() message: string;
   @Input() title: string;
+  @Input() displayButton: boolean
 
   accept: boolean;
-  termOfService = false;
-  constructor(private modal: ModalController) {}
+  constructor(private pop: PopoverController) {}
 
+  //TODO: take in an extra variable boolean that determines whether or not this popup should display buttons.
+  //Link this to the user services such that you can call one function for no buttons, and another for buttons
   ngOnInit() {
     if (this.title === 'termsOfService') {
-      this.termOfService = true;
       this.message =
         'Note that by making use of the Document Workflow system, you are ' +
         'essentially giving your soul to our Lizard overlord JeffBezos. He will steal all of' +
@@ -28,14 +29,14 @@ export class UserNotificationsComponent implements OnInit {
   }
 
   confirm() {
-    this.modal.dismiss({
-      confirm: true,
+    this.pop.dismiss({
+      'confirm': true,
     });
   }
 
   reject() {
-    this.modal.dismiss({
-      confirm: false,
+    this.pop.dismiss({
+      'confirm': false,
     });
   }
 }

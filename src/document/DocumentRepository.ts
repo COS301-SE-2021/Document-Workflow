@@ -1,7 +1,9 @@
 import { Document, DocumentProps } from "./Document";
 import * as AWS from 'aws-sdk';
 import { ObjectId, Types } from "mongoose";
-import { CloudError, DatabaseError } from "../error/Error";
+import { CloudError, DatabaseError, ServerError } from "../error/Error";
+import * as multer from 'multer';
+import * as multerS3 from 'multer-s3';
 
 const s3 = new AWS.S3({
     region: process.env.AWS_REGION,
@@ -36,9 +38,29 @@ export default class DocumentRepository {
         return doc._id;
     }
 
+    async updateDocumentS3(file, workflowId, phaseNumber){
+        console.log("Updating a document in S3, file looks as follows: ");
+        console.log(file);
+        const uploadParams = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Body: file.data,
+            Key: workflowId +"/phase"+phaseNumber +"/" + file.name
+        }
+        try{
+            console.log(uploadParams);
+            let d = await s3.putObject(uploadParams).promise();
+            console.log("Finished updating s3 file");
+            console.log(d);
+        }
+        catch(e){
+            console.log(e);
+            throw new ServerError("The cloud server could not be reached");
+        }
+    }
+
     async getDocument(id: Types.ObjectId): Promise<DocumentProps> {
         try {
-            return await Document.findOne(id);
+            return await Document.findById(id);
         }
         catch(err){
             throw new Error("Could not find Document");
@@ -74,11 +96,39 @@ export default class DocumentRepository {
         }
     }
 
-    async deleteDocumentFromS3(workflow_id){ //workflow_id is the folder name
+    /**
+     * This function exists due to the way in which AWS returns files. It returns buffers that can be converted
+     * into files using fs (and possibly even new file). Our original function for updating a file in S3
+     * takes in a file object, and extracts the data from it anyway (that is to say, it takes the array buffer of data
+     * from the file and uses that in its request to aws). To save time when we have access to a filebuffer and not a file
+     * object, we create this function that instead takes the buffer in directly.
+     * TODO: change the update files3 function to take in filedata instead of a file, then we can destroy this function.
+     * @param path
+     * @param fileData
+     */
+    async updateDocumentS3WithBuffer(path, fileData){
+        const uploadParams = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Body: fileData,
+            Key: path
+        }
+        try{
+            console.log(uploadParams);
+            let d = await s3.putObject(uploadParams).promise();
+            console.log("Finished updating s3 file");
+            console.log(d);
+        }
+        catch(e){
+            console.log(e);
+            throw new ServerError("The cloud server could not be reached");
+        }
+    }
+
+    async deleteDocumentFromS3(workflowId){ //workflowId is the folder name
         try {
             const listParams = {
                 Bucket: process.env.AWS_BUCKET_NAME,
-                Prefix: workflow_id
+                Prefix: workflowId
             };
 
             const listedObjects = await s3.listObjectsV2(listParams).promise();
@@ -96,7 +146,7 @@ export default class DocumentRepository {
 
             await s3.deleteObjects(deleteParams).promise();
 
-            if (listedObjects.IsTruncated) await this.deleteDocument(workflow_id);
+            if (listedObjects.IsTruncated) await this.deleteDocument(workflowId);
         }
         catch(err){
             throw "Could not delete document from File Server";

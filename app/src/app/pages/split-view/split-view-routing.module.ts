@@ -41,19 +41,10 @@ const routes: Routes = [
         pathMatch: 'full',
       },
       {
-        path: 'intro',
+        path: 'workflowEdit',
         loadChildren: () =>
-          import('./../intro/intro-routing.module').then(
-            (m) => m.IntroPageRoutingModule
-          ),
-        pathMatch: 'full',
-      },
-
-      {
-        path: 'documentEdit',
-        loadChildren: () =>
-          import('./../document-edit/document-edit.module').then(
-            (m) => m.DocumentEditPageModule
+          import('./../workflow-edit/workflow-edit.module').then(
+            (m) => m.WorkflowEditPageModule
           ),
         pathMatch: 'full',
       },
@@ -66,12 +57,20 @@ const routes: Routes = [
         pathMatch: 'full',
       },
       {
+        path: 'documentEdit',
+        loadChildren: () =>
+          import('./../document-edit/document-edit.module').then(
+            (m) => m.DocumentEditPageModule
+          ),
+        pathMatch: 'full',
+      },
+      {
         path: 'addWorkflow',
         loadChildren: () =>
           import('./../document-add/document-add.module').then(
             (m) => m.DocumentAddPageModule
           ),
-          pathMatch:'full'
+        pathMatch: 'full',
       },
       {
         path: '',

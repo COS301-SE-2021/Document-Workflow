@@ -6,11 +6,10 @@ import jwt from "jsonwebtoken";
 import { AuthenticationError, RequestError } from "../error/Error";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
-import WorkflowRepository from "../workflow/WorkflowRepository";
 
 @injectable()
 export default class UserService {
-    constructor(private userRepository: UserRepository, private workflowRepository: WorkflowRepository) {}
+    constructor(private userRepository: UserRepository) {}
     async authenticateUser(password, usr: UserProps) {
         const result = await bcrypt.compare(password, await usr.password);
         if(result){
@@ -32,6 +31,13 @@ export default class UserService {
 
     generateToken(email, id): string{
         return jwt.sign({id: id, email: email}, process.env.SECRET, {expiresIn: "24h"});
+    }
+
+    //TODO: check that its safe to save a user the way we are saving them here. We arent creating an entirely new
+    //User since we do pass through a valid id, but should probably use an updateOne function in the
+    //User repository to be safe.
+    async updateUserWorkflows(user){
+        await this.userRepository.saveUser(user);
     }
 
     async getUser(request): Promise<UserProps> {
@@ -58,12 +64,12 @@ export default class UserService {
         }
     }
 
-    async getUserByEmail(request): Promise<UserProps> {
-        if(!request.params.email){
+    async getUserByEmail(email): Promise<UserProps> {
+        if(email === undefined){
             throw new Error("Search criteria required");
         }
         try {
-            return await this.userRepository.findUser({email: request.params.email});
+            return await this.userRepository.findUser({email: email});
         } catch (err) {
             console.error(err);
             throw new RequestError("Could not get user");
@@ -184,33 +190,6 @@ export default class UserService {
         }
     }
 
-    // async retrieveOwnedWorkFlows(req): Promise<any> {
-    //     console.log("Retrieving owned workflows")
-    //     const user = await this.userRepository.findUser({email: req.user.email});
-    //
-    //     let workflows = [];
-    //     for(let id of user.owned_workflows)
-    //     {
-    //         workflows.push(await this.workFlowRepository.getWorkFlow(id));
-    //     }
-    //
-    //     return {status:"success", data: workflows, message:""};
-    // }
-    //
-    // async retrieveWorkFlows(req):Promise<any> {
-    //     console.log("Retrieving workflows")
-    //
-    //     const user = await this.userRepository.findUser({email: req.user.email});
-    //
-    //     let workflows = [];
-    //     for(let id of user.workflows)
-    //     {
-    //         workflows.push(await this.workFlowRepository.getWorkFlow(id));
-    //     }
-    //
-    //     return {status:"success", data: workflows, message:""};
-    // }
-
     async deleteUser(req): Promise<UserProps> {
         if (!req.params.id) {
             throw new RequestError("Missing Parameter");
@@ -249,6 +228,8 @@ export default class UserService {
                 initials: user.initials,
                 email: user.email,
                 signature:user.signature.toString()
+                //ownedWorkflows: user.ownedWorkflows,
+               // workflows: user.workflows
             };
             return {status: "success", data: data, message:""};
         }
@@ -287,5 +268,9 @@ export default class UserService {
             throw new RequestError("Could not update User");
         }
 
+    }
+
+    async verifyEmailExistence(email, requestingUserId) {
+        return Promise.resolve(undefined);
     }
 }
