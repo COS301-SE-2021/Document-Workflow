@@ -17,7 +17,7 @@
   </ion-toolbar>
 </ion-header>
 <ion-content style="height:95%" *ngIf="ready" fullscreen="true">
-  <form [formGroup]="workflowForm" style="height:100%" (ngSubmit)="submit()">
+  <form [formGroup]="workflowForm" style="height:100%" (ngSubmit)="saveChangesToWorkflow()">
     <ion-card style="height: auto;">
       <ion-card-header>
         <ion-item>
@@ -53,8 +53,7 @@
                     <ion-item lines='none'
                       style="--border-color: #002060; --border-style:solid; --border-width:2px; --border-radius:15px">
                       <ion-label position="stacked">Description</ion-label>
-                      <ion-textarea [formControl]="phase.controls.description"
-                        (click)="setPhase(phase.controls.phaseNumber.value)"></ion-textarea>
+                      <ion-textarea [formControl]="phase.controls.description"></ion-textarea>
                     </ion-item>
                   </ion-col>
                   <ion-col sizeXs='4'>
@@ -68,8 +67,8 @@
                   <ion-col sizeXs='10'>
                     <ion-item>
                       <ion-label position="stacked">User email:</ion-label>
-                      <ion-input type="email" [formControl]="user.controls.user"
-                        (click)="setPhase(phase.controls.phaseNumber.value)"></ion-input>
+                      <!-- (click)="setPhase(phase.controls.phaseNumber.value)" -->
+                      <ion-input type="email" [formControl]="user.controls.user"></ion-input>
                     </ion-item>
                   </ion-col>
                   <ion-col sizeXs='2'>
@@ -82,9 +81,11 @@
                       <ion-label>Permission:</ion-label>
                       <ion-select placeholder="{{user.controls.permission.value}}"
                         [formControl]="user.controls.permission">
-                        <ion-select-option value="signer" (click)="setPhase(phase.controls.phaseNumber.value)">Signer
+                        <!-- (click)="setPhase(phase.controls.phaseNumber.value)" -->
+                        <ion-select-option value="signer" >Signer
                         </ion-select-option>
-                        <ion-select-option value="viewer" (click)="setPhase(phase.controls.phaseNumber.value)">Viewer
+                        <!-- (click)="setPhase(phase.controls.phaseNumber.value)" -->
+                        <ion-select-option value="viewer" >Viewer
                         </ion-select-option>
                       </ion-select>
                     </ion-item>
@@ -107,7 +108,7 @@
               <ion-button style="width: 99%;" (click)="addPhase()">Add a new Phase</ion-button>
             </ion-col>
             <ion-col sizeXs='12' sizeSm='6'>
-              <ion-button type="submit" (click)="saveChangesToWorkflow()" style="width: 99%;"
+              <ion-button type="submit" style="width: 99%;"
                 [disabled]="!workflowForm">Save changes</ion-button>
             </ion-col>
           </ion-row>

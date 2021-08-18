@@ -260,25 +260,31 @@ export class WorkflowEditPage implements OnInit {
   }
 
   async saveChangesToWorkflow() {
-    console.log(this.workflowForm);
-    alert(
-      'This function needs to be looked at, the request is sent before we confirm it'
-    );
-
-    const phases = this.workflowForm.controls.phases.value;
+    const tmp = this.workflowForm.controls.phases.value;
+    let phases:phaseFormat[] =[];
+    console.warn(tmp);
+    let i: number =0;
+    console.log(this.document.currentPhase)
+    for(let phase of tmp){
+      if(this.document.currentPhase < i){
+        console.log(phase);
+        // phases.push(phase);
+      }
+      i++;
+    }
     const name = this.workflowForm.controls.workflowName.value;
     const description = this.workflowForm.controls.workflowDescription.value;
     console.log(phases);
 
-    await this.workflowServices.editWorkflow(
-      name,
-      description,
-      phases,
-      this.workflowId,
-      (response) => {
-        console.log(response);
-      }
-    );
+    // await this.workflowServices.editWorkflow(
+    //   name,
+    //   description,
+    //   phases,
+    //   this.workflowId,
+    //   (response) => {
+    //     console.log(response);
+    //   }
+    // );
   }
 
   changeController() {
@@ -348,9 +354,8 @@ export class WorkflowEditPage implements OnInit {
     if (phase.at(i)['controls'].status.value === 'Create') {
       phase.removeAt(i);
     } else {
-      phase.at(i)['controls'].status = 'Delete';
+      phase.at(i)['controls'].status.setValue('Delete') ;
       phase.at(i)['controls'].showPhases = false;
-      phas.status = 'Delete';
     }
     console.warn(this.workflowForm);
   }
@@ -432,18 +437,6 @@ export class WorkflowEditPage implements OnInit {
     });
   }
 
-  submit() {
-    this.userApiService.displayPopOverWithButtons(
-      'Edited document',
-      'Are you happy with your changes?',
-      (response) => {
-        if (response.confirm) {
-          //TODO: extract data from form and send it to the backend.
-        }
-      }
-    );
-  }
-
   viewPhase(i: number) {
     this.phaseViewers[i] = !this.phaseViewers[i];
   }
@@ -470,14 +463,14 @@ export class WorkflowEditPage implements OnInit {
 
   setPhase(i: number) {
     let phase = this.workflowForm.get('phases') as FormArray;
-    let helper = phase.at(i)['controls'].status.value;
+    let helper = phase.at(i)['controls'].status;
     console.warn(helper);
     if (helper === 'Create') {
-      phase.at(i)['controls'].status.value = 'Create';
+      phase.at(i)['controls'].status.setValue('Create') ;
     } else if (helper === 'Delete') {
-      phase.at(i)['controls'].status.value = 'Delete';
+      phase.at(i)['controls'].status.setValue('Delete') ;
     } else {
-      phase.at(i)['controls'].status.value = 'Edit';
+      phase.at(i)['controls'].status.setValue('Edit');
     }
   }
 }
