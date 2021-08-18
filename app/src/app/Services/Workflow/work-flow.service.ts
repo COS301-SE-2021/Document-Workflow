@@ -28,7 +28,7 @@ export interface phaseFormat {
 }
 
 export interface phaseUserFormat {
-  email: string;
+  user: string;
   permission: string;
   accepted: boolean;
 }
@@ -276,7 +276,7 @@ export class WorkFlowService {
           }
           tmpUser = {
             accepted: a,
-            email: user.user,
+            user: user.user,
             permission: user.permission,
           };
           tempUser.push(tmpUser);

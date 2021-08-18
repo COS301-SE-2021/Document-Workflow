@@ -156,7 +156,7 @@ export class WorkflowEditPage implements OnInit {
               tmpB = false;
             }
             tmpUser = {
-              email: user['user'],
+              user: user['user'],
               permission: user['permission'],
               accepted: tmpB,
             };
@@ -232,7 +232,7 @@ export class WorkflowEditPage implements OnInit {
 
   fillUser(user: phaseUserFormat): FormGroup {
     return this.fb.group({
-      user: new FormControl(user.email, [
+      user: new FormControl(user.user, [
         Validators.email,
         Validators.required,
       ]),
@@ -460,7 +460,7 @@ export class WorkflowEditPage implements OnInit {
         for (let user of phase.controls.users['controls']) {
           let tempUser: phaseUserFormat;
           tempUser = {
-            email: user.controls.user.value,
+            user: user.controls.user.value,
             permission: user.controls.permission.value,
             accepted: user.controls.accepted.value,
           };
