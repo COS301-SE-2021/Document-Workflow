@@ -16,6 +16,7 @@ export class PhaseService{
         return await this.phaseRepository.getPhaseById(id);
     }
 
+    //TODO: change this function to instead use find one and update, then used passed in parameters.
     async updatePhase(phase) :Promise<void>{
         await this.phaseRepository.updatePhase(phase);
     }

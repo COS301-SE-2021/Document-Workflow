@@ -466,18 +466,19 @@ export class WorkflowEditPage implements OnInit {
           };
           tmpUsr.push(tempUser);
         }
-        console.log(phase.controls._id.value);
-        tmpPhase = {
+        tmpPhase={
           status: phase.controls.phaseStatus.value,
           annotations: phase.controls.annotations.value,
           description: phase.controls.description.value,
-          _id: phase.controls._id.value,
           users: tmpUsr,
-        };
+          _id: phase.controls._id.value
+        }
         phases.push(tmpPhase);
       }
       i++;
     }
+
+    console.log(phases)
     const name = this.workflowForm.controls.workflowName.value;
     const description = this.workflowForm.controls.workflowDescription.value;
 
@@ -522,4 +523,6 @@ export class WorkflowEditPage implements OnInit {
 
     this.ready = false;
   }
+
+
 }

@@ -210,7 +210,7 @@ export default class WorkflowController {
                 description: phase.description,
                 annotations: phase.annotations,
                 status: phase.status,
-                _id: phase._id
+                _id: phase._id  //TODO: check if 'Create' status phases are being sent through with an id. They shouldn't be.
             }));
         });
 
