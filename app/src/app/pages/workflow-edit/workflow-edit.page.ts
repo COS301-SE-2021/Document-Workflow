@@ -214,7 +214,7 @@ export class WorkflowEditPage implements OnInit {
     return this.fb.group({
       description: new FormControl(phase.description, Validators.required),
       annotations: new FormControl(phase.annotations, [Validators.required]),
-      status: new FormControl('Create'),
+      status: new FormControl('Edit'),
       showPhases: new FormControl(phase.showPhase),
       phaseNumber: new FormControl(phase.phaseNumber),
       users: this.fb.array([]),
@@ -257,11 +257,12 @@ export class WorkflowEditPage implements OnInit {
 
   async saveChangesToWorkflow() {
     console.log(this.workflowForm);
+    alert('This function needs to be looked at, the request is sent before we confirm it');
 
     const phases = this.workflowForm.controls.phases.value;
     const name = this.workflowForm.controls.workflowName.value;
     const description = this.workflowForm.controls.workflowDescription.value;
-    console.log(this.workflowId);
+    console.log(phases);
 
     await this.workflowServices.editWorkflow(
       name,
@@ -330,13 +331,16 @@ export class WorkflowEditPage implements OnInit {
 
   addPhase() {
     let phase = this.workflowForm.get('phases') as FormArray;
-    phase.push(this.createPhase(phase.length + 1));
+    phase.push(this.createPhase(phase.length)); //was + 1 but then it seems we skip a phaseNumber
   }
 
   removePhase(i: number) {
+    console.log('removing phase ', i);
     let phase = this.workflowForm.get('phases') as FormArray;
+    console.log(phase.at(i));
     phase.at(i)['controls'].status.value = 'Delete';
-    phase.at(i)['controls'].showPhase = 'false';
+    phase.at(i)['controls'].showPhases = false;
+    console.log(phase.at(i));
   }
 
   async selectImageSource() {
@@ -395,7 +399,6 @@ export class WorkflowEditPage implements OnInit {
   }
 
   async includeActionArea(i: number, form: FormControl) {
-    console.log(i);
     const a = await this.modal.create({
       component: DocumentActionAreaComponent,
       componentProps: {
@@ -409,6 +412,7 @@ export class WorkflowEditPage implements OnInit {
     (await a).onDidDismiss().then(async (data) => {
       const result = (await data).data['xfdfString'];
       if (result) {
+        console.log(result);
         form.setValue(result);
       } else {
         //not delete
@@ -422,6 +426,7 @@ export class WorkflowEditPage implements OnInit {
       'Are you happy with your changes?',
       (response) => {
         if (response.confirm) {
+          //TODO: extract data from form and send it to the backend.
         }
       }
     );
