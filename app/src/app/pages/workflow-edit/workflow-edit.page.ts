@@ -460,24 +460,24 @@ export class WorkflowEditPage implements OnInit {
         for (let user of phase.controls.users['controls']) {
           let tempUser: phaseUserFormat;
           tempUser = {
-            email: user.controls.user.value,
-            permission: user.controls.permission.value,
-            accepted: user.controls.accepted.value,
+            email: user.controls.user,
+            permission: user.controls.permission,
+            accepted: user.controls.accepted,
           };
           tmpUsr.push(tempUser);
         }
-        console.log(phase.controls._id.value);
-        tmpPhase = {
-          status: phase.controls.phaseStatus.value,
-          annotations: phase.controls.annotations.value,
-          description: phase.controls.description.value,
-          _id: phase.controls._id.value,
+        tmpPhase={
+          status: phase.controls.phaseStatus,
+          annotations: phase.controls.annotations,
+          description: phase.controls.description,
           users: tmpUsr,
-        };
+        }
         phases.push(tmpPhase);
       }
       i++;
     }
+
+    console.log(phases)
     const name = this.workflowForm.controls.workflowName.value;
     const description = this.workflowForm.controls.workflowDescription.value;
 
@@ -521,4 +521,6 @@ export class WorkflowEditPage implements OnInit {
 
     this.ready = false;
   }
+
+
 }

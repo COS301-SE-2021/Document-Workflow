@@ -461,7 +461,6 @@ export default class WorkflowService{
             const workflowOriginal = await this.workflowRepository.getWorkflow(workflowId);
             console.log(workflowOriginal);
             console.log(convertedPhases);
-            return {status: "success", data: {}, message: ""}
 
             //2) Check that the requesting user has the correct permissions to edit this workflow
             if(! workflowOriginal.ownerEmail === requestingUser)
@@ -474,18 +473,30 @@ export default class WorkflowService{
                 return {status:"error", data:{}, message:""};
             }
 
+            console.log(preservePhasesIds);
+
             //5) For each phase, either create, edit, or delete.
             let addPhaseIds = [];
             for(let i=0; i<convertedPhases.length; ++i){
-                if(convertedPhases[i].status === "Edit"){
+                if(convertedPhases[i].status === PhaseStatus.EDIT){
+                    console.log("Updating an existing phase with id:, ", convertedPhases[i]._id);
+                    //TODO: to make this faster and avoid fetching then savinf phase, change the update phase method in the phaseRepo
+                    //Right now that function requires a phase to be passed through
+                    const p = await this.phaseService.getPhaseById(convertedPhases[i]._id)
+                    console.log(p);
+                    p.description = convertedPhases[i].description;
+                    p.users = convertedPhases[i].users;
+                    p.annotations = convertedPhases[i].annotations;
+                    p.status = PhaseStatus.PENDING;
                     addPhaseIds.push(convertedPhases[i]._id);
 
+                    await this.phaseService.updatePhase(p);
                 }
-                else if(convertedPhases[i].status === "Create"){
-
+                else if(convertedPhases[i].status === PhaseStatus.CREATE){
+                    console.log("Creating an entirely new phase");
                 }
-                else if(convertedPhases[i].status === "Delete"){
-
+                else if(convertedPhases[i].status === PhaseStatus.DELETE){
+                    console.log("Deleting a phase with id: ", convertedPhases[i]._id);
                 }
                 else{
                     //TODO: throw error

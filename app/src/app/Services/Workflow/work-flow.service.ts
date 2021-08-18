@@ -323,6 +323,7 @@ export class WorkFlowService {
     workflowId,
     callback
   ) {
+    console.log(phases);
     const formData = new FormData();
     formData.append('name', workflowName);
     formData.append('description', workflowDescription);
