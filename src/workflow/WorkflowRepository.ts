@@ -18,13 +18,12 @@ export default class WorkflowRepository{
         return Workflow.deleteOne({_id: id});
     }*/
 
-    /*async findWorkflow(id:string):Promise<WorkflowProps>{
+    async findWorkflow(id: ObjectId): Promise<WorkflowProps>{
         try{
-            return await Workflow.findById(id).populateTs()
+            return await Workflow.findById(id);
         }
         catch(err){
             throw err;
         }
-    }*/
-
+    }
 }

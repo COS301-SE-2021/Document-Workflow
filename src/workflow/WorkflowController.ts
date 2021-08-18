@@ -113,23 +113,23 @@ export default class WorkflowController {
         }
     }
 
-    /*async getWorkFlowDetails(req):Promise<any>{
+    /*async getWorkFlowDetails(id: ObjectId): Promise<WorkflowProps>{
         try{
-            return await this.workflowService.getWorkFlowDetails(req);
+            return await this.workflowService.getWorkFlowDetails(id);
         } catch(err) {
             throw new ServerError(err.toString());
         }
     }
-    private async deleteWorkFlow(req) {
+    private async deleteWorkFlow(id: ObjectId) {
         try{
-            return await this.workflowService.deleteWorkFlow(req);
+            return await this.workflowService.deleteWorkFlow(id);
         } catch(err) {
             throw new ServerError(err.toString());
         }
     }*/
 
     routes() {
-        this.router.post("", /*this.auth, upload.single("file") ,*/async (req, res) => {
+        this.router.post("", this.auth ,async (req, res) => {
             try {
                 res.status(200).json(await this.createWorkFlow(req));
             } catch(err){
@@ -137,16 +137,16 @@ export default class WorkflowController {
             }
         });
 
-        /*this.router.post("/getDetails", this.auth, async (req,res) =>{
+        /*this.router.post("/getDetails:id", this.auth, async (req,res) =>{
             try {
-                res.status(200).json(await this.getWorkFlowDetails(req));
+                res.status(200).json(await this.getWorkFlowDetails(req.params.id));
             } catch(err){
                 await handleErrors(err,res);
             }
         });
-        this.router.post("/delete",this.auth, async(req,res)=>{
+        this.router.delete("/delete:id",this.auth, async(req,res)=>{
             try {
-                res.status(200).json(await this.deleteWorkFlow(req));
+                res.status(200).json(await this.deleteWorkFlow(req.params.id));
             } catch(err){
                 await handleErrors(err,res);
             }
