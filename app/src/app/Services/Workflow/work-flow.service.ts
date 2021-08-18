@@ -30,7 +30,7 @@ export interface phaseFormat {
 export interface phaseUserFormat {
   user: string;
   permission: string;
-  accepted: boolean;
+  accepted: string;
 }
 @Injectable({
   providedIn: 'root',
@@ -270,9 +270,9 @@ export class WorkFlowService {
         let tempUser: phaseUserFormat[] = [];
         for (let user of JSON.parse(phase['users'])) {
           let tmpUser: phaseUserFormat;
-          let a: boolean = true;
+          let a: string = "true";
           if (user.accepted === 'false') {
-            a = false;
+            a = "false";
           }
           tmpUser = {
             accepted: a,

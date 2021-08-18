@@ -105,8 +105,9 @@
                     <ion-col sizeXs='3' sizeMd='2' sizeSm='2' style="text-align: right;">
                       <ion-item lines="none">
                         <ion-label position="stacked">Done:</ion-label>
-                        <ion-icon *ngIf="user.accepted" name="checkmark-circle-outline"></ion-icon>
-                        <ion-icon *ngIf="!user.accepted" name="close-circle-outline"></ion-icon>
+                        <!--- TODO: swap over to boolean acceptance values -->
+                        <ion-icon *ngIf='user.accepted === "true"' name="checkmark-circle-outline"></ion-icon>
+                        <ion-icon *ngIf='user.accepted === "false"' name="close-circle-outline"></ion-icon>
                       </ion-item>
                     </ion-col>
                   </ion-row>

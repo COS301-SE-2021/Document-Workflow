@@ -151,9 +151,9 @@ export class WorkflowEditPage implements OnInit {
           let tempUser: phaseUserFormat[] = [];
           for (let user of JSON.parse(phase.users)) {
             let tmpUser: phaseUserFormat;
-            let tmpB: boolean = true;
-            if (user['accepted'] === 'false') {
-              tmpB = false;
+            let tmpB: string = "true";
+            if (user['accepted'] === "false") {
+              tmpB = "false";
             }
             tmpUser = {
               user: user['user'],
@@ -281,7 +281,7 @@ export class WorkflowEditPage implements OnInit {
     return this.fb.group({
       user: new FormControl('', [Validators.email, Validators.required]),
       permission: new FormControl('', [Validators.required]),
-      accepted: new FormControl('false', [Validators.required]),
+      accepted: new FormControl("false", [Validators.required]),
     });
   }
 
