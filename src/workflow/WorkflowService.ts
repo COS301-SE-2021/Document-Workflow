@@ -494,6 +494,10 @@ export default class WorkflowService{
                 }
                 else if(convertedPhases[i].status === PhaseStatus.CREATE){
                     console.log("Creating an entirely new phase");
+                    delete convertedPhases[i]['_id'];
+                    convertedPhases[i].status = PhaseStatus.PENDING;
+                    console.log(convertedPhases[i]);
+                    addPhaseIds.push(await this.phaseService.createPhase(convertedPhases[i]));
                 }
                 else if(convertedPhases[i].status === PhaseStatus.DELETE){
                     console.log("Deleting a phase with id: ", convertedPhases[i]._id);
@@ -503,6 +507,9 @@ export default class WorkflowService{
                 }
 
             }
+
+            workflowOriginal.phases = preservePhasesIds.concat(addPhaseIds);
+            await this.workflowRepository.updateWorkflow(workflowOriginal);
 
             return {status: "success", data: {}, message: ''};
         }
