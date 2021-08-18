@@ -58,7 +58,7 @@
                     </ion-item>
                   </ion-col>
                   <ion-col sizeXs='4'>
-                    <ion-button style="width: 100%;" (click)="removePhase(i)">Delete Phase</ion-button>
+                    <ion-button style="width: 100%;" (click)="removePhase(i, phase)">Delete Phase</ion-button>
                   </ion-col>
                 </ion-row>
               </ion-col>
@@ -92,7 +92,7 @@
                 </ion-row>
                 <ion-row>
                   <ion-col sizeXs='12' sizeSm='6'>
-                    <ion-button style="width: 99%;" (click)="addUser(phase.controls['users'])">Add User</ion-button>
+                    <ion-button style="width: 99%;" (click)="addUser(phase.controls['users'],i)">Add User</ion-button>
                   </ion-col>
                   <ion-col sizeXs='12' sizeSm='6'>
                     <ion-button style="width: 99%;" (click)="includeActionArea(i,phase.controls.annotation)">Change
@@ -116,4 +116,9 @@
       </ion-card-content>
     </ion-card>
   </form>
+  <ion-fab>
+    <ion-fab-button (click)="debug('sorry')">
+
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

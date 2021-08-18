@@ -1,6 +1,7 @@
 import { TypeModifier } from '@angular/compiler/src/output/output_ast';
 import {
   Component,
+  ComponentFactoryResolver,
   ElementRef,
   Input,
   OnInit,
@@ -120,13 +121,16 @@ export class WorkflowEditPage implements OnInit {
 
     await this.getUser();
 
-    await this.workflowServices.getOriginalDocument(this.workflowId, (response) =>{
-      console.log("Got the original document");
-      const arr = new Uint8Array(response.data.filedata.Body.data);
-      const blob = new Blob([arr], {type: 'application/pdf'});
-      this.originalFile = new File([blob], response.data.metadata.name);
-      console.log(response);
-    });
+    await this.workflowServices.getOriginalDocument(
+      this.workflowId,
+      (response) => {
+        console.log('Got the original document');
+        const arr = new Uint8Array(response.data.filedata.Body.data);
+        const blob = new Blob([arr], { type: 'application/pdf' });
+        this.originalFile = new File([blob], response.data.metadata.name);
+        console.log(response);
+      }
+    );
   }
   //todo add workflowId
   async getWorkflowData() {
@@ -257,7 +261,9 @@ export class WorkflowEditPage implements OnInit {
 
   async saveChangesToWorkflow() {
     console.log(this.workflowForm);
-    alert('This function needs to be looked at, the request is sent before we confirm it');
+    alert(
+      'This function needs to be looked at, the request is sent before we confirm it'
+    );
 
     const phases = this.workflowForm.controls.phases.value;
     const name = this.workflowForm.controls.workflowName.value;
@@ -283,8 +289,9 @@ export class WorkflowEditPage implements OnInit {
     this.next = !this.next;
   }
 
-  addUser(form: FormArray) {
+  addUser(form: FormArray, i: number) {
     form.push(this.createNewUser());
+    this.setPhase(i);
   }
 
   createNewUser(): FormGroup {
@@ -299,7 +306,7 @@ export class WorkflowEditPage implements OnInit {
       control.removeAt(j);
     } else {
       if (this.workflowForm.controls.phases['controls'].length > 1) {
-        this.removePhase(i);
+        this.removePhase(i, this.workflowForm.get('phases')[i]);
       } else {
         this.userApiService.displayPopOver(
           'Error',
@@ -307,9 +314,11 @@ export class WorkflowEditPage implements OnInit {
         );
       }
     }
+    this.setPhase(i);
   }
 
-  changePermission(control: any, str: string) {
+  changePermission(control: any, str: string, i: number) {
+    this.setPhase(i);
     control.setValue(str);
   }
 
@@ -334,13 +343,16 @@ export class WorkflowEditPage implements OnInit {
     phase.push(this.createPhase(phase.length)); //was + 1 but then it seems we skip a phaseNumber
   }
 
-  removePhase(i: number) {
-    console.log('removing phase ', i);
+  removePhase(i: number, phas: phaseFormat) {
     let phase = this.workflowForm.get('phases') as FormArray;
-    console.log(phase.at(i));
-    phase.at(i)['controls'].status.value = 'Delete';
-    phase.at(i)['controls'].showPhases = false;
-    console.log(phase.at(i));
+    if (phase.at(i)['controls'].status.value === 'Create') {
+      phase.removeAt(i);
+    } else {
+      phase.at(i)['controls'].status = 'Delete';
+      phase.at(i)['controls'].showPhases = false;
+      phas.status = 'Delete';
+    }
+    console.warn(this.workflowForm);
   }
 
   async selectImageSource() {
@@ -395,7 +407,7 @@ export class WorkflowEditPage implements OnInit {
   }
 
   debug(str: any) {
-    console.log(str);
+    console.log(this.workflowForm);
   }
 
   async includeActionArea(i: number, form: FormControl) {
@@ -458,9 +470,14 @@ export class WorkflowEditPage implements OnInit {
 
   setPhase(i: number) {
     let phase = this.workflowForm.get('phases') as FormArray;
-    if (phase.at(i)['controls'].status.value === 'Create') {
+    let helper = phase.at(i)['controls'].status.value;
+    console.warn(helper);
+    if (helper === 'Create') {
       phase.at(i)['controls'].status.value = 'Create';
+    } else if (helper === 'Delete') {
+      phase.at(i)['controls'].status.value = 'Delete';
+    } else {
+      phase.at(i)['controls'].status.value = 'Edit';
     }
-    phase.at(i)['controls'].status.value = 'Edit';
   }
 }
