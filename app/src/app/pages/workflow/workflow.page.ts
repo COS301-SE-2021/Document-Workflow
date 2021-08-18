@@ -125,6 +125,8 @@ export class WorkflowPage implements OnInit {
       this.documentPermission[i] = 0;
       if (document.status !== 'Completed') {
         if (document.phases[document.currentPhase].status !== 'Completed') {
+          if(document.ownerEmail === this.userEmail)
+            this.documentPermission[i] = 2;
           for (let user of document.phases[document.currentPhase].users) {
             if (user.user === this.userEmail) {
               if (user.accepted === "false" ){ //TODO: swap to boolean once changes in backend made
