@@ -154,6 +154,7 @@ export default class UserService {
             throw new Error("Could not log in");
         }
         const user = await this.userRepository.findUser({"email": req.body.email});
+        if(!user) throw new RequestError("User does not exist");
         if(user.validated){
             try{
                 return await this.authenticateUser(req.body.password, user);
