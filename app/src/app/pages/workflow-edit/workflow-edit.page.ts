@@ -170,7 +170,7 @@ export class WorkflowEditPage implements OnInit {
             description: phase.description,
             status: phase.status,
             users: tempUser,
-            _id: phase._id
+            _id: phase._id,
           };
           phases.push(tmpPhase);
         }
@@ -316,7 +316,7 @@ export class WorkflowEditPage implements OnInit {
         this.fb.group({
           user: new FormControl('', [Validators.email, Validators.required]),
           permission: new FormControl('', [Validators.required]),
-          accepted: new FormControl(false, [Validators.required])
+          accepted: new FormControl(false, [Validators.required]),
         }),
       ]),
     });
@@ -415,24 +415,35 @@ export class WorkflowEditPage implements OnInit {
     });
   }
 
-  checkIfValid(){
-
-    for(let phase of this.workflowForm.controls.phases['controls']){
-
+  checkIfValid(): boolean {
+    let temp: boolean = true;
+    for (let phase of this.workflowForm.controls.phases['controls']) {
+      if (phase.controls.phaseStatus.value !== 'Delete') {
+        if (phase.status !== 'VALID') {
+          temp = false;
+        }
+      }
     }
+    return temp;
   }
 
   submit() {
-    this.checkIfValid();
-    this.userApiService.displayPopOverWithButtons(
-      'Edited document',
-      'Are you happy with your changes?',
-      async (response) => {
-        if (response.data.confirm) {
-          await this.saveChangesToWorkflow();
+    if (this.checkIfValid()) {
+      this.userApiService.displayPopOverWithButtons(
+        'Edited document',
+        'Are you happy with your changes?',
+        async (response) => {
+          if (response.data.confirm) {
+            await this.saveChangesToWorkflow();
+          }
         }
-      }
-    );
+      );
+    } else {
+      this.userApiService.displayPopOver(
+        'Error in form',
+        'The form is incomplete'
+      );
+    }
   }
 
   async saveChangesToWorkflow() {
@@ -454,14 +465,14 @@ export class WorkflowEditPage implements OnInit {
           };
           tmpUsr.push(tempUser);
         }
-        console.log(phase.controls._id.value,)
-        tmpPhase={
+        console.log(phase.controls._id.value);
+        tmpPhase = {
           status: phase.controls.phaseStatus.value,
           annotations: phase.controls.annotations.value,
           description: phase.controls.description.value,
           _id: phase.controls._id.value,
           users: tmpUsr,
-        }
+        };
         phases.push(tmpPhase);
       }
       i++;
@@ -469,15 +480,15 @@ export class WorkflowEditPage implements OnInit {
     const name = this.workflowForm.controls.workflowName.value;
     const description = this.workflowForm.controls.workflowDescription.value;
 
-    await this.workflowServices.editWorkflow(
-      name,
-      description,
-      phases,
-      this.workflowId,
-      (response) => {
-        console.log(response);
-      }
-    );
+    // await this.workflowServices.editWorkflow(
+    //   name,
+    //   description,
+    //   phases,
+    //   this.workflowId,
+    //   (response) => {
+    //     console.log(response);
+    //   }
+    // );
   }
 
   viewPhase(i: number) {
@@ -503,6 +514,4 @@ export class WorkflowEditPage implements OnInit {
 
     this.ready = false;
   }
-
-
 }
