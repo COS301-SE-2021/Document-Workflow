@@ -52,6 +52,8 @@ export class WorkflowEditPage implements OnInit {
   phases: FormArray;
   file: File;
 
+  validat: boolean;
+
   ready: boolean;
   addFile: boolean;
   addName: boolean;
@@ -160,6 +162,7 @@ export class WorkflowEditPage implements OnInit {
             };
             tempUser.push(tmpUser);
           }
+          console.log(phase);
           tmpPhase = {
             showPhase: tmpShow,
             phaseNumber: i,
@@ -167,6 +170,7 @@ export class WorkflowEditPage implements OnInit {
             description: phase.description,
             status: phase.status,
             users: tempUser,
+            _id: phase._id
           };
           phases.push(tmpPhase);
         }
@@ -221,6 +225,7 @@ export class WorkflowEditPage implements OnInit {
       phaseStatus: new FormControl('Edit'),
       showPhases: new FormControl(phase.showPhase),
       phaseNumber: new FormControl(phase.phaseNumber),
+      _id: new FormControl(phase._id),
       users: this.fb.array([]),
     });
   }
@@ -306,6 +311,7 @@ export class WorkflowEditPage implements OnInit {
       phaseStatus: new FormControl('Create'),
       showPhases: new FormControl(true),
       phaseNumber: new FormControl(i),
+      _id: new FormControl(''),
       users: this.fb.array([
         this.fb.group({
           user: new FormControl('', [Validators.email, Validators.required]),
@@ -411,6 +417,9 @@ export class WorkflowEditPage implements OnInit {
 
   checkIfValid(){
 
+    for(let phase of this.workflowForm.controls.phases['controls']){
+
+    }
   }
 
   submit() {
@@ -439,24 +448,24 @@ export class WorkflowEditPage implements OnInit {
         for (let user of phase.controls.users['controls']) {
           let tempUser: phaseUserFormat;
           tempUser = {
-            email: user.controls.user,
-            permission: user.controls.permission,
-            accepted: user.controls.accepted,
+            email: user.controls.user.value,
+            permission: user.controls.permission.value,
+            accepted: user.controls.accepted.value,
           };
           tmpUsr.push(tempUser);
         }
+        console.log(phase.controls._id.value,)
         tmpPhase={
-          status: phase.controls.phaseStatus,
-          annotations: phase.controls.annotations,
-          description: phase.controls.description,
+          status: phase.controls.phaseStatus.value,
+          annotations: phase.controls.annotations.value,
+          description: phase.controls.description.value,
+          _id: phase.controls._id.value,
           users: tmpUsr,
         }
         phases.push(tmpPhase);
       }
       i++;
     }
-
-    console.log(phases)
     const name = this.workflowForm.controls.workflowName.value;
     const description = this.workflowForm.controls.workflowDescription.value;
 

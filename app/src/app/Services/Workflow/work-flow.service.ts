@@ -23,6 +23,7 @@ export interface phaseFormat {
   status: string;
   annotations: string;
   description: string;
+  _id?: string;
   users: phaseUserFormat[];
 }
 
