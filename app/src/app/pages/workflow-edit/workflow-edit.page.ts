@@ -460,16 +460,16 @@ export class WorkflowEditPage implements OnInit {
         for (let user of phase.controls.users['controls']) {
           let tempUser: phaseUserFormat;
           tempUser = {
-            email: user.controls.user,
-            permission: user.controls.permission,
-            accepted: user.controls.accepted,
+            email: user.controls.user.value,
+            permission: user.controls.permission.value,
+            accepted: user.controls.accepted.value,
           };
           tmpUsr.push(tempUser);
         }
         tmpPhase={
-          status: phase.controls.phaseStatus,
-          annotations: phase.controls.annotations,
-          description: phase.controls.description,
+          status: phase.controls.phaseStatus.value,
+          annotations: phase.controls.annotations.value,
+          description: phase.controls.description.value,
           users: tmpUsr,
         }
         phases.push(tmpPhase);
