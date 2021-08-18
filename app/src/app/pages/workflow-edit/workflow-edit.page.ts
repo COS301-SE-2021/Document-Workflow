@@ -471,6 +471,7 @@ export class WorkflowEditPage implements OnInit {
           annotations: phase.controls.annotations.value,
           description: phase.controls.description.value,
           users: tmpUsr,
+          _id: phase.controls._id.value
         }
         phases.push(tmpPhase);
       }
