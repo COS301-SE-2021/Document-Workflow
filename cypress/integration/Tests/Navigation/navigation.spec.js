@@ -83,8 +83,8 @@ describe("Navigation when user is logged in", () => {
     cy.url().should("eq", "http://localhost:8100/home/addWorkflow");
   });
   
-  it("Navigating to random page +> faceboook", () => {
+  it("Navigating to random page => faceboook", () => {
     cy.visit("http://localhost:8100/home/faceboook");
-    cy.url().should("eq", "http://localhost:8100/home/faceboook");
+    cy.url().should("eq", "http://localhost:8100/home/login");
   });
 });

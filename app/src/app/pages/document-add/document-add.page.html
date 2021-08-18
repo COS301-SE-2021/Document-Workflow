@@ -27,22 +27,22 @@
       <ion-card-content style="height: 100%;">
         <ion-item>
           <ion-label position="floating">Workflow Name</ion-label>
-          <ion-input formControlName="workflowName" inputmode="text" (input)="checkStatus()"></ion-input>
+          <ion-input formControlName="workflowName" inputmode="text" (input)="checkStatus()" id="workflowName"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="floating">Workflow Description</ion-label>
-          <ion-textarea formControlName="workflowDescription" inputmode="text" (input)="checkStatus()"></ion-textarea>
+          <ion-textarea formControlName="workflowDescription" inputmode="text" (input)="checkStatus()" id="workflowDescription"></ion-textarea>
         </ion-item>
         <ion-item>
           <ion-button hidden="true">
             <input FormControlName="fileUploader" type="file" #fileInput (change)="uploadFile($event)" hidden="false"
               accept="application/pdf" required>
           </ion-button>
-          <ion-button (click)="selectImageSource()" expand="block" color="primary" fill="outline">Add Your document</ion-button>
+          <ion-button (click)="selectImageSource()" id="uploadFile" expand="block" color="primary" fill="outline">Add Your document</ion-button>
         </ion-item>
         <iframe [src]="srcFile" *ngIf="addFile" style="width: 100%; height:100%;"></iframe>
       </ion-card-content>
-      <ion-button (click)="changeOver()" >Next</ion-button>
+      <ion-button (click)="changeOver()" id="changeOver">Next</ion-button>
     </ion-card>
     <!-- second card -->
     <ion-reorder-group *ngIf="next" [disabled]="reOrder" (ionItemReorder)="fixOrder($event)" style="width:95%">

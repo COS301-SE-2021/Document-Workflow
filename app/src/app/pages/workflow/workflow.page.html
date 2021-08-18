@@ -41,8 +41,8 @@
         <ion-card>
           <ion-header style="min-height: 80px;">
             <br />
-            <ion-card-title style="font-size: 20px; padding-left: 10px;">{{document.name}}</ion-card-title>
-            <ion-card-subtitle style="font-size: 12px; padding-left: 10px;">Owner of the workflow:
+            <ion-card-title style="font-size: 20px; padding-left: 10px;" name="workflowName">{{document.name}}</ion-card-title>
+            <ion-card-subtitle style="font-size: 12px; padding-left: 10px;"name="workflowOwner">Owner of the workflow:
               {{document.ownerEmail}}
             </ion-card-subtitle>
             <ion-fab vertical="top" horizontal="end" style="font-size: 25px;">
@@ -71,7 +71,7 @@
             </ion-fab>
           </ion-header>
           <ion-card-content style="width:100%">
-            <ion-item lines="none">
+            <ion-item lines="none" name="workflowDescription">
               <p>{{document.description}}</p>
             </ion-item>
             <ion-grid style="width: 100%;">
