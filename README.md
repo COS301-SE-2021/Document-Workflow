@@ -53,7 +53,7 @@
 ### [Software Requirement Specifications](https://www.overleaf.com/read/wdkdstnqdrbq)
 ### [Architectural Requirements Document](https://www.overleaf.com/read/ysxrgzkpvwwy)
 ### [Installation Guide](https://www.overleaf.com/read/xqggmbwpgxjq)
-### [User Manual ]
+### [User Manual ](https://www.overleaf.com/read/zmcjkphgdhrv)
 ### [Coding Standards](https://www.overleaf.com/read/pqpbcypgydjh)
 <!--- ### Previous Versions --->
 
