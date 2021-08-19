@@ -176,7 +176,9 @@ export default class UserService {
         }
         const user = await this.userRepository.findUser({email: req.user.email});
         const tokens: Token[] = req.user.tokens;
-        tokens.filter(token => {return token.token !== req.user.token});
+        const tokensFiltered = tokens.filter(token => {return token.token !== req.user.token});
+        console.log("Filtered tokens when logging out user: ");
+        console.log(tokensFiltered);
         user.tokens = tokens as any;
         try {
             return await this.userRepository.updateUser(user);

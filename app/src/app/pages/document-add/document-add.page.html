@@ -40,7 +40,7 @@
           </ion-button>
           <ion-button (click)="selectImageSource()" id="uploadFile" expand="block" color="primary" fill="outline">Add Your document</ion-button>
         </ion-item>
-        <iframe [src]="srcFile" *ngIf="addFile" style="width: 100%; height:100%;"></iframe>
+        <iframe title="Preview your document" [src]="srcFile | safe: url" *ngIf="addFile" style="width: 100%; height:100%;"></iframe>
       </ion-card-content>
       <ion-button (click)="changeOver()" id="changeOver">Next</ion-button>
     </ion-card>
