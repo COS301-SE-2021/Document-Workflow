@@ -239,4 +239,10 @@ export class LoginRegisterPage implements OnInit {
 
     (await mod).onDidDismiss();
   }
+    //Terms and conditions
+  async displaypopOver(even: Event )
+  {
+
+    this.userAPiService.displayPopOver('termsOfService','');
+  }
 }
