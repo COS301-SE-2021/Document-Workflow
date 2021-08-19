@@ -1,4 +1,4 @@
-describe("testing the add workflow functionality", () => {
+describe("testing the edit workflow functionality", () => {
   before(() => {
     cy.clearCookies();
     cy.visit("http://localhost:8100");
@@ -28,11 +28,17 @@ describe("testing the add workflow functionality", () => {
 
   it('will open phase and change phase description',  ()=>{
     cy.get(':nth-child(2) > [style="margin: 5px; padding: 5px; border-width: 4px; border-style: solid; border-radius: 15px; border-color: #002060;"] > [sizexs="12"] > ion-row.md > [sizexs="2"] > .md').click();
-    cy.get(':nth-child(2) > [sizexs="10"] > .item-interactive > .ng-untouched > .native-input').type(" changing of the phase");
-    cy.get(':nth-child(2) > [sizexs="10"] > .item-interactive > .ng-untouched > .native-input').should("contain","timothyhill202@gmail.comchangingofthephase");
+    cy.get(':nth-child(2) > [sizexs="10"] > .item-interactive > .ng-untouched > .native-input').clear();
+    cy.get(':nth-child(2) > [sizexs="10"] > .item-interactive > .ng-untouched > .native-input').type("brenton.stroberg@yahoo.co.za");
+    cy.get(':nth-child(2) > [sizexs="10"] > .item-interactive > .ng-untouched > .native-input').should('have.value','brenton.stroberg@yahoo.co.za');
   });
 
   it("will delete a phase and save the changes",()=>{
-    cy.get('ion-button').eq(0).click();
+    cy.get(':nth-child(3) > [style="margin: 5px; padding: 5px; border-width: 4px; border-style: solid; border-radius: 15px; border-color: #002060;"] > [sizexs="12"] > ion-row.md > [sizexs="4"] > .md').click();
+    cy.get('ion-grid.md > :nth-child(4) > :nth-child(2) > .md').click();
+    cy.wait(3000);
+  
+    cy.get('div > ion-grid.md > ion-row.md > :nth-child(1) > .md').click();
   })  
+
 });

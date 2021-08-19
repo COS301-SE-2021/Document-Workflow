@@ -35,6 +35,7 @@ describe("testing the add workflow functionality", () => {
         cy.get('ion-button').eq(1).click();
         cy.wait(10000);
 
+        cy.wait(5000);
         cy.get('ion-icon').eq(0).click();
         cy.get('ion-button').eq(1).click();
 
