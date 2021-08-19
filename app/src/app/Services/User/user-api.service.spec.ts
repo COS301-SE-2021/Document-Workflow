@@ -24,7 +24,7 @@ describe('UserService', () => {
         initials: 'BP',
         email: 'u17015741@tuks.co.za',
         phone_number: '0763398714',
-        password: 'submarine',
+        password: process.env.TEST_PASSWORD
       };
     expect( service.getUser(1)).toContain(user);
   });

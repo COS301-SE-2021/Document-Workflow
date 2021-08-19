@@ -94,11 +94,9 @@ export default class UserService {
             usr.signature = req.files.signature.data;
             usr.validateCode = crypto.randomBytes(64).toString('hex');
             usr.password = await this.getHashedPassword(usr.password);
-            //const user: UserProps = await this.userRepository.postUser(usr);
             const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
             usr.tokens = [token];
             const user: UserProps = await this.userRepository.saveUser(usr);
-            //const response = await this.userRepository.putUser(usr);
             if(user){
                 await this.sendVerificationEmail(usr.email, usr.validateCode)//,
                 return user;
