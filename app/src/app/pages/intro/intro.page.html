@@ -1,144 +1,64 @@
 <ion-toolbar>
   <div class="logo">
-<!--    Document Workflow-->
-    <ion-row style="background-color: #002060;">
-<!--        <ion-searchbar (input)="getItems($event)"></ion-searchbar>-->
-      <ion-row sizeXs="8" sizeSm="8" sizeMd="3" offsetMd="1" style="justify-content: center; align-items: center; ">
-          <ion-img src="../../../assets/LogoWhiteBackground.png"></ion-img>
-      </ion-row>
-    </ion-row>
+    Document Workflow
   </div>
-
  </ion-toolbar>
 
- <ion-content padding class="background">
-   <app-generic-footer></app-generic-footer>
-  <div>
-<!--    Check background with svg-->
-<!--   <svg width="100%" height="100%">-->
-<!--     <defs>-->
-<!--       <pattern id="polka-dots" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">-->
-<!--         <circle fill="#bee9e8" cx="50" cy="50" r="25"></circle>-->
-<!--       </pattern>-->
-<!--     </defs>-->
-<!--     <rect x="0" y="0" width="100%" height="100%" fill="url(#polka-dots)"></rect>-->
-<!--   </svg>-->
+ <ion-content>
    <ion-grid>
      <ion-row>
 
      </ion-row>
      <ion-row>
        <ion-text>
-         <div>
-         <h1 class="firstText">Try Document-Workflow for effectively managing all your digital signing and continuous integration with your employees and clients.</h1>
-         </div></ion-text>
+         <h1 class="firstText">A solution for all your digital document signing needs</h1>
+       </ion-text>
      </ion-row>
 
      <ion-row class="buttonRow">
-       <ion-button  fill="solid" color="" (click)="getStarted()">Get Started
+       <ion-button  fill="solid" color="">Get Started
          <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
        </ion-button>
      </ion-row>
 
      <ion-row class="conceptRow">
        <ion-col size-xs="12" size-sm="12" size-md="4" >
-         <ion-card  style="height:100%;background-color: maroon;opacity: initial;--outline-hover: 0.7 px; border-radius: 0.4px">
+         <ion-card  style="height:100%">
            <ion-card-header>
              <ion-icon size="large" name="create"></ion-icon>
            </ion-card-header>
-           <ion-card-title style="font-family: Elephant;text-align: center; color: #d0d0d0">CREATE</ion-card-title>
-           <ion-card-content style="
-                font-family: 'Arial Black';
-                @import url(https://fonts.googleapis.com/css?family=Anonymous+Pro);
-                color: #989ba3;
-                text-justify: auto;
-                text-align: center;
-                overflow: hidden;
-                position: relative;
-                width: 18em;
-                border-right: 2px solid rgba(255, 255, 255, 0.75);
-                font-size: 22px;
-                animation: typewriter 4s steps(44) 1s 1 normal both,
-                           blinkTextCursor 400ms steps(44) infinite normal;
-                /*@keyframes typewriter from {width: 0;}, to {width: 18em;}*/
-                --from-width:0; --to-width:18em; animation:typewriter 4s ease infinite;
-                /*@keyframes blinkTextCursor from {border-right-color: rgba(255, 255, 255, 0.75);},*/
-                /*                           to {border-right-color: transparent;}*/
---from-border-right-color: rgba(255, 255, 255, 0.75); --to-border-right-color: transparent;">
+           <ion-card-title>Create</ion-card-title>
+           <ion-card-content>
              Create a workflow process for each document that needs signing,
              specify how it needs to be signed, and then upload the document.
            </ion-card-content>
          </ion-card>
        </ion-col>
        <ion-col size-xs="12" size-sm="12" size-md="4" >
-         <ion-card  style="height:100%;background-color: maroon;--outline-hover: 0.7%">
+         <ion-card  style="height:100%">
            <ion-card-header>
              <ion-icon size="large" name="person-add"></ion-icon>
            </ion-card-header>
-           <ion-card-title style="font-family: Elephant;text-align: center;color: #d0d0d0">ADD</ion-card-title>
-           <ion-card-content style="
-                font-family: 'Arial Black';
-                @import url(https://fonts.googleapis.com/css?family=Anonymous+Pro);
-                color: #989ba3;
-                text-justify: auto;
-                text-align: center;
-                overflow: hidden;
-                position: relative;
-                width: 18em;
-                border-right: 2px solid rgba(255, 255, 255, 0.75);
-                font-size: 22px;
-                animation: typewriter 4s steps(44) 1s 1 normal both,
-                           blinkTextCursor 400ms steps(44) infinite normal;
-                /*@keyframes typewriter from {width: 0;}, to {width: 18em;}*/
-                --from-width:0; --to-width:18em; animation:typewriter 4s ease infinite;
-                /*@keyframes blinkTextCursor from {border-right-color: rgba(255, 255, 255, 0.75);},*/
-                /*                           to {border-right-color: transparent;}*/
---from-border-right-color: rgba(255, 255, 255, 0.75); --to-border-right-color: transparent;">
+           <ion-card-title>Add</ion-card-title>
+           <ion-card-content>
              Add other users as participants to a workflow and assign them to different phases,
              so that they can sign the document.
            </ion-card-content>
          </ion-card>
        </ion-col>
        <ion-col size-xs="12" size-sm="12" size-md="4" >
-         <ion-card style="height:100%;background-color: maroon;--outline-hover: 0.7%">
+         <ion-card style="height:100%">
            <ion-card-header>
              <ion-icon size="large" name="checkmark-circle"></ion-icon>
            </ion-card-header>
-           <ion-card-title style="font-family: Elephant;text-align: center;color: #d0d0d0;text-shadow: #0d0d0d">APPROVE</ion-card-title>
-           <ion-card-content
-             style="font-family: 'Arial Black';
-                @import url(https://fonts.googleapis.com/css?family=Anonymous+Pro);
-                color: #989ba3;
-                text-justify: auto;
-                text-align: center;
-                overflow: hidden;
-                position: relative;
-                width: 18em;
-                border-right: 2px solid rgba(255, 255, 255, 0.75);
-                font-size: 22px;
-                animation: typewriter 4s steps(44) 1s 1 normal both,
-                           blinkTextCursor 400ms steps(44) infinite normal;
-                /*@keyframes typewriter from {width: 0;}, to {width: 18em;}*/
-                --from-width:0; --to-width:18em; animation:typewriter 4s ease infinite;
-                /*@keyframes blinkTextCursor from {border-right-color: rgba(255, 255, 255, 0.75);},*/
-                /*                           to {border-right-color: transparent;}*/
---from-border-right-color: rgba(255, 255, 255, 0.75); --to-border-right-color: transparent;">
+           <ion-card-title>Approve</ion-card-title>
+           <ion-card-content>
              Approve or reject a document after it has been signed.
            </ion-card-content>
          </ion-card>
        </ion-col>
      </ion-row>
    </ion-grid>
-  </div>
+
+
  </ion-content>
-
-<ion-footer> <small>
-  <ion-toolbar>
-
-    <ion-title style="font-size: 13px; text-align: left" >&copy; Copyright 2021, Document-Workflow. All Rights Reserved </ion-title>
-
-    <ion-button style="text-align: center" (click)="displaypopOver($event)">Terms and Conditions</ion-button>
-
-  </ion-toolbar>
-</small></ion-footer>
-
