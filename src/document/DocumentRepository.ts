@@ -25,22 +25,43 @@ export default class DocumentRepository {
             await newDoc.save();
         }
         catch(err) {
-            throw new DatabaseError("Could not save Document data");
+            console.log(err);
+            throw new Error("Could not save Document data");
         }
 
         const uploadParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
-            Body: fileData,
-            Key: doc.workflowId +"/"+ fileName
+            Body: file.data,
+            Key: doc.workflowId +"/"+ file.name
+        }
+        try{
+            await s3.upload(uploadParams, (err, data) => {
+                console.log(err)
+                if(err) {
+                    throw new Error("Error establishing connection to the cloud file server");
+                }
+                else console.log(data);
+
+            });
+
+        }
+        catch(e){
+            console.log(e);
         }
 
-        s3.upload(uploadParams, (err, data) => {
+        const uploadParams2 = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Body: file.data,
+            Key: doc.workflowId +"/phase0/"+ file.name
+        }
+
+        await s3.upload(uploadParams2, (err, data) => {
             if(err) {
-                throw new CloudError(err.toString());
+                throw new Error("Error establishing connection to the cloud file server");
             }
             else console.log(data);
-
         });
+
         return doc._id;
     }
 

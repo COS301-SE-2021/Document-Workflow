@@ -5,7 +5,7 @@ import Authenticator from "../security/Authenticate";
 import { RequestError, ServerError } from "../error/Error";
 import { handleErrors } from "../error/ErrorHandler";
 import { WorkflowProps } from "./Workflow";
-import { Phase } from "../phase/Phase";
+import { PhaseProps, Phase } from "../phase/Phase";
 
 @injectable()
 export default class WorkflowController {
@@ -81,10 +81,10 @@ export default class WorkflowController {
         })
 
         try{
-            return await this.workflowService.createWorkFlow(workflow, req.files.document,req.files.document.data, convertedPhases);
+            return await this.workflowService.createWorkFlow(workflow, req.files.document, convertedPhases);
 
         } catch(err) {
-            throw err;
+            throw new ServerError(err.toString());
         }
     }
 
@@ -162,22 +162,33 @@ export default class WorkflowController {
     }
 
     private async retrieveWorkflow(req) {
+
         if(!req.body.workflowId){
             throw new RequestError("There was something wrong with the request");
         }
-        return await this.workflowService.retrieveWorkflow(req.body.workflowId, req.user.email);
+
+        try{
+            return await this.workflowService.retrieveWorkflow(req.body.workflowId, req.user.email);
+        } catch(err) {
+            console.log(err)
+            throw new ServerError(err.toString());
+        }
     }
 
     private async deleteWorkFlow(req) {
         if(!req.body.workflowId)
             throw new RequestError("There was something wrong with the request");
 
-        return await this.workflowService.deleteWorkFlow(req.body.workflowId, req.user.email);
+        try{
+            return await this.workflowService.deleteWorkFlow(req.body.workflowId, req.user.email);
+        } catch(err) {
+            throw new ServerError(err.toString());
+        }
     }
 
     private async editWorkflow(req) {
         if(!req.body.name || !req.body.description
-             || !req.body.phases || !req.body.workflowId) { //owner ID will be added after the auth is used!!! dont check for it here
+            || !req.body.phases || !req.body.workflowId) { //owner ID will be added after the auth is used!!! dont check for it here
             throw new RequestError("There was something wrong with the request");
         }
 
@@ -344,3 +355,10 @@ export default class WorkflowController {
         return this.router;
     }
 }
+
+/*
+      \    /\
+       )  ( ') Meow Meow Meow
+      (  /  )
+       \(__)|
+ */

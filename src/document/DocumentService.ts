@@ -18,7 +18,7 @@ export default class DocumentService {
         }
     }
 
-    async uploadDocument(file: File, fileData: Buffer, id: ObjectId): Promise<ObjectId>{
+    async uploadDocument(file: File, id: ObjectId): Promise<ObjectId>{
         try{
             const doc = new Document({
                 name: file.name,
@@ -26,7 +26,7 @@ export default class DocumentService {
                 path: id + '/' +file.name,
                 workflowId: id
             })
-            return await this.documentRepository.saveDocument(doc, fileData, file.name);
+            return await this.documentRepository.postDocument(doc, file);
         }
         catch(err) {
             console.log(err);

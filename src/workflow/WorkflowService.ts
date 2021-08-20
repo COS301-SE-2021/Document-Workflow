@@ -6,26 +6,28 @@ import UserService from "../user/UserService";
 import {PhaseProps, PhaseStatus} from "../phase/Phase";
 import { ObjectId } from "mongoose";
 import { PhaseService } from "../phase/PhaseService";
-import { PhaseError, RequestError, ServerError } from "../error/Error";
+import {RequestError, ServerError} from "../error/Error";
 
 @injectable()
 export default class WorkflowService{
+    //Errors in Service files -> Internal Server Error
+
     constructor(
         private workflowRepository: WorkFlowRepository,
         private documentService: DocumentService,
         private userService: UserService,
         private phaseService: PhaseService) {
     }
+
     /**
      * We first create the workflow so that its ID can be generated. We then store the document
      * which requires its parent workflow id. Once we get the document id back we update our workflow.
      * Members is just an array of email addresses.
      * @param workflow
      * @param file
-     * @param fileData
      * @param phases
      */
-    async createWorkFlow(workflow: WorkflowProps, file: File, fileData:Buffer, phases: PhaseProps[]): Promise<any>{
+    async createWorkFlow(workflow: WorkflowProps, file: File, phases: PhaseProps[]): Promise<any>{
 
         console.log("In the createWorkFlow function");
         try {
@@ -33,7 +35,7 @@ export default class WorkflowService{
             const areValid = await this.arePhasesValid(phases);
             if(!areValid){
                 console.log("Phase was malformed");
-                throw new PhaseError();
+                return {status: "error", data:{}, message: "A phase contains a user that does not exist"}
             }
             console.log("ALL PHASES ARE VALID");
             phases[0].status = PhaseStatus.INPROGRESS;
@@ -52,7 +54,7 @@ export default class WorkflowService{
             console.log("Workflow saved, saving document");
 
             //Step 3 save document with workflowId:
-            const documentId = await this.documentService.uploadDocument(file, fileData, workflowId);
+            const documentId = await this.documentService.uploadDocument(file, workflowId);
             console.log("THE DOCUMENT HAS BEEN CREATED AND THE WORKFLOW SHOULD HAVE THE DOCUMENT ID NOW!!!");
             console.log(workflow);
             console.log("Document saved, updating workflow");
@@ -85,6 +87,7 @@ export default class WorkflowService{
             if (!await this.checkUsersExist(usrs))
                 return false;
         }
+
         return true;
     }
 
@@ -163,7 +166,7 @@ export default class WorkflowService{
 
             const workflow = await this.workflowRepository.getWorkflow(workflowId);
             console.log(workflow);
-            if(workflow === null || workflow === undefined)
+            if(workflow === null)
                 return {status: "failed", data: {}, message: "Workflow does not exist"};
             if(workflow.ownerEmail !== userEmail)
                 return {status:"failed", data: {}, message: "Insufficient rights to delete"};
@@ -326,7 +329,7 @@ export default class WorkflowService{
             throw new ServerError(err);
         }
     }
-    //my cat walked across my keyboard while I was typing this out. If there are any bugs, she is to blame.
+    //my cat walked across my keyboard while I was typing this out. If there are any bugs, she is too blame.
     isPhaseComplete(phase){
         console.log("Checking if phase is completed");
         console.log(phase.users);
@@ -335,6 +338,7 @@ export default class WorkflowService{
             if(phaseUsers[i].accepted === 'false')
                 return false;
         }
+
         return true;
     }
 
@@ -451,14 +455,14 @@ export default class WorkflowService{
 
     /**
      *
-     * @param workflowDescrip
-     * @param workflowName
+     * @param workflow
      * @param convertedPhases
      * @param requestingUser
      * @param workflowId
      */
     async editWorkflow(workflowDescrip, workflowName, convertedPhases, requestingUser, workflowId) {
         console.log("Attempting to update a workflow");
+        ;
 
         try{
             //1) Retrieve the workflow that we are going to be editing based on the input workflowId
@@ -527,15 +531,17 @@ export default class WorkflowService{
      * This function checks whether any of the phases to be edited occur in the array of phase ids that may
      * noot be edited.
      * @param phases
-     * @param preservePhasesIds
+     * @param preservePhases
      */
     allPhasesCanBeEdited(phases, preservePhasesIds){
+
         for(let i=0; i<preservePhasesIds.length; ++i){
             for(let k=0; k<phases.length; ++k){
                 if(preservePhasesIds[i]=== phases[k]._id)
                     return false;
             }
         }
+
         return true;
     }
 

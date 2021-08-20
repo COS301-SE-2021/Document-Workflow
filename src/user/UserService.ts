@@ -98,8 +98,8 @@ export default class UserService {
             usr.validateCode = crypto.randomBytes(64).toString('hex');
             usr.password = await this.getHashedPassword(usr.password);
 
-            const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
-            usr.tokens = [token];
+            //const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
+            //usr.tokens = [token];
 
             const user: UserProps = await this.userRepository.saveUser(usr);
             if(user){
