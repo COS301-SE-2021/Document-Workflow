@@ -102,7 +102,7 @@ export class LoginRegisterPage implements OnInit {
       if (response.status === 'success') {
         //localStorage.setItem('token', response.data.token);
         Cookies.set('token', response.data.token, { expires: 1 });
-        this.userAPIService.displayPopOver('Success', 'login was successful');
+        // this.userAPIService.displayPopOver('Success', 'login was successful');
         this.router.navigate(['home']);
       } else {
         console.log(response);

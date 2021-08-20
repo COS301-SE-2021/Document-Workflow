@@ -316,7 +316,7 @@ export class WorkflowEditPage implements OnInit {
         this.fb.group({
           user: new FormControl('', [Validators.email, Validators.required]),
           permission: new FormControl('', [Validators.required]),
-          accepted: new FormControl(false, [Validators.required]),
+          accepted: new FormControl("false", [Validators.required]),
         }),
       ]),
     });
