@@ -50,10 +50,10 @@
          
 # Documentation
 ## Software Requirements Specification
-### [Software Requirement Specifications version 1](https://www.overleaf.com/read/wdkdstnqdrbq)
-### [Software Requirement Specifications version 2](https://www.overleaf.com/read/ssnwjnpqqxjm)
-### [Architectural Requirements Document version 1](https://www.overleaf.com/read/ysxrgzkpvwwy)
-### [Architectural Requirements Document version 2](https://www.overleaf.com/read/vkrwvnpydfhb)
+### [Software Requirement Specifications version 1 and 2](https://www.overleaf.com/read/wdkdstnqdrbq)
+### [Software Requirement Specifications version 3](https://www.overleaf.com/read/ssnwjnpqqxjm)
+### [Architectural Requirements Document version 1 and 2](https://www.overleaf.com/read/ysxrgzkpvwwy)
+### [Architectural Requirements Document version 3](https://www.overleaf.com/read/vkrwvnpydfhb)
 ### [Installation Guide version 1](https://www.overleaf.com/read/xqggmbwpgxjq)
 ### [User Manual verion 1](https://www.overleaf.com/read/zmcjkphgdhrv)
 ### [Coding Standards version 1](https://www.overleaf.com/read/pqpbcypgydjh)
