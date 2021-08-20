@@ -16,7 +16,6 @@ import {
   AbstractControlOptions,
 } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
-import { IonicSafeString } from '@ionic/core';
 import { Router } from '@angular/router';
 import {
   ActionSheetController,
@@ -285,9 +284,9 @@ export class DocumentAddPage implements OnInit {
     this.workflowForm.get('workflowFile').setValue(this.file);
     this.blob = new Blob([this.file], { type: 'application/pdf;base64' });
     console.log(this.blob.arrayBuffer());
-    const obj = new IonicSafeString(URL.createObjectURL(this.blob));
+    const obj = URL.createObjectURL(this.blob);
     console.log(obj);
-    this.srcFile = obj;
+    this.srcFile = this.sanitizer.bypassSecurityTrustResourceUrl(obj);
     this.addFile = true;
   }
 
