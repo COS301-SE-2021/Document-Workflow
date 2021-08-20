@@ -97,11 +97,11 @@ export default class UserService {
             usr.signature = req.files.signature.data;
             usr.validateCode = crypto.randomBytes(64).toString('hex');
             usr.password = await this.getHashedPassword(usr.password);
-            //const user: UserProps = await this.userRepository.postUser(usr);
-            /*const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: undefined};
-            usr.tokens = [token];*/
+
+            const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
+            usr.tokens = [token];
+
             const user: UserProps = await this.userRepository.saveUser(usr);
-            //const response = await this.userRepository.putUser(usr);
             if(user){
                 await this.sendVerificationEmail(usr.email, usr.validateCode)//,
                 return user;
@@ -181,10 +181,13 @@ export default class UserService {
         if(!req.user || !req.user.email || !req.user.tokens){
             throw new RequestError("Missing required properties");
         }
-        const user: UserDoc = await this.userRepository.findUser({email: req.user.email});
-        //delete the token from user:
 
-        user.tokens = []
+        const user = await this.userRepository.findUser({email: req.user.email});
+        const tokens: Token[] = req.user.tokens;
+        const tokensFiltered = tokens.filter(token => {return token.token !== req.user.token});
+        console.log("Filtered tokens when logging out user: ");
+        console.log(tokensFiltered);
+        user.tokens = tokens as any;
 
         try {
             return await this.userRepository.updateUser(user);

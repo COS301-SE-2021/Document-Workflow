@@ -13,7 +13,13 @@ const s3 = new AWS.S3({
 
 export default class DocumentRepository {
 
-    async saveDocument(doc: DocumentProps, fileData: Buffer, fileName: string): Promise<ObjectId> {
+    /*
+       This function should only be used when creating a document when the workflow is created.
+       To update a document/create a new phase in the S3 bucket see the 'putDocument' function
+     */
+    //TODO: when saving documents to s3, use promises instead of callbacks
+    async postDocument(doc: DocumentProps, file): Promise<ObjectId> {
+        console.log(file);
         try{
             const newDoc = new Document(doc);
             await newDoc.save();
