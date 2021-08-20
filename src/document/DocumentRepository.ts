@@ -1,9 +1,9 @@
 import { Document, DocumentProps } from "./Document";
 import * as AWS from 'aws-sdk';
 import { ObjectId, Types } from "mongoose";
+import { CloudError, DatabaseError, ServerError } from "../error/Error";
 import * as multer from 'multer';
 import * as multerS3 from 'multer-s3';
-import {ServerError} from "../error/Error";
 
 const s3 = new AWS.S3({
     region: process.env.AWS_REGION,
@@ -12,7 +12,6 @@ const s3 = new AWS.S3({
 });
 
 export default class DocumentRepository {
-
 
     /*
        This function should only be used when creating a document when the workflow is created.
@@ -26,43 +25,22 @@ export default class DocumentRepository {
             await newDoc.save();
         }
         catch(err) {
-            console.log(err);
-            throw new Error("Could not save Document data");
+            throw new DatabaseError("Could not save Document data");
         }
 
         const uploadParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
-            Body: file.data,
-            Key: doc.workflowId +"/"+ file.name
-        }
-        try{
-            await s3.upload(uploadParams, (err, data) => {
-                console.log(err)
-                if(err) {
-                    throw new Error("Error establishing connection to the cloud file server");
-                }
-                else console.log(data);
-
-            });
-
-        }
-        catch(e){
-            console.log(e);
+            Body: fileData,
+            Key: doc.workflowId +"/"+ fileName
         }
 
-        const uploadParams2 = {
-            Bucket: process.env.AWS_BUCKET_NAME,
-            Body: file.data,
-            Key: doc.workflowId +"/phase0/"+ file.name
-        }
-
-        await s3.upload(uploadParams2, (err, data) => {
+        s3.upload(uploadParams, (err, data) => {
             if(err) {
-                throw new Error("Error establishing connection to the cloud file server");
+                throw new CloudError(err.toString());
             }
             else console.log(data);
-        });
 
+        });
         return doc._id;
     }
 
@@ -132,7 +110,7 @@ export default class DocumentRepository {
      * object, we create this function that instead takes the buffer in directly.
      * TODO: change the update files3 function to take in filedata instead of a file, then we can destroy this function.
      * @param path
-     * @param data
+     * @param fileData
      */
     async updateDocumentS3WithBuffer(path, fileData){
         const uploadParams = {

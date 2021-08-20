@@ -17,9 +17,13 @@ const onError = error => {
 
 const onListen = () => {
     console.log("Listening on port " + port);
-    Database.get().then(()=>{
-        console.log("Connection Established to MongoDB server");
-    });
+    if(process.env.TEST_MODE !== 'true'){
+        Database.get().then(()=>{
+            console.log("Connection Established to MongoDB server");
+        });
+    }else{
+        console.log("Application started in test mode");
+    }
 };
 
 const onClose = async () => {

@@ -19,8 +19,8 @@ export default class UserRepository {
 
     /**
      * @returns Promise<User[]> A list of the found users.
-     * @throws Error If something goes horribly wrong
-     * @param filter An object containing the search criteria
+     * @throws Error If something goes horribly wrong.
+     * @param filter An object containing the search criteria.
      */
     async findUsers(filter): Promise<UserProps[]> {
         try {
@@ -31,9 +31,9 @@ export default class UserRepository {
     }
 
     /**
-     * @returns Promise<User> The user object after it has been changed
-     * @throws Error when the user object is not found
-     * @param Usr The user object to be modified
+     * @returns Promise<User> The user object after it has been changed.
+     * @throws Error when the user object is not found.
+     * @param Usr The user object to be modified.
      */
     async updateUser(Usr: UserDoc): Promise<UserProps>{
         try{
@@ -45,14 +45,14 @@ export default class UserRepository {
         }
     }
 
-    async addToken(Usr: UserProps){
+    /*async addToken(Usr: UserProps){
         try{
             return await User.updateOne({_id: Usr._id}, {tokens: Usr.tokens as any})
         }
         catch(err){
             throw new Error(err);
         }
-    }
+    }*/
 
     /*async putSignature(user: UserProps): Promise<UserProps>{
         const usr: UserDoc = await User.findOne({id: user._id});

@@ -22,5 +22,5 @@ export const workflowSchema = createSchema({
     status: Type.string({default: WorkflowStatus.INPROGRESS})
 }, {_id: true, _v: false});
 
-export const Workflow = typedModel('WorkFlow', workflowSchema);
+export const Workflow = typedModel('Workflow', workflowSchema);
 export type WorkflowProps = ExtractProps<typeof workflowSchema>;
