@@ -203,7 +203,7 @@ export class WorkflowPage implements OnInit {
           this.workFlowService.revertPhase(id, async (response2) => {
             console.log(response2);
             if(response2.status === "success") {
-              await this.userApiService.displayPopOver("Success", "The workflow was successfully deleted");
+              await this.userApiService.displayPopOver("Success", "The workflow has been successfully reverted by a phase");
             }
           });
         }

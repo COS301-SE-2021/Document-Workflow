@@ -374,7 +374,7 @@ export class WorkflowEditPage implements OnInit {
     console.log(this.blob.arrayBuffer());
     const obj = URL.createObjectURL(this.blob);
     console.log(obj);
-    this.srcFile = this.sanitizer.bypassSecurityTrustResourceUrl(obj);
+    this.srcFile = obj;
     this.addFile = true;
   }
 
