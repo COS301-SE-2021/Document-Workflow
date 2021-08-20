@@ -1,6 +1,6 @@
 import { injectable } from "tsyringe";
 import UserRepository from "./UserRepository";
-import { UserProps, Token } from "./User";
+import { UserProps } from "./User";
 import nodemailer from 'nodemailer';
 import jwt from "jsonwebtoken";
 import { AuthenticationError, RequestError } from "../error/Error";
@@ -14,6 +14,9 @@ export default class UserService {
         const result = await bcrypt.compare(password, await usr.password);
         if(result){
             return this.generateToken(usr.email, usr._id);
+            /*const user: UserDoc = await this.userRepository.findUser(usr.email);
+            user.tokens.push(token);
+            await this.userRepository.updateUser(user);*/
         }else{
             throw new AuthenticationError("Password or Email is incorrect");
         }
@@ -30,7 +33,7 @@ export default class UserService {
     }
 
     generateToken(email, id): string{
-        return jwt.sign({id: id, email: email}, process.env.SECRET, {expiresIn: "24h"});
+        return jwt.sign({id: id, email: email}, process.env.SECRET, {expiresIn: "1h"});
     }
 
     //TODO: check that its safe to save a user the way we are saving them here. We arent creating an entirely new
@@ -95,8 +98,8 @@ export default class UserService {
             usr.validateCode = crypto.randomBytes(64).toString('hex');
             usr.password = await this.getHashedPassword(usr.password);
             //const user: UserProps = await this.userRepository.postUser(usr);
-            const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
-            usr.tokens = [token];
+            /*const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: undefined};
+            usr.tokens = [token];*/
             const user: UserProps = await this.userRepository.saveUser(usr);
             //const response = await this.userRepository.putUser(usr);
             if(user){
@@ -157,7 +160,7 @@ export default class UserService {
 
     async loginUser(req): Promise<any> {
         if(!req.body.email || !req.body.password){
-            throw new Error("Could not log in");
+            throw new RequestError("Could not log in");
         }
         const user = await this.userRepository.findUser({"email": req.body.email});
         if(!user) throw new RequestError("User does not exist");
@@ -173,14 +176,16 @@ export default class UserService {
         }
     }
 
-    async logoutUser(req): Promise<UserProps> {
-        if(!req.user){
+    //TODO: Implement JWT blacklist in order to facilitate explicit logout
+    /*async logoutUser(req): Promise<UserProps> {
+        if(!req.user || !req.user.email || !req.user.tokens){
             throw new RequestError("Missing required properties");
         }
-        const user = await this.userRepository.findUser({email: req.user.email});
-        const tokens: Token[] = req.user.tokens;
-        tokens.filter(token => {return token.token !== req.user.token});
-        user.tokens = tokens as any;
+        const user: UserDoc = await this.userRepository.findUser({email: req.user.email});
+        //delete the token from user:
+
+        user.tokens = []
+
         try {
             return await this.userRepository.updateUser(user);
         }
@@ -188,8 +193,9 @@ export default class UserService {
             console.error(err);
             throw new RequestError("Could not log out user");
         }
-    }
+    }*/
 
+    //TODO: Delete User from workflows and phases.
     async deleteUser(req): Promise<UserProps> {
         if (!req.params.id) {
             throw new RequestError("Missing Parameter");

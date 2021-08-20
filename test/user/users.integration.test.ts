@@ -2,19 +2,32 @@ import UserService from "../../src/user/UserService";
 import UserRepository from "../../src/user/UserRepository";
 import UserController from "../../src/user/UserController";
 import Database from "../../src/Database";
-import WorkFlowRepository from "../../src/workflow/WorkflowRepository";
 import Authenticator from "../../src/security/Authenticate";
+import request from "supertest";
+import app from "../../src/index";
 
 let userService;
 let userController;
-describe("User integration tests", () => {
 
-  beforeAll(async () => {
+describe("User sub-system integration tests:", () => {
+    let testUserId;
+    const testUserPassword = "paSsW*or^d123";
+    const testUserEmail = "testymctestface@testmail.test";
+    const testUserName = "Testy";
+    const testUserSurname = "Testface";
+    const testUserInitials = "TT";
+    const testUserSignature = {
+        data: "textrepresentingabufferofthesignature"
+    }
+    let testUserValidationToken;
+    let testUserValidationCode;
+
+    beforeAll(async () => {
       await Database.get();
-  });
+    });
 
   beforeEach(() => {
-    userService = new UserService(new UserRepository(), new WorkFlowRepository());
+    userService = new UserService(new UserRepository());
     userController = new UserController(userService, new Authenticator(userService));
   });
 
@@ -28,13 +41,13 @@ describe("User integration tests", () => {
 
         //Create new user if it doesn't exist
         //Check if user exists
-        const findByEmailRequest = {
-          params: {
-            email: "testymctestface@testmail.test"
-          },
-        } as unknown as Request;
+        //Delete User if it exists:
+        let getResponse;
+        try {
+            getResponse = await userService.getUserByEmail(testUserEmail);
+        }catch(err){
 
-        const getResponse = await userController.getUserByEmailRoute(findByEmailRequest);
+        }
         if(getResponse){
           const deleteRequest = {
             params: {
@@ -42,55 +55,64 @@ describe("User integration tests", () => {
             }
           } as unknown as Request;
 
-          const deletedUser = await userController.deleteUserRoute(deleteRequest);
+          const deletedUser = await userService.deleteUser(deleteRequest);
           expect(deletedUser.email).toBe("testymctestface@testmail.test");
         }
 
         //const currentDate = Date.now();
         const mockPostRequest = {
           body: {
-            name: "Testy",
-            surname: "TestFace",
-            initials: "TT",
-            email: "testymctestface@testmail.test",
-            password: "paSsW*or^d1234"
+            name: testUserName,
+            surname: testUserSurname,
+            initials: testUserInitials,
+            email: testUserEmail,
+            password: testUserPassword
           },
           files: {
-            signature: {
-              data: "somedataofasignaturelul"
-            }
+            signature: testUserSignature
           }
         } as unknown as Request;
 
-        // const postResponse = await userController.registerUserRoute(mockPostRequest);
-        await userController.registerUserRoute(mockPostRequest);
-        //console.log(postResponse);
+        const createdUser = await userController.registerUserRoute(mockPostRequest);
+        expect(createdUser.name).toBe(testUserName);
+        expect(createdUser.surname).toBe(testUserSurname);
+        expect(createdUser.initials).toBe(testUserInitials);
+        expect(createdUser.email).toBe(testUserEmail);
+        testUserId = createdUser._id;
+        testUserValidationCode = createdUser.validateCode;
       });
 
-      it("Should delete a user", () => {
+      it("Should verify the user", async () => {
+          const verifyRequest = {
+              query: {
+                  email: testUserEmail,
+                  verificationCode: testUserValidationCode
+              },
+          } as unknown as Request;
 
+          await userController.verifyUserRoute(verifyRequest);
+          //check that user has been updated:
+          const user = await userService.getUserByEmail(testUserEmail);
+          expect(user.validated).toBe(true);
       });
 
-      it("Should edit a user", () => {
-
+      it("Should login a user", async () => {
+          const loginRequest = {
+              body: {
+                  email: testUserEmail,
+                  password: testUserPassword
+              },
+          } as unknown as Request;
+          testUserValidationToken = await userController.loginUserRoute(loginRequest);
+          expect(testUserValidationToken).toBeDefined();
       });
 
-      it("Should add friends to a user", () => {
-
-      });
-
-      it("Should remove a friend from a user", () => {
-
-      });
-
-
-      //Negative tests
-      it("Should throw Authentication Error", () => {
-
-      });
-
-
-
-
+      it("Should Authenticate the User", async () => {
+          request(app)
+              .post('/api/users/authenticate')
+              .set('Authorization', 'Bearer ' + testUserValidationToken)
+              .expect('Content-Type', /json/)
+              .expect(200);
+      })
     });
 });

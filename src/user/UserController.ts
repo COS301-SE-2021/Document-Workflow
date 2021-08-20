@@ -76,14 +76,14 @@ export default class UserController{
         }
     }
 
-    async logoutUserRoute(request): Promise<UserProps> {
+    /*async logoutUserRoute(request): Promise<UserProps> {
         try{
             return await this.userService.logoutUser(request);
         }
         catch(err){
             throw new ServerError(err.toString());
         }
-    }
+    }*/
 
     async deleteUserRoute(request): Promise<UserProps> {
         try{
@@ -172,7 +172,7 @@ export default class UserController{
             }
         });
 
-        this.router.post("/logout", this.authenticationService.Authenticate, async (req,res) => {
+        /*this.router.post("/logout", this.authenticationService.Authenticate, async (req,res) => {
             try{
                 const user = await this.logoutUserRoute(req);
                 if(user) res.status(200).send("Successfully logged out");
@@ -181,7 +181,7 @@ export default class UserController{
             catch(err){
                 await handleErrors(err,res);
             }
-        });
+        });*/
 
         this.router.post("/register", async (req,res) => {
             try {
@@ -217,7 +217,7 @@ export default class UserController{
             }
         });
 
-        this.router.post("/verifyEmailExistence", this.auth, async (req, res) => {
+        this.router.post("/verifyEmailExistence", this.authenticationService.Authenticate, async (req, res) => {
             try {
                 return await this.verifyEmailExistence(req);
             } catch(err){

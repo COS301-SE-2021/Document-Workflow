@@ -5,7 +5,7 @@ import Authenticator from "../security/Authenticate";
 import { RequestError, ServerError } from "../error/Error";
 import { handleErrors } from "../error/ErrorHandler";
 import { WorkflowProps } from "./Workflow";
-import { PhaseProps, Phase } from "../phase/Phase";
+import { Phase } from "../phase/Phase";
 
 @injectable()
 export default class WorkflowController {
@@ -81,10 +81,10 @@ export default class WorkflowController {
         })
 
         try{
-            return await this.workflowService.createWorkFlow(workflow, req.files.document, convertedPhases);
+            return await this.workflowService.createWorkFlow(workflow, req.files.document,req.files.document.data, convertedPhases);
 
         } catch(err) {
-            throw new ServerError(err.toString());
+            throw err;
         }
     }
 
@@ -162,28 +162,17 @@ export default class WorkflowController {
     }
 
     private async retrieveWorkflow(req) {
-
         if(!req.body.workflowId){
             throw new RequestError("There was something wrong with the request");
         }
-
-        try{
-            return await this.workflowService.retrieveWorkflow(req.body.workflowId, req.user.email);
-        } catch(err) {
-            console.log(err)
-            throw new ServerError(err.toString());
-        }
+        return await this.workflowService.retrieveWorkflow(req.body.workflowId, req.user.email);
     }
 
     private async deleteWorkFlow(req) {
         if(!req.body.workflowId)
             throw new RequestError("There was something wrong with the request");
 
-        try{
-            return await this.workflowService.deleteWorkFlow(req.body.workflowId, req.user.email);
-        } catch(err) {
-            throw new ServerError(err.toString());
-        }
+        return await this.workflowService.deleteWorkFlow(req.body.workflowId, req.user.email);
     }
 
     private async editWorkflow(req) {

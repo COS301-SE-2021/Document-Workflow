@@ -10,7 +10,7 @@ export default class Authenticator {
     }
 
     public async Authenticate(req, res, next) {
-        const { headers, method, url } = req;
+        const { headers } = req;
         req.on('error', (err) => {
             console.log(err);
         });
@@ -20,6 +20,7 @@ export default class Authenticator {
         //TODO: check if headers are present:
         const token = req.header("Authorization").replace("Bearer ", "");
         const decoded = jwt.verify(token, process.env.SECRET);
+
         const user = await this.userService.getUserById(decoded.id); //NOTE: the decoded object has an id field, not a _id field
         if (!user) throw new AuthenticationError("User could not be authenticated");
         req.user = user;
