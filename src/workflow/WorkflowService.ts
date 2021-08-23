@@ -216,11 +216,15 @@ export default class WorkflowService{
         await this.userService.updateUserWorkflows(user);
     }
 
-
+    /***
+     * Note that the annotations string for each phase is deleted to reduce the amount of data that needs to be sent
+     * through (since these strings are quite long and unneeded by the functions that call this endpoint).
+     * @param usr
+     */
     async getUsersWorkflowData(usr) {
 
         //we have the user's email and id, but we need to fetch this user from the UserService
-        //So that we have the ids of workflows they are a part of, and that they
+        //So that we have the ids of workflows they are a part of
         try {
             const user = await this.userService.getUserById(usr._id);
             console.log("getting the users workflow data");
@@ -228,14 +232,10 @@ export default class WorkflowService{
             let ownedWorkflows = [];
             let workflows = [];
 
-            for(let i=0; i<user.ownedWorkflows.length; ++i){ //I couldnt find a prettier way of iterating through this, other methods did not work
+            for(let i=0; i<user.ownedWorkflows.length; ++i){
                 console.log(user.ownedWorkflows[i])
                 let workflow = await this.workflowRepository.getWorkflow(String(user.ownedWorkflows[i]));
-                let phases = [];
-
-                for(let k=0; k<workflow.phases.length; ++k){
-                    phases.push(await this.phaseService.getPhaseById(workflow.phases[k]));
-                }
+                let phases = await this.getPhasesInformationForWorkflow(workflow);
                 workflow.phases = phases;
                 ownedWorkflows.push(workflow);
             }
@@ -244,11 +244,7 @@ export default class WorkflowService{
             {
                 console.log(user.workflows[i])
                 let workflow = await this.workflowRepository.getWorkflow(String(user.workflows[i]));
-                let phases = [];
-
-                for(let k=0; k<workflow.phases.length; ++k){
-                    phases.push(await this.phaseService.getPhaseById(workflow.phases[k]));
-                }
+                let phases = await this.getPhasesInformationForWorkflow(workflow);
                 workflow.phases = phases;
 
                 workflows.push(workflow);
@@ -261,6 +257,18 @@ export default class WorkflowService{
             console.log(e);
             throw e;
         }
+    }
+
+    async getPhasesInformationForWorkflow(workflow)
+    {
+        let phases = [];
+
+        for(let k=0; k<workflow.phases.length; ++k){
+            let phase = await this.phaseService.getPhaseById(workflow.phases[k])
+            phase.annotations = "";
+            phases.push(phase);
+        }
+        return phases;
     }
 
     async updatePhase(user, workflowId, accept, document) {//NOTE: document will be null in the event that a viewer is updating the phase
@@ -593,10 +601,9 @@ export default class WorkflowService{
 
             workflow.status = WorkflowStatus.INPROGRESS;
             console.log('Updating the workflow values')
-            await this.workflowRepository.updateWorkflow(workflow); //the update workflow function does not appear to work
+            await this.workflowRepository.updateWorkflow(workflow);
             console.log('Workflow in database looks as follows: ');
             console.log(await this.workflowRepository.getWorkflow(workflow._id));
-            //await this.workflowRepository.saveWorkflow(workflow); //But thankfully the saveWorkflow function fills the correct role
 
             return {status:"success", data: {}, message: ""}
         }
