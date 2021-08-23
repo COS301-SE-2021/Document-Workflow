@@ -4,6 +4,7 @@ import { resolveFileWithPostfixes } from '@angular/compiler-cli/ngcc/src/utils';
 import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
 import { PopoverController } from '@ionic/angular';
 import * as Cookies from 'js-cookie';
+import { CoreEnvironment } from '@angular/compiler/src/compiler_facade_interface';
 
 export interface User {
   Fname: string;
@@ -28,6 +29,7 @@ export class UserAPIService {
 
   public checkIfAuthorized() {
     //callback){
+
     const formData = new FormData();
     //const token = localStorage.getItem('token');
     const token = Cookies.get('token');
@@ -126,33 +128,37 @@ export class UserAPIService {
     });
   }
 
+
+  // return true if email is valid else return false.
+  //Can be used with register as it must return false
   async verifyEmail(email: string): Promise<boolean>{
-    const formData = new FormData();
-    //const token = localStorage.getItem('token');
-    const token = Cookies.get('token');
-    const httpHeaders: HttpHeaders = new HttpHeaders({
-      Authorization: 'Bearer ' + token,
-    });
+    console.log(email);
+    // const formData = new FormData();
+    // //const token = localStorage.getItem('token');
+    // const token = Cookies.get('token');
+    // const httpHeaders: HttpHeaders = new HttpHeaders({
+    //   Authorization: 'Bearer ' + token,
+    // });
 
-    this.http
-      .post(UserAPIService.url + '/users/verifyEmailExistence', formData, {
-        headers: httpHeaders,
-      })
-      .subscribe(
-        (data) => {
-          //TODO: change url
+    // this.http
+    //   .post(UserAPIService.url + '/users/verifyEmailExistence', formData, {
+    //     headers: httpHeaders,
+    //   })
+    //   .subscribe(
+    //     (data) => {
+    //       //TODO: change url
 
-          if (data) {
-            console.log(data);
-          }
-        },
-        async (error) => {
-          await this.displayPopOver(
-            'Error',
-            'The Document Workflow server could not be reached at this time'
-          );
-        }
-      );
+    //       if (data) {
+    //         console.log(data);
+    //       }
+    //     },
+    //     async (error) => {
+    //       await this.displayPopOver(
+    //         'Error',
+    //         'The Document Workflow server could not be reached at this time'
+    //       );
+    //     }
+    //   );
 
     return true;
   }
