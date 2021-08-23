@@ -122,7 +122,7 @@ export default class UserService {
             await this.userRepository.updateUser(user);
             return ('<html lang="en">Successfully verified. Click<a href= ' + redirect_url + '> here</a> to return to login</html>');
         } else {
-            throw new AuthenticationError("Could not Validate User Email");
+            throw new AuthenticationError("Could not Validate User Account");
         }
     }
 
@@ -157,18 +157,21 @@ export default class UserService {
 
     async loginUser(req): Promise<any> {
         if(!req.body.email || !req.body.password){
-            throw new Error("Could not log in");
+            throw new RequestError("Please supply an email and a password");
         }
         const user = await this.userRepository.findUser({"email": req.body.email});
+        if(!user)
+            throw new AuthenticationError("The entered email or password was incorrect");
+
         if(user.validated){
             try{
                 return await this.authenticateUser(req.body.password, user);
             }
             catch(err){
-                throw new AuthenticationError(err.message);
+                throw new AuthenticationError("The entered email or password was incorrect");
             }
         } else {
-            throw new AuthenticationError("User must be validated");
+            throw new AuthenticationError("Please check your emails and validate your account.");
         }
     }
 
@@ -228,7 +231,7 @@ export default class UserService {
                 email: user.email,
                 signature:user.signature.toString()
                 //ownedWorkflows: user.ownedWorkflows,
-               // workflows: user.workflows
+                //workflows: user.workflows
             };
             return {status: "success", data: data, message:""};
         }

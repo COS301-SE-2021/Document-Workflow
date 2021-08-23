@@ -77,19 +77,19 @@ export class UserAPIService {
     formData.append('password', loginData.password);
     try {
       this.http.post(UserAPIService.url + '/users/login', formData).subscribe(
-        (data) => {
-          //TODO: change url
+        async (data) => {
           if (data) {
             callback(data);
           } else
-            callback({ status: 'error', message: 'Cannot connect to Server' });
-        },
-        (error) => {
-          this.displayPopOver('Error user-api-services - login', error);
+            await this.couldNotConnectToServer();
+          },
+        async (error) => {
+          console.log(error);
+          await this.displayPopOver('Login Error', error.error);
         }
       );
     } catch (e) {
-      alert('An unexpected error occured, please try again later');
+      alert('An unexpected error occurred, please try again later');
     }
   }
 
@@ -194,7 +194,12 @@ export class UserAPIService {
   }
 
   logout() {
-    //localStorage.removeItem('token');
+    //TODO: call the backend logout function
     Cookies.remove('token');
+  }
+
+  private async couldNotConnectToServer() {
+    await this.displayPopOver('Error', 'The Document Workflow Server could not be reached at this time, please try again later');
+
   }
 }

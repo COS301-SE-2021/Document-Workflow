@@ -64,7 +64,6 @@ export default class UserController{
             return await this.userService.loginUser(request);
         }
         catch(err){
-            console.error(err);
             throw err;
         }
     }
