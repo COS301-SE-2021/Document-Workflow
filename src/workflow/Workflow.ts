@@ -10,7 +10,6 @@ import { documentSchema } from "../document/Document";
 
 export const WorkflowStatus = Object.freeze({COMPLETED: "Completed", INPROGRESS: "InProgress", REJECTED: "Rejected"});
 
-//TODO: add the status variable
 export const workflowSchema = createSchema({
     name: Type.string({required: true}),
     ownerId: Type.ref(Type.objectId({required: true})).to("User", userSchema),
@@ -22,5 +21,12 @@ export const workflowSchema = createSchema({
     status: Type.string({default: WorkflowStatus.INPROGRESS})
 }, {_id: true, _v: false});
 
+export const workflowHistorySchema = createSchema({
+    entries: {type: [String], default: []}
+},{_id: true, _v: false});
+
 export const Workflow = typedModel('WorkFlow', workflowSchema);
 export type WorkflowProps = ExtractProps<typeof workflowSchema>;
+export const WorkflowHistory = typedModel('WorkflowHistory', workflowHistorySchema);
+export type WorkflowHistoryProps = ExtractProps<typeof workflowHistorySchema>;
+
