@@ -50,6 +50,7 @@
     "ng2-pdf-viewer": "^7.0.1",
     "nodemailer": "^6.6.1",
     "pdf-lib": "^1.16.0",
+    "pdf.js": "^0.1.0",
     "pdfmake": "^0.1.71",
     "rxjs": "~6.6.0",
     "save": "^2.4.0",
