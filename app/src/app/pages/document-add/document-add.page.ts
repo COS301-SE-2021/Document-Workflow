@@ -30,7 +30,8 @@ import * as Cookies from 'js-cookie';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 import { verifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
 import WebViewer, {Core} from '@pdftron/webviewer';
-import PDFNet = Core.PDFNet;
+import 'convertapi-js';
+
 
 @Component({
   selector: 'app-document-add',
@@ -291,26 +292,40 @@ export class DocumentAddPage implements OnInit {
     this.srcFile = this.sanitizer.bypassSecurityTrustResourceUrl(obj);
     this.addFile = true;
 
-    this.testExtractText(this.blob);
+    this.displayWebViewer(this.blob);
+
     const addDocButton = document.getElementById('uploadFile');
     addDocButton.parentNode.removeChild(addDocButton);
   }
 
-  testExtractText(blob: Blob){
+  displayWebViewer(blob: Blob){
 
     WebViewer({
       path: './../../../assets/lib',
+      fullAPI:true
     }, this.viewerRef.nativeElement).then(async instance =>{
+
+      instance.Core.PDFNet.initialize();
 
       instance.UI.loadDocument(blob, {filename: 'Preview Document'});
       instance.UI.disableElements(['ribbons']);
       instance.UI.setToolbarGroup('toolbarGroup-View',false);
 
       instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
-        const doc = instance.Core.documentViewer.getDocument();
-        console.log(doc);
-        const pages = await doc.getPageCount();
-        console.log(pages);
+        const PDFNet = instance.Core.PDFNet;
+        const doc = await PDFNet.PDFDoc.createFromBuffer(await this.file.arrayBuffer());
+        const page = await doc.getPage(1);
+
+        const txt = await PDFNet.TextExtractor.create();
+        const rect = await page.getCropBox();
+        txt.begin(page, rect); // Read the page.
+
+        let line = await txt.getFirstLine();
+        if(await line.isValid()){
+          let word = await line.getFirstWord();
+          console.log(await word.getString());
+        }
+
       });
 
     });
