@@ -87,14 +87,14 @@ export class WorkFlowService {
       })
       .subscribe(
         (data) => {
-          //this.dismissLoading();
+          this.dismissLoading();
           if (data) {
             callback(data);
           } else
             {callback({ status: 'error', message: 'Cannot connect to Server' });}
         },
         async (error) => {
-          //this.dismissLoading();
+          this.dismissLoading();
           await this.displayPopOver('Error creating new Workflow', error.error);
         }
       );

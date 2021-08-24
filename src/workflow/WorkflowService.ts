@@ -104,7 +104,7 @@ export default class WorkflowService{
             console.log("Checking if user ", users[i], " exists");
             const user = await this.userService.getUserByEmail(users[i].user);
             if(user === undefined || user === null){
-                throw new RequestError("Could not create new workflow: user " + user + " does not exist");
+                throw new RequestError("Could not create new workflow: user " + users[i].user + " does not exist");
                 return false;
             }
 

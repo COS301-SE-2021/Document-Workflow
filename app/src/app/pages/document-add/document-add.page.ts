@@ -376,7 +376,6 @@ export class DocumentAddPage implements OnInit {
   }
 
   async createWorkflow() {
-    this.workflowService.displayLoading();
     console.log('Extracting form data ------------------------------');
     console.log('Name: ', this.workflowForm.controls.workflowName.value);
     console.log(
