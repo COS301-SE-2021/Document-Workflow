@@ -9,7 +9,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DocumentAPIService } from 'src/app/Services/Document/document-api.service';
 import {WorkFlowService} from 'src/app/Services/Workflow/work-flow.service';
 import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
-import { DomSanitizer } from '@angular/platform-browser';
 import WebViewer from '@pdftron/webviewer';
 import { UserAPIService } from 'src/app/Services/User/user-api.service';
 
@@ -104,7 +103,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
             });
           });
 
-            instance.Core.documentViewer.addEventListener('documentLoaded', ()=>{
+            instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
               //For now, to work around not having full api functions with the free version of PDFTron
               //We disable the action areas from showing through a check of the workflow status
               //This is to ensure pringint of the document does not include action areas.
