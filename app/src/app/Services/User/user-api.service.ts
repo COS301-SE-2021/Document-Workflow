@@ -85,7 +85,12 @@ export class UserAPIService {
           },
         async (error) => {
           console.log(error);
-          await this.displayPopOver('Login Error', error.error);
+          if(error.statusText === 'Unknown Error'){
+            await this.displayPopOver('Login Error', 'Could not connect to the Document Workflow Server at this time. Please try again later.');
+          }
+          else {
+            await this.displayPopOver('Login Error', error.error);
+          }
         }
       );
     } catch (e) {
