@@ -16,10 +16,9 @@ import {
   AbstractControlOptions,
 } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
-import { IonicSafeString } from '@ionic/core';
 import { Router } from '@angular/router';
 import {
-  ActionSheetController,
+  ActionSheetController, IonicSafeString,
   IonReorderGroup,
   ModalController,
   Platform,
@@ -31,6 +30,8 @@ import * as Cookies from 'js-cookie';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 import { verifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
 import { validateLocaleAndSetLanguage } from 'typescript';
+import WebViewer, {Core} from '@pdftron/webviewer';
+
 
 @Component({
   selector: 'app-document-add',
@@ -66,6 +67,7 @@ export class DocumentAddPage implements OnInit {
   showPhase: boolean[] = [];
 
   controller: boolean;
+  @ViewChild('viewer') viewerRef: ElementRef;
   constructor(
     private plat: Platform,
     private fb: FormBuilder,
@@ -279,16 +281,54 @@ export class DocumentAddPage implements OnInit {
     console.log(typeof this.file);
     console.log('file', await this.file.arrayBuffer());
     // const buff = response.data.filedata.Body.data; //wut
-    const a = new Uint8Array(await this.file.arrayBuffer());
-    this.srcFile = a;
+
+    this.srcFile = new Uint8Array(await this.file.arrayBuffer());
 
     this.workflowForm.get('workflowFile').setValue(this.file);
     this.blob = new Blob([this.file], { type: 'application/pdf;base64' });
     console.log(this.blob.arrayBuffer());
     const obj = new IonicSafeString(URL.createObjectURL(this.blob));
     console.log(obj);
-    this.srcFile = obj;
+    this.srcFile = this.sanitizer.bypassSecurityTrustResourceUrl(String(obj));
     this.addFile = true;
+
+    this.displayWebViewer(this.blob);
+
+    const addDocButton = document.getElementById('uploadFile');
+    addDocButton.parentNode.removeChild(addDocButton);
+  }
+
+  displayWebViewer(blob: Blob){
+
+    WebViewer({
+      path: './../../../assets/lib',
+      fullAPI:true
+    }, this.viewerRef.nativeElement).then(async instance =>{
+
+      instance.Core.PDFNet.initialize();
+
+      instance.UI.loadDocument(blob, {filename: 'Preview Document'});
+      instance.UI.disableElements(['ribbons']);
+      instance.UI.setToolbarGroup('toolbarGroup-View',false);
+
+      instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
+        const PDFNet = instance.Core.PDFNet;
+        const doc = await PDFNet.PDFDoc.createFromBuffer(await this.file.arrayBuffer());
+        const page = await doc.getPage(1);
+
+        const txt = await PDFNet.TextExtractor.create();
+        const rect = await page.getCropBox();
+        txt.begin(page, rect); // Read the page.
+
+        let line = await txt.getFirstLine();
+        if(await line.isValid()){
+          let word = await line.getFirstWord();
+          console.log(await word.getString());
+        }
+
+      });
+
+    });
   }
 
   fixOrder(ev: CustomEvent<ItemReorderEventDetail>) {
