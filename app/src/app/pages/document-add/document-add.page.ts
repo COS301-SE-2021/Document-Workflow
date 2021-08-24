@@ -314,17 +314,19 @@ export class DocumentAddPage implements OnInit {
       instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
         const PDFNet = instance.Core.PDFNet;
         const doc = await PDFNet.PDFDoc.createFromBuffer(await this.file.arrayBuffer());
-        const page = await doc.getPage(1);
+
+        let extractedText = "";
 
         const txt = await PDFNet.TextExtractor.create();
-        const rect = await page.getCropBox();
-        txt.begin(page, rect); // Read the page.
-
-        let line = await txt.getFirstLine();
-        if(await line.isValid()){
-          let word = await line.getFirstWord();
-          console.log(await word.getString());
+        ;
+        const pageCount = await doc.getPageCount();
+        for(let i=1; i<=pageCount; ++i){
+          const page = await doc.getPage(i);
+          const rect = await page.getCropBox();
+          txt.begin(page, rect); // Read the page.
+          extractedText += await txt.getAsText();
         }
+        console.log(extractedText);
 
       });
 
