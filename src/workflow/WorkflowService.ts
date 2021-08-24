@@ -7,6 +7,7 @@ import {PhaseProps, PhaseStatus} from "../phase/Phase";
 import { ObjectId } from "mongoose";
 import { PhaseService } from "../phase/PhaseService";
 import {RequestError, ServerError} from "../error/Error";
+import encryption from "../crypto/encryption";
 
 @injectable()
 export default class WorkflowService{
@@ -16,7 +17,8 @@ export default class WorkflowService{
         private workflowRepository: WorkFlowRepository,
         private documentService: DocumentService,
         private userService: UserService,
-        private phaseService: PhaseService) {
+        private phaseService: PhaseService,
+        private encrypt: encryption) {
     }
 
     /**
@@ -364,6 +366,7 @@ export default class WorkflowService{
             console.log("REquesting user is a member of this workflow");
 
             let data = await this.documentService.retrieveDocument(workflow.documentId, workflowId, workflow.currentPhase);
+            console.log(this.encrypt.encyrpt(data,workflow.workflowId, userEmail));
             const phase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
             data.annotations = phase.annotations;
             return {status: 'success', data: data, message:''};
