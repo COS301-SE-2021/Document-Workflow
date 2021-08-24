@@ -3,7 +3,7 @@ import * as AWS from 'aws-sdk';
 import { ObjectId, Types } from "mongoose";
 import * as multer from 'multer';
 import * as multerS3 from 'multer-s3';
-import {ServerError} from "../error/Error";
+import {CloudError, ServerError} from "../error/Error";
 
 const s3 = new AWS.S3({
     region: process.env.AWS_REGION,
@@ -42,7 +42,7 @@ export default class DocumentRepository {
         }
         catch(err) {
             console.log(err);
-            throw new Error("Could not save Document data");
+            throw new ServerError("Could not save Document data");
         }
 
         const uploadParams = {
@@ -54,7 +54,7 @@ export default class DocumentRepository {
             await s3.upload(uploadParams, (err, data) => {
                 console.log(err)
                 if(err) {
-                    throw new Error("Error establishing connection to the cloud file server");
+                    throw new CloudError("The cloud server could not be reached at this time, please try again later.");
                 }
                 else console.log(data);
 
@@ -106,7 +106,7 @@ export default class DocumentRepository {
             return await Document.findById(id);
         }
         catch(err){
-            throw new Error("Could not find Document");
+            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
         }
     }
 
@@ -115,7 +115,7 @@ export default class DocumentRepository {
             return await s3.getObject({Bucket: process.env.AWS_BUCKET_NAME, Key:path}).promise();
         }
         catch(err){
-            throw "The document server could not be reached";
+            throw new CloudError("The cloud server could not be reached at this time, please try again later.");
         }
     }
 
@@ -126,7 +126,7 @@ export default class DocumentRepository {
                 await Document.deleteOne({_id: id});
         }
         catch(err){
-            throw 'Could not delete fileMetadata';
+            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
         }
     }
 
@@ -134,8 +134,8 @@ export default class DocumentRepository {
         try {
             return await Document.find();
         }
-        catch(err) {
-            throw new Error("Could not find Documents " + err.toString());
+        catch(err){
+            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
         }
     }
 
@@ -163,7 +163,7 @@ export default class DocumentRepository {
         }
         catch(e){
             console.log(e);
-            throw new ServerError("The cloud server could not be reached");
+            throw new CloudError("The cloud server could not be reached");
         }
     }
 
@@ -192,7 +192,7 @@ export default class DocumentRepository {
             if (listedObjects.IsTruncated) await this.deleteDocument(workflowId);
         }
         catch(err){
-            throw "Could not delete document from File Server";
+            throw new CloudError("The cloud server could not be reached at this time, please try again later.");
         }
     }
 }

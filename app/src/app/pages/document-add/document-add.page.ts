@@ -388,18 +388,17 @@ export class DocumentAddPage implements OnInit {
     const phases = this.workflowForm.controls.phases.value;
     const name = this.workflowForm.controls.workflowName.value;
     const description = this.workflowForm.controls.workflowDescription.value;
-    this.workflowService.createWorkflow(
+    await this.workflowService.createWorkflow(
       name,
       description,
       phases,
       this.file,
       (response) => {
-        this.workflowService.dismissLoading();
-        if(response.status === 'success'){
-          this.userApiService.displayPopOver('Success','You have successfully created a workflow');
+        if (response.status === 'success') {
+          this.userApiService.displayPopOver('Success', 'You have successfully created a workflow');
           this.router.navigate(['/home']);
-        }else{
-          this.userApiService.displayPopOver('Error','something has gone wrong, please try again');
+        } else {
+          this.userApiService.displayPopOver('Error', 'Something has gone wrong, please try again');
           this.router.navigate(['/home']);
         }
       }
