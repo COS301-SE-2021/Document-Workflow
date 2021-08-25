@@ -184,7 +184,7 @@ export default class WorkflowController {
 
     private async editWorkflow(req) {
         if(!req.body.name || !req.body.description
-             || !req.body.phases || !req.body.workflowId) { //owner ID will be added after the auth is used!!! dont check for it here
+            || !req.body.phases || !req.body.workflowId) { //owner ID will be added after the auth is used!!! dont check for it here
             throw new RequestError("There was something wrong with the request");
         }
 

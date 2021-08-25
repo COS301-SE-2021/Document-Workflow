@@ -34,8 +34,7 @@ describe("testing the edit workflow functionality", () => {
       ':nth-child(2) > [sizexs="10"] > .item-interactive > .ng-untouched > .native-input'
     ).should("have.value", "brenton.stroberg@yahoo.co.za");
 
-    cy.get(':nth-child(3) > [style="margin: 5px; padding: 5px; border-width: 4px; border-style: solid; border-radius: 15px; border-color: #002060;"] > [sizexs="12"] > ion-row.md > [sizexs="4"] > .md').click();// delete
-    cy.get("ion-grid.md > :nth-child(4) > :nth-child(2) > .md").click(); confirm
+    cy.get(':nth-child(3) > [style="margin: 5px; padding: 5px; border-width: 4px; border-style: solid; border-radius: 15px; border-color: #002060;"] > [sizexs="12"] > ion-row.md > [sizexs="4"] > .md').click();// deletes
 
     cy.get("div > ion-grid.md > ion-row.md > :nth-child(1) > .md").click();
     cy.wait(10000);

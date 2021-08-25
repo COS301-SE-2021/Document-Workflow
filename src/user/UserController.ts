@@ -15,8 +15,6 @@ export default class UserController{
         this.router = new Router();
     }
 
-    auth = this.authenticationService.Authenticate;
-
     async getUsersRoute(): Promise<UserProps[]> {
         try{
             return await this.userService.getAllUsers();
@@ -77,14 +75,14 @@ export default class UserController{
         }
     }
 
-    async logoutUserRoute(request): Promise<UserProps> {
+    /*async logoutUserRoute(request): Promise<UserProps> {
         try{
             return await this.userService.logoutUser(request);
         }
         catch(err){
             throw new ServerError(err.toString());
         }
-    }
+    }*/
 
     async deleteUserRoute(request): Promise<UserProps> {
         try{
@@ -116,7 +114,7 @@ export default class UserController{
     }
 
     routes() {
-        this.router.get("", this.auth, async (req, res) => {
+        this.router.get("", this.authenticationService.Authenticate, async (req, res) => {
             try {
                 const users = await this.getUsersRoute();
                 if(users) res.status(200).json(users);
@@ -134,16 +132,16 @@ export default class UserController{
             }
         });
 
-        this.router.post("/getDetails", this.auth, async (req,res) => {
+        this.router.post("/getDetails", this.authenticationService.Authenticate, async (req,res) => {
             try {
                 res.status(200).json(await this.getUserDetails(req));
             } catch(err){
-                console.log("Fetching user details had an error");
+                console.log("Fetcing user details had an error");
                 await handleErrors(err,res);
             }
         });
 
-        this.router.get("/:id", this.auth , async (req, res) => {
+        this.router.get("/find/:id", this.authenticationService.Authenticate , async (req, res) => {
             try {
                 const user = await this.getUserByIdRoute(req);
                 if(user) res.status(200).json(user);
@@ -153,7 +151,7 @@ export default class UserController{
             }
         });
 
-        this.router.get("/:email", async (req, res) => {
+        this.router.get("/find/:email", async (req, res) => {
             try {
                 const user = await this.getUserByEmailRoute(req);
                 if(user) res.status(200).json(user);
@@ -173,7 +171,7 @@ export default class UserController{
             }
         });
 
-        this.router.post("/logout", this.auth, async (req,res) => {
+        /*this.router.post("/logout", this.authenticationService.Authenticate, async (req,res) => {
             try{
                 const user = await this.logoutUserRoute(req);
                 if(user) res.status(200).send("Successfully logged out");
@@ -182,7 +180,7 @@ export default class UserController{
             catch(err){
                 await handleErrors(err,res);
             }
-        });
+        });*/
 
         this.router.post("/register", async (req,res) => {
             try {
@@ -194,11 +192,11 @@ export default class UserController{
             }
         });
 
-        this.router.post("/authenticate", this.auth, async (req,res) =>{ //This route is used by the front end to forbid access to certain pages.
+        this.router.post("/authenticate", this.authenticationService.Authenticate, async (req,res) =>{ //This route is used by the front end to forbid access to certain pages.
             res.status(200).json({status:"success", data:{}, message:""});
         });
 
-        this.router.put("/:id", sanitize, this.auth , async (req, res) => {
+        this.router.put("/create/:id", sanitize, this.authenticationService.Authenticate , async (req, res) => {
             try {
                 const user = await this.updateUserRoute(req);
                 if(user) res.status(200).json(user);
@@ -208,7 +206,7 @@ export default class UserController{
             }
         });
 
-        this.router.delete("", this.auth, async (req, res) => {
+        this.router.delete("", this.authenticationService.Authenticate, async (req, res) => {
             try {
                 const user = await this.deleteUserRoute(req);
                 if(user) res.status(203).json(user);
@@ -218,7 +216,7 @@ export default class UserController{
             }
         });
 
-        this.router.post("/verifyEmailExistence", this.auth, async (req, res) => {
+        this.router.post("/verifyEmailExistence", this.authenticationService.Authenticate, async (req, res) => {
             try {
                 return await this.verifyEmailExistence(req);
             } catch(err){
@@ -226,6 +224,10 @@ export default class UserController{
                 await handleErrors(err,res);
             }
         });
+
+        this.router.get("/test", async (req, res) => {
+            res.status(200).json("Server is running");
+        })
 
         return this.router;
     }
