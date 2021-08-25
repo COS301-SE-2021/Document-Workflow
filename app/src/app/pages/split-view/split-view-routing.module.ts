@@ -73,6 +73,10 @@ const routes: Routes = [
         pathMatch: 'full',
       },
       {
+        path: 'workflowTemplate',
+        loadChildren: () => import('./../workflow-template/workflow-template.module').then( m => m.WorkflowTemplatePageModule)
+      },
+      {
         path: '',
         redirectTo: '',
         pathMatch: 'full',

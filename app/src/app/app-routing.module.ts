@@ -34,11 +34,7 @@ const routes: Routes = [
   },{
     path: '**',
     redirectTo:'/login',
-  },  {
-    path: 'workflow-template',
-    loadChildren: () => import('./pages/workflow-template/workflow-template.module').then( m => m.WorkflowTemplatePageModule)
   }
-
 ];
 @NgModule({
   imports: [
