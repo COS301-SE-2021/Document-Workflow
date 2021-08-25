@@ -18,6 +18,10 @@ export default class DocumentService {
         }
     }
 
+    async uploadTemplateDocumentToCloud(file: File, workflowTemplateId){
+
+    }
+
     async uploadDocument(file: File, id: ObjectId): Promise<ObjectId>{
         try{
             const doc = new Document({

@@ -136,9 +136,6 @@ export default class WorkflowService{
     }
 
     //--------------------------------------------------------------------------------------------------------
-    async createWorkflowTemplate(){
-
-    }
 
     async getWorkFlowById(id) {
 

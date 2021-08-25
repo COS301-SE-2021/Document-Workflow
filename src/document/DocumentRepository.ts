@@ -13,20 +13,19 @@ const s3 = new AWS.S3({
 
 export default class DocumentRepository {
 
-    async saveDocumentToS3() {
-        const upload = multer({
-            storage: multerS3({
-                s3: s3,
-                bucket: process.env.AWS_BUCKET_NAME,
-                metadata: function (req, file, cb) {
-                    cb(null, { fieldName: file.fieldname });
-                },
-                key: function (req, file, cb) {
-                    cb(null, Date.now().toString())
-                }
-            })
-        })
+    async saveDocumentToS3(file, path) {
+        const uploadParams = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Body: file.data,
+            Key: path
+        }
+        try {
+            const response = await s3.upload(uploadParams).promise; //TODO: test this.
+            console.log(response);
+        }
+        catch(e){
 
+        }
     }
 
     /*
