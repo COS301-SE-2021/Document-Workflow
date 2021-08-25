@@ -63,6 +63,8 @@ export class DocumentAddPage implements OnInit {
   ownerEmail: any;
   sizeMe: boolean;
 
+  template: boolean = false;
+
   showPhase: boolean[] = [];
 
   controller: boolean;
@@ -370,5 +372,20 @@ export class DocumentAddPage implements OnInit {
 
   toggleVisibility(i: number){
     this.showPhase[i] = !this.showPhase[i];
+  }
+
+  addTemplate(){
+    this.template = !this.template;
+    if(this.template === false){
+      this.removeTemplate();
+    }else{
+      this.workflowForm.addControl('template', this.fb.group({
+        template: ['', [Validators.required]]
+      }));
+    }
+  }
+
+  removeTemplate(){
+    this.workflowForm.removeControl('template');
   }
 }

@@ -27,20 +27,24 @@
       <ion-card-content style="height: 100%;">
         <ion-item>
           <ion-label position="floating">Workflow Name</ion-label>
-          <ion-input formControlName="workflowName" inputmode="text" (input)="checkStatus()" id="workflowName"></ion-input>
+          <ion-input formControlName="workflowName" inputmode="text" (input)="checkStatus()" id="workflowName">
+          </ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="floating">Workflow Description</ion-label>
-          <ion-textarea formControlName="workflowDescription" inputmode="text" (input)="checkStatus()" id="workflowDescription"></ion-textarea>
+          <ion-textarea formControlName="workflowDescription" inputmode="text" (input)="checkStatus()"
+            id="workflowDescription"></ion-textarea>
         </ion-item>
         <ion-item>
           <ion-button hidden="true">
             <input FormControlName="fileUploader" type="file" #fileInput (change)="uploadFile($event)" hidden="false"
               accept="application/pdf" required>
           </ion-button>
-          <ion-button (click)="selectImageSource()" id="uploadFile" expand="block" color="primary" fill="outline">Add Your document</ion-button>
+          <ion-button (click)="selectImageSource()" id="uploadFile" expand="block" color="primary" fill="outline">Add
+            Your document</ion-button>
         </ion-item>
-        <iframe title="Preview your document" [src]="srcFile | safe: url" *ngIf="addFile" style="width: 100%; height:100%;"></iframe>
+        <iframe title="Preview your document" [src]="srcFile | safe: url" *ngIf="addFile"
+          style="width: 100%; height:100%;"></iframe>
       </ion-card-content>
       <ion-button (click)="changeOver()" id="changeOver">Next</ion-button>
     </ion-card>
@@ -86,10 +90,12 @@
                         <ion-item>
                           <ion-label>Permission</ion-label>
                           <!--- TODO: use enums instead of hardcoded values here for sign and view -->
-                          <ion-select placeholder="Click here" [formControl]="user.controls.permission" >
-                            <ion-select-option value="sign" (click)="changePermission(user.controls.permission, 'sign')">Signer
+                          <ion-select placeholder="Click here" [formControl]="user.controls.permission">
+                            <ion-select-option value="sign"
+                              (click)="changePermission(user.controls.permission, 'sign')">Signer
                             </ion-select-option>
-                            <ion-select-option value="view" (click)="changePermission(user.controls.permission, 'view')">Viewer</ion-select-option>
+                            <ion-select-option value="view"
+                              (click)="changePermission(user.controls.permission, 'view')">Viewer</ion-select-option>
                           </ion-select>
                         </ion-item>
                       </ion-col>
@@ -97,7 +103,8 @@
                   </ion-col>
                   <ion-row>
                     <ion-col sizeXs='12'>
-                      <ion-button style="width:100%" expand="block" color="primary" fill="outline" (click)="addUser(phase.controls['users'])">Add a new user</ion-button>
+                      <ion-button style="width:100%" expand="block" color="primary" fill="outline"
+                        (click)="addUser(phase.controls['users'])">Add a new user</ion-button>
                     </ion-col>
                     <ion-col sizeXs='12' sizeSm='6'>
                       <ion-button expand="block" color="primary" fill="outline"
@@ -126,14 +133,26 @@
             type="submit">
             Add workflow</ion-button>
         </ion-col>
+        <ion-col sizeXs='12' sizeSm='6' *ngIf='template'>
+          <ion-item>
+            <ion-label position='floating'>Template Name </ion-label>
+            <ion-input type="text"></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col sizeXs='12' sizeSm='6'>
+          <ion-button style="width:100%" expand="block" color="primary" fill="outline" (click)="addTemplate()"  *ngIf='!template'>
+            Save As template</ion-button>
+            <ion-button style="width:100%" expand="block" color="primary" fill="outline" (click)="addTemplate()"  *ngIf='template'>
+              Do not Save As template</ion-button>
+        </ion-col>
       </ion-row>
     </ion-reorder-group>
   </form>
-  <!---
+  -
   <ion-fab>
     <ion-fab-button (click)='debug("")'></ion-fab-button>
   </ion-fab>
-  --->
+  -
 </ion-content>
 
 

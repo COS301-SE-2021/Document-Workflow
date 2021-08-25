@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { ConfirmSignaturesComponent } from './confirm-signatures.component';
+import { WorkflowTemplatePage } from './workflow-template.page';
 
-describe('ConfirmSignaturesComponent', () => {
-  let component: ConfirmSignaturesComponent;
-  let fixture: ComponentFixture<ConfirmSignaturesComponent>;
+describe('WorkflowTemplatePage', () => {
+  let component: WorkflowTemplatePage;
+  let fixture: ComponentFixture<WorkflowTemplatePage>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ConfirmSignaturesComponent ],
+      declarations: [ WorkflowTemplatePage ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ConfirmSignaturesComponent);
+    fixture = TestBed.createComponent(WorkflowTemplatePage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));
