@@ -5,14 +5,12 @@ import { container } from "tsyringe";
 import * as dotenv from 'dotenv';
 import UserController from "./user/UserController";
 import WorkflowController from "./workflow/WorkflowController";
-import cors from 'cors';
 dotenv.config();
 
 const fileUpload = require('express-fileupload');
 
 const app = express();
 
-app.use(cors());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(fileUpload(undefined));

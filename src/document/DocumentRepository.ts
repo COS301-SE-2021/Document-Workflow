@@ -1,9 +1,9 @@
 import { Document, DocumentProps } from "./Document";
 import * as AWS from 'aws-sdk';
 import { ObjectId, Types } from "mongoose";
+import { CloudError, DatabaseError, ServerError } from "../error/Error";
 import * as multer from 'multer';
 import * as multerS3 from 'multer-s3';
-import {CloudError, ServerError} from "../error/Error";
 
 const s3 = new AWS.S3({
     region: process.env.AWS_REGION,
@@ -12,22 +12,6 @@ const s3 = new AWS.S3({
 });
 
 export default class DocumentRepository {
-
-    async saveDocumentToS3() {
-        const upload = multer({
-            storage: multerS3({
-                s3: s3,
-                bucket: process.env.AWS_BUCKET_NAME,
-                metadata: function (req, file, cb) {
-                    cb(null, { fieldName: file.fieldname });
-                },
-                key: function (req, file, cb) {
-                    cb(null, Date.now().toString())
-                }
-            })
-        })
-
-    }
 
     /*
        This function should only be used when creating a document when the workflow is created.
@@ -42,7 +26,7 @@ export default class DocumentRepository {
         }
         catch(err) {
             console.log(err);
-            throw new ServerError("Could not save Document data");
+            throw new Error("Could not save Document data");
         }
 
         const uploadParams = {
@@ -54,7 +38,7 @@ export default class DocumentRepository {
             await s3.upload(uploadParams, (err, data) => {
                 console.log(err)
                 if(err) {
-                    throw new CloudError("The cloud server could not be reached at this time, please try again later.");
+                    throw new Error("Error establishing connection to the cloud file server");
                 }
                 else console.log(data);
 
@@ -106,7 +90,7 @@ export default class DocumentRepository {
             return await Document.findById(id);
         }
         catch(err){
-            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
+            throw new Error("Could not find Document");
         }
     }
 
@@ -115,7 +99,7 @@ export default class DocumentRepository {
             return await s3.getObject({Bucket: process.env.AWS_BUCKET_NAME, Key:path}).promise();
         }
         catch(err){
-            throw new CloudError("The cloud server could not be reached at this time, please try again later.");
+            throw "The document server could not be reached";
         }
     }
 
@@ -126,7 +110,7 @@ export default class DocumentRepository {
                 await Document.deleteOne({_id: id});
         }
         catch(err){
-            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
+            throw 'Could not delete fileMetadata';
         }
     }
 
@@ -134,8 +118,8 @@ export default class DocumentRepository {
         try {
             return await Document.find();
         }
-        catch(err){
-            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
+        catch(err) {
+            throw new Error("Could not find Documents " + err.toString());
         }
     }
 
@@ -147,7 +131,7 @@ export default class DocumentRepository {
      * object, we create this function that instead takes the buffer in directly.
      * TODO: change the update files3 function to take in filedata instead of a file, then we can destroy this function.
      * @param path
-     * @param data
+     * @param fileData
      */
     async updateDocumentS3WithBuffer(path, fileData){
         const uploadParams = {
@@ -163,7 +147,7 @@ export default class DocumentRepository {
         }
         catch(e){
             console.log(e);
-            throw new CloudError("The cloud server could not be reached");
+            throw new ServerError("The cloud server could not be reached");
         }
     }
 
@@ -192,7 +176,7 @@ export default class DocumentRepository {
             if (listedObjects.IsTruncated) await this.deleteDocument(workflowId);
         }
         catch(err){
-            throw new CloudError("The cloud server could not be reached at this time, please try again later.");
+            throw "Could not delete document from File Server";
         }
     }
 }

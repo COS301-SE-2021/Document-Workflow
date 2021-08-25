@@ -1,6 +1,6 @@
 import { injectable } from "tsyringe";
 import UserRepository from "./UserRepository";
-import { UserProps, Token } from "./User";
+import { UserProps } from "./User";
 import nodemailer from 'nodemailer';
 import jwt from "jsonwebtoken";
 import { AuthenticationError, RequestError } from "../error/Error";
@@ -14,6 +14,9 @@ export default class UserService {
         const result = await bcrypt.compare(password, await usr.password);
         if(result){
             return this.generateToken(usr.email, usr._id);
+            /*const user: UserDoc = await this.userRepository.findUser(usr.email);
+            user.tokens.push(token);
+            await this.userRepository.updateUser(user);*/
         }else{
             throw new AuthenticationError("Password or Email is incorrect");
         }
@@ -30,7 +33,7 @@ export default class UserService {
     }
 
     generateToken(email, id): string{
-        return jwt.sign({id: id, email: email}, process.env.SECRET, {expiresIn: "24h"});
+        return jwt.sign({id: id, email: email}, process.env.SECRET, {expiresIn: "1h"});
     }
 
     //TODO: check that its safe to save a user the way we are saving them here. We arent creating an entirely new
@@ -94,11 +97,11 @@ export default class UserService {
             usr.signature = req.files.signature.data;
             usr.validateCode = crypto.randomBytes(64).toString('hex');
             usr.password = await this.getHashedPassword(usr.password);
-            //const user: UserProps = await this.userRepository.postUser(usr);
-            const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
-            usr.tokens = [token];
+
+            //const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
+            //usr.tokens = [token];
+
             const user: UserProps = await this.userRepository.saveUser(usr);
-            //const response = await this.userRepository.putUser(usr);
             if(user){
                 await this.sendVerificationEmail(usr.email, usr.validateCode)//,
                 return user;
@@ -122,7 +125,7 @@ export default class UserService {
             await this.userRepository.updateUser(user);
             return ('<html lang="en">Successfully verified. Click<a href= ' + redirect_url + '> here</a> to return to login</html>');
         } else {
-            throw new AuthenticationError("Could not Validate User Account");
+            throw new AuthenticationError("Could not Validate User Email");
         }
     }
 
@@ -157,32 +160,35 @@ export default class UserService {
 
     async loginUser(req): Promise<any> {
         if(!req.body.email || !req.body.password){
-            throw new RequestError("Please supply an email and a password");
+            throw new RequestError("Could not log in");
         }
         const user = await this.userRepository.findUser({"email": req.body.email});
-        if(!user)
-            throw new AuthenticationError("The entered email or password was incorrect");
-
+        if(!user) throw new RequestError("User does not exist");
         if(user.validated){
             try{
                 return await this.authenticateUser(req.body.password, user);
             }
             catch(err){
-                throw new AuthenticationError("The entered email or password was incorrect");
+                throw new AuthenticationError(err.message);
             }
         } else {
-            throw new AuthenticationError("Please check your emails and validate your account.");
+            throw new AuthenticationError("User must be validated");
         }
     }
 
-    async logoutUser(req): Promise<UserProps> {
-        if(!req.user){
+    //TODO: Implement JWT blacklist in order to facilitate explicit logout
+    /*async logoutUser(req): Promise<UserProps> {
+        if(!req.user || !req.user.email || !req.user.tokens){
             throw new RequestError("Missing required properties");
         }
+
         const user = await this.userRepository.findUser({email: req.user.email});
         const tokens: Token[] = req.user.tokens;
-        tokens.filter(token => {return token.token !== req.user.token});
+        const tokensFiltered = tokens.filter(token => {return token.token !== req.user.token});
+        console.log("Filtered tokens when logging out user: ");
+        console.log(tokensFiltered);
         user.tokens = tokens as any;
+
         try {
             return await this.userRepository.updateUser(user);
         }
@@ -190,8 +196,9 @@ export default class UserService {
             console.error(err);
             throw new RequestError("Could not log out user");
         }
-    }
+    }*/
 
+    //TODO: Delete User from workflows and phases.
     async deleteUser(req): Promise<UserProps> {
         if (!req.params.id) {
             throw new RequestError("Missing Parameter");
@@ -231,7 +238,7 @@ export default class UserService {
                 email: user.email,
                 signature:user.signature.toString()
                 //ownedWorkflows: user.ownedWorkflows,
-                //workflows: user.workflows
+               // workflows: user.workflows
             };
             return {status: "success", data: data, message:""};
         }
