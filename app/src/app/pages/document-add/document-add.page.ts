@@ -30,8 +30,6 @@ import * as Cookies from 'js-cookie';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 import { verifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
 import WebViewer, {Core} from '@pdftron/webviewer';
-import 'convertapi-js';
-
 
 @Component({
   selector: 'app-document-add',
