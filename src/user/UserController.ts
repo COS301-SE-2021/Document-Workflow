@@ -1,70 +1,75 @@
 import { Router } from "express";
-import { injectable } from "tsyringe";
+import { autoInjectable } from "tsyringe";
 import UserService from "./UserService";
-import { UserProps } from "./User";
-import sanitize from "../security/Sanitize";
-import {ServerError} from "../error/Error";
-import { handleErrors } from "../error/ErrorHandler";
-import Authenticator from "../security/Authenticate";
+import { UserI } from "./User";
+import jwt from "jsonwebtoken";
 
-@injectable()
+// "/api/users"
+
+@autoInjectable()
 export default class UserController{
-    private readonly router: Router;
+    router: Router;
 
-    constructor(private userService: UserService, private authenticationService: Authenticator) {
+    constructor(private userService: UserService) {
         this.router = new Router();
     }
 
-    auth = this.authenticationService.Authenticate;
-
-    async getUsersRoute(): Promise<UserProps[]> {
+    Authenticate = async(req,res,next)=>{
         try{
-            return await this.userService.getAllUsers();
-        } catch(err) {
-            throw new ServerError(err.toString());
+            const token = req.header("Authorization").replace("Bearer ", "");
+            const decoded = jwt.verify(token, process.env.SECRET);
+            const user = await this.userService.getUser({_id: decoded._id, 'tokens.token': token});
+            if(!user) {
+                throw new Error("User could not be found");
+            }
+            req.user = user;
+            next();
+        } catch (e) {
+            res.status(401).send({status: "failed", data: {},  message: "Unable to Authenticate"});
         }
     }
 
-    async getUserByIdRoute(request): Promise<UserProps> {
+    async getUsersRoute(): Promise<UserI[]> {
+        try{
+            return await this.userService.getUsers();
+        } catch(err) {
+            throw err;
+        }
+    }
+
+    async getUserRoute(request): Promise<UserI> {
         try{
             return await this.userService.getUser(request);
         }catch(err) {
-            throw new ServerError(err.toString());
+            throw err;
         }
     }
 
-    async getUserByEmailRoute(request): Promise<UserProps> {
-        try{
-            return await this.userService.getUserByEmail(request);
-        }catch(err) {
-            throw new ServerError(err.toString());
-        }
-    }
 
-    async registerUserRoute(request): Promise<UserProps>{
+    async registerUserRoute(request) :Promise<any>{
         try{
             return await this.userService.registerUser(request)
         }
-        catch(err){
-            throw new ServerError(err.toString());
+        catch(err)
+        {
+            throw err;
         }
     }
 
-    async verifyUserRoute(request): Promise<UserProps>{
+    async verifyUserRoute(request) : Promise<any>{
         try {
             return await this.userService.verifyUser(request);
         }
         catch(err){
-            throw new ServerError(err.toString());
+            throw err;
         }
     }
 
-    async loginUserRoute(request): Promise<UserProps> {
+    async loginUserRoute(request) : Promise<any>{
         try {
             return await this.userService.loginUser(request);
         }
         catch(err){
-            console.error(err);
             throw err;
         }
     }
@@ -78,145 +83,139 @@ export default class UserController{
         }
     }
 
-    // private async retrieveOwnedWorkFlows(req):Promise<any> {
-    //     try{
-    //         return await this.userService.retrieveOwnedWorkFlows(req);
-    //     }
-    //     catch(err) {
-    //         throw err;
-    //     }
-    // }
-
-    async logoutUserRoute(request): Promise<UserProps> {
+    private async retrieveOwnedWorkFlows(req):Promise<any> {
         try{
-            return await this.userService.logoutUser(request);
+            return await this.userService.retrieveOwnedWorkFlows(req);
         }
-        catch(err){
-            throw new ServerError(err.toString());
+        catch(err) {
+            throw err;
         }
     }
 
-    async deleteUserRoute(request): Promise<UserProps> {
+    private async retrieveWorkFlows(req):Promise<any> {
         try{
-            return await this.userService.deleteUser(request);
-        }catch(err){
-            throw new ServerError(err.toString());
+            return await this.userService.retrieveWorkFlows(req);
+        }
+        catch(err) {
+            throw err;
         }
     }
 
-    async updateUserRoute(request): Promise<UserProps> {
+    private async generatePasswordReset(req) {
         try{
-            return await this.userService.updateUser(request);
+            return await this.userService.generatePasswordReset(req);
         }
-        catch(err){
-            throw new ServerError(err.toString());
+        catch(err) {
+            throw err;
         }
-
     }
+
+    /*
+    * error codes:
+    * 200 OK request succeeded
+    * 201 Created
+    * 202 Accepted -> received but not acted upon
+    * 400 Bad request
+    * 401 Unauthorized -> (unauthenticated) Client id not known
+    * 403 Forbidden -> Client id known
+    * 404 Not found
+    * 405 Method not allowed
+    * 418 I'm a teapot
+    * 500 Internal Server Error
+    * 507 Insufficient Storage
+    * */
 
     routes() {
-        this.router.get("", this.auth, async (req, res) => {
+        this.router.post("", async (req,res) => {
             try {
-                const users = await this.getUsersRoute();
-                if(users) res.status(200).json(users);
-                else res.status(404).send();
+                res.status(201).json(await this.registerUserRoute(req));
             } catch(err){
-                await handleErrors(err,res);
+                console.log("Could not create new user");
+                console.log(err);
+                res.status(200).json(err);
+            }
+        });
+        /*
+        this.router.get("", this.Authenticate, async (req, res) => {
+            try {
+                res.status(200).json(await this.getUsersRoute());
+            } catch(err){
+                res.status(400).json(err);
+            }
+        });*/
+
+        this.router.post("/retrieveOwnedWorkflows", this.Authenticate, async (req,res) =>{
+            try {
+                res.status(200).json(await this.retrieveOwnedWorkFlows(req));
+            } catch(err){
+                res.status(400).json(err);
             }
         });
 
-        this.router.get("/verify", sanitize, async(req,res) =>{
+        this.router.post("/retrieveWorkflows",  this.Authenticate, async(req,res) =>{
             try {
-                res.status(200).send(await this.verifyUserRoute(req));
+                res.status(200).json(await this.retrieveWorkFlows(req));
             } catch(err){
-                await handleErrors(err,res);
+                res.status(400).json({status:"error", data:{}, message:err});
             }
         });
 
-        this.router.post("/getDetails", this.auth, async (req,res) => {
+        this.router.post("/login",  async (req,res) => {
+            try {
+                let token = await this.loginUserRoute(req);
+                if(token){
+                    res.status(200).json(
+                        {status: "success", data:{token: token}, message: ""}
+                    )
+                } else {
+                    res.status(400).send("Could not log in user"); //Unexpected error occurred
+                }
+            } catch(err){
+                //Leave this as status 200 for now. We can change it after demo 2 if we really want but its important for the backend.
+                res.status(200).json({status: "failed", data:{}, message: err.message});
+            }
+        });
+
+        this.router.post("/getDetails", this.Authenticate, async (req,res) => {
             try {
                 res.status(200).json(await this.getUserDetails(req));
             } catch(err){
-                console.log("Fetcing user details had an error");
-                await handleErrors(err,res);
+                res.status(400).json({status: "failed", data:{}, message: err.message});
             }
         });
 
-        this.router.get("/:id", this.auth , async (req, res) => {
+        this.router.get("/verify", async(req,res) =>{
             try {
-                const user = await this.getUserByIdRoute(req);
-                if(user) res.status(200).json(user);
-                else res.status(404).send("Could not find User");
+                res.status(200).send(await this.verifyUserRoute(req));
             } catch(err){
-                await handleErrors(err,res);
+                res.status(400).json(err);
             }
         });
 
-        this.router.get("/:email", async (req, res) => {
+        this.router.get("/:id", this.Authenticate , async (req, res) => {
             try {
-                const user = await this.getUserByEmailRoute(req);
-                if(user) res.status(200).json(user);
-                else res.status(404).send("Could not find User");
+                res.status(200).json(await this.getUserRoute(req));
             } catch(err){
-                await handleErrors(err,res);
+                if(err instanceof URIError){
+                    res.status(400).json("id field is required");
+                } else {
+                    res.status(400).json(err);
+                }
+
             }
         });
 
-        this.router.post("/login" , async (req,res) => {
-            try {
-                const token = await this.loginUserRoute(req);
-                if(token) res.status(200).json({status: "success", data:{"token": token}, message: ""});
-                else res.status(400).send("Could not log in user");
-            } catch(err){
-                await handleErrors(err,res);
-            }
+        this.router.post("/generate_reset", async(req,res) =>{
+            res.status(200).json(await this.generatePasswordReset(req));
         });
 
-        this.router.post("/logout", this.auth, async (req,res) => {
-            try{
-                const user = await this.logoutUserRoute(req);
-                if(user) res.status(200).send("Successfully logged out");
-                else res.status(400).send("User could not be logged out");
-            }
-            catch(err){
-                await handleErrors(err,res);
-            }
-        });
-
-        this.router.post("/register", async (req,res) => {
-            try {
-                const user = await this.registerUserRoute(req);
-                if(user) res.status(201).json(user);
-                else res.status(400).send("Could not register User");
-            } catch(err){
-                await handleErrors(err,res);
-            }
-        });
-
-        this.router.post("/authenticate", this.auth, async (req,res) =>{ //This route is used by the front end to forbid access to certain pages.
+        this.router.post("/authenticate", this.Authenticate, async (req,res) =>{ //This route is used by the front end to forbid access to certain pages.
             res.status(200).json({status:"success", data:{}, message:""});
-        });
-
-        this.router.put("/:id", sanitize, this.auth , async (req, res) => {
-            try {
-                const user = await this.updateUserRoute(req);
-                if(user) res.status(200).json(user);
-                else res.status(400).send("Could not update User");
-            } catch(err){
-                await handleErrors(err,res);
-            }
-        });
-
-        this.router.delete("", this.auth, async (req, res) => {
-            try {
-                const user = await this.deleteUserRoute(req);
-                if(user) res.status(203).json(user);
-                else res.status(404).send("User does not exist");
-            } catch(err){
-                await handleErrors(err,res);
-            }
         });
 
         return this.router;
     }
+
+
+
 }

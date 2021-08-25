@@ -1,37 +1,38 @@
 import { injectable } from "tsyringe";
 import DocumentRepository from "./DocumentRepository";
-import { Document, DocumentProps } from "./Document";
-import { RequestError } from "../error/Error";
+import { DocumentI } from "./Document";
 import fs from 'fs';
-import { ObjectId } from "mongoose";
+import {PDFAssembler, BinaryFile} from 'pdfassembler';
+import CloudmersiveConvertApiClient from 'cloudmersive-convert-api-client';
 
 @injectable()
 export default class DocumentService {
+    documentRepository: DocumentRepository;
 
-    constructor(private documentRepository: DocumentRepository) {}
+    constructor(documentRepository: DocumentRepository) {
+        this.documentRepository = documentRepository;
+    }
 
-    async getDocuments(): Promise<DocumentProps[]> {
+    async getDocuments(): Promise<DocumentI[]> {
         try{
-            return await this.documentRepository.getDocuments();
+            return await this.documentRepository.getDocuments({});
         }catch(err){
-            throw new RequestError("Could not retrieve documents");
+            throw err;
         }
     }
 
-    //TODO: Check if type is PDF
-    async saveDocument(file: File, fileData: Buffer, id: ObjectId): Promise<ObjectId>{
+    /**
+     *
+     * @param document
+     * @param workflow_id
+     */
+    async uploadDocument(document, workflow_id) : Promise<any>{
         try{
-            const doc = new Document({
-                name: file.name,
-                size: file.size,
-                path: id.toString() + '/' + file.name,
-                workflowId: id
-            })
-            const fileName = file.name;
-            return await this.documentRepository.saveDocument(doc, fileData, fileName);
+            return await this.documentRepository.postDocument(document, workflow_id);
         }
-        catch(err) {
-            throw new RequestError("Could not store document");
+        catch(err)
+        {
+            throw err
         }
     }
 
@@ -41,6 +42,7 @@ export default class DocumentService {
         console.log("deleting document from metadata database ", document_id);
         await this.documentRepository.deleteDocument(document_id);
     }
+
 
     async retrieveDocument(req) : Promise<any> {
         console.log("retrieving a document");
@@ -80,6 +82,44 @@ export default class DocumentService {
                 });
             });
         });
+    }
+
+    async convertToHTML(req) {
+        //console.log(req.files.document);
+        //console.log(PDFAssembler);
+        const newpdf = new PDFAssembler(req.files.document);
+        console.log(newpdf)
+        return {status:"success", data: {name: req.files.document.name}, message: ""};
+    }
+
+    async convertToDocX(req){
+        console.log(req.files)
+       /* fs.readFile('Test.pdf', (err,data)=>{
+            if (err) {
+                return console.log(err);
+            }
+            console.log(data);
+        }); */
+
+        const defaultClient = CloudmersiveConvertApiClient.ApiClient.instance;
+        // Configure API key authorization: Apikey
+        const Apikey = defaultClient.authentications['Apikey'];
+        Apikey.apiKey = process.env.CLOUDMERSIVE_API_KEY;
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //Apikey.apiKeyPrefix = 'Token';
+        const apiInstance = new CloudmersiveConvertApiClient.ConvertDocumentApi();
+        const inputFile = 'Test.pdf';
+
+        console.log("Attempting to convert document to docx");
+        apiInstance.convertDocumentPdfToDocx(inputFile, (error, data, response) => {
+            console.log("response");
+            if (error) {
+                console.error(error);
+            } else {
+                console.log('API called successfully. Returned data: ' + data);
+            }
+        });
+
     }
 }
 
