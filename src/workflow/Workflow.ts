@@ -1,32 +1,26 @@
-import {
-    createSchema,
-    Type,
-    typedModel,
-    ExtractDoc, ExtractProps
-} from "ts-mongoose";
-import { phaseSchema } from "../phase/Phase";
-import { userSchema } from "../user/User";
-import { documentSchema } from "../document/Document";
+import { Schema, model } from "mongoose";
 
-export const WorkflowStatus = Object.freeze({COMPLETED: "Completed", INPROGRESS: "InProgress", REJECTED: "Rejected"});
+export interface WorkFlowI{
 
-export const workflowSchema = createSchema({
-    name: Type.string({required: true}),
-    ownerId: Type.ref(Type.objectId({required: true})).to("User", userSchema),
-    ownerEmail: Type.string({required: true}),
-    documentId: Type.ref(Type.objectId({required: false})).to("Document", documentSchema),
-    description: Type.string({required: true}),
-    phases: Type.array({required: false}).of(Type.ref(Type.objectId({required: true})).to("Phase", phaseSchema)),
-    currentPhase: Type.number({default: 0}),
-    status: Type.string({default: WorkflowStatus.INPROGRESS})
-}, {_id: true, _v: false});
+    _id: string,
+    name: string,
+    owner_email: string,
+    document_id: string,
+    document_path: string,
+    description: string,
+    phases: [[string]],
+    currentPhase: number
+}
 
-export const workflowHistorySchema = createSchema({
-    entries: {type: [String], default: []}
-},{_id: true, _v: false});
+const workflowSchema = new Schema<WorkFlowI>({
 
-export const Workflow = typedModel('WorkFlow', workflowSchema);
-export type WorkflowProps = ExtractProps<typeof workflowSchema>;
-export const WorkflowHistory = typedModel('WorkflowHistory', workflowHistorySchema);
-export type WorkflowHistoryProps = ExtractProps<typeof workflowHistorySchema>;
+    name: {type: String, required: true},
+    description: {type: String, default:""},
+    owner_email: {type:String, required: true},
+    document_id: {type:String},
+    document_path: {type:String, required:true},
+    phases: {type: [[String]], required:true},
+    currentPhase: {type: Number, default: 0}
+});
 
+export default model<WorkFlowI>('WorkFlow', workflowSchema)
