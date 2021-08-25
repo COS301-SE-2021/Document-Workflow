@@ -25,6 +25,7 @@ import { ConfirmSignaturesComponent } from './components/confirm-signatures/conf
 import { UserNotificationsComponent } from './components/user-notifications/user-notifications.component';
 import { ConfirmDeleteWorkflowComponent } from './components/confirm-delete-workflow/confirm-delete-workflow.component';
 import {DocumentActionAreaComponent} from './components/document-action-area/document-action-area.component';
+import { Logger } from './Services/Logger';
 @NgModule({
   declarations: [
     AppComponent,
@@ -53,7 +54,8 @@ import {DocumentActionAreaComponent} from './components/document-action-area/doc
       provide: RouteReuseStrategy,
       useClass: IonicRouteStrategy,
     },
-    NavParams
+    NavParams,
+    Logger
   ],
   bootstrap: [AppComponent],
 })

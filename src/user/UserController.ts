@@ -62,7 +62,6 @@ export default class UserController{
             return await this.userService.loginUser(request);
         }
         catch(err){
-            console.error(err);
             throw err;
         }
     }
@@ -122,6 +121,15 @@ export default class UserController{
                 else res.status(404).send();
             } catch(err){
                 await handleErrors(err,res);
+            }
+        });
+
+        this.router.post("", async(req, res) =>{
+            try{
+                res.status(200).send(await this.registerUserRoute(req));
+            }
+            catch(err){
+                await handleErrors(err, res);
             }
         });
 

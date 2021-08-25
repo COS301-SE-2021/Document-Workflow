@@ -1,9 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { resolveFileWithPostfixes } from '@angular/compiler-cli/ngcc/src/utils';
 import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
-import { PopoverController } from '@ionic/angular';
 import * as Cookies from 'js-cookie';
+import {LoadingController, PopoverController} from '@ionic/angular';
 
 export interface User {
   Fname: string;
@@ -24,10 +23,25 @@ export interface LoginData {
 export class UserAPIService {
   static url = 'http://localhost:3000/api';
 
-  constructor(private http: HttpClient, private pop: PopoverController) {}
+  constructor(private http: HttpClient, private pop: PopoverController, public loadingCtrl: LoadingController,) {}
+
+  displayLoading(){
+    const loading = this.loadingCtrl.create({
+      message: 'Please wait...',
+    }).then((response)=>{
+      response.present();
+    });
+  }
+
+  dismissLoading(){
+    this.loadingCtrl.dismiss().then((response) => {
+    }).catch((err) => {
+    });;
+  }
 
   public checkIfAuthorized() {
     //callback){
+
     const formData = new FormData();
     //const token = localStorage.getItem('token');
     const token = Cookies.get('token');
@@ -42,17 +56,19 @@ export class UserAPIService {
   }
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
-  public register(user: User, file: File, callback) {
+  public register(user: User, confirmPassword: string, file: File, callback) {
+    //this.displayLoading();
     const formData = new FormData();
     formData.append('name', user.Fname);
     formData.append('surname', user.Lname);
     formData.append('initials', user.initials);
     formData.append('password', user.password);
+    formData.append('confirmPassword', user.password);
     formData.append('email', user.email);
     formData.append('signature', file);
     this.http.post(UserAPIService.url + '/users', formData).subscribe(
       (data) => {
-        //TODO: change url
+        //this.dismissLoading();
         if (data) {
           callback(data);
         } else
@@ -60,9 +76,10 @@ export class UserAPIService {
       },
       (error) => {
         console.log(error);
+        //this.dismissLoading();
         this.displayPopOver(
           'Error',
-          'An unexpected error occurred, please try again later'
+          error.error
         );
       }
     );
@@ -75,19 +92,24 @@ export class UserAPIService {
     formData.append('password', loginData.password);
     try {
       this.http.post(UserAPIService.url + '/users/login', formData).subscribe(
-        (data) => {
-          //TODO: change url
+        async (data) => {
           if (data) {
             callback(data);
           } else
-            callback({ status: 'error', message: 'Cannot connect to Server' });
-        },
-        (error) => {
-          this.displayPopOver('Error user-api-services - login', error);
+            await this.couldNotConnectToServer();
+          },
+        async (error) => {
+          console.log(error);
+          if(error.statusText === 'Unknown Error'){
+            await this.displayPopOver('Login Error', 'Could not connect to the Document Workflow Server at this time. Please try again later.');
+          }
+          else {
+            await this.displayPopOver('Login Error', error.error);
+          }
         }
       );
     } catch (e) {
-      alert('An unexpected error occured, please try again later');
+      alert('An unexpected error occurred, please try again later');
     }
   }
 
@@ -126,33 +148,37 @@ export class UserAPIService {
     });
   }
 
+
+  // return true if email is valid else return false.
+  //Can be used with register as it must return false
   async verifyEmail(email: string): Promise<boolean>{
-    const formData = new FormData();
-    //const token = localStorage.getItem('token');
-    const token = Cookies.get('token');
-    const httpHeaders: HttpHeaders = new HttpHeaders({
-      Authorization: 'Bearer ' + token,
-    });
+    console.log(email);
+    // const formData = new FormData();
+    // //const token = localStorage.getItem('token');
+    // const token = Cookies.get('token');
+    // const httpHeaders: HttpHeaders = new HttpHeaders({
+    //   Authorization: 'Bearer ' + token,
+    // });
 
-    this.http
-      .post(UserAPIService.url + '/users/verifyEmailExistence', formData, {
-        headers: httpHeaders,
-      })
-      .subscribe(
-        (data) => {
-          //TODO: change url
+    // this.http
+    //   .post(UserAPIService.url + '/users/verifyEmailExistence', formData, {
+    //     headers: httpHeaders,
+    //   })
+    //   .subscribe(
+    //     (data) => {
+    //       //TODO: change url
 
-          if (data) {
-            console.log(data);
-          }
-        },
-        async (error) => {
-          await this.displayPopOver(
-            'Error',
-            'The Document Workflow server could not be reached at this time'
-          );
-        }
-      );
+    //       if (data) {
+    //         console.log(data);
+    //       }
+    //     },
+    //     async (error) => {
+    //       await this.displayPopOver(
+    //         'Error',
+    //         'The Document Workflow server could not be reached at this time'
+    //       );
+    //     }
+    //   );
 
     return true;
   }
@@ -188,7 +214,12 @@ export class UserAPIService {
   }
 
   logout() {
-    //localStorage.removeItem('token');
+    //TODO: call the backend logout function
     Cookies.remove('token');
+  }
+
+  private async couldNotConnectToServer() {
+    await this.displayPopOver('Error', 'The Document Workflow Server could not be reached at this time, please try again later');
+
   }
 }

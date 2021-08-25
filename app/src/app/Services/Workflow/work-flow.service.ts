@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as Cookies from 'js-cookie';
-import { LoadingController } from '@ionic/angular';
+import {LoadingController, PopoverController} from '@ionic/angular';
+import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
 
 export interface workflowFormat {
   showWorkflow?: boolean;
@@ -39,8 +40,26 @@ export class WorkFlowService {
   static url = 'http://localhost:3000/api'; //TODO: change this url
   constructor(
     private http: HttpClient,
-    public loadingCtrl: LoadingController
+    public loadingCtrl: LoadingController,
+    private pop: PopoverController
   ) {}
+
+  async displayPopOver(title: string, message: string) {
+    const poper = await this.pop.create({
+      component: UserNotificationsComponent,
+      componentProps: {
+        title: title,
+        message: message,
+        displayButton: false
+      },
+    });
+
+    await poper.present();
+
+    (await poper).onDidDismiss().then(async (data) => {
+      return await data;
+    });
+  }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   public async createWorkflow(
@@ -50,6 +69,7 @@ export class WorkFlowService {
     document,
     callback
   ): Promise<any> {
+    this.displayLoading();
     const formData = new FormData();
     formData.append('name', workflowName);
     formData.append('description', workflowDescription);
@@ -67,13 +87,16 @@ export class WorkFlowService {
       })
       .subscribe(
         (data) => {
-          //TODO: change url
+          this.dismissLoading();
           if (data) {
             callback(data);
           } else
-            callback({ status: 'error', message: 'Cannot connect to Server' });
+            {callback({ status: 'error', message: 'Cannot connect to Server' });}
         },
-        (error) => {}
+        async (error) => {
+          this.dismissLoading();
+          await this.displayPopOver('Error creating new Workflow', error.error);
+        }
       );
   }
 

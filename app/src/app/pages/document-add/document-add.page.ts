@@ -30,7 +30,9 @@ import { User, UserAPIService } from 'src/app/Services/User/user-api.service';
 import * as Cookies from 'js-cookie';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 import { verifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
-import { validateLocaleAndSetLanguage } from 'typescript';
+import WebViewer, {Core} from '@pdftron/webviewer';
+import 'convertapi-js';
+
 
 @Component({
   selector: 'app-document-add',
@@ -66,6 +68,7 @@ export class DocumentAddPage implements OnInit {
   showPhase: boolean[] = [];
 
   controller: boolean;
+  @ViewChild('viewer') viewerRef: ElementRef;
   constructor(
     private plat: Platform,
     private fb: FormBuilder,
@@ -279,8 +282,8 @@ export class DocumentAddPage implements OnInit {
     console.log(typeof this.file);
     console.log('file', await this.file.arrayBuffer());
     // const buff = response.data.filedata.Body.data; //wut
-    const a = new Uint8Array(await this.file.arrayBuffer());
-    this.srcFile = a;
+
+    this.srcFile = new Uint8Array(await this.file.arrayBuffer());
 
     this.workflowForm.get('workflowFile').setValue(this.file);
     this.blob = new Blob([this.file], { type: 'application/pdf;base64' });
@@ -289,6 +292,46 @@ export class DocumentAddPage implements OnInit {
     console.log(obj);
     this.srcFile = obj;
     this.addFile = true;
+
+    this.displayWebViewer(this.blob);
+
+    const addDocButton = document.getElementById('uploadFile');
+    addDocButton.parentNode.removeChild(addDocButton);
+  }
+
+  displayWebViewer(blob: Blob){
+
+    WebViewer({
+      path: './../../../assets/lib',
+      fullAPI:true
+    }, this.viewerRef.nativeElement).then(async instance =>{
+
+      instance.Core.PDFNet.initialize();
+
+      instance.UI.loadDocument(blob, {filename: 'Preview Document'});
+      instance.UI.disableElements(['ribbons']);
+      instance.UI.setToolbarGroup('toolbarGroup-View',false);
+
+      instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
+        const PDFNet = instance.Core.PDFNet;
+        const doc = await PDFNet.PDFDoc.createFromBuffer(await this.file.arrayBuffer());
+
+        let extractedText = "";
+
+        const txt = await PDFNet.TextExtractor.create();
+        ;
+        const pageCount = await doc.getPageCount();
+        for(let i=1; i<=pageCount; ++i){
+          const page = await doc.getPage(i);
+          const rect = await page.getCropBox();
+          txt.begin(page, rect); // Read the page.
+          extractedText += await txt.getAsText();
+        }
+        console.log(extractedText);
+
+      });
+
+    });
   }
 
   fixOrder(ev: CustomEvent<ItemReorderEventDetail>) {
@@ -334,7 +377,6 @@ export class DocumentAddPage implements OnInit {
   }
 
   async createWorkflow() {
-    this.workflowService.displayLoading();
     console.log('Extracting form data ------------------------------');
     console.log('Name: ', this.workflowForm.controls.workflowName.value);
     console.log(
@@ -346,18 +388,17 @@ export class DocumentAddPage implements OnInit {
     const phases = this.workflowForm.controls.phases.value;
     const name = this.workflowForm.controls.workflowName.value;
     const description = this.workflowForm.controls.workflowDescription.value;
-    this.workflowService.createWorkflow(
+    await this.workflowService.createWorkflow(
       name,
       description,
       phases,
       this.file,
       (response) => {
-        this.workflowService.dismissLoading();
-        if(response.status === 'success'){
-          this.userApiService.displayPopOver('Success','You have successfully created a workflow');
+        if (response.status === 'success') {
+          this.userApiService.displayPopOver('Success', 'You have successfully created a workflow');
           this.router.navigate(['/home']);
-        }else{
-          this.userApiService.displayPopOver('Error','something has gone wrong, please try again');
+        } else {
+          this.userApiService.displayPopOver('Error', 'Something has gone wrong, please try again');
           this.router.navigate(['/home']);
         }
       }
