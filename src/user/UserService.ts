@@ -1,6 +1,6 @@
 import { injectable } from "tsyringe";
 import UserRepository from "./UserRepository";
-import { UserProps, Token } from "./User";
+import { UserProps} from "./User"; //, Token } from "./User";
 import nodemailer from 'nodemailer';
 import jwt from "jsonwebtoken";
 import { AuthenticationError, RequestError } from "../error/Error";
@@ -94,9 +94,12 @@ export default class UserService {
             usr.signature = req.files.signature.data;
             usr.validateCode = crypto.randomBytes(64).toString('hex');
             usr.password = await this.getHashedPassword(usr.password);
+            usr.ownedWorkflows = [];
+            usr.workflows = [];
+            usr.workflowTemplates = [];
             //const user: UserProps = await this.userRepository.postUser(usr);
-            const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
-            usr.tokens = [token];
+            //const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
+            //usr.tokens = [token];
             const user: UserProps = await this.userRepository.saveUser(usr);
             //const response = await this.userRepository.putUser(usr);
             if(user){
@@ -180,9 +183,9 @@ export default class UserService {
             throw new RequestError("Missing required properties");
         }
         const user = await this.userRepository.findUser({email: req.user.email});
-        const tokens: Token[] = req.user.tokens;
-        tokens.filter(token => {return token.token !== req.user.token});
-        user.tokens = tokens as any;
+        //const tokens: Token[] = req.user.tokens;
+        //tokens.filter(token => {return token.token !== req.user.token});
+        //user.tokens = tokens as any;
         try {
             return await this.userRepository.updateUser(user);
         }

@@ -126,8 +126,8 @@ export class LoginRegisterPage implements OnInit {
       'termsOfService',
       '',
       (response) => {
-        if (response.confirm === 'true') {
-          this.workFlowService.displayLoading();
+        console.log(response);
+        if (response.data.confirm === true) {
           const userdata = this.registerForm.value;
           console.log('Printing file:');
           console.log(this.file);
@@ -153,10 +153,9 @@ export class LoginRegisterPage implements OnInit {
                 'Successfully created new user account',
                 'check your email for account verification'
               );
-              this.workFlowService.dismissLoading();
+
               this.router.navigate(['login']);
             } else {
-              this.workFlowService.dismissLoading();
               this.userAPIService.displayPopOver(
                 'Failed to make a new account:',
                 response.message

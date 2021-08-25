@@ -124,6 +124,15 @@ export default class UserController{
             }
         });
 
+        this.router.post("", async(req, res) =>{
+            try{
+                res.status(200).send(await this.registerUserRoute(req));
+            }
+            catch(err){
+                await handleErrors(err, res);
+            }
+        });
+
         this.router.get("/verify", sanitize, async(req,res) =>{
             try {
                 res.status(200).send(await this.verifyUserRoute(req));
