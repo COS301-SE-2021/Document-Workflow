@@ -1,69 +1,85 @@
 import { injectable } from "tsyringe";
 import DocumentRepository from "./DocumentRepository";
-import { DocumentI } from "./Document";
+import { Document, DocumentProps } from "./Document";
+import {RequestError, ServerError} from "../error/Error";
 import fs from 'fs';
-import {PDFAssembler, BinaryFile} from 'pdfassembler';
-import CloudmersiveConvertApiClient from 'cloudmersive-convert-api-client';
+import { ObjectId } from "mongoose";
 
 @injectable()
 export default class DocumentService {
-    documentRepository: DocumentRepository;
 
-    constructor(documentRepository: DocumentRepository) {
-        this.documentRepository = documentRepository;
-    }
+    constructor(private documentRepository: DocumentRepository) {}
 
-    async getDocuments(): Promise<DocumentI[]> {
+    async getDocuments(): Promise<DocumentProps[]> {
         try{
-            return await this.documentRepository.getDocuments({});
+            return await this.documentRepository.getDocuments();
         }catch(err){
-            throw err;
+            throw new RequestError("Could not retrieve documents");
         }
     }
 
-    /**
-     *
-     * @param document
-     * @param workflow_id
-     */
-    async uploadDocument(document, workflow_id) : Promise<any>{
+    async uploadDocument(file: File, id: ObjectId): Promise<ObjectId>{
         try{
-            return await this.documentRepository.postDocument(document, workflow_id);
+            const doc = new Document({
+                name: file.name,
+                size: file.size,
+                path: id + '/' +file.name,
+                workflowId: id
+            })
+            return await this.documentRepository.postDocument(doc, file);
         }
-        catch(err)
-        {
-            throw err
+        catch(err){
+            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
         }
     }
 
-    async deleteDocument(workflow_id, document_id){
+    async updateDocument(file: File, id: ObjectId, phaseNumber){
+        try{
+            await this.documentRepository.updateDocumentS3(file, id, phaseNumber);
+        }
+        catch(err){
+            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
+        }
+    }
+
+    async deleteDocument(workflowId, documentId){
         console.log("Deleting document from CLoud server");
-        await this.documentRepository.deleteDocumentFromS3(workflow_id);
-        console.log("deleting document from metadata database ", document_id);
-        await this.documentRepository.deleteDocument(document_id);
+        try {
+            await this.documentRepository.deleteDocumentFromS3(workflowId);
+        }
+        catch(err){
+            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
+        }
+        console.log("deleting document from metadata database ", documentId);
+
+            await this.documentRepository.deleteDocument(documentId);
+
     }
 
-
-    async retrieveDocument(req) : Promise<any> {
-        console.log("retrieving a document");
-        console.log(req.body.doc_id);
+    async retrieveOriginalDocument(docId, workflowId){
         try {
-            const metadata = await this.documentRepository.getDocument(req.body.doc_id);
-            console.log(metadata);
-            console.log(metadata.document_path);
-            const filedata = await this.documentRepository.getDocumentFromS3(metadata.document_path);
-            if(filedata === null)
-                throw "The specified document does not exist.";
-            //await this.turnBufferIntoFile(filedata,metadata);
-            console.log({status:"success", data:{metadata: metadata, filedata: filedata}, message:"" });
-            return {status:"success", data:{metadata: metadata, filedata: filedata}, message:"" };
-            //return {status:"success", data:{filepath: metadata.doc_name}, message:"" }; //need to return filepath ( which is just the file name) up the chain so we can pipe it to the response.
+            const documentMetadata = await this.documentRepository.getDocument(docId);
+            const filedata = await this.documentRepository.getDocumentFromS3(workflowId + '/' + documentMetadata.name);
+            return {status: "success", data: {filedata: filedata, metadata: documentMetadata}, message: ""};
         }
-        catch(err)
-        {
-            console.log(err);
-            throw err;
+        catch(err){
+            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
         }
+    }
+
+    async retrieveDocument(docId, workflowId, currentPhase) : Promise<any> {
+        console.log("retrieving a document");
+        console.log(docId);
+
+        const metadata = await this.documentRepository.getDocument(docId);
+        console.log(metadata);
+        console.log("Fetching document from S3 server with path: ", workflowId +'/phase' + currentPhase +'/', metadata.name);
+        const filedata = await this.documentRepository.getDocumentFromS3(workflowId +'/phase' + currentPhase +'/' + metadata.name);
+        if(filedata === null)
+            throw "The specified document does not exist.";
+        console.log({status:"success", data:{metadata: metadata, filedata: filedata}, message:"" });
+        return {metadata: metadata, filedata: filedata};
+        //return {status:"success", data:{filepath: metadata.doc_name}, message:"" }; //need to return filepath ( which is just the file name) up the chain so we can pipe it to the response.
     }
 
     async turnBufferIntoFile(filedata, metadata): Promise<any>{
@@ -84,41 +100,11 @@ export default class DocumentService {
         });
     }
 
-    async convertToHTML(req) {
-        //console.log(req.files.document);
-        //console.log(PDFAssembler);
-        const newpdf = new PDFAssembler(req.files.document);
-        console.log(newpdf)
-        return {status:"success", data: {name: req.files.document.name}, message: ""};
-    }
-
-    async convertToDocX(req){
-        console.log(req.files)
-       /* fs.readFile('Test.pdf', (err,data)=>{
-            if (err) {
-                return console.log(err);
-            }
-            console.log(data);
-        }); */
-
-        const defaultClient = CloudmersiveConvertApiClient.ApiClient.instance;
-        // Configure API key authorization: Apikey
-        const Apikey = defaultClient.authentications['Apikey'];
-        Apikey.apiKey = process.env.CLOUDMERSIVE_API_KEY;
-        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
-        //Apikey.apiKeyPrefix = 'Token';
-        const apiInstance = new CloudmersiveConvertApiClient.ConvertDocumentApi();
-        const inputFile = 'Test.pdf';
-
-        console.log("Attempting to convert document to docx");
-        apiInstance.convertDocumentPdfToDocx(inputFile, (error, data, response) => {
-            console.log("response");
-            if (error) {
-                console.error(error);
-            } else {
-                console.log('API called successfully. Returned data: ' + data);
-            }
-        });
+    async resetFirstPhaseDocument(workflowId, documentId) {
+        const metadata = await this.documentRepository.getDocument(documentId);
+        console.log("Resetting first phase document to original, path to original: ",workflowId + '/' + metadata.name);
+        const originalDocument = await this.documentRepository.getDocumentFromS3(workflowId + '/' + metadata.name);
+        await this.documentRepository.updateDocumentS3WithBuffer(workflowId +'/phase0/' + metadata.name, originalDocument.Body);
 
     }
 }

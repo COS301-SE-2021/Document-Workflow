@@ -57,6 +57,11 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
           header.getHeader('toolbarGroup-Annotate').delete('freeTextToolGroupButton');
           header.getHeader('toolbarGroup-Annotate').delete('freeHandToolGroupButton');
           header.getHeader('toolbarGroup-Annotate').delete('freeHandHighlightToolGroupButton');
+          header.getHeader('toolbarGroup-Annotate').delete('highlightToolGroupButton');
+          header.getHeader('toolbarGroup-Annotate').delete('underlineToolGroupButton');
+          header.getHeader('toolbarGroup-Annotate').delete('strikeoutToolGroupButton');
+          header.getHeader('toolbarGroup-Annotate').delete('squigglyToolGroupButton');
+          header.getHeader('toolbarGroup-Annotate').delete('shapeToolGroupButton');
         });
 
         /* Dont delete me yet.
@@ -77,6 +82,11 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
 
     this.showAnnotations = !this.showAnnotations;
     const annotations = annotationManager.getAnnotationsList();
+
+    annotations.forEach(annotation =>{
+      console.log(annotation);
+    });
+
     if(this.showAnnotations){
       //annotManager.showAnnotations(annotations); //use if you wihs to hide the associated comments that go with an annotation as well as the annotation.
       annotations.forEach(annot =>{

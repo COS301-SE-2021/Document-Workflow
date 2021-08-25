@@ -8,7 +8,7 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { DocumentViewPageRoutingModule } from './document-view-routing.module';
 
 import { DocumentViewPage } from './document-view.page';
-import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
+
 
 @NgModule({
   imports: [

@@ -1,13 +1,22 @@
 <ion-card>
-  <ion-card-header>
+  <ion-card-header style="text-align: center;">
     {{title}}
   </ion-card-header>
   <ion-card-content>
+    <p style="text-align: center;">
     {{message}}
-
-    <div *ngIf='termOfService'>
-      <ion-button inline (click)="confirm()">Confirm</ion-button>
-      <ion-button inline (click)="reject()">Reject</ion-button>
+      </p>
+    <div *ngIf='displayButton'>
+      <ion-grid style="width:100%">
+        <ion-row>
+          <ion-col sizeXs='6' >
+            <ion-button block (click)="confirm()" style="width: 98%;">Confirm</ion-button>
+          </ion-col>
+          <ion-col sizeXs='6' >
+            <ion-button block (click)="reject()" style="width: 98%;">Reject</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </div>
   </ion-card-content>
 </ion-card>

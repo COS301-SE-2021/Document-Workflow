@@ -1,18 +1,13 @@
 <ion-content>
-  <br>
-  <ion-fab>
-    <ion-fab-button (click)="debug()">
-      debug
-    </ion-fab-button>
-  </ion-fab>
   <ion-grid>
     <ion-row style="background-color: #002060;">
-
-      <ion-col sizeXs="12" sizeSm="12" sizeMd="6" offsetMd="3" style="justify-content: center; align-items: center; ">
+      <ion-col sizeXs='4'></ion-col>
+      <ion-col sizeXs="6" sizeSm="6" sizeMd="4" style="justify-content: center; align-items: center; ">
         <div>
           <ion-img src="../../../assets/LogoWhiteBackground.png"></ion-img>
         </div>
       </ion-col>
+      <ion-col sizeXs='3'></ion-col>
     </ion-row>
     <ion-row>
       <ion-col size="10" offset="1">
@@ -23,12 +18,12 @@
             <ion-card-content>
               <form [formGroup]="loginForm" (ngSubmit)="login()">
                 <ion-item>
-                  <ion-label position="stacked">Email Address:</ion-label>
-                  <ion-input inputmode="email" formControlName="loginEmail"></ion-input>
+                  <ion-label position="floating">Email Address:</ion-label>
+                  <ion-input inputmode="email" formControlName="loginEmail" id="loginEmail"></ion-input>
                 </ion-item>
                 <ion-item>
-                  <ion-label position="stacked">Password:</ion-label>
-                  <ion-input type="password" formControlName="loginPassword"></ion-input>
+                  <ion-label position="floating">Password:</ion-label>
+                  <ion-input type="password" formControlName="loginPassword" id="loginPassword"></ion-input>
                 </ion-item>
                 <div style="text-align: center;">
                   <span>
@@ -36,10 +31,10 @@
                       password</a>
                   </span>
                   <br>
-                  <span>Register a new Account <a (click)="changeOver()">here</a></span>
+                  <span>Register a new Account <a (click)="changeOver()" id="changeover">here</a></span>
                 </div>
                 <ion-button padding expand="block" color="primary" fill="outline" [disabled]="!loginForm.valid"
-                  type="submit">Login</ion-button>
+                  type="submit" id="login">Login</ion-button>
               </form>
             </ion-card-content>
 
@@ -67,32 +62,32 @@
             <ion-card-content>
               <form [formGroup]="registerForm" (ngSubmit)="register()">
                 <ion-item>
-                  <ion-label position="stacked">First name:</ion-label>
-                  <ion-input inputmode="text" formControlName="Fname"></ion-input>
+                  <ion-label position="floating">First name:</ion-label>
+                  <ion-input inputmode="text" formControlName="Fname" id="firstname"></ion-input>
                 </ion-item>
                 <ion-item>
-                  <ion-label position="stacked">Last name:</ion-label>
-                  <ion-input inputmode="text" formControlName="Lname"></ion-input>
+                  <ion-label position="floating">Last name:</ion-label>
+                  <ion-input inputmode="text" formControlName="Lname" id="lastname"></ion-input>
                 </ion-item>
                 <ion-item>
-                  <ion-label position="stacked">Initials:</ion-label>
-                  <ion-input inputmode="text" formControlName="initials"></ion-input>
+                  <ion-label position="floating">Initials:</ion-label>
+                  <ion-input inputmode="text" formControlName="initials" id="initials"></ion-input>
                 </ion-item>
                 <ion-item>
-                  <ion-label position="stacked">Email:</ion-label>
-                  <ion-input inputmode="text" formControlName="email"></ion-input>
+                  <ion-label position="floating">Email:</ion-label>
+                  <ion-input inputmode="text" formControlName="email" id="email"></ion-input>
                 </ion-item>
                 <ion-item>
-                  <ion-label position="stacked">Phone number:</ion-label>
-                  <ion-input inputmode="text" formControlName="phone_number"></ion-input>
+                  <ion-label position="floating">Phone number:</ion-label>
+                  <ion-input inputmode="text" formControlName="phone_number" id="phoneNumber"></ion-input>
                 </ion-item>
                 <ion-item>
-                  <ion-label position="stacked">Password</ion-label>
-                  <ion-input type="password" formControlName="password"></ion-input>
+                  <ion-label position="floating">Password</ion-label>
+                  <ion-input type="password" formControlName="password" id="password"></ion-input>
                 </ion-item>
                 <ion-item>
-                  <ion-label position="stacked">Confirm password</ion-label>
-                  <ion-input type="password" formControlName="confirmPassword"></ion-input>
+                  <ion-label position="floating">Confirm password</ion-label>
+                  <ion-input type="password" formControlName="confirmPassword" id="confirmPassword"></ion-input>
                 </ion-item>
                 <ion-item>
                   <ion-label position="stacked">Add your signature</ion-label>
@@ -100,10 +95,10 @@
                     <!-- dont edit, its not an error believe it or not -->
                     <input type="file" #fileInput (change)="uploadFile($event)" hidden="true" accept="image/*">
                   </ion-button>
-                  <ion-button (click)="selectImageSource()">Add</ion-button>
+                  <ion-button (click)="selectImageSource()" id="addSignature">Add</ion-button>
                 </ion-item>
                 <ion-button expand="block" color="primary" fill="outline" [disabled]="!registerForm.valid"
-                  type="submit">Register</ion-button>
+                  type="submit" id="register">Register</ion-button>
               </form>
             </ion-card-content>
           </ion-card>

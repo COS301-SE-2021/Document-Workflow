@@ -1,239 +1,355 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { IonReorderGroup, LoadingController, ModalController, NavController } from '@ionic/angular';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { IonReorderGroup } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 
 //interface and services
 import { User, UserAPIService } from './../../Services/User/user-api.service';
 import {
-  documentImage,
-  DocumentAPIService,
-} from './../../Services/Document/document-api.service';
-import { WorkFlowService } from '../../Services/Workflow/work-flow.service';
-import { ConfirmDeleteWorkflowComponent } from 'src/app/components/confirm-delete-workflow/confirm-delete-workflow.component';
+  phaseFormat,
+  workflowFormat,
+  WorkFlowService,
+} from '../../Services/Workflow/work-flow.service';
 import { ItemReorderEventDetail } from '@ionic/core';
 import * as Cookies from 'js-cookie';
+import { FormBuilder, FormGroup } from '@angular/forms';
 @Component({
   selector: 'app-workflow',
   templateUrl: './workflow.page.html',
   styleUrls: ['./workflow.page.scss'],
 })
 export class WorkflowPage implements OnInit {
+  sortForm: FormGroup;
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
-  documents: documentImage[] = [];
+  documents: workflowFormat[] = [];
+  documentPermission: number[] = [];
   userEmail: string;
-  user: User;
+  user;
   reOrder: boolean;
   isBrowser: boolean;
   sizeMe: boolean;
-  allUserDocuments: documentImage[] =[];
+  ownedWorkflows = [];
+  workflows = [];
+  leave: boolean = false;
 
   constructor(
-    private docService: DocumentAPIService,
-    private modals: ModalController,
     private plat: Platform,
     private router: Router,
     private userApiService: UserAPIService,
     private workFlowService: WorkFlowService,
-    private loadctrl: LoadingController,
-    private navControl: NavController
-  ) {
+    private fb: FormBuilder
+  ) {}
+
+  ngOnDestroy(): void {
+    //Called once, before the instance is destroyed.
+    //Add 'implements OnDestroy' to the class.
+    console.log("hfijbnrfijbfrijbwfijb")
+  }
+
+  ionViewDidEnter(){
+    if(this.leave === true){
+      this.documents =[];
+      this.ngOnInit();
+      this.leave = false;
+    }
   }
 
   async ngOnInit() {
-    if(this.plat.width() > 572){
-      this.sizeMe = false;
-    }else{
-      this.sizeMe = true;
-    }
+    this.sortForm = this.fb.group({
+      sortBy: [''],
+    });
+    this.workFlowService.displayLoading();
     this.reOrder = true;
 
-    if(this.plat.is('desktop')){
-      //alert("here");
-      console.log('Desktop');
+    if (this.plat.width() > 572) {
+      this.sizeMe = false;
+    } else {
+      this.sizeMe = true;
     }
 
-    const load = await this.loadctrl.create({
-      message: 'Hang in there... we are almost done',
-      duration: 5000,
-      showBackdrop: false,
-      spinner: 'bubbles'
-    });
-    await load.present();
-    //if(localStorage.getItem('token') === null) {
-    if(Cookies.get('token') === undefined){
+    if (Cookies.get('token') === undefined) {
       await this.router.navigate(['/login']);
-      await load.dismiss();
+      this.workFlowService.dismissLoading();
       return;
-    }
-    else
-    {
-      this.userApiService.checkIfAuthorized().subscribe((response) => {
-        console.log('Successfully authorized user');
-      }, async (error) => {
-        console.log(error);
-        await this.router.navigate(['/login']);
-        await load.dismiss();
-        return;
-      });
+    } else {
+      this.userApiService.checkIfAuthorized().subscribe(
+        (response) => {
+          console.log('Successfully authorized user');
+        },
+        async (error) => {
+          console.log(error);
+          await this.router.navigate(['/login']);
+          this.workFlowService.dismissLoading();
+          return;
+        }
+      );
     }
     await this.getUser();
-    await this.loadWorkFlows();
-    await load.dismiss();
   }
 
-  async getUser(){
-     this.userApiService.getUserDetails(async (response)=>{
-      if(response){
+  async getUser() {
+    await this.userApiService.getUserDetails(async (response) => {
+      if (response) {
         this.user = response.data;
         this.userEmail = this.user.email;
-      } else{
-        this.userApiService.displayPopOver('Error', 'Cannot find user');
+        await this.retrieveWorkflows();
+      } else {
+        await this.userApiService.displayPopOver('Error', 'Cannot find user');
+        Cookies.set('token', '');
+        await this.router.navigate(['login']);
       }
     });
   }
 
-  async deleteWorkFlow(id: string){
-    const deleteMod = this.modals.create({
-      component: ConfirmDeleteWorkflowComponent
-    });
-
-    (await deleteMod).present();
-    (await deleteMod).onDidDismiss().then(async (data) => {
-      const result = (await data).data.confirm;
-      if (result){
-        this.workFlowService.deleteWorkFlow(id, (response) =>{
-          console.log(response);
-          this.userApiService.displayPopOver('Deletion of workflow', 'Workflow has been successfully deleted');
-        });
-
-      }else{
-        //not delete
-      }
-    });
-  }
-
-
-  async loadWorkFlows() {
-    this.userApiService.getAllWorkOwnedFlows((response) => {
+  async retrieveWorkflows() {
+    await this.workFlowService.getUserWorkflowsData((response) => {
       if (response.status === 'success') {
-        for(const tmpDoc of response.data){
-          if(tmpDoc != null){
+        const ownedWorkflows = response.data.ownedWorkflows;
+        const workflows = response.data.workflows;
+        for (let tmpDoc of ownedWorkflows) {
+          if (tmpDoc != null) {
             this.documents.push(tmpDoc);
-            this.allUserDocuments.push(tmpDoc);
+          }
+        }
+
+        for (let tmpDoc of workflows) {
+          if (tmpDoc != null) {
+            this.documents.push(tmpDoc);
+          }
+        }
+        console.log(this.documents);
+        //for the searching and sorting so we wont waste users data.
+        this.sortPermission();
+      } else {
+        alert('Something went wrong');
+      }
+      this.workFlowService.dismissLoading();
+    });
+  }
+
+  //TODO: clean up this function, the logic behind it isn't entirely clear
+  sortPermission() {
+    let i: number = 0;
+    for (const document of this.documents) {
+      this.documentPermission[i] = 0;
+      if (document.status !== 'Completed') {
+        if (document.phases[document.currentPhase].status !== 'Completed') {
+          if (document.ownerEmail === this.userEmail)
+            this.documentPermission[i] = 2;
+          for (let user of document.phases[document.currentPhase].users) {
+            if (user.user === this.userEmail) {
+              if (user.accepted === 'false') {
+                //TODO: swap to boolean once changes in backend made
+                if (user.permission === 'view') {
+                  this.documentPermission[i] = 2;
+                } else {
+                  this.documentPermission[i] = 1;
+                }
+              }
+            }
           }
         }
       } else {
-        this.userApiService.displayPopOver('Error', 'unexpected error occured');
+        this.documentPermission[i] = 2;
       }
-    });
-    this.userApiService.getAllWorkFlows((response) => {
+      i++;
+    }
+  }
 
-      if (response.status === 'success') {
-        for(const tmpDoc of response.data){
-          if(tmpDoc != null){
-            this.documents.push(tmpDoc);
-            this.allUserDocuments.push(tmpDoc);
-          }
-        }
-      } else {
-        this.userApiService.displayPopOver('Error', 'unexpected error occurred');
-      }
+  //todo move this to the spec.ts of workflow
+  async testRetrieveWorkflow() {
+    console.log('Testing the retrieve workflow function');
+    const id = '61163482d68c450938c29a30';
+    await this.workFlowService.getWorkFlowData(id, (response) => {
+      console.log(response);
+    });
+    await this.workFlowService.getUserWorkflowsData((response) => {
+      console.log(response);
     });
   }
 
-  async editWorkflow(id_: string){
-    // const editModal = await this.modals.create({
-    //   component: EditWorkflowComponent,
-    //   componentProps:{
-    //     workflowID: id_
-    //   }
-    // });
+  async testUpdatePhase() {
+    const id = '611661feb394bb1d4cc91f3e';
+    const accepts = true;
+    await this.workFlowService.updatePhase(id, accepts, null, (data) => {
+      console.log(data);
+    });
+  }
 
-    // (await editModal).present();
+  async deleteWorkFlow(id: string) {
+    await this.userApiService.displayPopOverWithButtons(
+      'Confirmation of deletion',
+      'Are you sure you want to permanently delete this?',
+      (response) => {
+        console.log(response);
+        if (response.data.confirm === true) {
+          this.workFlowService.displayLoading();
+          this.workFlowService.deleteWorkFlow(id, (response2) => {
 
-    // (await editModal).onDidDismiss().then(async (data)=>{
-    //   const documents = (await data).data['document'];
-    //   // const file = (await data).data['file'];
-    //   let phases = '';
-    //   console.log(documents.phases);
-    //   for(let i=0; i<documents.phases.length; ++i)
-    //Sending arrays of arrays does not work well in angular so this workaround will have to do.
-    //   {
-    //     let temp = '[';
-    //     for(const [key, value] of Object.entries(documents.phases[i]))
-    //       temp+=value + ' ';
-    //     phases += temp.substr(0, temp.length-1) +']'; //dont want the trailing space
-    //   }
-    //   console.log(phases);
-    //   const workflowData = {
-    //     name: documents.workflowName,
-    //     description: documents.workflowDescription
-    //   };
-    // })
+            console.log(response2);
+            this.workFlowService.dismissLoading();
+          });
+        }
+      }
+    );
+  }
+
+  revertPhase(id: string) {
+    this.userApiService.displayPopOverWithButtons(
+      'Revert the phase',
+      'Are you sure you want to revert the phase?',
+      (response) => {
+        if (response.data.confirm === true) {
+          this.workFlowService.revertPhase(id, async (response2) => {
+            console.log(response2);
+            if(response2.status === "success") {
+              await this.userApiService.displayPopOver("Success", "The workflow has been successfully reverted by a phase");
+            }
+          });
+        }
+      }
+    );
+  }
+
+  async editWorkflow(id: string) {
+    this.leave=true;
+    this.router.navigate([
+      'home/workflowEdit',
+      {
+        workflowId: id,
+      },
+    ]);
   }
 
   async addWorkflow() {
     this.router.navigate(['home/addWorkflow']);
   }
 
-  viewWorkFlow(id: string, name: string) {
+  viewWorkFlow(id: string, name: string, status) {
     // this.navControl.navigateForward
-    this.router.navigate(['/home/documentView', {
-      id,
-      documentname: name,
-      userEmail: this.user.email
-    }]);
+    this.leave=true;
+    this.router.navigate([
+      '/home/documentView',
+      {
+        workflowId: id,
+        documentname: name,
+        userEmail: this.user.email,
+        status: status,
+      },
+    ]);
   }
 
-  logout(){
-    this.userApiService.logout();
-    this.router.navigate(['login']);
+  editDocument(id: string, name: string) {
+    this.leave=true;
+    this.router.navigate([
+      '/home/documentEdit',
+      {
+        workflowId: id,
+        documentname: name,
+        userEmail: this.user.email,
+      },
+    ]);
+
   }
 
-  toProfilepage(){
-    this.router.navigate(['/home/userProfile']);
-  }
-
-  fixOrder(event: CustomEvent<ItemReorderEventDetail>){
+  fixOrder(event: CustomEvent<ItemReorderEventDetail>) {
     event.detail.complete();
   }
 
-  showOnlyWorkflowOwned(){
-    this.documents = [];
-    console.log(this.documents);
-    for(let document of this.allUserDocuments){
-      if(document.owner_email === this.userEmail){
-        this.documents.push(document);
-      }
+  sortBy() {
+    console.log(typeof this.sortForm.controls.sortBy.value);
+    switch (parseInt(this.sortForm.controls.sortBy.value)) {
+      case 1:
+        this.showOnlyWorkflowOwned();
+        break;
+      case 2:
+        this.sortByNeededActions();
+        break;
+      case 3:
+        this.showAll();
+        break;
+      case 4:
+        this.reOrderWorkflows();
+        break;
+      case 5:
+        this.showNonOwnedWorkflows();
+        break;
     }
-    console.log(this.documents);
   }
 
-  sortByNeededActions(){
-    this.documents = [];
-    this.allUserDocuments.push(this.docService.createTestDocuments());
-    for(let document of this.allUserDocuments){
-      for(let phase of document.phases){
-        if(phase.completed === false){
-          for(let user of phase.phaseUsers){
-            if(user.email === this.userEmail){
-              this.documents.push(document);
-            }
+  showNonOwnedWorkflows() {
+    for (const document of this.documents) {
+      if (document.ownerEmail !== this.userEmail) {
+        document.showWorkflow = true;
+      } else {
+        document.showWorkflow = false;
+      }
+    }
+  }
+
+  reOrderWorkflows() {
+    this.reOrder = !this.reOrder;
+  }
+
+  showOnlyWorkflowOwned() {
+    console.log('here');
+    for (const document of this.documents) {
+      if (document.ownerEmail === this.userEmail) {
+        document.showWorkflow = true;
+      } else {
+        document.showWorkflow = false;
+      }
+    }
+  }
+
+  sortByNeededActions() {
+    for (let document of this.documents) {
+      for (let user of document.phases[document.currentPhase].users) {
+        if (user.user === this.userEmail) {
+          if (user.accepted === 'true') {
+            document.showWorkflow = false;
+          } else {
+            document.showWorkflow = true;
           }
+        } else {
+          document.showWorkflow = false;
         }
       }
     }
   }
 
-  getByName(name:string){
-    this.documents=[];
-    for(let document of this.allUserDocuments){
-      if(document.name === name){
-        this.documents.push(document);
+  getByName(name: string) {
+    for (let document of this.documents) {
+      if (document.name === name) {
+        document.showWorkflow = true;
+      } else {
+        document.showWorkflow = false;
       }
     }
   }
+
+  showPhase(phase: phaseFormat) {
+    phase.showPhase = !phase.showPhase;
+  }
+
+  async getWorkflow() {
+    const id = '611661feb394bb1d4cc91f3e';
+    await this.workFlowService.retrieveDocument(id, (response) => {
+      console.log(response);
+    });
+  }
+
+  debug(num: number) {
+    if (num === 1) {
+      this.workFlowService.displayLoading();
+    } else {
+      this.workFlowService.dismissLoading();
+    }
+  }
+
+  showAll() {
+    for (let document of this.documents) {
+      document.showWorkflow = true;
+    }
+  }
 }
-
-

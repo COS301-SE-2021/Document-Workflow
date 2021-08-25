@@ -8,7 +8,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { AbstractControlOptions, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { User, UserAPIService } from '../../Services/User/user-api.service';
-import { match } from './../../Services/match.validator';
+import { match } from '../../Services/Validators/match.validator';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Platform } from '@ionic/angular';

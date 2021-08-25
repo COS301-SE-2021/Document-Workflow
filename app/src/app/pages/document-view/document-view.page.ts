@@ -5,19 +5,12 @@ import {Component, OnInit, Input, AfterViewInit, ElementRef, ViewChild} from '@a
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 
 import { ModalController, NavParams, Platform } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
-import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DocumentAPIService } from 'src/app/Services/Document/document-api.service';
 import {WorkFlowService} from 'src/app/Services/Workflow/work-flow.service';
-import { async } from '@angular/core/testing';
-import { ConfirmSignaturesComponent } from 'src/app/components/confirm-signatures/confirm-signatures.component';
 import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
-import { DomSanitizer } from '@angular/platform-browser';
 import WebViewer from '@pdftron/webviewer';
-import {UserNotificationsComponent} from "../../components/user-notifications/user-notifications.component";
-import {DocumentActionAreaComponent} from "../../components/document-action-area/document-action-area.component";
-import {ErrorOccurredComponent} from "../../components/error-occurred/error-occurred.component";
+import { UserAPIService } from 'src/app/Services/User/user-api.service';
 
 @Component({
   selector: 'app-document-view',
@@ -28,9 +21,13 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   srcFile: any;
   srcFileBase64: any;
   pdfDoc: PDFDocument;
-  showAnnotations = false;
+  showAnnotations = true;
+  annotationManager: any;
+  documentViewer: any;
+  documentMetadata: any;
+  annotationSubjects = ['Note', 'Rectangle', 'Squiggly', 'Underline', 'Highlight', 'Strikeout'];
 
-  @Input('id') documentId: string;
+  @Input('workflowStatus') workflowStatus:string;
   @Input('documentname') docName: string;
   @Input('workflowId') workflowId: string;
   @ViewChild('viewer') viewerRef: ElementRef;
@@ -40,14 +37,16 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
     private navpar: NavParams,
     private route: ActivatedRoute,
     private docApi: DocumentAPIService,
-    private workFlowService: WorkFlowService,
+    private workflowService: WorkFlowService,
     private router: Router,
+    private userApiService: UserAPIService
   ) {}
 
   async ngOnInit() {
     await this.route.params.subscribe((data) => {
-      this.documentId = data['id'];
-      this.docName = data['documentname'];
+      this.workflowId = data['workflowId'];
+      //this.docName = data['documentname'];
+      this.workflowStatus = data['status'];
       this.userEmail = data['userEmail'];
     });
   }
@@ -60,8 +59,11 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   });
 
   async ngAfterViewInit(): Promise<void>{
-    await this.docApi.getDocument(this.documentId, async (response) => {
+    await this.workflowService.retrieveDocument(this.workflowId, async (response) => {
+      console.log(response);
       if (response) {
+        this.documentMetadata = response.data.metadata;
+        this.docName = this.documentMetadata.name;
         this.srcFileBase64 = response.data.filedata.Body.data;
         const arr = new Uint8Array(response.data.filedata.Body.data);
         const blob = new Blob([arr], {type: 'application/pdf'});
@@ -73,6 +75,9 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
           path: './../../../assets/lib',
           annotationUser: this.userEmail
         }, this.viewerRef.nativeElement).then(instance =>{
+
+            this.annotationManager = instance.Core.annotationManager;
+            this.documentViewer = instance.Core.documentViewer;
 
             instance.UI.loadDocument(blob, {filename: this.docName});
             instance.UI.disableElements(['ribbons']);
@@ -86,32 +91,43 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
                 }
               });
          });
+
+          instance.UI.setHeaderItems(header =>{
+            header.push({
+              type: 'actionButton',
+              img: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>',
+              onClick: async () => {
+                const xfdfString = await  instance.Core.annotationManager.exportAnnotations();
+                 await this.acceptDocument();
+              }
+            });
+          });
+
+            instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
+              //For now, to work around not having full api functions with the free version of PDFTron
+              //We disable the action areas from showing through a check of the workflow status
+              //This is to ensure pringint of the document does not include action areas.
+              console.log(this.workflowStatus);
+              if(this.workflowStatus !== 'Complete') //TODO: swap with enum
+                instance.Core.annotationManager.importAnnotations(response.data.annotations);
+            });
+
         });
       }else {
         //TODO: style this ErrorOccurredPopup
-        const a = await this.modalCtrl.create({
-          component: ErrorOccurredComponent,
-          componentProps: {
-            title: 'An error occurred',
-            message: 'Please try again later'
-          },
-        });
 
-        await (await a).present();
-        (await a).onDidDismiss().then(async (data) => {
-        });
+        await this.userApiService.displayPopOver('Oops','An unexpected error occurred. Please try again later');
+        // const a = await this.modalCtrl.create({
+        //   component: ErrorOccurredComponent,
+        //   componentProps: {
+        //   },
+        //   cssClass: 'errorModalClass'
+        // });
+
+        // await (await a).present();
+        // (await a).onDidDismiss().then(async (data) => {
+        // });
       }
-    });
-    //TODO: style this ErrorOccurredPopup
-    const a = await this.modalCtrl.create({
-      component: ErrorOccurredComponent,
-      componentProps: {
-      },
-      cssClass: 'errorModalClass'
-    });
-
-    await (await a).present();
-    (await a).onDidDismiss().then(async (data) => {
     });
   }
 
@@ -127,25 +143,50 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
     link.click();
     link.remove();
   }
-
-  back() {
-    this.router.navigate(['home']);
+  async back() {
+    await this.userApiService.displayPopOverWithButtons('Go back','Are you sure you want to go back? Any unsaved changes will be lost.', (response) =>{
+      if(response.data.confirm === true)
+        this.router.navigate(['home']);
+    });
   }
 
-  toggleAnnotations(annotationManager){
+  async acceptDocument(){
+    await this.userApiService.displayPopOverWithButtons('Accept Phase','Do you accept this phase as complete?', async (response) =>{
+      await this.updateDocumentAnnotations(await this.annotationManager.exportAnnotations());
 
+      const data = await this.documentViewer.getDocument().getFileData({});
+      const arr = new Uint8Array(data);
+      const blob = new Blob([arr], { type: 'application/pdf' });
+      const file = new File([blob], this.documentMetadata.name);
+
+      await this.workflowService.updatePhase(this.workflowId, response.data.confirm, file, (response2) => {
+        console.log(response2);
+      });
+    });
+   }
+
+  toggleAnnotations(annotationManager){
+    console.log("TToggling annotations");
     this.showAnnotations = !this.showAnnotations;
     const annotations = annotationManager.getAnnotationsList();
     if(this.showAnnotations){
       //annotManager.showAnnotations(annotations); //use if you wihs to hide the associated comments that go with an annotation as well as the annotation.
       annotations.forEach(annot =>{
-        annot.Hidden = false;
+        this.annotationSubjects.forEach(a =>{
+          if(a === annot.Subject)
+            annot.Hidden = false;
+        });
+
       });
     }
     else{
       //annotManager.hideAnnotations(annotations);
       annotations.forEach(annot =>{
-        annot.Hidden = true;
+        this.annotationSubjects.forEach(a =>{
+          if(a === annot.Subject)
+            annot.Hidden = true;
+        });
+
       });
     }
     annotationManager.drawAnnotationsFromList(annotations);
@@ -164,5 +205,32 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
       } else {
       }
     });
+  }
+  removeActionAreasFromAnnotations(){
+
+    const toDelete = [];
+    this.annotationManager.getAnnotationsList().forEach(annot =>{
+      this.annotationSubjects.forEach(a =>{
+        if(a === annot.Subject) {
+          toDelete.push(annot);
+        }
+      });
+    });
+    this.annotationManager.deleteAnnotations(toDelete);
+  }
+
+  async updateDocumentAnnotations(annotationsString){
+      console.log("Updating the annotations of this document");
+      this.workflowService.displayLoading();
+      await this.workflowService.updateCurrentPhaseAnnotations(this.workflowId, annotationsString, (response)=>{
+        console.log(response);
+
+        if(response.status === "success"){
+          this.userApiService.displayPopOver("Success", "Your response has been saved");
+          this.router.navigate(['home']);
+        }
+
+        this.workflowService.dismissLoading();
+      });
   }
 }

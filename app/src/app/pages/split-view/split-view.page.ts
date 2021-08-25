@@ -18,7 +18,6 @@ export class SplitViewPage implements OnInit {
   }
 
   logout(){
-    console.log('herre');
     this.userServices.logout();
     this.router.navigate(['login']);
   }
