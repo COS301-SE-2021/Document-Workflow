@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import { AuthenticationError, RequestError } from "../error/Error";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
+import { isStrongPassword, isEmail } from "validator";
 
 @injectable()
 export default class UserService {
@@ -89,28 +90,49 @@ export default class UserService {
         if (req.body.length === 0 || !req.body || !req.files.signature.data) {
             throw new RequestError("Missing required information to register user");
         }
-        try {
-            const usr: UserProps = req.body;
-            usr.signature = req.files.signature.data;
-            usr.validateCode = crypto.randomBytes(64).toString('hex');
-            usr.password = await this.getHashedPassword(usr.password);
-            usr.ownedWorkflows = [];
-            usr.workflows = [];
-            usr.workflowTemplates = [];
-            //const user: UserProps = await this.userRepository.postUser(usr);
-            //const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
-            //usr.tokens = [token];
-            const user: UserProps = await this.userRepository.saveUser(usr);
-            //const response = await this.userRepository.putUser(usr);
-            if(user){
-                await this.sendVerificationEmail(usr.email, usr.validateCode)//,
-                return user;
-            }
-        } catch (err) {
-            console.error(err);
-            throw new RequestError("Could not register user");
+
+        if(!isEmail(req.body.email)){
+            throw new RequestError("The given email address is invalid.");
         }
+
+        const checkForUser = await this.getUserByEmail(req.body.email);
+        if(checkForUser){
+            throw new RequestError("The given email address already has a Document Workflow Account");
+        }
+
+        if(req.body.password !== req.body.confirmPassword){
+            throw new RequestError("The two passwords do not match.");
+        }
+
+        if(!isStrongPassword(req.body.password)){
+            throw new RequestError("Password is not strong enough. Ensure that it is at least 8 characters long with one uppercase character, lowercase character, number and special character");
+        }
+
+        const usr: UserProps = req.body;
+        usr.signature = req.files.signature.data;
+        usr.validateCode = crypto.randomBytes(64).toString('hex');
+        usr.password = await this.getHashedPassword(usr.password);
+        usr.ownedWorkflows = [];
+        usr.workflows = [];
+        usr.workflowTemplates = [];
+        //const user: UserProps = await this.userRepository.postUser(usr);
+        //const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
+        //usr.tokens = [token];
+        const user: UserProps = await this.userRepository.saveUser(usr);
+        //const response = await this.userRepository.putUser(usr);
+        if(user){
+            await this.sendVerificationEmail(usr.email, usr.validateCode)//,
+            return user;
+        }
+
     }
+
+    /**
+     * This function will be used to ensure that the email address given in the register user request
+     * is an actual email address and not some random string.
+     * @param email
+     * //TODO: look at a smarter way of validating. Instead of Regex maybe try sending an email or checking if email account exists.
+     */
 
     async verifyUser(req): Promise<any> {
         const redirect_url = "http://localhost:3000/login-register";

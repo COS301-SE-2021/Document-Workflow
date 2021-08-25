@@ -147,7 +147,7 @@ export class LoginRegisterPage implements OnInit {
             password: userdata.password,
           };
 
-          this.userAPIService.register(user, this.file, (response) => {
+          this.userAPIService.register(user, userdata.confirmPassword, this.file, (response) => {
             if (response.status === 'success') {
               this.userAPIService.displayPopOver(
                 'Successfully created new user account',
@@ -155,11 +155,6 @@ export class LoginRegisterPage implements OnInit {
               );
 
               this.router.navigate(['login']);
-            } else {
-              this.userAPIService.displayPopOver(
-                'Failed to make a new account:',
-                response.message
-              );
             }
           });
         }

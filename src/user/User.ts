@@ -47,7 +47,8 @@ export const userSchema = createSchema({
     validateCode: Type.string(),
     //tokens: Type.array().of(tokenSchema),
     ownedWorkflows: [{type:String}],
-    workflows: [{type: String}]
+    workflows: [{type: String}],
+    workflowTemplates: [{type: String}]
 });
 
 export const User = typedModel('User', userSchema);
