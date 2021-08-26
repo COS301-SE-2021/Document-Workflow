@@ -3,7 +3,7 @@ import { injectable } from "tsyringe";
 import UserService from "./UserService";
 import { UserProps } from "./User";
 import sanitize from "../security/Sanitize";
-import {RequestError, ServerError} from "../error/Error";
+import { RequestError, ServerError } from "../error/Error";
 import { handleErrors } from "../error/ErrorHandler";
 import Authenticator from "../security/Authenticate";
 
@@ -11,9 +11,12 @@ import Authenticator from "../security/Authenticate";
 export default class UserController{
     private readonly router: Router;
 
+
     constructor(private userService: UserService, private authenticationService: Authenticator) {
         this.router = new Router();
     }
+
+    auth = this.authenticationService.Authenticate;
 
     async getUsersRoute(): Promise<UserProps[]> {
         try{
@@ -57,9 +60,12 @@ export default class UserController{
         }
     }
 
-    async loginUserRoute(request): Promise<UserProps> {
+    async loginUserRoute(req): Promise<String> {
+        if(!req.body.email || !req.body.password){
+            throw new RequestError("Could not log in");
+        }
         try {
-            return await this.userService.loginUser(request);
+            return await this.userService.loginUser(req.body.email, req.body.password);
         }
         catch(err){
             console.error(err);
@@ -76,14 +82,19 @@ export default class UserController{
         }
     }
 
-    /*async logoutUserRoute(request): Promise<UserProps> {
+    async logoutUserRoute(req): Promise<Boolean> {
         try{
-            return await this.userService.logoutUser(request);
+            const { headers } = req;
+            if(headers.authorization){
+                const token = headers.authorization.split(" ")[1];
+                if(token) return await this.userService.logoutUser(token);
+            }
+            return false;
         }
         catch(err){
             throw new ServerError(err.toString());
         }
-    }*/
+    }
 
     async deleteUserRoute(request): Promise<UserProps> {
         try{
@@ -137,12 +148,12 @@ export default class UserController{
             try {
                 res.status(200).json(await this.getUserDetails(req));
             } catch(err){
-                console.log("Fetcing user details had an error");
+                console.log("Fetching user details had an error");
                 await handleErrors(err,res);
             }
         });
 
-        this.router.get("/find/:id", this.authenticationService.Authenticate , async (req, res) => {
+        this.router.get("/findById/:id", this.authenticationService.Authenticate , async (req, res) => {
             try {
                 const user = await this.getUserByIdRoute(req);
                 if(user) res.status(200).json(user);
@@ -152,7 +163,7 @@ export default class UserController{
             }
         });
 
-        this.router.get("/find/:email", async (req, res) => {
+        this.router.get("/findByEmail/:email", async (req, res) => {
             try {
                 const user = await this.getUserByEmailRoute(req);
                 if(user) res.status(200).json(user);
@@ -172,16 +183,15 @@ export default class UserController{
             }
         });
 
-        /*this.router.post("/logout", this.authenticationService.Authenticate, async (req,res) => {
+        this.router.delete("/logout", this.auth, async (req,res) => {
             try{
-                const user = await this.logoutUserRoute(req);
-                if(user) res.status(200).send("Successfully logged out");
+                if(await this.logoutUserRoute(req)) res.status(200).json({status: "success", data: {}, message: "Successfully logged out"});
                 else res.status(400).send("User could not be logged out");
             }
             catch(err){
                 await handleErrors(err,res);
             }
-        });*/
+        });
 
         this.router.post("/register", async (req,res) => {
             try {
@@ -193,8 +203,14 @@ export default class UserController{
             }
         });
 
-        this.router.post("/authenticate", this.authenticationService.Authenticate, async (req,res) =>{ //This route is used by the front end to forbid access to certain pages.
-            res.status(200).json({status:"success", data:{}, message:""});
+        //This route is used by the front end to forbid access to certain pages.
+        this.router.post("/authenticate", this.authenticationService.Authenticate, async (req,res) =>{
+            try{
+                res.status(200).json({status:"success", data:{}, message:""});
+            } catch(err){
+                await handleErrors(err, res);
+            }
+
         });
 
         this.router.put("/create/:id", sanitize, this.authenticationService.Authenticate , async (req, res) => {
