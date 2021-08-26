@@ -18,7 +18,7 @@ export default class DocumentService {
         }
     }
 
-    async uploadDocument(file: File, fileData: Buffer, id: ObjectId): Promise<ObjectId>{
+    async saveDocument(file: File, fileData: Buffer, id: ObjectId): Promise<ObjectId>{
         try{
             const doc = new Document({
                 name: file.name,
