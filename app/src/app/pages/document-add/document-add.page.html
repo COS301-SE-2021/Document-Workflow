@@ -136,7 +136,13 @@
         <ion-col sizeXs='12' sizeSm='6' *ngIf='template'>
           <ion-item>
             <ion-label position='floating'>Template Name </ion-label>
-            <ion-input formControlName="template" inputmode="text"></ion-input>
+            <ion-input formControlName="templateName" inputmode="text"></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col sizeXs='12' sizeSm='6' *ngIf='template'>
+          <ion-item>
+            <ion-label position='floating'>Template Description </ion-label>
+            <ion-textarea formControlName="templateDescription" inputmode="text"></ion-textarea>
           </ion-item>
         </ion-col>
         <ion-col sizeXs='12' sizeSm='6'>
