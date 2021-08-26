@@ -2,8 +2,6 @@ import { Document, DocumentProps } from "./Document";
 import * as AWS from 'aws-sdk';
 import { ObjectId, Types } from "mongoose";
 import { CloudError, DatabaseError, ServerError } from "../error/Error";
-import * as multer from 'multer';
-import * as multerS3 from 'multer-s3';
 
 const s3 = new AWS.S3({
     region: process.env.AWS_REGION,
@@ -18,8 +16,8 @@ export default class DocumentRepository {
        To update a document/create a new phase in the S3 bucket see the 'putDocument' function
      */
     //TODO: when saving documents to s3, use promises instead of callbacks
-    async postDocument(doc: DocumentProps, file): Promise<ObjectId> {
-        console.log(file);
+    async saveDocument(doc: DocumentProps, fileData: Buffer, fileName: String): Promise<ObjectId> {
+        //console.log(file);
         try{
             const newDoc = new Document(doc);
             await newDoc.save();
