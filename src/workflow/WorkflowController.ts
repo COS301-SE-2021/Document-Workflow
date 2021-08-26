@@ -80,8 +80,12 @@ export default class WorkflowController {
             }));
         })
 
+        try{
+            return await this.workflowService.createWorkFlow(workflow, req.files.document, convertedPhases);
 
-        return await this.workflowService.createWorkFlow(workflow, req.files.document, convertedPhases);
+        } catch(err) {
+            throw new ServerError(err.toString());
+        }
     }
 
     async getWorkFlowDetails(req):Promise<any>{

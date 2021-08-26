@@ -333,18 +333,14 @@ export class WorkflowPage implements OnInit {
   }
 
   async getWorkflow() {
-    const id = '611661feb394bb1d4cc91f3e';
+    const id = '61191eb89da4034090bb3d4f';
     await this.workFlowService.retrieveDocument(id, (response) => {
       console.log(response);
     });
   }
 
   debug(num: number) {
-    if (num === 1) {
-      this.workFlowService.displayLoading();
-    } else {
-      this.workFlowService.dismissLoading();
-    }
+    this.getWorkflow();
   }
 
   showAll() {

@@ -31,8 +31,6 @@ import * as Cookies from 'js-cookie';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 import { verifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
 import WebViewer, {Core} from '@pdftron/webviewer';
-import 'convertapi-js';
-
 
 @Component({
   selector: 'app-document-add',
@@ -64,6 +62,8 @@ export class DocumentAddPage implements OnInit {
   user: User;
   ownerEmail: any;
   sizeMe: boolean;
+
+  template: boolean = false;
 
   showPhase: boolean[] = [];
 
@@ -411,5 +411,20 @@ export class DocumentAddPage implements OnInit {
 
   toggleVisibility(i: number){
     this.showPhase[i] = !this.showPhase[i];
+  }
+
+  addTemplate(){
+    this.template = !this.template;
+    if(this.template === false){
+      this.removeTemplate();
+    }else{
+      this.workflowForm.addControl('template', this.fb.group({
+        template: ['', [Validators.required]]
+      }));
+    }
+  }
+
+  removeTemplate(){
+    this.workflowForm.removeControl('template');
   }
 }
