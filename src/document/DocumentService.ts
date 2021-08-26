@@ -19,7 +19,7 @@ export default class DocumentService {
     }
 
     async uploadTemplateDocumentToCloud(file: File, workflowTemplateId){
-
+        await this.documentRepository.saveDocumentToS3(file, 'templateFiles/' + workflowTemplateId + '/' + file.name);
     }
 
     async uploadDocument(file: File, id: ObjectId): Promise<ObjectId>{

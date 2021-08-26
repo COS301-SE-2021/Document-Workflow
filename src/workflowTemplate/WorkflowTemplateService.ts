@@ -55,7 +55,8 @@ export default class WorkflowTemplateService{
      * @param templateId
      */
     async getWorkflowTemplateData(templateId){
-        const template = await this.workflowTemplateRepository.findWorkflowTemplate(templateId);
+        let template = await this.workflowTemplateRepository.findWorkflowTemplate(templateId);
+        //TODO: retrieve file and add it to the tamplate object
         return template;
     }
 
