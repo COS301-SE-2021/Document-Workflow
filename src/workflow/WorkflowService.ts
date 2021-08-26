@@ -52,7 +52,7 @@ export default class WorkflowService{
             console.log("Workflow saved, saving document");
 
             //Step 3 save document with workflowId:
-            const documentId = await this.documentService.uploadDocument(file, fileData, workflowId);
+            const documentId = await this.documentService.saveDocument(file, fileData, workflowId);
             console.log("THE DOCUMENT HAS BEEN CREATED AND THE WORKFLOW SHOULD HAVE THE DOCUMENT ID NOW!!!");
             console.log(workflow);
             console.log("Document saved, updating workflow");
@@ -214,12 +214,12 @@ export default class WorkflowService{
     }
 
 
-    async getUsersWorkflowData(usr) {
+    async getUsersWorkflowData(usrId) {
 
         //we have the user's email and id, but we need to fetch this user from the UserService
         //So that we have the ids of workflows they are a part of, and that they
         try {
-            const user = await this.userService.getUserById(usr._id);
+            const user = await this.userService.getUserById(usrId);
             console.log("getting the users workflow data");
             console.log(user);
             let ownedWorkflows = [];
@@ -260,7 +260,7 @@ export default class WorkflowService{
         }
     }
 
-    async updatePhase(user, workflowId, accept, document) {//NOTE: document will be null in the event that a viewer is updating the phase
+    async updatePhase(userEmail, workflowId, accept, document) {//NOTE: document will be null in the event that a viewer is updating the phase
 
         //first, retrieve the workflow based on the workflow id
         console.log("Updating a phase of a document");
@@ -279,7 +279,7 @@ export default class WorkflowService{
             let permission = '';
             let userFound = false;
             for(let i=0; i<phaseUsers.length; ++i){
-                if(phaseUsers[i].user === user.email){
+                if(phaseUsers[i].user === userEmail){
                     userFound = true;
                     permission = phaseUsers[i].permission;
                     phaseUsers[i].accepted = accept;
