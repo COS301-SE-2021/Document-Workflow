@@ -16,6 +16,7 @@ import {
   AbstractControlOptions,
 } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
+import { IonicSafeString } from '@ionic/core';
 import { Router } from '@angular/router';
 import {
   ActionSheetController,
@@ -61,6 +62,8 @@ export class DocumentAddPage implements OnInit {
   user: User;
   ownerEmail: any;
   sizeMe: boolean;
+
+  template: boolean = false;
 
   showPhase: boolean[] = [];
 
@@ -285,9 +288,9 @@ export class DocumentAddPage implements OnInit {
     this.workflowForm.get('workflowFile').setValue(this.file);
     this.blob = new Blob([this.file], { type: 'application/pdf;base64' });
     console.log(this.blob.arrayBuffer());
-    const obj = URL.createObjectURL(this.blob);
+    const obj = new IonicSafeString(URL.createObjectURL(this.blob));
     console.log(obj);
-    this.srcFile = this.sanitizer.bypassSecurityTrustResourceUrl(obj);
+    this.srcFile = obj;
     this.addFile = true;
 
     this.displayWebViewer(this.blob);
@@ -408,5 +411,20 @@ export class DocumentAddPage implements OnInit {
 
   toggleVisibility(i: number){
     this.showPhase[i] = !this.showPhase[i];
+  }
+
+  addTemplate(){
+    this.template = !this.template;
+    if(this.template === false){
+      this.removeTemplate();
+    }else{
+      this.workflowForm.addControl('template', this.fb.group({
+        template: ['', [Validators.required]]
+      }));
+    }
+  }
+
+  removeTemplate(){
+    this.workflowForm.removeControl('template');
   }
 }

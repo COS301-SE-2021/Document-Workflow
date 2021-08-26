@@ -6,7 +6,8 @@ import UserService from "../user/UserService";
 import {PhaseProps, PhaseStatus} from "../phase/Phase";
 import { ObjectId } from "mongoose";
 import { PhaseService } from "../phase/PhaseService";
-import {AuthorizationError, RequestError, ServerError} from "../error/Error";
+import {RequestError, ServerError} from "../error/Error";
+import encryption from "../crypto/encryption";
 
 @injectable()
 export default class WorkflowService{
@@ -16,7 +17,8 @@ export default class WorkflowService{
         private workflowRepository: WorkFlowRepository,
         private documentService: DocumentService,
         private userService: UserService,
-        private phaseService: PhaseService) {
+        private phaseService: PhaseService,
+        private encrypt: encryption) {
     }
 
     /**
@@ -29,6 +31,7 @@ export default class WorkflowService{
      */
     async createWorkFlow(workflow: WorkflowProps, file: File, phases: PhaseProps[]): Promise<any>{
 
+        console.log("In the createWorkFlow function");
         try {
             //Before any creation of objects takes place, checks must be done on the inputs to ensure that they are valid.
             const areValid = await this.arePhasesValid(phases);
@@ -76,23 +79,15 @@ export default class WorkflowService{
     //---------------------------------------Create Workflow Helper functions----------------------------------
 
     async arePhasesValid(phases):Promise<boolean>{
+        //TODO: possibly add checks for a signer/signers
         console.log("Checking if phases are valid");
-
+        console.log(typeof  phases);
         for(let i=0; i<phases.length; ++i) {
-
-            if(!phases[i].users){
-                throw new RequestError("Could not create new workflow: phase " +String(i +1) + " does not have any specified users");
-            }
+            console.log("Checking Phase: ", i+1);
+            console.log(phases[i]);
             const usrs = JSON.parse(phases[i].users);
-            if (!await this.checkUsersExist(usrs)) {
+            if (!await this.checkUsersExist(usrs))
                 return false;
-            }
-            if(!phases[i].description){
-                throw new RequestError("Could not create new workflow: phase " + String(i + 1) + " does not have a valid description");
-            }
-            if(!phases[i].annotations){
-                throw new RequestError("Could not create new workflow: phase " + String(i+1) + " does not have any action areas");
-            }
         }
 
         return true;
@@ -103,11 +98,8 @@ export default class WorkflowService{
         for(let i=0; i<users.length; ++i){
             console.log("Checking if user ", users[i], " exists");
             const user = await this.userService.getUserByEmail(users[i].user);
-            if(user === undefined || user === null){
-                throw new RequestError("Could not create new workflow: user " + users[i].user + " does not exist");
+            if(user === undefined || user === null)
                 return false;
-            }
-
         }
 
         return true;
@@ -226,15 +218,11 @@ export default class WorkflowService{
         await this.userService.updateUserWorkflows(user);
     }
 
-    /***
-     * Note that the annotations string for each phase is deleted to reduce the amount of data that needs to be sent
-     * through (since these strings are quite long and unneeded by the functions that call this endpoint).
-     * @param usr
-     */
+
     async getUsersWorkflowData(usr) {
 
         //we have the user's email and id, but we need to fetch this user from the UserService
-        //So that we have the ids of workflows they are a part of
+        //So that we have the ids of workflows they are a part of, and that they
         try {
             const user = await this.userService.getUserById(usr._id);
             console.log("getting the users workflow data");
@@ -242,24 +230,27 @@ export default class WorkflowService{
             let ownedWorkflows = [];
             let workflows = [];
 
-            for(let i=0; i<user.ownedWorkflows.length; ++i){
+            for(let i=0; i<user.ownedWorkflows.length; ++i){ //I couldnt find a prettier way of iterating through this, other methods did not work
                 console.log(user.ownedWorkflows[i])
                 let workflow = await this.workflowRepository.getWorkflow(String(user.ownedWorkflows[i]));
-                if(!workflow){
-                    throw new ServerError("Could not retrieve workflow data for a workflow that does not exist");
+                let phases = [];
+
+                for(let k=0; k<workflow.phases.length; ++k){
+                    phases.push(await this.phaseService.getPhaseById(workflow.phases[k]));
                 }
-                let phases = await this.getPhasesInformationForWorkflow(workflow);
                 workflow.phases = phases;
                 ownedWorkflows.push(workflow);
             }
 
             for(let i=0; i<user.workflows.length; ++i)
             {
+                console.log(user.workflows[i])
                 let workflow = await this.workflowRepository.getWorkflow(String(user.workflows[i]));
-                if(!workflow){
-                    throw new ServerError("Could not retrieve workflow data for a workflow that does not exist");
+                let phases = [];
+
+                for(let k=0; k<workflow.phases.length; ++k){
+                    phases.push(await this.phaseService.getPhaseById(workflow.phases[k]));
                 }
-                let phases = await this.getPhasesInformationForWorkflow(workflow);
                 workflow.phases = phases;
 
                 workflows.push(workflow);
@@ -272,21 +263,6 @@ export default class WorkflowService{
             console.log(e);
             throw e;
         }
-    }
-
-    async getPhasesInformationForWorkflow(workflow) {
-        let phases = [];
-
-        for(let k=0; k<workflow.phases.length; ++k){
-            let phase = await this.phaseService.getPhaseById(workflow.phases[k])
-            if(!phase){
-                throw new ServerError("The input workflow is malformed");
-            }
-
-            phase.annotations = "";
-            phases.push(phase);
-        }
-        return phases;
     }
 
     async updatePhase(user, workflowId, accept, document) {//NOTE: document will be null in the event that a viewer is updating the phase
@@ -355,7 +331,7 @@ export default class WorkflowService{
             throw new ServerError(err);
         }
     }
-
+    //my cat walked across my keyboard while I was typing this out. If there are any bugs, she is too blame.
     isPhaseComplete(phase){
         console.log("Checking if phase is completed");
         console.log(phase.users);
@@ -390,6 +366,7 @@ export default class WorkflowService{
             console.log("REquesting user is a member of this workflow");
 
             let data = await this.documentService.retrieveDocument(workflow.documentId, workflowId, workflow.currentPhase);
+            console.log(this.encrypt.encyrpt(data,workflow.workflowId, userEmail));
             const phase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
             data.annotations = phase.annotations;
             return {status: 'success', data: data, message:''};
@@ -410,13 +387,14 @@ export default class WorkflowService{
      */
     async isUserMemberOfWorkflow(workflow, email):Promise<boolean>{
 
+        console.log('Checking if user: ', email, 'is a member of workflow ', workflow._id);
         if(workflow.ownerEmail === email)
             return true;
 
         for(let i=0; i<workflow.phases.length; ++i){
             const phase = await this.phaseService.getPhaseById(workflow.phases[i]);
             const phaseUsers = JSON.parse(phase.users);
-
+            console.log(phaseUsers);
             for(let  k=0; k<phaseUsers.length; ++k){
                 if(phaseUsers[k].user == email)
                     return true;
@@ -435,21 +413,24 @@ export default class WorkflowService{
      * @param annotations
      */
     async updatePhaseAnnotations(userEmail, workflowId, annotations) {
+        console.log("Updating the annotations of a phase");
+        try{
+            const workflow = await this.workflowRepository.getWorkflow(workflowId);
+            if(!await this.isUserMemberOfWorkflow(workflow, userEmail)){
+                console.log("REquesting user is NOT a member of this workflow");
+                return {status:"error", data:{}, message:"You are not a member of this workflow"};
+            }
+            let phase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
+            phase.annotations = annotations;
 
-        const workflow = await this.workflowRepository.getWorkflow(workflowId);
-        if(!workflow){
-            throw new RequestError("Workflow does not exist");
+            await this.phaseService.updatePhase(phase);
+
+            return {status:'success', data:{}, message:''};
         }
-        if(!await this.isUserMemberOfWorkflow(workflow, userEmail)) {
-            throw new AuthorizationError("You do not have privileges to work on this workflow.");
+        catch(err){
+            console.log(err);
+            throw new ServerError("Could not update the annotations of the phase");
         }
-        let phase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
-        phase.annotations = annotations;
-
-        await this.phaseService.updatePhase(phase);
-
-        return {status:'success', data:{}, message:''};
-
     }
 
     /**
@@ -462,14 +443,17 @@ export default class WorkflowService{
      */
     async retrieveWorkflow(workflowId, email) {
 
-        const workflow = await this.workflowRepository.getWorkflow(workflowId);
-        if(!workflow){
-            throw new RequestError("Workflow does not exist");
+        try {
+            const workflow = await this.workflowRepository.getWorkflow(workflowId);
+            if(! await this.isUserMemberOfWorkflow(workflow, email)){
+                return {status:"error", data:{}, message: ""};
+            }
+            return await this.getWorkFlowById(workflowId);
         }
-        if(! await this.isUserMemberOfWorkflow(workflow, email)){
-            throw new AuthorizationError("You do not have the privileges to view this workflow");
+        catch(err){
+            console.log(err);
+            throw new ServerError("Could not retrieve workflow");
         }
-        return await this.getWorkFlowById(workflowId);
     }
 
     /**
@@ -478,72 +462,77 @@ export default class WorkflowService{
      * @param convertedPhases
      * @param requestingUser
      * @param workflowId
-     * //TODO: break up the cases for each phase into their own function.
      */
     async editWorkflow(workflowDescrip, workflowName, convertedPhases, requestingUser, workflowId) {
         console.log("Attempting to update a workflow");
+        ;
 
-        //1) Retrieve the workflow that we are going to be editing based on the input workflowId
-        const workflowOriginal = await this.workflowRepository.getWorkflow(workflowId);
-        if(!workflowOriginal){
-            throw new RequestError("Workflow does not exist");
-        }
+        try{
+            //1) Retrieve the workflow that we are going to be editing based on the input workflowId
+            const workflowOriginal = await this.workflowRepository.getWorkflow(workflowId);
+            console.log(workflowOriginal);
+            console.log(convertedPhases);
 
-        //2) Check that the requesting user has the correct permissions to edit this workflow
-        if(! workflowOriginal.ownerEmail === requestingUser){
-            throw new AuthorizationError("You do not have the privileges of editing this workflow.");
-        }
+            //2) Check that the requesting user has the correct permissions to edit this workflow
+            if(! workflowOriginal.ownerEmail === requestingUser)
+                return {status: "error", data: {}, message: "Only the workflow owner can edit the workflow"};
 
-        //3) Only phases up to and including the current phase can be edited. We extract these ids from the workflow.phases
-        const preservePhasesIds = workflowOriginal.phases.slice(0, workflowOriginal.currentPhase +1); //+1 since slice does not include the end index
-        //4) check that the user is not attempting to edit any of the phases they may not edit
-        if(!this.allPhasesCanBeEdited(convertedPhases, preservePhasesIds)){
-            throw new RequestError("Attempting to edit phases that have already been completed or are currently in progress");
-        }
-
-        //5) For each phase, either create, edit, or delete.
-        let addPhaseIds = [];
-        for(let i=0; i<convertedPhases.length; ++i){
-            if(convertedPhases[i].status === PhaseStatus.EDIT){
-                console.log("Updating an existing phase with id:, ", convertedPhases[i]._id);
-                //TODO: to make this faster and avoid fetching then saving phase, change the update phase method in the phaseRepo
-                //Right now that function requires a phase to be passed through
-                const p = await this.phaseService.getPhaseById(convertedPhases[i]._id)
-                console.log(p);
-                p.description = convertedPhases[i].description;
-                p.users = convertedPhases[i].users;
-                p.annotations = convertedPhases[i].annotations;
-                p.status = PhaseStatus.PENDING;
-                addPhaseIds.push(convertedPhases[i]._id);
-
-                await this.phaseService.updatePhase(p);
+            //3) Only phases up to and including the current phase can be edited. We extract these ids from the workflow.phases
+            const preservePhasesIds = workflowOriginal.phases.slice(0, workflowOriginal.currentPhase +1); //+1 since slice does not include the end index
+            //4) check that the user is not attempting to edit any of the phases they may not edit
+            if(!this.allPhasesCanBeEdited(convertedPhases, preservePhasesIds)){
+                return {status:"error", data:{}, message:""};
             }
-            else if(convertedPhases[i].status === PhaseStatus.CREATE){
-                console.log("Creating an entirely new phase");
-                delete convertedPhases[i]['_id'];
-                convertedPhases[i].status = PhaseStatus.PENDING;
-                console.log(convertedPhases[i]);
-                addPhaseIds.push(await this.phaseService.createPhase(convertedPhases[i]));
+
+            console.log(preservePhasesIds);
+
+            //5) For each phase, either create, edit, or delete.
+            let addPhaseIds = [];
+            for(let i=0; i<convertedPhases.length; ++i){
+                if(convertedPhases[i].status === PhaseStatus.EDIT){
+                    console.log("Updating an existing phase with id:, ", convertedPhases[i]._id);
+                    //TODO: to make this faster and avoid fetching then savinf phase, change the update phase method in the phaseRepo
+                    //Right now that function requires a phase to be passed through
+                    const p = await this.phaseService.getPhaseById(convertedPhases[i]._id)
+                    console.log(p);
+                    p.description = convertedPhases[i].description;
+                    p.users = convertedPhases[i].users;
+                    p.annotations = convertedPhases[i].annotations;
+                    p.status = PhaseStatus.PENDING;
+                    addPhaseIds.push(convertedPhases[i]._id);
+
+                    await this.phaseService.updatePhase(p);
+                }
+                else if(convertedPhases[i].status === PhaseStatus.CREATE){
+                    console.log("Creating an entirely new phase");
+                    delete convertedPhases[i]['_id'];
+                    convertedPhases[i].status = PhaseStatus.PENDING;
+                    console.log(convertedPhases[i]);
+                    addPhaseIds.push(await this.phaseService.createPhase(convertedPhases[i]));
+                }
+                else if(convertedPhases[i].status === PhaseStatus.DELETE){
+                    console.log("Deleting a phase with id: ", convertedPhases[i]._id);
+                    await this.phaseService.deletePhaseById(convertedPhases[i]._id);
+                }
+                else{
+                    //TODO: throw error
+                }
             }
-            else if(convertedPhases[i].status === PhaseStatus.DELETE){
-                console.log("Deleting a phase with id: ", convertedPhases[i]._id);
-                await this.phaseService.deletePhaseById(convertedPhases[i]._id);
-            }
-            else{
-                //TODO: throw error
-            }
+
+            workflowOriginal.phases = preservePhasesIds.concat(addPhaseIds);
+            await this.workflowRepository.updateWorkflow(workflowOriginal);
+
+            return {status: "success", data: {}, message: ''};
         }
-
-        workflowOriginal.phases = preservePhasesIds.concat(addPhaseIds);
-        await this.workflowRepository.updateWorkflow(workflowOriginal);
-
-        return {status: "success", data: {}, message: ''};
-
+        catch(err){
+            console.log(err);
+            throw err;
+        }
     }
 
     /**
      * This function checks whether any of the phases to be edited occur in the array of phase ids that may
-     * not be edited.
+     * noot be edited.
      * @param phases
      * @param preservePhases
      */
@@ -570,60 +559,69 @@ export default class WorkflowService{
      */
     async revertWorkflowPhase(workflowId, email) {
         console.log("Attempting to revert the phase of a workflow");
+        try{
 
-        let workflow = await this.workflowRepository.getWorkflow(workflowId);
-        if(!workflow){
-            throw new RequestError("Workflow does not exist");
+            let workflow = await this.workflowRepository.getWorkflow(workflowId);
+            console.log(workflow);
+
+            if(workflow.ownerEmail !== email){
+                return {status: "error", data: {}, message: "Insufficient privileges to revert a workflow phase"};
+            }
+
+            //There are two phases when it comes to reverting a phase
+            //1) The currentPhase is the start phase
+            //2) The currentPhase is not the start phase
+            //If the current phase is the start phase, all that need be done is fetch the original document from the S3
+            //Bucket and then save it as the document for phase0
+            //If the current phase is not the start phase then we set the currentPhase to be one less than it is
+            //In both cases, the acceptance values of phase users need to change.
+
+            if(workflow.currentPhase === 0){
+                let currentPhase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
+                console.log("Setting currentPhase acceptances to false");
+                await this.phaseService.resetPhaseAndSave(currentPhase, PhaseStatus.INPROGRESS);
+                await this.documentService.resetFirstPhaseDocument(workflowId, String(workflow.documentId));
+            }
+            else{
+                //reset the acceptance values for members of the current phase and new phase
+                let currentPhase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
+                console.log("Setting currentPhase acceptances to false");
+                await this.phaseService.resetPhaseAndSave(currentPhase, PhaseStatus.PENDING);
+                console.log("Setting new phase acceptances to false");
+                let newPhase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase -1]);
+                await this.phaseService.resetPhaseAndSave(newPhase, PhaseStatus.INPROGRESS);
+
+                workflow.currentPhase = workflow.currentPhase - 1; //set the currentPhase to be one prior
+            }
+
+            workflow.status = WorkflowStatus.INPROGRESS;
+            console.log('Updating the workflow values')
+            await this.workflowRepository.updateWorkflow(workflow); //the update workflow function does not appear to work
+            console.log('Workflow in database looks as follows: ');
+            console.log(await this.workflowRepository.getWorkflow(workflow._id));
+            //await this.workflowRepository.saveWorkflow(workflow); //But thankfully the saveWorkflow function fills the correct role
+
+            return {status:"success", data: {}, message: ""}
         }
-
-        if(workflow.ownerEmail !== email){
-            throw new AuthorizationError("You do not have the privileges to revert the current phase of this workflow.");
+        catch(err){
+            console.log(err);
+            throw err;
         }
-
-        //There are two phases when it comes to reverting a phase
-        //1) The currentPhase is the start phase
-        //2) The currentPhase is not the start phase
-        //If the current phase is the start phase, all that need be done is fetch the original document from the S3
-        //Bucket and then save it as the document for phase0
-        //If the current phase is not the start phase then we set the currentPhase to be one less than it is
-        //In both cases, the acceptance values of phase users need to change.
-
-        if(workflow.currentPhase === 0){
-            let currentPhase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
-            console.log("Setting currentPhase acceptances to false");
-            await this.phaseService.resetPhaseAndSave(currentPhase, PhaseStatus.INPROGRESS);
-            await this.documentService.resetFirstPhaseDocument(workflowId, String(workflow.documentId));
-        }
-        else{
-            //reset the acceptance values for members of the current phase and new phase
-            let currentPhase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
-            console.log("Setting currentPhase acceptances to false");
-            await this.phaseService.resetPhaseAndSave(currentPhase, PhaseStatus.PENDING);
-            console.log("Setting new phase acceptances to false");
-            let newPhase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase -1]);
-            await this.phaseService.resetPhaseAndSave(newPhase, PhaseStatus.INPROGRESS);
-
-            workflow.currentPhase = workflow.currentPhase - 1; //set the currentPhase to be one prior
-        }
-
-        workflow.status = WorkflowStatus.INPROGRESS;
-        console.log('Updating the workflow values')
-        await this.workflowRepository.updateWorkflow(workflow);
-        console.log('Workflow in database looks as follows: ');
-        console.log(await this.workflowRepository.getWorkflow(workflow._id));
-
-        return {status:"success", data: {}, message: ""};
     }
 
 
     async getOriginalDocument(workflowId, email) {
         console.log("Retrieving the original document for workflow id: ", workflowId);
-        const workflow = await this.workflowRepository.getWorkflow(workflowId);
-        if(email !== workflow.ownerEmail){
-            throw new AuthorizationError("You do not have the privileges to retrieve this document");
+        try{
+            const workflow = await this.workflowRepository.getWorkflow(workflowId);
+            if(email !== workflow.ownerEmail)
+                return {status: "error", data: {}, message: "Insufficient rights to retrieve this document"};
+
+            return await this.documentService.retrieveOriginalDocument(workflow.documentId, workflowId);
         }
-
-        return await this.documentService.retrieveOriginalDocument(workflow.documentId, workflowId);
-
+        catch(err){
+            console.log(err);
+            throw err;
+        }
     }
 }

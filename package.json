@@ -4,10 +4,11 @@
   "description": "A web-based solution that facilitate the reviewing, approval and signing of documents.",
   "main": "src/index.js",
   "scripts": {
+    "start": "tsc && node dist/src/server,js",
     "build:server": "tsc",
     "test:server": "jest --verbose",
     "run:server": "node dist/src/server.js",
-    "dev:server": "nodemon",
+    "dev:server": "ts-node src/server.ts",
     "build:app": "echo 'this is for anything that needs to be compiled before execution'",
     "test:app": "echo 'testing for frontend must run in cli'",
     "run:app": "echo 'this is for running in production'",
