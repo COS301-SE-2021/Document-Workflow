@@ -49,4 +49,12 @@ export default class WorkflowTemplateService{
         return templateId;
     }
 
+    async getWorkflowTemplateData(){
+
+    }
+
+    async getWorkflowTemplateNameAndDescription(){
+
+    }
+
 }
