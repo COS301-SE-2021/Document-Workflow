@@ -28,7 +28,7 @@ describe("User sub-system integration tests:", () => {
 
   beforeEach(() => {
     userService = new UserService(new UserRepository());
-    userController = new UserController(userService, new Authenticator(userService));
+    userController = new UserController(userService, new Authenticator());
   });
 
   afterAll(async () => {
@@ -114,5 +114,22 @@ describe("User sub-system integration tests:", () => {
               .expect('Content-Type', /json/)
               .expect(200);
       })
+
+      it("Should invalidate the user's access token", async () => {
+          request(app)
+              .delete('/api/users/logout')
+              .set('Authorization', 'Bearer ' + testUserValidationToken)
+              .expect('Content-Type', /json/)
+              .expect(200);
+      });
+
+      it("Should fail to authenticate with the previous token", async () => {
+          request(app)
+              .post('/api/users/authenticate')
+              .set('Authorization', 'Bearer ' + testUserValidationToken)
+              .expect('Content-Type', /json/)
+              .expect(401)
+      });
+
     });
 });
