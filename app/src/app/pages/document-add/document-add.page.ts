@@ -418,11 +418,13 @@ export class DocumentAddPage implements OnInit {
     if(this.template === false){
       this.removeTemplate();
     }else{
-      this.workflowForm.addControl('template', new FormControl('', Validators.required));
+      this.workflowForm.addControl('templateName', new FormControl('', Validators.required));
+      this.workflowForm.addControl('templateDescription', new FormControl('', Validators.required));
     }
   }
 
   removeTemplate(){
-    this.workflowForm.removeControl('template');
+    this.workflowForm.removeControl('templateName');
+    this.workflowForm.removeControl('templateDescription');
   }
 }
