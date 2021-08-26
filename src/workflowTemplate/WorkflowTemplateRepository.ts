@@ -38,4 +38,13 @@ export default class WorkflowTemplateRepository{
             throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
         }
     }
+
+    async findWorkflowTemplate(templateId){
+        try{
+            return await WorkflowTemplate.findById(templateId);
+        }
+        catch(err){
+            throw new ServerError("Could not find the specified workflow Template.");
+        }
+    }
 }

@@ -49,12 +49,26 @@ export default class WorkflowTemplateService{
         return templateId;
     }
 
-    async getWorkflowTemplateData(){
-
+    /**
+     * Used to retrieve all the data stored by a workflow template so that it can be used by an end user to create
+     * a new workflow without having to re-enter the same old information.
+     * @param templateId
+     */
+    async getWorkflowTemplateData(templateId){
+        const template = await this.workflowTemplateRepository.findWorkflowTemplate(templateId);
+        return template;
     }
 
-    async getWorkflowTemplateNameAndDescription(){
-
+    /**
+     * Fetches only the name and description of a WorkflowTemplate. To be used when only generic
+     * information about a workflow template is required to avoid slow api calls due to sending large
+     * the large annotations of the phases string back if it is not needed.
+     * @param templateId
+     */
+    async getWorkflowTemplateNameAndDescription(templateId){
+        const template = await this.workflowTemplateRepository.findWorkflowTemplate(templateId);
+        const data = {templateName: template.templateName, templateDescription: template.templateDescription};
+        return data;
     }
 
 }
