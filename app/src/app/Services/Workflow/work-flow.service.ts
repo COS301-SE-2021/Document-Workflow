@@ -67,6 +67,7 @@ export class WorkFlowService {
     workflowDescription,
     phases,
     document,
+    template,
     callback
   ): Promise<any> {
     this.displayLoading();
@@ -75,6 +76,10 @@ export class WorkFlowService {
     formData.append('description', workflowDescription);
     formData.append('document', document);
     formData.append('phases', JSON.stringify(phases));
+    if(template !== null){
+      formData.append('template', JSON.stringify(template));
+    }
+
 
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
@@ -95,7 +100,12 @@ export class WorkFlowService {
         },
         async (error) => {
           this.dismissLoading();
-          await this.displayPopOver('Error creating new Workflow', error.error);
+          if(error.statusText === 'Unknown Error'){
+            await this.displayPopOver('Login Error', 'Could not connect to the Document Workflow Server at this time. Please try again later.');
+          }
+          else {
+            await this.displayPopOver('Error creating new Workflow', error.error);
+          }
         }
       );
   }

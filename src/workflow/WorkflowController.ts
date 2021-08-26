@@ -54,7 +54,7 @@ export default class WorkflowController {
             if(!phase.annotations || !phase.description || !phase.users){
                 throw new RequestError("There was something wrong with the request");
             }
-        })
+        });
 
         //parse request, setup WorkflowProps object to send through
         const workflow: WorkflowProps = {
@@ -71,8 +71,6 @@ export default class WorkflowController {
         const convertedPhases = [];
 
         phases.forEach( phase => {
-            console.log("THIS PHASE HAS THE FOLLOWING USERS OBJECT");
-            console.log(phase.users);
             convertedPhases.push(new Phase({
                 users: JSON.stringify(phase.users), //The input users array is actually an array with a single JSON string
                 description: phase.description,
@@ -80,12 +78,7 @@ export default class WorkflowController {
             }));
         })
 
-        try{
-            return await this.workflowService.createWorkFlow(workflow, req.files.document, convertedPhases);
-
-        } catch(err) {
-            throw new ServerError(err.toString());
-        }
+        return await this.workflowService.createWorkFlow(workflow, req.files.document, convertedPhases, req.body.template, req.user);
     }
 
     async getWorkFlowDetails(req):Promise<any>{

@@ -12,6 +12,7 @@ export default class WorkflowTemplateRepository{
             return newWorkflowTemplate._id;
         }
         catch(err){
+            console.log(err);
             throw new ServerError("Could not save workflow information as template");
         }
     }

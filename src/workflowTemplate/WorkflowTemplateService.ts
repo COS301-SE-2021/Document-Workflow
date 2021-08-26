@@ -10,7 +10,7 @@ import {ObjectId} from "mongoose";
 
 
 @injectable()
-export default class WorkflowService{
+export default class WorkflowTemplateService{
 
     constructor(
         private workflowTemplateRepository: WorkflowTemplateRepository,
@@ -27,20 +27,24 @@ export default class WorkflowService{
      * @param phases
      * @param templateName
      */
-    async createWorkflowTemplate(workflow, file: File, phases: PhaseProps[], templateName): Promise<ObjectId>{
+    async createWorkflowTemplate(workflow, file: File, phases: PhaseProps[], template): Promise<ObjectId>{
 
-        //TODO: cextract and stringyfy phase data then add it to the phases memebr variable.
-        let template = new WorkflowTemplate({
-            templateName: templateName,
+        //TODO: cextract and stringyfy phase data then add it to the phases member variable.
+        template = JSON.parse(template);
+        let newTemplate = new WorkflowTemplate({
+            templateName: template.templateName,
+            templateDescription: template.templateDescription,
             templateOwnerId: workflow.ownerId,
             templateOwnerEmail: workflow.ownerEmail,
             workflowName: workflow.name,
             workflowDescription: workflow.description,
-            phases: [],
+            phases: JSON.stringify(phases),
             documentName: file.name
 
         });
-        const templateId = await this.workflowTemplateRepository.saveWorkflowTemplate(template);
+        console.log(newTemplate);
+
+        const templateId = await this.workflowTemplateRepository.saveWorkflowTemplate(newTemplate);
         await this.documentService.uploadTemplateDocumentToCloud(file, templateId);
         return templateId;
     }
