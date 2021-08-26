@@ -2,15 +2,17 @@ import { injectable } from "tsyringe";
 import UserRepository from "./UserRepository";
 import { UserProps } from "./User";
 import nodemailer from 'nodemailer';
-import jwt from "jsonwebtoken";
+import jwt, { Jwt } from "jsonwebtoken";
 import { AuthenticationError, RequestError } from "../error/Error";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
+import Database from "../Database";
 
 @injectable()
 export default class UserService {
+
     constructor(private userRepository: UserRepository) {}
-    async authenticateUser(password, usr: UserProps) {
+    async authenticateUser(password, usr: UserProps): Promise<String> {
         const result = await bcrypt.compare(password, await usr.password);
         if(result){
             return this.generateToken(usr.email, usr._id);
@@ -32,7 +34,7 @@ export default class UserService {
             });
     }
 
-    generateToken(email, id): string{
+    async generateToken(email, id): Promise<String>{
         return jwt.sign({id: id, email: email}, process.env.SECRET, {expiresIn: "1h"});
     }
 
@@ -55,12 +57,12 @@ export default class UserService {
         }
     }
 
-    async getUserById(_id): Promise<UserProps> {
-        if(_id === undefined){
+    async getUserById(id): Promise<UserProps> {
+        if(id === undefined){
             throw new Error("Search criteria required");
         }
         try {
-            return await this.userRepository.findUser({_id: _id});
+            return await this.userRepository.findUser({_id: id});
         } catch (err) {
             console.error(err);
             throw new RequestError("Could not get user");
@@ -98,8 +100,8 @@ export default class UserService {
             usr.validateCode = crypto.randomBytes(64).toString('hex');
             usr.password = await this.getHashedPassword(usr.password);
 
-            const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
-            usr.tokens = [token];
+            /*const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
+            usr.tokens = [token];*/
 
             const user: UserProps = await this.userRepository.saveUser(usr);
             if(user){
@@ -158,45 +160,36 @@ export default class UserService {
         });
     }
 
-    async loginUser(req): Promise<any> {
-        if(!req.body.email || !req.body.password){
-            throw new RequestError("Could not log in");
+    async loginUser(email, password): Promise<String> {
+
+        let user;
+        try{
+            user = await this.userRepository.findUser({email: email});
+        } catch(err){
+            throw err;
         }
-        const user = await this.userRepository.findUser({"email": req.body.email});
-        if(!user) throw new RequestError("User does not exist");
-        if(user.validated){
+
+        if(user && user.validated){
             try{
-                return await this.authenticateUser(req.body.password, user);
+                return await this.authenticateUser(password, user);
             }
             catch(err){
                 throw new AuthenticationError(err.message);
             }
         } else {
-            throw new AuthenticationError("User must be validated");
+            throw new RequestError("User does not exist");
         }
     }
 
-    //TODO: Implement JWT blacklist in order to facilitate explicit logout
-    /*async logoutUser(req): Promise<UserProps> {
-        if(!req.user || !req.user.email || !req.user.tokens){
-            throw new RequestError("Missing required properties");
-        }
-
-        const user = await this.userRepository.findUser({email: req.user.email});
-        const tokens: Token[] = req.user.tokens;
-        const tokensFiltered = tokens.filter(token => {return token.token !== req.user.token});
-        console.log("Filtered tokens when logging out user: ");
-        console.log(tokensFiltered);
-        user.tokens = tokens as any;
-
+    async logoutUser(token: Jwt): Promise<Boolean> {
         try {
-            return await this.userRepository.updateUser(user);
+            return await Database.addToBlacklist(token);
         }
         catch(err){
             console.error(err);
             throw new RequestError("Could not log out user");
         }
-    }*/
+    }
 
     //TODO: Delete User from workflows and phases.
     async deleteUser(req): Promise<UserProps> {
