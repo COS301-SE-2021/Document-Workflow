@@ -418,9 +418,7 @@ export class DocumentAddPage implements OnInit {
     if(this.template === false){
       this.removeTemplate();
     }else{
-      this.workflowForm.addControl('template', this.fb.group({
-        template: ['', [Validators.required]]
-      }));
+      this.workflowForm.addControl('template', new FormControl('', Validators.required));
     }
   }
 
