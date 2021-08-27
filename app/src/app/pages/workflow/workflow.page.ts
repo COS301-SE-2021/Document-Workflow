@@ -249,7 +249,16 @@ export class WorkflowPage implements OnInit {
         userEmail: this.user.email,
       },
     ]);
+  }
 
+  templateDocument(id: string) {
+    this.leave=true;
+    this.router.navigate([
+      '/home/workflowTemplate',
+      {
+        workflowId: id,
+      },
+    ]);
   }
 
   fixOrder(event: CustomEvent<ItemReorderEventDetail>) {
@@ -292,7 +301,6 @@ export class WorkflowPage implements OnInit {
   }
 
   showOnlyWorkflowOwned() {
-    console.log('here');
     for (const document of this.documents) {
       if (document.ownerEmail === this.userEmail) {
         document.showWorkflow = true;
