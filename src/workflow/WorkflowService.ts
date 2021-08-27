@@ -6,8 +6,9 @@ import UserService from "../user/UserService";
 import {PhaseProps, PhaseStatus} from "../phase/Phase";
 import { ObjectId } from "mongoose";
 import { PhaseService } from "../phase/PhaseService";
-import {RequestError, ServerError} from "../error/Error";
+import {AuthorizationError, RequestError, ServerError} from "../error/Error";
 import encryption from "../crypto/encryption";
+import WorkflowTemplateService from "../workflowTemplate/WorkflowTemplateService";
 
 @injectable()
 export default class WorkflowService{
@@ -18,6 +19,7 @@ export default class WorkflowService{
         private documentService: DocumentService,
         private userService: UserService,
         private phaseService: PhaseService,
+        private workflowTemplateService: WorkflowTemplateService,
         private encrypt: encryption) {
     }
 
@@ -29,7 +31,7 @@ export default class WorkflowService{
      * @param file
      * @param phases
      */
-    async createWorkFlow(workflow: WorkflowProps, file: File, phases: PhaseProps[]): Promise<any>{
+    async createWorkFlow(workflow: WorkflowProps, file: File, phases: PhaseProps[], template: any, user): Promise<any>{
 
         console.log("In the createWorkFlow function");
         try {
@@ -69,6 +71,17 @@ export default class WorkflowService{
 
             await this.addWorkFlowIdToUsersWorkflows(phases, workflowId, workflow.ownerEmail);
             await this.addWorkFlowIdToOwnedWorkflows(workflowId, workflow.ownerEmail);
+
+            if(template !== null){
+                console.log("Creating a temlate from the created workflow");
+                const templateId = await this.workflowTemplateService.createWorkflowTemplate(workflow, file, phases, template);
+                const user = await this.userService.getUserById(workflow.ownerId);
+                // @ts-ignore
+                user.workflowTemplates.push(String(templateId)); //The ts-ignore of the previous line was due to IntelliJ complaining about a non-existent
+                                                                 //Type error. This code is tested and works.
+                await this.userService.updateUser({body:user, params:{id: user._id}});
+            }
+
             return {status: "success", data: {id:workflowId}, message:""};
         }
         catch(e){
@@ -227,13 +240,11 @@ export default class WorkflowService{
         //So that we have the ids of workflows they are a part of, and that they
         try {
             const user = await this.userService.getUserById(usr._id);
-            console.log("getting the users workflow data");
-            console.log(user);
+            console.log("getting a users workflow data");
             let ownedWorkflows = [];
             let workflows = [];
 
             for(let i=0; i<user.ownedWorkflows.length; ++i){ //I couldnt find a prettier way of iterating through this, other methods did not work
-                console.log(user.ownedWorkflows[i])
                 let workflow = await this.workflowRepository.getWorkflow(String(user.ownedWorkflows[i]));
                 let phases = [];
 
@@ -246,7 +257,6 @@ export default class WorkflowService{
 
             for(let i=0; i<user.workflows.length; ++i)
             {
-                console.log(user.workflows[i])
                 let workflow = await this.workflowRepository.getWorkflow(String(user.workflows[i]));
                 let phases = [];
 
@@ -254,7 +264,6 @@ export default class WorkflowService{
                     phases.push(await this.phaseService.getPhaseById(workflow.phases[k]));
                 }
                 workflow.phases = phases;
-
                 workflows.push(workflow);
             }
             const data = {ownedWorkflows, workflows};
@@ -363,7 +372,7 @@ export default class WorkflowService{
                 console.log("BIG ERROR THIS WORKFLOW DOES NOT HAVE A DOCUMEnt ID!!!");
             if(!await this.isUserMemberOfWorkflow(workflow, userEmail)){
                 console.log("REquesting user is NOT a member of this workflow");
-                return {status:"error", data:{}, message:"You are not a member of this workflow"};
+                throw new AuthorizationError("You may not retrieve this workflow's details");
             }
             console.log("REquesting user is a member of this workflow");
 

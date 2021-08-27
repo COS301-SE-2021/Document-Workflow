@@ -288,7 +288,7 @@ export class DocumentAddPage implements OnInit {
     this.workflowForm.get('workflowFile').setValue(this.file);
     this.blob = new Blob([this.file], { type: 'application/pdf;base64' });
     console.log(this.blob.arrayBuffer());
-    const obj = new IonicSafeString(URL.createObjectURL(this.blob));
+    const obj = URL.createObjectURL(this.blob);
     console.log(obj);
     this.srcFile = obj;
     this.addFile = true;
@@ -384,6 +384,11 @@ export class DocumentAddPage implements OnInit {
       this.workflowForm.controls.workflowDescription.value
     );
     console.log(this.workflowForm);
+    let template = null;
+    if(this.workflowForm.controls.templateName !== undefined){
+      template = {templateName: this.workflowForm.controls.templateName.value, templateDescription: this.workflowForm.controls.templateDescription.value};
+    }
+
 
     const phases = this.workflowForm.controls.phases.value;
     const name = this.workflowForm.controls.workflowName.value;
@@ -393,13 +398,13 @@ export class DocumentAddPage implements OnInit {
       description,
       phases,
       this.file,
+      template,
       (response) => {
         if (response.status === 'success') {
           this.userApiService.displayPopOver('Success', 'You have successfully created a workflow');
           this.router.navigate(['/home']);
         } else {
           this.userApiService.displayPopOver('Error', 'Something has gone wrong, please try again');
-          this.router.navigate(['/home']);
         }
       }
     );
@@ -418,13 +423,13 @@ export class DocumentAddPage implements OnInit {
     if(this.template === false){
       this.removeTemplate();
     }else{
-      this.workflowForm.addControl('template', this.fb.group({
-        template: ['', [Validators.required]]
-      }));
+      this.workflowForm.addControl('templateName', new FormControl('', Validators.required));
+      this.workflowForm.addControl('templateDescription', new FormControl('', Validators.required));
     }
   }
 
   removeTemplate(){
-    this.workflowForm.removeControl('template');
+    this.workflowForm.removeControl('templateName');
+    this.workflowForm.removeControl('templateDescription');
   }
 }
