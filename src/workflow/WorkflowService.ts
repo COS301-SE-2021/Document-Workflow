@@ -33,12 +33,6 @@ export default class WorkflowService{
      */
     async createWorkFlow(workflow: WorkflowProps, file: File, phases: PhaseProps[], template: any, user): Promise<any>{
 
-        if(template !== null){
-            console.log("Creating a temlate from the created workflow");
-            await this.workflowTemplateService.createWorkflowTemplate(workflow, file, phases, template);
-        }
-        return {status: "as"};
-
         console.log("In the createWorkFlow function");
         try {
             //Before any creation of objects takes place, checks must be done on the inputs to ensure that they are valid.
@@ -77,6 +71,16 @@ export default class WorkflowService{
 
             await this.addWorkFlowIdToUsersWorkflows(phases, workflowId, workflow.ownerEmail);
             await this.addWorkFlowIdToOwnedWorkflows(workflowId, workflow.ownerEmail);
+
+            if(template !== null){
+                console.log("Creating a temlate from the created workflow");
+                const templateId = await this.workflowTemplateService.createWorkflowTemplate(workflow, file, phases, template);
+                const user = await this.userService.getUserById(workflow.ownerId);
+                // @ts-ignore
+                user.workflowTemplates.push(String(templateId)); //The ts-ignore of the previous line was due to IntelliJ complaining about a non-existent
+                                                                 //Type error. This code is tested and works.
+                await this.userService.updateUser({body:user, params:{id: user._id}});
+            }
 
             return {status: "success", data: {id:workflowId}, message:""};
         }

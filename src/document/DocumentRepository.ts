@@ -14,17 +14,27 @@ const s3 = new AWS.S3({
 export default class DocumentRepository {
 
     async saveDocumentToS3(file, path) {
+        console.log("Testing new save file to S3 function");
         const uploadParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
             Body: file.data,
             Key: path
         }
         try {
-            const response = await s3.upload(uploadParams).promise; //TODO: test this.
-            console.log(response);
+            //const response = await s3.upload(uploadParams).promise; //TODO: test this.
+            //console.log(response);
+            await s3.upload(uploadParams, (err, data) => {
+                console.log(err)
+                if(err) {
+                    throw new CloudError("The cloud server could not be reached at this time, please try again later.");
+                }
+                else console.log(data);
+
+            });
         }
         catch(e){
-
+            console.log(e);
+            throw new CloudError("The cloud server could not be reached at this time, please try again later.");
         }
     }
 
