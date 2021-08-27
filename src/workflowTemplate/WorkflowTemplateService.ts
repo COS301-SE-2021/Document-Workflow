@@ -6,6 +6,7 @@ import {Workflow} from "../workflow/Workflow";
 import {WorkflowTemplate, WorkflowTemplateProps} from "./WorkflowTemplate";
 import {PhaseProps} from "../phase/Phase";
 import {ObjectId} from "mongoose";
+import {RequestError} from "../error/Error";
 
 
 
@@ -14,6 +15,7 @@ export default class WorkflowTemplateService{
 
     constructor(
         private workflowTemplateRepository: WorkflowTemplateRepository,
+        private userService: UserService,
         private documentService: DocumentService){
     }
 
@@ -29,7 +31,6 @@ export default class WorkflowTemplateService{
      */
     async createWorkflowTemplate(workflow, file: File, phases: PhaseProps[], template): Promise<ObjectId>{
 
-        //TODO: cextract and stringyfy phase data then add it to the phases member variable.
         template = JSON.parse(template);
         let newTemplate = new WorkflowTemplate({
             templateName: template.templateName,
@@ -51,13 +52,21 @@ export default class WorkflowTemplateService{
 
     /**
      * Used to retrieve all the data stored by a workflow template so that it can be used by an end user to create
-     * a new workflow without having to re-enter the same old information.
+     * a new workflow without having to re-enter the same old information. This function has an extra check not persent in the
+     * get name and description function. Since this function returns sensitive data (the document)
+     * we must verify that this templateId belongs to teh requesting user.
      * @param templateId
      */
-    async getWorkflowTemplateData(templateId){
+    async getWorkflowTemplateData(templateId, usr){
+
+        const user = await this.userService.getUserById(usr._id);
+        if(!user.workflowTemplates.includes(templateId)){
+            throw new RequestError("This workflow does not belong to you");
+        }
         let template = await this.workflowTemplateRepository.findWorkflowTemplate(templateId);
-        //TODO: retrieve file and add it to the tamplate object
-        return template;
+        const fileData = await this.documentService.retrieveTemplateDocumentFromCloud(template._id, template.documentName);
+
+        return {template: template, fileData: fileData};
     }
 
     /**
