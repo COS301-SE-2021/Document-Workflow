@@ -60,7 +60,7 @@ export class WorkflowTemplateService {
     });
 
     this.http
-      .post(WorkflowTemplate.url + '/workflowTemplates', formData, {
+      .post(WorkflowTemplate.url + '/workflowTemplates/getWorkflowTemplateNameAndDescription', formData, {
         headers: httpHeaders,
       })
       .subscribe(
@@ -93,7 +93,7 @@ export class WorkflowTemplateService {
     });
 
     this.http
-      .post(WorkflowTemplate.url + '/workflowTemplates', formData, {
+      .post(WorkflowTemplate.url + '/workflowTemplates/getWorkflowTemplateData', formData, {
         headers: httpHeaders,
       })
       .subscribe(

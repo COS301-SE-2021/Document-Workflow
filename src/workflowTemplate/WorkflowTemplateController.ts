@@ -48,6 +48,15 @@ export default class WorkflowTemplateController {
             }
         });
 
+        this.router.post("/getWorkflowTemplateData", this.auth, async(req,res) =>{
+            try {
+                res.status(200).json( await this.getWorkflowTemplateData(req));
+            }
+            catch(err){
+                await handleErrors(err, res);
+            }
+        });
+
         this.router.post("/delete",this.auth, async(req,res)=>{
             try {
 
