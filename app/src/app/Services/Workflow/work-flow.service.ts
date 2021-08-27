@@ -230,6 +230,7 @@ export class WorkFlowService {
   }
 
   async getUserWorkflowsData(callback) {
+    this.displayLoading();
     const formData = new FormData();
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
@@ -249,12 +250,16 @@ export class WorkFlowService {
             data['data'].workflows = this.formatWorkflows(
               data['data'].workflows
             );
+            this.dismissLoading();
             callback(data);
-          } else
+          } else {
+            this.dismissLoading();
             callback({ status: 'error', message: 'Cannot connect to Server' });
+          }
         },
         (error) => {
           console.log(error);
+          this.dismissLoading();
           alert('An unexpected error occurred');
         }
       );
@@ -270,9 +275,9 @@ export class WorkFlowService {
         let tempUser: phaseUserFormat[] = [];
         for (let user of JSON.parse(phase['users'])) {
           let tmpUser: phaseUserFormat;
-          let a: string = "true";
+          let a: string = 'true';
           if (user.accepted === 'false') {
-            a = "false";
+            a = 'false';
           }
           tmpUser = {
             accepted: a,
@@ -378,18 +383,21 @@ export class WorkFlowService {
       );
   }
 
-  displayLoading(){
-    const loading = this.loadingCtrl.create({
-      message: 'Please wait...',
-    }).then((response)=>{
-      response.present();
-    });
+  displayLoading() {
+    const loading = this.loadingCtrl
+      .create({
+        message: 'Please wait...',
+      })
+      .then((response) => {
+        response.present();
+      });
   }
 
-  dismissLoading(){
-    this.loadingCtrl.dismiss().then((response) => {
-    }).catch((err) => {
-    });;
+  dismissLoading() {
+    this.loadingCtrl
+      .dismiss()
+      .then((response) => {})
+      .catch((err) => {});
   }
 
   /**
@@ -398,6 +406,7 @@ export class WorkFlowService {
    * @param file
    */
   public async updateDocument(documentId, file, callback) {
+    this.displayLoading();
     const formData = new FormData();
     formData.append('documentId', documentId);
     formData.append('document', file);
@@ -416,11 +425,15 @@ export class WorkFlowService {
         (data) => {
           //TODO: change url
           if (data) {
+            this.dismissLoading();
             callback(data);
-          } else
+          } else{
+            this.dismissLoading();
             callback({ status: 'error', message: 'Cannot connect to Server' });
+          }
         },
         (error) => {
+          this.dismissLoading();
           alert('An unexpected error occurred');
         }
       );
