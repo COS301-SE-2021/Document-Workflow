@@ -1,19 +1,15 @@
-import { TemplateBindingIdentifier } from '@angular/compiler';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
+import { phaseUser } from 'src/app/Services/Document/document-api.service';
 import { Logger } from 'src/app/Services/Logger';
 import { UserAPIService } from 'src/app/Services/User/user-api.service';
-import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
-import { WorkflowTemplateService } from 'src/app/Services/WorkflowTemplate/workflow-template.service';
+import { phaseFormat, WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
+import { WorkflowTemplateService, templateDescription, templatePhaseUser } from 'src/app/Services/WorkflowTemplate/workflow-template.service';
 
 
-export interface templateDescription{
-  templateID: string;
-  templateName: string;
-  templateDescription: string;
-}
+
 @Component({
   selector: 'app-workflow-template',
   templateUrl: './workflow-template.page.html',
@@ -63,7 +59,6 @@ export class WorkflowTemplatePage implements OnInit {
       for(let id of response.data.templateIds){
         await this.getWorkflowTemplateData(id);
       }
-      console.log(this.tempDesc)
     })
   }
 
@@ -76,6 +71,54 @@ export class WorkflowTemplatePage implements OnInit {
         templateDescription: response.templateDescription
       }
       this.tempDesc.push(tmp);
+    })
+  }
+
+  async useThisTemplate(id:string){
+    this.templateService.getWorkflowTemplateData(id, (response)=>{
+      console.log(response);
+      let template = response.template;
+      let fileData = response.fileData;
+      this.templateForm = this.fb.group({
+        workflowName: [template.documentName,[Validators.required]],
+        workflowDescription: [template.workflowDescription, [Validators.required]],
+        phases: this.fb.array([]),
+      });
+      this.fillPhases(template.phases);
+    })
+  }
+
+  fillPhases(phases: any){
+    console.log(this.templateForm.controls.phases['controls'])
+      for(let phase of phases){
+        this.templateForm.controls.phases['controls'].push(this.fillPhase(phase[0]))
+      }
+      console.log(this.templateForm)
+  }
+
+  fillPhase(phase: phaseFormat){
+
+    let temp  = this.fb.group({
+      annotations:[phase.annotations,[Validators.required]],
+      description:[phase.description,[Validators.required]],
+      status: [phase.status, [Validators.required]],
+      users: this.fb.array([])
+    });
+
+    console.log(temp.controls.users['controls'])
+    for(let user of phase.users){
+      temp.controls.users['controls'].push(this.fillUsers(user));
+    }
+
+    return temp;
+  }
+
+  fillUsers(user: any){
+    console.log('here')
+    return this.fb.group({
+      user:[user.user, [Validators.required, Validators.email]],
+      permission:[user.permission,[Validators.required]],
+      accepted:[user.accepted,[Validators.required]]
     })
   }
 
