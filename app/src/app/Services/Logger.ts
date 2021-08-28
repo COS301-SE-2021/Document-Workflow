@@ -14,6 +14,12 @@ export enum LogLevel {
 @Injectable()
 export class Logger {
   debug: boolean = true;
+
+  debugWorkflow: boolean = true;
+  debugEditWorkflow: boolean = true;
+  debugAddWorkflow: boolean = true;
+  debugTemplateWorkflow: boolean= true;
+
   constructor() {}
 
   public Error(str: any) {
@@ -30,6 +36,26 @@ export class Logger {
 
   public Debug(str: any) {
     this.log(str, '', 'debug');
+  }
+
+  public WorkflowHome(str:any){
+    if(this.debugWorkflow)
+      this.log(str,'','');
+  }
+
+  public WorkflowEdit(str:any){
+    if(this.debugEditWorkflow)
+      this.log(str,'','');
+  }
+
+  public WorkflowAdd(str:any){
+    if(this.debugAddWorkflow)
+      this.log(str,'','');
+  }
+
+  public WorkflowTemplate(str:any){
+    if(this.debugTemplateWorkflow)
+      this.log(str,'','');
   }
 
   public Brent(str: any) {
