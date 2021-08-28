@@ -69,7 +69,7 @@ export default class WorkflowRepository{
     async addWorkflowHistoryId(workflowId, workflowHistoryId){
         logger.info("Saving the historyId: " + workflowHistoryId + " to workflow " + workflowId);
         try {
-            await Workflow.updateOne({_id: workflowId}, {$set: {history: workflowHistoryId}}, {upsert: true});
+            await Workflow.updateOne({_id: workflowId}, {$set: {historyId: workflowHistoryId}}, {upsert: true});
         }
         catch(err){
             throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");

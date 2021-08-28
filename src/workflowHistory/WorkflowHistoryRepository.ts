@@ -14,4 +14,13 @@ export default class WorkflowHistoryRepository{
             throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
         }
     }
+
+    async getWorkflowHistory(id:string):Promise<WorkflowHistoryProps>{
+        try{
+            return await WorkflowHistory.findById(id);
+        }
+        catch(err){
+            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
+        }
+    }
 }
