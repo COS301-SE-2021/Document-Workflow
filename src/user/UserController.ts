@@ -250,7 +250,7 @@ export default class UserController{
 
         this.router.post("/getWorkflowTemplatesIds", this.authenticationService.Authenticate, async(req, res) =>{
             try {
-                return await this.getWorkflowTemplatesIds(req);
+                res.status(200).json(await this.getWorkflowTemplatesIds(req));
             } catch(err){
                 res.status(200).json({status:"error", data: {}, message: ""});
                 await handleErrors(err,res);
