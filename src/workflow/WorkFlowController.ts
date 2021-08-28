@@ -78,6 +78,10 @@ export default class WorkflowController {
             }));
         })
 
+        if(!req.body.template){
+            req.body.template = null;
+        }
+
         return await this.workflowService.createWorkFlow(workflow, req.files.document, convertedPhases, req.body.template, req.user);
     }
 
