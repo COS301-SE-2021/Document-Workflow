@@ -9,6 +9,7 @@ import { PhaseService } from "../phase/PhaseService";
 import {AuthorizationError, RequestError, ServerError} from "../error/Error";
 import encryption from "../crypto/encryption";
 import WorkflowTemplateService from "../workflowTemplate/WorkflowTemplateService";
+import WorkflowHistoryService from "../workflowHistory/WorkflowHistoryService";
 
 @injectable()
 export default class WorkflowService{
@@ -20,6 +21,7 @@ export default class WorkflowService{
         private userService: UserService,
         private phaseService: PhaseService,
         private workflowTemplateService: WorkflowTemplateService,
+        private workflowHistoryService: WorkflowHistoryService,
         private encrypt: encryption) {
     }
 
@@ -65,15 +67,16 @@ export default class WorkflowService{
 
             //Step 4 update workflow with documentId:
             await this.workflowRepository.addDocumentId(workflowId, documentId);
-            console.log("Workflow updated, adding the workflow to the relevant users");
 
-            console.log(workflow);
+            //Step5 create the workflow history for this workflow and save the returned id to this workflow.
+            const historyId = await this.workflowHistoryService.createWorkflowHistory(workflow.ownerEmail);
+            await this.workflowRepository.addWorkflowHistoryId(workflowId, historyId);
 
             await this.addWorkFlowIdToUsersWorkflows(phases, workflowId, workflow.ownerEmail);
             await this.addWorkFlowIdToOwnedWorkflows(workflowId, workflow.ownerEmail);
 
             if(template !== null){
-                console.log("Creating a temlate from the created workflow");
+                console.log("Creating a template from the created workflow");
                 const templateId = await this.workflowTemplateService.createWorkflowTemplate(workflow, file, phases, template);
                 const user = await this.userService.getUserById(workflow.ownerId);
                 // @ts-ignore

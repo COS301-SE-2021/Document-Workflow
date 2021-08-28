@@ -17,6 +17,7 @@ export default class WorkflowHistoryService {
         logger.info("Creating a new workflow history");
 
         const entry = new Entry();
+        entry.hash = "";
         entry.userEmail = ownerEmail;
         entry.date = Date.now();
         entry.type = ENTRY_TYPE.CREATE;
@@ -24,6 +25,8 @@ export default class WorkflowHistoryService {
         const history = new WorkflowHistory({
             entries: [JSON.stringify(entry)]
         });
+
+        logger.info(history);
 
         return await this.workflowHistoryRepository.saveWorkflowHistory(history);
     }

@@ -64,6 +64,7 @@ export default class WorkflowController {
             ownerId: req.user._id,
             ownerEmail: req.user.email,
             documentId: undefined,
+            historyId: undefined,
             description: req.body.description,
             phases: undefined
         }
