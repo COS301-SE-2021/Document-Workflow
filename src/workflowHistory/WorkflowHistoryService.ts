@@ -3,6 +3,7 @@ import encryption from "../crypto/encryption";
 import WorkflowHistoryRepository from "./WorkflowHistoryRepository";
 import { ObjectId } from "mongoose";
 import {Entry, ENTRY_TYPE, WorkflowHistory} from './WorkflowHistory';
+import {logger} from './../LoggingConfig';
 
 @injectable()
 export default class WorkflowHistoryService {
@@ -13,6 +14,7 @@ export default class WorkflowHistoryService {
     }
 
     async createWorkflowHistory(ownerEmail):Promise<ObjectId>{
+        logger.info("Creating a new workflow history");
 
         const entry = new Entry();
         entry.userEmail = ownerEmail;
