@@ -7,6 +7,7 @@ import { AuthenticationError, RequestError } from "../error/Error";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { isStrongPassword, isEmail } from "validator";
+import {logger} from "../LoggingConfig";
 
 @injectable()
 export default class UserService {
@@ -303,6 +304,6 @@ export default class UserService {
 
     async getWorkflowTemplatesIds(user) {
         const usr = await this.getUserById(user._id);
-        return usr.workflowTemplates;
+        return {status:"success", data:{templateIds: usr.workflowTemplates}, message:""};
     }
 }
