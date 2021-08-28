@@ -176,11 +176,11 @@ export default class DocumentRepository {
         }
     }
 
-    async deleteDocumentFromS3(workflowId){ //workflowId is the folder name
+    async deleteDocumentFromS3(folderName){
         try {
             const listParams = {
                 Bucket: process.env.AWS_BUCKET_NAME,
-                Prefix: workflowId
+                Prefix: folderName
             };
 
             const listedObjects = await s3.listObjectsV2(listParams).promise();
@@ -198,7 +198,7 @@ export default class DocumentRepository {
 
             await s3.deleteObjects(deleteParams).promise();
 
-            if (listedObjects.IsTruncated) await this.deleteDocument(workflowId);
+            if (listedObjects.IsTruncated) await this.deleteDocument(folderName);
         }
         catch(err){
             throw new CloudError("The cloud server could not be reached at this time, please try again later.");

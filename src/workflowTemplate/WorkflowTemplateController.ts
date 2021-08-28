@@ -32,6 +32,14 @@ export default class WorkflowTemplateController {
         return this.workflowTemplateService.getWorkflowTemplateData(req.body.workflowTemplateId, req.user);
     }
 
+    private async deleteWorkflowTemplate(req) {
+        if(!req.body.templateId){
+            throw new RequestError("WorkflowId not specified")
+        }
+        
+        return await this.workflowTemplateService.deleteWorkflowTemplate(req.user, req.body.templateId);
+    }
+
     auth = this.authenticationService.Authenticate;
 
 
@@ -59,12 +67,14 @@ export default class WorkflowTemplateController {
 
         this.router.post("/delete",this.auth, async(req,res)=>{
             try {
-
+                res.status(200).json(await this.deleteWorkflowTemplate(req));
             } catch(err){
                 await handleErrors(err,res);
             }
         });
         return this.router;
     }
+
+    
 }
 

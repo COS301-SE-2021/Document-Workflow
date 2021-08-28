@@ -26,6 +26,10 @@ export default class DocumentService {
         return await this.documentRepository.getDocumentFromS3('templateFiles/' + workflowTemplateId + '/' +filename);
     }
 
+    async deleteTemplateDocumentFromCloud(workflowTemplateId){
+        await this.deleteTemplateDocumentFromCloud("templateFiles/" + workflowTemplateId);
+    }
+
     async uploadDocument(file: File, id: ObjectId): Promise<ObjectId>{
         try{
             const doc = new Document({
@@ -51,17 +55,8 @@ export default class DocumentService {
     }
 
     async deleteDocument(workflowId, documentId){
-        console.log("Deleting document from CLoud server");
-        try {
-            await this.documentRepository.deleteDocumentFromS3(workflowId);
-        }
-        catch(err){
-            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
-        }
-        console.log("deleting document from metadata database ", documentId);
-
-            await this.documentRepository.deleteDocument(documentId);
-
+        await this.documentRepository.deleteDocumentFromS3(workflowId);
+        await this.documentRepository.deleteDocument(documentId);
     }
 
     async retrieveOriginalDocument(docId, workflowId){

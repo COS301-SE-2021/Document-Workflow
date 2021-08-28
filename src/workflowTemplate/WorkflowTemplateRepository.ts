@@ -25,4 +25,13 @@ export default class WorkflowTemplateRepository{
             throw new ServerError("Could not find the specified workflow Template.");
         }
     }
+
+    async deleteWorkflowTemplate(id: ObjectId) {
+        try {
+            await WorkflowTemplate.deleteOne({_id: id});
+        }
+        catch(err){
+            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
+        }
+    }
 }
