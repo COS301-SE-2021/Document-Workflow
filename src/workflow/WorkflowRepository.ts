@@ -14,7 +14,6 @@ export default class WorkflowRepository{
             throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
         }
     }
-    //This function does not work as intended. the updateOne function should take in the values to update eg {name: 'John Snow'}. See https://masteringjs.io/tutorials/mongoose/update
 
     async updateWorkflow(workflow: WorkflowProps): Promise<Boolean>{
         console.log("Updating a workflow to have new values: ");
