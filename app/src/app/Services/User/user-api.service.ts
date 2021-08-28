@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
 import * as Cookies from 'js-cookie';
 import { LoadingController, PopoverController } from '@ionic/angular';
-import { ENV } from 'src/environments/environment';
+import { config } from 'src/app/Services/configuration';
 import { Logger } from '../Logger';
 
 export interface User {
@@ -58,7 +58,7 @@ export class UserAPIService {
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: 'Bearer ' + token,
     });
-    return this.http.post(ENV.url + '/users/authenticate', formData, {
+    return this.http.post(config.url + '/users/authenticate', formData, {
       headers: httpHeaders,
     });
   }
@@ -74,7 +74,7 @@ export class UserAPIService {
     formData.append('confirmPassword', user.password);
     formData.append('email', user.email);
     formData.append('signature', file);
-    this.http.post(ENV.url + '/users', formData).subscribe(
+    this.http.post(config.url + '/users', formData).subscribe(
       (data) => {
         //this.dismissLoading();
         if (data) {
@@ -96,7 +96,7 @@ export class UserAPIService {
     formData.append('email', loginData.email);
     formData.append('password', loginData.password);
     try {
-      this.http.post(ENV.url + '/users/login', formData).subscribe(
+      this.http.post(config.url + '/users/login', formData).subscribe(
         async (data) => {
           if (data) {
             callback(data);
@@ -127,7 +127,7 @@ export class UserAPIService {
         Authorization: 'Bearer ' + token,
       });
       this.http
-      .post(ENV.url + '/users/getWorkflowTemplatesIds', formData, {
+      .post(config.url + '/users/getWorkflowTemplatesIds', formData, {
           headers: httpHeaders,
         }).subscribe(async (response) => {
           this.logger.Brent(response);
@@ -184,7 +184,7 @@ export class UserAPIService {
     // });
 
     // this.http
-    //   .post(ENV.url + '/users/verifyEmailExistence', formData, {
+    //   .post(config.url + '/users/verifyEmailExistence', formData, {
     //     headers: httpHeaders,
     //   })
     //   .subscribe(
@@ -215,7 +215,7 @@ export class UserAPIService {
     });
 
     this.http
-      .post(ENV.url + '/users/getDetails', formData, {
+      .post(config.url + '/users/getDetails', formData, {
         headers: httpHeaders,
       })
       .subscribe(

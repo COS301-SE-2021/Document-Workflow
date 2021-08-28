@@ -3,13 +3,13 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {LoadingController, PopoverController} from '@ionic/angular';
 import {UserNotificationsComponent} from '../../components/user-notifications/user-notifications.component';
 import * as Cookies from 'js-cookie';
-
+import { config } from 'src/app/Services/configuration';
 @Injectable({
   providedIn: 'root'
 })
 export class WorkflowTemplateService {
 
-  static url = 'http://localhost:3000/api'; //TODO: change this url
+  // static url = 'http://localhost:3000/api'; //TODO: change this url
   constructor(
     private http: HttpClient,
     public loadingCtrl: LoadingController,
@@ -58,7 +58,7 @@ export class WorkflowTemplateService {
     });
 
     this.http
-      .post(WorkflowTemplateService.url + '/workflowTemplates/getWorkflowTemplateNameAndDescription', formData, {
+      .post(config.url + '/workflowTemplates/getWorkflowTemplateNameAndDescription', formData, {
         headers: httpHeaders,
       })
       .subscribe(
@@ -91,7 +91,7 @@ export class WorkflowTemplateService {
     });
 
     this.http
-      .post(WorkflowTemplateService.url + '/workflowTemplates/getWorkflowTemplateData', formData, {
+      .post(config.url + '/workflowTemplates/getWorkflowTemplateData', formData, {
         headers: httpHeaders,
       })
       .subscribe(
