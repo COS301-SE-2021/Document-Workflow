@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {LoadingController, PopoverController} from '@ionic/angular';
-import {UserNotificationsComponent} from '../../components/user-notifications/user-notifications.component';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { LoadingController, PopoverController } from '@ionic/angular';
+import { UserNotificationsComponent } from '../../components/user-notifications/user-notifications.component';
 import * as Cookies from 'js-cookie';
 import { config } from 'src/app/Services/configuration';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class WorkflowTemplateService {
-
   // static url = 'http://localhost:3000/api'; //TODO: change this url
   constructor(
     private http: HttpClient,
@@ -22,7 +21,7 @@ export class WorkflowTemplateService {
       componentProps: {
         title: title,
         message: message,
-        displayButton: false
+        displayButton: false,
       },
     });
 
@@ -33,21 +32,60 @@ export class WorkflowTemplateService {
     });
   }
 
-  displayLoading(){
-    const loading = this.loadingCtrl.create({
-      message: 'Please wait...',
-    }).then((response)=>{
-      response.present();
+  displayLoading() {
+    const loading = this.loadingCtrl
+      .create({
+        message: 'Please wait...',
+      })
+      .then((response) => {
+        response.present();
+      });
+  }
+
+  dismissLoading() {
+    this.loadingCtrl
+      .dismiss()
+      .then((response) => {})
+      .catch((err) => {});
+  }
+
+  async getWorkflowTemplateNameAndDescription(workflowTemplateId, callback) {
+    console.log(workflowTemplateId);
+    // this.displayLoading();
+    const formData = new FormData();
+    formData.append('workflowTemplateId', workflowTemplateId);
+
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
     });
-  }
 
-  dismissLoading(){
-    this.loadingCtrl.dismiss().then((response) => {
-    }).catch((err) => {
-    });;
+    let url = config.url  + '/workflowTemplates/getWorkflowTemplateNameAndDescription';
+    this.http.post(url, formData,{headers: httpHeaders,}).subscribe( async (data) => {
+          if (data) {
+            callback(data);
+          } else {
+            this.dismissLoading();
+            callback({ status: 'error', message: 'Cannot connect to Server' });
+          }
+        },
+        async (error) => {
+          this.dismissLoading();
+          if (error.statusText === 'Unknown Error') {
+            await this.displayPopOver(
+              'Login Error',
+              'Could not connect to the Document Workflow Server at this time. Please try again later.'
+            );
+          } else {
+            await this.displayPopOver(
+              'Error creating new Workflow',
+              error.error
+            );
+          }
+        }
+      );
   }
-
-  async getWorkflowTemplateNameAndDescription(workflowTemplateId, callback){
+  async getWorkflowTemplateData(workflowTemplateId, callback) {
     this.displayLoading();
     const formData = new FormData();
     formData.append('', workflowTemplateId);
@@ -58,59 +96,36 @@ export class WorkflowTemplateService {
     });
 
     this.http
-      .post(config.url + '/workflowTemplates/getWorkflowTemplateNameAndDescription', formData, {
-        headers: httpHeaders,
-      })
+      .post(
+        config.url + '/workflowTemplates/getWorkflowTemplateData',
+        formData,
+        {
+          headers: httpHeaders,
+        }
+      )
       .subscribe(
         (data) => {
           this.dismissLoading();
           if (data) {
             callback(data);
-          } else
-          {callback({ status: 'error', message: 'Cannot connect to Server' });}
-        },
-        async (error) => {
-          this.dismissLoading();
-          if(error.statusText === 'Unknown Error'){
-            await this.displayPopOver('Login Error', 'Could not connect to the Document Workflow Server at this time. Please try again later.');
-          }
-          else {
-            await this.displayPopOver('Error creating new Workflow', error.error);
-          }
-        });
-  }
-  async getWorkflowTemplateData(workflowTemplateId, callback){
-    this.displayLoading();
-    const formData = new FormData();
-    formData.append('', workflowTemplateId);
-
-
-    const token = Cookies.get('token');
-    const httpHeaders: HttpHeaders = new HttpHeaders({
-      Authorization: 'Bearer ' + token,
-    });
-
-    this.http
-      .post(config.url + '/workflowTemplates/getWorkflowTemplateData', formData, {
-        headers: httpHeaders,
-      })
-      .subscribe(
-        (data) => {
-          this.dismissLoading();
-          if (data) {
-            callback(data);
-          } else{
-          callback({ status: 'error', message: 'Cannot connect to Server' });
+          } else {
+            callback({ status: 'error', message: 'Cannot connect to Server' });
           }
         },
         async (error) => {
           this.dismissLoading();
-          if(error.statusText === 'Unknown Error'){
-            await this.displayPopOver('Login Error', 'Could not connect to the Document Workflow Server at this time. Please try again later.');
+          if (error.statusText === 'Unknown Error') {
+            await this.displayPopOver(
+              'Login Error',
+              'Could not connect to the Document Workflow Server at this time. Please try again later.'
+            );
+          } else {
+            await this.displayPopOver(
+              'Error creating new Workflow',
+              error.error
+            );
           }
-          else {
-            await this.displayPopOver('Error creating new Workflow', error.error);
-          }
-        });
+        }
+      );
   }
 }

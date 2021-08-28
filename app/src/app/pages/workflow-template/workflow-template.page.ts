@@ -1,3 +1,4 @@
+import { TemplateBindingIdentifier } from '@angular/compiler';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,6 +8,12 @@ import { UserAPIService } from 'src/app/Services/User/user-api.service';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 import { WorkflowTemplateService } from 'src/app/Services/WorkflowTemplate/workflow-template.service';
 
+
+export interface templateDescription{
+  templateID: string;
+  templateName: string;
+  templateDescription: string;
+}
 @Component({
   selector: 'app-workflow-template',
   templateUrl: './workflow-template.page.html',
@@ -15,6 +22,8 @@ import { WorkflowTemplateService } from 'src/app/Services/WorkflowTemplate/workf
 export class WorkflowTemplatePage implements OnInit {
   sizeMe: boolean;
   templateForm: FormGroup;
+  readyForPhase2: boolean = false;
+  tempDesc: templateDescription[]=[];
 
   constructor(
     private fb: FormBuilder,
@@ -34,8 +43,9 @@ export class WorkflowTemplatePage implements OnInit {
       this.sizeMe = true;
     }
 
-    await this.getTemplateIDs();
+    await this.getTemplateData();
     // await this.getTemplateids();
+
 
     this.templateForm = this.fb.group({
       templateName: ['', [Validators.required]],
@@ -43,20 +53,30 @@ export class WorkflowTemplatePage implements OnInit {
       templateFile: ['', [Validators.required]],
       phases: this.fb.array([]),
     });
-    await this.getWorkflowTemplateData();
+    // await this.getWorkflowTemplateData();
   }
 
-  async getTemplateIDs(){
+  async getTemplateData(){
     console.log("Fetching template ids");
-    this.userService.getTemplateIDs((response)=>{
+    this.userService.getTemplateIDs(async (response)=>{
       console.log(response);
+      for(let id of response.data.templateIds){
+        await this.getWorkflowTemplateData(id);
+      }
+      console.log(this.tempDesc)
     })
   }
 
-  async getWorkflowTemplateData(){
-    // this.templateService.getWorkflowTemplateNameAndDescription(this.workflowId, (response)=>{
-    //   this.logger.Brent(response);
-    // })
+  async getWorkflowTemplateData(id: string){
+    this.templateService.getWorkflowTemplateNameAndDescription(id, (response)=>{
+      let tmp: templateDescription;
+      tmp={
+        templateID: id,
+        templateName: response.templateName,
+        templateDescription: response.templateDescription
+      }
+      this.tempDesc.push(tmp);
+    })
   }
 
 }

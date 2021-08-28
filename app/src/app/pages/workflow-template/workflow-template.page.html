@@ -18,5 +18,29 @@
 </ion-header>
 
 <ion-content>
-
+  <ion-card *ngIf='!readyForPhase2'>
+    <ion-card-content>
+      <ion-grid>
+        <ion-row *ngFor="let template of tempDesc" style="border: 5px solid #002060; border-radius: 25px; padding: 10px; margin: 10px">
+          <ion-col sizeXs='12'>
+            <ion-item lines="none">
+              <ion-label position="stacked">
+                Template Name:
+              </ion-label>
+              <ion-text>{{template.templateName}}</ion-text>
+            </ion-item>
+          </ion-col>
+          <ion-col sizeXs='8'>
+            <ion-item lines="none">
+              <ion-label position="stacked">Description</ion-label>
+              <ion-text>{{template.templateDescription}}</ion-text>
+            </ion-item>
+          </ion-col>
+          <ion-col sizeXs='4'>
+            <ion-button (click)="useThisTemplat(template.templateID)">Use this template</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
