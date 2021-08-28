@@ -130,10 +130,10 @@ export class UserAPIService {
       .post(config.url + '/users/getWorkflowTemplatesIds', formData, {
           headers: httpHeaders,
         }).subscribe(async (response) => {
-          this.logger.Brent(response);
+          callback(response);
         });
-    } catch (e) {
-      await this.displayPopOver('Template ID Error', 'error.error');
+    } catch (error) {
+      await this.displayPopOver('Template ID Error', error.error);
     }
   }
 

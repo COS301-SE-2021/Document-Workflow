@@ -47,8 +47,9 @@ export class WorkflowTemplatePage implements OnInit {
   }
 
   async getTemplateIDs(){
+    console.log("Fetching template ids");
     this.userService.getTemplateIDs((response)=>{
-      this.logger.Brent(response);
+      console.log(response);
     })
   }
 
