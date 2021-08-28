@@ -188,3 +188,4 @@ log.txt
 /platforms
 /plugins
 /www
+app/src/environments/environment.ts

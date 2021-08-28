@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
 import * as Cookies from 'js-cookie';
 import {LoadingController, PopoverController} from '@ionic/angular';
+import { ENV } from 'src/environments/environment';
 
 export interface User {
   Fname: string;
@@ -23,7 +24,9 @@ export interface LoginData {
 export class UserAPIService {
   static url = 'http://localhost:3000/api';
 
-  constructor(private http: HttpClient, private pop: PopoverController, public loadingCtrl: LoadingController,) {}
+  constructor(private http: HttpClient,
+    private pop: PopoverController,
+    public loadingCtrl: LoadingController,) {}
 
   displayLoading(){
     const loading = this.loadingCtrl.create({
@@ -110,6 +113,17 @@ export class UserAPIService {
       );
     } catch (e) {
       alert('An unexpected error occurred, please try again later');
+    }
+  }
+
+  async getTemplateIDs(callback){
+    try{
+      console.log(ENV.userUrl)
+      this.http.post(ENV.userUrl+"", "").subscribe(async (response)=>{
+
+        })
+    }catch(e){
+      await this.displayPopOver('Template ID Error', "error.error");
     }
   }
 
