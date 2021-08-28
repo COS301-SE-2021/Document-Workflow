@@ -11,7 +11,7 @@ export class Entry{
 };
 
 export const workflowHistorySchema = createSchema({
-    entries: {type: [String], default: []}
+    entries: [String]
 },{_id: true, _v: false});
 
 export const WorkflowHistory = typedModel('WorkflowHistory', workflowHistorySchema);

@@ -4,6 +4,7 @@ import WorkflowHistoryRepository from "./WorkflowHistoryRepository";
 import { ObjectId } from "mongoose";
 import {Entry, ENTRY_TYPE, WorkflowHistory} from './WorkflowHistory';
 import {logger} from './../LoggingConfig';
+import bcrypt from "bcrypt";
 
 @injectable()
 export default class WorkflowHistoryService {
@@ -29,6 +30,17 @@ export default class WorkflowHistoryService {
         logger.info(history);
 
         return await this.workflowHistoryRepository.saveWorkflowHistory(history);
+    }
+
+    async updateWorkflowHistory(historyId, user, eventType, currentPhase){
+        logger.info("Updating a workflow history, history id is: " + historyId);
+        const workflowHistory = await this.workflowHistoryRepository.getWorkflowHistory(historyId);
+        const previousEntry = workflowHistory.entries[workflowHistory.entries.length -1];
+        logger.info(previousEntry);
+        const entry = new Entry();
+        //entry.hash = bcrypt.hash(w, parseInt(process.env.SALT_ROUNDS))
+
+
     }
 
 }

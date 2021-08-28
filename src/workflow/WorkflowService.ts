@@ -10,6 +10,7 @@ import {AuthorizationError, RequestError, ServerError} from "../error/Error";
 import encryption from "../crypto/encryption";
 import WorkflowTemplateService from "../workflowTemplate/WorkflowTemplateService";
 import WorkflowHistoryService from "../workflowHistory/WorkflowHistoryService";
+import {ENTRY_TYPE} from "../workflowHistory/WorkflowHistory";
 
 @injectable()
 export default class WorkflowService{
@@ -308,6 +309,11 @@ export default class WorkflowService{
             if(!userFound)
                 return {status:"error", data:{}, message:'You are not a part of this phase'};
 
+            if(permission === 'sign'){
+                await this.documentService.updateDocument(document, workflowId, workflow.currentPhase);
+                await this.workflowHistoryService.updateWorkflowHistory(workflow.historyId, user, ENTRY_TYPE.EDIT, workflow.currentPhase);
+            }
+
             //At this point there are two things that must be done:
             //1) The phase must be checked to see if everyone accepts the phase. If they do, then the workflow
             //Progresses to the next phase. If this is the last phase of the workflow, the workflow must be considered
@@ -328,10 +334,6 @@ export default class WorkflowService{
                     await this.documentService.updateDocument(document, workflowId, workflow.currentPhase);
                     console.log("NEED TO CREATE THE FILE FOR THE NEXT FACE!!!!");
                 }
-            }
-
-            if(permission === 'sign'){ //TODO: make the permission field an enum.
-                await this.documentService.updateDocument(document, workflowId, workflow.currentPhase);
             }
 
             //Save everything
@@ -380,7 +382,7 @@ export default class WorkflowService{
             console.log("REquesting user is a member of this workflow");
 
             let data = await this.documentService.retrieveDocument(workflow.documentId, workflowId, workflow.currentPhase);
-            console.log(this.encrypt.encyrpt(data,workflow.workflowId, userEmail));
+            //console.log(this.encrypt.encyrpt(data,workflow.workflowId, userEmail));
             const phase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
             data.annotations = phase.annotations;
             return {status: 'success', data: data, message:''};
