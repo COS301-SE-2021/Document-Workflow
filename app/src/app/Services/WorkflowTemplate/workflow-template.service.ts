@@ -52,7 +52,6 @@ export class WorkflowTemplateService {
     const formData = new FormData();
     formData.append('', workflowTemplateId);
 
-
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: 'Bearer ' + token,
