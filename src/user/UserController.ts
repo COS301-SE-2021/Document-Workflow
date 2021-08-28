@@ -113,6 +113,20 @@ export default class UserController{
         }
     }
 
+    /**
+     * This function is used to fetch the ids of the workflow templates owned by a user.
+     * We don't allow the user to pass through any data: that is, we get the user making the request
+     * from the input JWT. If we did this differently, it could be a security risk since then users
+     * could make requests to this api endpoint but get the data for workflow templates belonging to other users.
+     * @param req
+     * @private
+     */
+    private async getWorkflowTemplatesIds(req) {
+
+
+        return await this.userService.getWorkflowTemplatesIds(req.user);
+    }
+
     routes() {
         this.router.get("", this.authenticationService.Authenticate, async (req, res) => {
             try {
@@ -228,6 +242,15 @@ export default class UserController{
         this.router.post("/verifyEmailExistence", this.authenticationService.Authenticate, async (req, res) => {
             try {
                 return await this.verifyEmailExistence(req);
+            } catch(err){
+                res.status(200).json({status:"error", data: {}, message: ""});
+                await handleErrors(err,res);
+            }
+        });
+
+        this.router.post("/getWorkflowTemplatesIds", this.authenticationService.Authenticate, async(req, res) =>{
+            try {
+                return await this.getWorkflowTemplatesIds(req);
             } catch(err){
                 res.status(200).json({status:"error", data: {}, message: ""});
                 await handleErrors(err,res);

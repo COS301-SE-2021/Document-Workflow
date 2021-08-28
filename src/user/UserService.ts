@@ -300,4 +300,9 @@ export default class UserService {
     async verifyEmailExistence(email, requestingUserId) {
         return Promise.resolve(undefined);
     }
+
+    async getWorkflowTemplatesIds(user) {
+        const usr = await this.getUserById(user._id);
+        return usr.workflowTemplates;
+    }
 }
