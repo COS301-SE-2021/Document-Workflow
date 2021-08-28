@@ -22,6 +22,7 @@ export default class WorkflowHistoryService {
         entry.userEmail = ownerEmail;
         entry.date = Date.now();
         entry.type = ENTRY_TYPE.CREATE;
+        entry.currentPhase = 0;
 
         const history = new WorkflowHistory({
             entries: [JSON.stringify(entry)]
@@ -35,12 +36,23 @@ export default class WorkflowHistoryService {
     async updateWorkflowHistory(historyId, user, eventType, currentPhase){
         logger.info("Updating a workflow history, history id is: " + historyId);
         const workflowHistory = await this.workflowHistoryRepository.getWorkflowHistory(historyId);
-        const previousEntry = workflowHistory.entries[workflowHistory.entries.length -1];
+        // @ts-ignore
+        const previousEntry = JSON.parse( workflowHistory.entries[workflowHistory.entries.length -1] );
         logger.info(previousEntry);
         const entry = new Entry();
-        //entry.hash = bcrypt.hash(w, parseInt(process.env.SALT_ROUNDS))
+        entry.hash = await bcrypt.hash(previousEntry.userEmail + previousEntry.data + previousEntry.type + previousEntry.currentPhase, parseInt(process.env.SALT_ROUNDS)).then(function(hash){
+            return hash;
+             })
+            .catch(err => {
+                throw new Error(err);
+            });
+        entry.userEmail = user.email;
+        entry.type = eventType;
+        entry.currentPhase = currentPhase;
+        // @ts-ignore
+        workflowHistory.entries.push(JSON.stringify(entry));
 
-
+        await this.workflowHistoryRepository.saveWorkflowHistory(workflowHistory);
     }
 
 }

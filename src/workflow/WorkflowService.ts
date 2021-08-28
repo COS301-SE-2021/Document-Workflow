@@ -617,6 +617,8 @@ export default class WorkflowService{
             console.log(await this.workflowRepository.getWorkflow(workflow._id));
             //await this.workflowRepository.saveWorkflow(workflow); //But thankfully the saveWorkflow function fills the correct role
 
+            await this.workflowHistoryService.updateWorkflowHistory(workflow.historyId, {email: email}, ENTRY_TYPE.REVERT, workflow.currentPhase +1);
+
             return {status:"success", data: {}, message: ""}
         }
         catch(err){

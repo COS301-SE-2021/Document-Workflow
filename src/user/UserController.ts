@@ -123,7 +123,6 @@ export default class UserController{
      */
     private async getWorkflowTemplatesIds(req) {
 
-
         return await this.userService.getWorkflowTemplatesIds(req.user);
     }
 
