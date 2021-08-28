@@ -2,8 +2,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
 import * as Cookies from 'js-cookie';
-import {LoadingController, PopoverController} from '@ionic/angular';
+import { LoadingController, PopoverController } from '@ionic/angular';
 import { ENV } from 'src/environments/environment';
+import { Logger } from '../Logger';
 
 export interface User {
   Fname: string;
@@ -24,22 +25,28 @@ export interface LoginData {
 export class UserAPIService {
   static url = 'http://localhost:3000/api';
 
-  constructor(private http: HttpClient,
+  constructor(
+    private http: HttpClient,
     private pop: PopoverController,
-    public loadingCtrl: LoadingController,) {}
+    public loadingCtrl: LoadingController,
+    private logger: Logger
+  ) {}
 
-  displayLoading(){
-    const loading = this.loadingCtrl.create({
-      message: 'Please wait...',
-    }).then((response)=>{
-      response.present();
-    });
+  displayLoading() {
+    const loading = this.loadingCtrl
+      .create({
+        message: 'Please wait...',
+      })
+      .then((response) => {
+        response.present();
+      });
   }
 
-  dismissLoading(){
-    this.loadingCtrl.dismiss().then((response) => {
-    }).catch((err) => {
-    });;
+  dismissLoading() {
+    this.loadingCtrl
+      .dismiss()
+      .then((response) => {})
+      .catch((err) => {});
   }
 
   public checkIfAuthorized() {
@@ -51,11 +58,9 @@ export class UserAPIService {
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: 'Bearer ' + token,
     });
-    return this.http.post(
-      UserAPIService.url + '/users/authenticate',
-      formData,
-      { headers: httpHeaders }
-    );
+    return this.http.post(ENV.url + '/users/authenticate', formData, {
+      headers: httpHeaders,
+    });
   }
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
@@ -69,7 +74,7 @@ export class UserAPIService {
     formData.append('confirmPassword', user.password);
     formData.append('email', user.email);
     formData.append('signature', file);
-    this.http.post(UserAPIService.url + '/users', formData).subscribe(
+    this.http.post(ENV.url + '/users', formData).subscribe(
       (data) => {
         //this.dismissLoading();
         if (data) {
@@ -80,10 +85,7 @@ export class UserAPIService {
       (error) => {
         console.log(error);
         //this.dismissLoading();
-        this.displayPopOver(
-          'Error',
-          error.error
-        );
+        this.displayPopOver('Error', error.error);
       }
     );
   }
@@ -94,19 +96,20 @@ export class UserAPIService {
     formData.append('email', loginData.email);
     formData.append('password', loginData.password);
     try {
-      this.http.post(UserAPIService.url + '/users/login', formData).subscribe(
+      this.http.post(ENV.url + '/users/login', formData).subscribe(
         async (data) => {
           if (data) {
             callback(data);
-          } else
-            await this.couldNotConnectToServer();
-          },
+          } else await this.couldNotConnectToServer();
+        },
         async (error) => {
           console.log(error);
-          if(error.statusText === 'Unknown Error'){
-            await this.displayPopOver('Login Error', 'Could not connect to the Document Workflow Server at this time. Please try again later.');
-          }
-          else {
+          if (error.statusText === 'Unknown Error') {
+            await this.displayPopOver(
+              'Login Error',
+              'Could not connect to the Document Workflow Server at this time. Please try again later.'
+            );
+          } else {
             await this.displayPopOver('Login Error', error.error);
           }
         }
@@ -116,14 +119,21 @@ export class UserAPIService {
     }
   }
 
-  async getTemplateIDs(callback){
-    try{
-      console.log(ENV.userUrl)
-      this.http.post(ENV.userUrl+"", "").subscribe(async (response)=>{
-
-        })
-    }catch(e){
-      await this.displayPopOver('Template ID Error', "error.error");
+  async getTemplateIDs(callback) {
+    try {
+      const formData = new FormData();
+      const token = Cookies.get('token');
+      const httpHeaders: HttpHeaders = new HttpHeaders({
+        Authorization: 'Bearer ' + token,
+      });
+      this.http
+      .post(ENV.url + '/users/getWorkflowTemplatesIds', formData, {
+          headers: httpHeaders,
+        }).subscribe(async (response) => {
+          this.logger.Brent(response);
+        });
+    } catch (e) {
+      await this.displayPopOver('Template ID Error', 'error.error');
     }
   }
 
@@ -134,7 +144,7 @@ export class UserAPIService {
       componentProps: {
         title: title,
         message: message,
-        displayButton: false
+        displayButton: false,
       },
     });
 
@@ -151,21 +161,20 @@ export class UserAPIService {
       componentProps: {
         title: title,
         message: message,
-        displayButton: true
+        displayButton: true,
       },
     });
 
     await poper.present();
 
     (await poper).onDidDismiss().then(async (data) => {
-      callback(data) ;
+      callback(data);
     });
   }
 
-
   // return true if email is valid else return false.
   //Can be used with register as it must return false
-  async verifyEmail(email: string): Promise<boolean>{
+  async verifyEmail(email: string): Promise<boolean> {
     console.log(email);
     // const formData = new FormData();
     // //const token = localStorage.getItem('token');
@@ -175,7 +184,7 @@ export class UserAPIService {
     // });
 
     // this.http
-    //   .post(UserAPIService.url + '/users/verifyEmailExistence', formData, {
+    //   .post(ENV.url + '/users/verifyEmailExistence', formData, {
     //     headers: httpHeaders,
     //   })
     //   .subscribe(
@@ -206,7 +215,7 @@ export class UserAPIService {
     });
 
     this.http
-      .post(UserAPIService.url + '/users/getDetails', formData, {
+      .post(ENV.url + '/users/getDetails', formData, {
         headers: httpHeaders,
       })
       .subscribe(
@@ -233,7 +242,9 @@ export class UserAPIService {
   }
 
   private async couldNotConnectToServer() {
-    await this.displayPopOver('Error', 'The Document Workflow Server could not be reached at this time, please try again later');
-
+    await this.displayPopOver(
+      'Error',
+      'The Document Workflow Server could not be reached at this time, please try again later'
+    );
   }
 }
