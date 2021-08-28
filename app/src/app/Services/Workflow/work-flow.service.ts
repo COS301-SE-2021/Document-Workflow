@@ -276,6 +276,7 @@ export class WorkFlowService {
       .subscribe(
         (data) => {
           if (data) {
+            console.log(data['data'].ownedWorkflows)
             data['data'].ownedWorkflows = this.formatWorkflows(
               data['data'].ownedWorkflows
             );

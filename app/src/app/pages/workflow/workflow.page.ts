@@ -249,7 +249,6 @@ export class WorkflowPage implements OnInit {
         userEmail: this.user.email,
       },
     ]);
-
   }
 
   fixOrder(event: CustomEvent<ItemReorderEventDetail>) {
