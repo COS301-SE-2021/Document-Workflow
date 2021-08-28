@@ -55,4 +55,8 @@ export default class WorkflowHistoryService {
         await this.workflowHistoryRepository.saveWorkflowHistory(workflowHistory);
     }
 
+    async getWorkflowHistory(historyId){
+        return await this.workflowHistoryRepository.getWorkflowHistory(historyId);
+    }
+
 }

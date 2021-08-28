@@ -246,6 +246,18 @@ export default class WorkflowController {
         }
     }
 
+    private async getWorkflowHistory(req) {
+        if(!req.body.workflowId)
+            throw new RequestError("An id must be supplied to revert the phase of a workflow");
+        try{
+            return await this.workflowService.getWorkflowHistory(req.body.workflowId, req.user.email);
+        }
+        catch(err){
+            console.log(err);
+            throw err;
+        }
+    }
+
     //----------------------------------------------------------------------------------
 
     routes() {
@@ -337,7 +349,14 @@ export default class WorkflowController {
             try {
                 res.status(200).json(await this.getOriginalDocument(req));
             } catch(err){
-                res.status(500).json({})
+                await handleErrors(err,res);
+            }
+        });
+
+        this.router.post("/getWorkflowHistory", this.auth, async(req,res)=>{
+            try {
+                res.status(200).json(await this.getWorkflowHistory(req));
+            } catch(err){
                 await handleErrors(err,res);
             }
         });

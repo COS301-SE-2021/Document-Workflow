@@ -399,7 +399,6 @@ export default class WorkflowService{
      * of the workflow.
      * @param workflow
      * @param email
-     * //TODO: if this function can be made more efficient it would help a lot of other functions
      */
     async isUserMemberOfWorkflow(workflow, email):Promise<boolean>{
 
@@ -641,5 +640,14 @@ export default class WorkflowService{
             console.log(err);
             throw err;
         }
+    }
+
+    async getWorkflowHistory(workflowId, email) {
+        const workflow = await this.workflowRepository.getWorkflow(workflowId);
+        if(!await this.isUserMemberOfWorkflow(workflow, email)){
+            return new AuthorizationError("You do not have the privilege of viewing this workflow's history");
+        }
+        const workflowHistory = await this.workflowHistoryService.getWorkflowHistory(workflow.historyId);
+        return {status:"success", data: {history: workflowHistory}, message:""};
     }
 }
