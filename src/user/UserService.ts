@@ -128,12 +128,6 @@ export default class UserService {
 
     }
 
-    /**
-     * This function will be used to ensure that the email address given in the register user request
-     * is an actual email address and not some random string.
-     * @param email
-     * //TODO: look at a smarter way of validating. Instead of Regex maybe try sending an email or checking if email account exists.
-     */
 
     async verifyUser(req): Promise<any> {
         const redirect_url = "http://localhost:3000/login-register";
