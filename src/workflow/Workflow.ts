@@ -18,7 +18,7 @@ export const workflowSchema = createSchema({
     documentId: Type.ref(Type.objectId({required: false})).to("Document", documentSchema),
     historyId: Type.ref(Type.objectId({required: false})).to("WorkflowHistory", workflowHistorySchema),
     description: Type.string({required: true}),
-    phases: Type.array({required: false}).of(Type.ref(Type.objectId({required: true})).to("Phase", phaseSchema)),
+    phases: [{type:String}],
     currentPhase: Type.number({default: 0}),
     status: Type.string({default: WorkflowStatus.INPROGRESS}),
 

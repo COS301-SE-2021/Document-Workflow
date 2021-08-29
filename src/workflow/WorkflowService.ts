@@ -49,9 +49,9 @@ export default class WorkflowService{
 
             //Step 1 create Phases:
             console.log("Saving Phases");
-            const phaseIds: ObjectId[] = [];
+            const phaseIds = [];
             for (const phase of phases) {
-                phaseIds.push(await this.phaseService.createPhase(phase));
+                phaseIds.push(String(await this.phaseService.createPhase(phase)));
             }
             workflow.phases = phaseIds;
             console.log("Phases saved, saving workflow");
