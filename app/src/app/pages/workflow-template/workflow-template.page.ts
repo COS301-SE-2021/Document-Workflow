@@ -46,8 +46,8 @@ export class WorkflowTemplatePage implements OnInit {
     }
 
     //todo uncomment the comment
-    // await this.getTemplateData();
-    await this.useThisTemplate('612942988ed7c10970592172');
+    await this.getTemplateData();
+    // await this.useThisTemplate('612942988ed7c10970592172');
 
     // this.templateForm = this.fb.group({
     //   templateName: ['', [Validators.required]],
@@ -81,10 +81,9 @@ export class WorkflowTemplatePage implements OnInit {
   }
 
   async useThisTemplate(id:string){
-    console.log(id);
     this.templateService.getWorkflowTemplateData(id, (response)=>{
-      console.log(response);
       let template = response.template;
+      this.ownerEmail = template.templateOwnerEmail;
       this.originalFile = response.fileData;
       this.templateForm = this.fb.group({
         workflowName: [template.documentName,[Validators.required]],
@@ -105,8 +104,6 @@ export class WorkflowTemplatePage implements OnInit {
   }
 
   viewPhase(i: number){
-    console.log(this.phaseViewers)
-    console.log(i)
     this.phaseViewers[i] = !this.phaseViewers[i];
   }
 
@@ -206,6 +203,7 @@ export class WorkflowTemplatePage implements OnInit {
   }
 
   async includeActionArea(i: number, form: FormControl) {
+    console.log(this.ownerEmail)
     const a = await this.modal.create({
       component: DocumentActionAreaComponent,
       componentProps: {
