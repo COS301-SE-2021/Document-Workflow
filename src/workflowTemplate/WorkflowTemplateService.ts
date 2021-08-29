@@ -61,7 +61,7 @@ export default class WorkflowTemplateService{
 
         const user = await this.userService.getUserById(usr._id);
         if(!user.workflowTemplates.includes(templateId)){
-            throw new RequestError("This workflow does not belong to you");
+            throw new RequestError("This template does not belong to you");
         }
         let template = await this.workflowTemplateRepository.findWorkflowTemplate(templateId);
         const fileData = await this.documentService.retrieveTemplateDocumentFromCloud(template._id, template.documentName);
@@ -81,4 +81,14 @@ export default class WorkflowTemplateService{
         return data;
     }
 
+    async deleteWorkflowTemplate(user, templateId) {
+        const usr = await this.userService.getUserById(user._id);
+        if(!user.workflowTemplates.includes(templateId)){
+            throw new RequestError("This template does not belong to you");
+        }
+        await this.documentService.deleteTemplateDocumentFromCloud(templateId);
+        await this.workflowTemplateRepository.deleteWorkflowTemplate(templateId);
+
+        return {status: "success", data:{}, message:""};
+    }
 }

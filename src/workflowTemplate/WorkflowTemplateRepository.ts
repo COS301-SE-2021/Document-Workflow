@@ -1,7 +1,7 @@
 import {WorkflowTemplate, WorkflowTemplateProps} from "./WorkflowTemplate";
 import { ObjectId } from "mongoose";
 import {ServerError} from "../error/Error";
-import {Workflow, WorkflowProps} from "../workflow/Workflow";
+import {Workflow, WorkflowProps} from "./../workflow/Workflow";
 
 export default class WorkflowTemplateRepository{
     
@@ -23,6 +23,15 @@ export default class WorkflowTemplateRepository{
         }
         catch(err){
             throw new ServerError("Could not find the specified workflow Template.");
+        }
+    }
+
+    async deleteWorkflowTemplate(id: ObjectId) {
+        try {
+            await WorkflowTemplate.deleteOne({_id: id});
+        }
+        catch(err){
+            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
         }
     }
 }
