@@ -116,27 +116,24 @@ export default class UserService {
         usr.ownedWorkflows = [];
         usr.workflows = [];
         usr.workflowTemplates = [];
+        const tempValidateCode = usr.validateCode;
         //const user: UserProps = await this.userRepository.postUser(usr);
         //const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
         //usr.tokens = [token];
         const user: UserProps = await this.userRepository.saveUser(usr);
         //const response = await this.userRepository.putUser(usr);
         if(user){
-            await this.sendVerificationEmail(usr.email, usr.validateCode)//,
+            //logger.info(usr); It seems as though the usr object gets changed after it is saved to the database
+            logger.info(req.body.email + " " + tempValidateCode);
+            await this.sendVerificationEmail(req.body.email, tempValidateCode);//,
             return user;
         }
 
     }
 
-    /**
-     * This function will be used to ensure that the email address given in the register user request
-     * is an actual email address and not some random string.
-     * @param email
-     * //TODO: look at a smarter way of validating. Instead of Regex maybe try sending an email or checking if email account exists.
-     */
 
     async verifyUser(req): Promise<any> {
-        const redirect_url = "http://localhost:3000/login-register";
+        const redirect_url = process.env.REDIRECT_URL; 
         if(!req.query.email || !req.query.verificationCode){
             throw new RequestError("Missing required properties");
         }
@@ -152,16 +149,21 @@ export default class UserService {
         }
     }
 
-    async sendVerificationEmail(code, emailAddress): Promise<void> {
+    async sendVerificationEmail(emailAddress, code ): Promise<void> {
+        logger.info("Sending an email to the new email address");
         let url = process.env.BASE_URL + '/users/verify?verificationCode=' + code + '&email=' + emailAddress;
         let transporter = nodemailer.createTransport({
             service: 'gmail',
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true,
             auth: {
                 user: process.env.EMAIL_ADDRESS,
                 pass: process.env.EMAIL_PASSWORD
-            }
+            },
+            tls:{ rejectUnauthorized:false} 
         });
-
+        
         let mailOptions = {
             from: process.env.EMAIL_ADDRESS,
             to: emailAddress,

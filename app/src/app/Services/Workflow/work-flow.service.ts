@@ -301,6 +301,7 @@ export class WorkFlowService {
       let tmpWorkflow: workflowFormat;
       let completedCounter: number = 0;
       for (let phase of document.phases) {
+        phase = JSON.parse(phase);
         let tempUser: phaseUserFormat[] = [];
         for (let user of JSON.parse(phase['users'])) {
           let tmpUser: phaseUserFormat;

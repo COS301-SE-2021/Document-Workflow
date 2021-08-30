@@ -1,7 +1,7 @@
 import {WorkflowTemplate, WorkflowTemplateProps} from "./WorkflowTemplate";
 import { ObjectId } from "mongoose";
 import {ServerError} from "../error/Error";
-import {Workflow, WorkflowProps} from "../workflow/Workflow";
+import {Workflow, WorkflowProps} from "./../workflow/Workflow";
 
 export default class WorkflowTemplateRepository{
     

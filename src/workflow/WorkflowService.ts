@@ -49,9 +49,9 @@ export default class WorkflowService{
 
             //Step 1 create Phases:
             console.log("Saving Phases");
-            const phaseIds: ObjectId[] = [];
+            const phaseIds = [];
             for (const phase of phases) {
-                phaseIds.push(await this.phaseService.createPhase(phase));
+                phaseIds.push(String(await this.phaseService.createPhase(phase)));
             }
             workflow.phases = phaseIds;
             console.log("Phases saved, saving workflow");
@@ -199,6 +199,7 @@ export default class WorkflowService{
 
             for(let i=0; i<workflow.phases.length; ++i){
                 const phase = await this.phaseService.getPhaseById(workflow.phases[i]);
+                
                 const phaseUsers = JSON.parse(phase.users);
                 console.log("deleting workflow id from members of current phase");
                 console.log(phaseUsers);
@@ -253,7 +254,7 @@ export default class WorkflowService{
                 let phases = [];
 
                 for(let k=0; k<workflow.phases.length; ++k){
-                    phases.push(await this.phaseService.getPhaseById(workflow.phases[k]));
+                    phases.push(JSON.stringify(await this.phaseService.getPhaseById(workflow.phases[k])));
                 }
                 workflow.phases = phases;
                 ownedWorkflows.push(workflow);
@@ -265,7 +266,7 @@ export default class WorkflowService{
                 let phases = [];
 
                 for(let k=0; k<workflow.phases.length; ++k){
-                    phases.push(await this.phaseService.getPhaseById(workflow.phases[k]));
+                    phases.push(JSON.stringify(await this.phaseService.getPhaseById(workflow.phases[k])));
                 }
                 workflow.phases = phases;
                 workflows.push(workflow);

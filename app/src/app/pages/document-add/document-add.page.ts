@@ -29,6 +29,7 @@ import { DocumentActionAreaComponent } from 'src/app/components/document-action-
 import { User, UserAPIService } from 'src/app/Services/User/user-api.service';
 import * as Cookies from 'js-cookie';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
+import { AIService } from 'src/app/Services/AI/ai.service';
 import { verifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
 import WebViewer, {Core} from '@pdftron/webviewer';
 
@@ -76,6 +77,7 @@ export class DocumentAddPage implements OnInit {
     private modal: ModalController,
     private router: Router,
     private userApiService: UserAPIService,
+    private aiService: AIService,
     private sanitizer: DomSanitizer,
     private workflowService: WorkFlowService
   ) {}
@@ -295,7 +297,7 @@ export class DocumentAddPage implements OnInit {
 
     this.displayWebViewer(this.blob);
 
-    const addDocButton = document.getElementById('uploadFile');
+    const addDocButton = document.getElementById('uploadFile'); 
     addDocButton.parentNode.removeChild(addDocButton);
   }
 
@@ -310,7 +312,7 @@ export class DocumentAddPage implements OnInit {
 
       instance.UI.loadDocument(blob, {filename: 'Preview Document'});
       instance.UI.disableElements(['ribbons']);
-      instance.UI.setToolbarGroup('toolbarGroup-View',false);
+      instance.UI.setToolbarGroup('toolbarGroup-View',false); 
 
       instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
         const PDFNet = instance.Core.PDFNet;
@@ -327,8 +329,7 @@ export class DocumentAddPage implements OnInit {
           txt.begin(page, rect); // Read the page.
           extractedText += await txt.getAsText();
         }
-        console.log(extractedText);
-
+        this.aiService.categorizeDocument(extractedText); 
       });
 
     });
