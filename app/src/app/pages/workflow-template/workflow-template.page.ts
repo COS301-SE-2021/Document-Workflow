@@ -47,21 +47,11 @@ export class WorkflowTemplatePage implements OnInit {
 
     //todo uncomment the comment
     await this.getTemplateData();
-    // await this.useThisTemplate('612942988ed7c10970592172');
-
-    // this.templateForm = this.fb.group({
-    //   templateName: ['', [Validators.required]],
-    //   templateDescription: ['', [Validators.required]],
-    //   templateFile: ['', [Validators.required]],
-    //   phases: this.fb.array([]),
-    // });
-    // await this.getWorkflowTemplateData();
   }
 
   async getTemplateData(){
     console.log("Fetching template ids");
     this.userService.getTemplateIDs(async (response)=>{
-      console.log(response);
       for(let id of response.data.templateIds){
         await this.getWorkflowTemplateData(id);
       }
@@ -85,8 +75,9 @@ export class WorkflowTemplatePage implements OnInit {
       let template = response.template;
       this.ownerEmail = template.templateOwnerEmail;
       this.originalFile = response.fileData;
+      console.log(template)
       this.templateForm = this.fb.group({
-        workflowName: [template.documentName,[Validators.required]],
+        workflowName: [template.workflowName,[Validators.required]],
         workflowDescription: [template.workflowDescription, [Validators.required]],
         phases: this.fb.array([]),
       });
@@ -96,11 +87,9 @@ export class WorkflowTemplatePage implements OnInit {
   }
 
   fillPhases(phases: any){
-    console.log(this.templateForm.controls.phases['controls'])
       for(let phase of phases){
         this.templateForm.controls.phases['controls'].push(this.fillPhase(phase[0]))
       }
-      console.log(this.templateForm)
   }
 
   viewPhase(i: number){
@@ -116,7 +105,6 @@ export class WorkflowTemplatePage implements OnInit {
       users: this.fb.array([])
     });
 
-    console.log(temp.controls.users['controls'])
     for(let user of phase.users){
       temp.controls.users['controls'].push(this.fillUsers(user));
     }

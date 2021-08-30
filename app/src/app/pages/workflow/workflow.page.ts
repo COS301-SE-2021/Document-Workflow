@@ -291,7 +291,6 @@ export class WorkflowPage implements OnInit {
   }
 
   showOnlyWorkflowOwned() {
-    console.log('here');
     for (const document of this.documents) {
       if (document.ownerEmail === this.userEmail) {
         document.showWorkflow = true;
@@ -346,5 +345,15 @@ export class WorkflowPage implements OnInit {
     for (let document of this.documents) {
       document.showWorkflow = true;
     }
+  }
+
+  viewHistory(workflowID: string){
+    this.leave=true;
+    this.router.navigate([
+      '/home/workflowHistory ',
+      {
+        workflowId: workflowID,
+      },
+    ]);
   }
 }
