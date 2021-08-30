@@ -116,13 +116,16 @@ export default class UserService {
         usr.ownedWorkflows = [];
         usr.workflows = [];
         usr.workflowTemplates = [];
+        const tempValidateCode = usr.validateCode;
         //const user: UserProps = await this.userRepository.postUser(usr);
         //const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
         //usr.tokens = [token];
         const user: UserProps = await this.userRepository.saveUser(usr);
         //const response = await this.userRepository.putUser(usr);
         if(user){
-            await this.sendVerificationEmail(usr.email, usr.validateCode)//,
+            //logger.info(usr); It seems as though the usr object gets changed after it is saved to the database
+            logger.info(req.body.email + " " + tempValidateCode);
+            await this.sendVerificationEmail(req.body.email, tempValidateCode);//,
             return user;
         }
 
@@ -146,16 +149,21 @@ export default class UserService {
         }
     }
 
-    async sendVerificationEmail(code, emailAddress): Promise<void> {
+    async sendVerificationEmail(emailAddress, code ): Promise<void> {
+        logger.info("Sending an email to the new email address");
         let url = process.env.BASE_URL + '/users/verify?verificationCode=' + code + '&email=' + emailAddress;
         let transporter = nodemailer.createTransport({
             service: 'gmail',
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true,
             auth: {
                 user: process.env.EMAIL_ADDRESS,
                 pass: process.env.EMAIL_PASSWORD
-            }
+            },
+            tls:{ rejectUnauthorized:false} 
         });
-
+        
         let mailOptions = {
             from: process.env.EMAIL_ADDRESS,
             to: emailAddress,
