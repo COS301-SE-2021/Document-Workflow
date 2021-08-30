@@ -63,7 +63,16 @@
         <ion-textarea formControlName="workflowDescription"></ion-textarea>
       </ion-item>
       <ion-item>
-        <!-- todo pdftron stuff -->
+        <style>
+          .webviewer{
+            width: 100%;
+            height:70vh;
+          }
+        </style>
+
+          <div id="webViewerContainer" class = "content" role="main">
+            <div id="webViewer" #viewer class="webviewer"></div>
+          </div>
       </ion-item>
 
     </ion-card>
@@ -155,7 +164,7 @@
             <ion-button style="width: 99%;" (click)="addPhase()">Add a new Phase</ion-button>
           </ion-col>
           <ion-col sizeXs='12' sizeSm='6'>
-            <ion-button type="submit" style="width: 99%;" [disabled]="!templateForm">Save changes</ion-button>
+            <ion-button type="submit" style="width: 99%;" [disabled]="!templateForm.valid">Save changes</ion-button>
           </ion-col>
         </ion-row>
 
