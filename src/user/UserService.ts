@@ -133,7 +133,7 @@ export default class UserService {
 
 
     async verifyUser(req): Promise<any> {
-        const redirect_url = "http://localhost:3000/login-register";
+        const redirect_url = process.env.REDIRECT_URL; 
         if(!req.query.email || !req.query.verificationCode){
             throw new RequestError("Missing required properties");
         }

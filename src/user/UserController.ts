@@ -6,6 +6,7 @@ import sanitize from "../security/Sanitize";
 import {RequestError, ServerError} from "../error/Error";
 import { handleErrors } from "../error/ErrorHandler";
 import Authenticator from "../security/Authenticate";
+import sanitizeRequest from "./../security/Sanitize";
 
 @injectable()
 export default class UserController{
@@ -146,7 +147,7 @@ export default class UserController{
             }
         });
 
-        this.router.get("/verify", sanitize, async(req,res) =>{
+        this.router.get("/verify", sanitizeRequest, async(req,res) =>{
             try {
                 res.status(200).send(await this.verifyUserRoute(req));
             } catch(err){
