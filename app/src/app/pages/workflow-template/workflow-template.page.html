@@ -62,6 +62,9 @@
         <ion-label position="floating">Workflow Description</ion-label>
         <ion-textarea formControlName="workflowDescription"></ion-textarea>
       </ion-item>
+      <ion-fab vertical="bottom" horizontal="end">
+        <ion-fab-button (click)="displayWebViewer()">ViewDocument</ion-fab-button>
+      </ion-fab>
       <ion-item>
         <style>
           .webviewer{

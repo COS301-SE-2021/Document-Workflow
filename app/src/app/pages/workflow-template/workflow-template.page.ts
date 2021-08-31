@@ -20,18 +20,18 @@ import { WorkflowTemplateService, templateDescription, templatePhaseUser } from 
 })
 export class WorkflowTemplatePage implements OnInit {
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
+  @ViewChild('viewer') viewerRef: ElementRef;
   sizeMe: boolean;
   templateForm: FormGroup;
   readyForPhase2: boolean = false;
   phase2: boolean = true;
   tempDesc: templateDescription[]=[];
   phaseViewers: boolean[]=[];
-  originalFile:string ;
+  originalFile: any ;
   ownerEmail:string;
   file:any;
   blob: Blob;
   srcFile: any;
-  viewerRef: any;
 
   constructor(
     private fb: FormBuilder,
@@ -53,7 +53,6 @@ export class WorkflowTemplatePage implements OnInit {
       this.sizeMe = true;
     }
 
-    //todo uncomment the comment
     await this.getTemplateData();
   }
 
@@ -79,11 +78,11 @@ export class WorkflowTemplatePage implements OnInit {
   }
 
   async useThisTemplate(id:string){
-    this.templateService.getWorkflowTemplateData(id, (response)=>{
+    await this.templateService.getWorkflowTemplateData(id, (response)=>{
       let template = response.template;
       this.ownerEmail = template.templateOwnerEmail;
       this.originalFile = response.fileData;
-      console.log(template)
+      console.log(template);
       this.templateForm = this.fb.group({
         workflowName: [template.workflowName,[Validators.required]],
         workflowDescription: [template.workflowDescription, [Validators.required]],
@@ -91,7 +90,29 @@ export class WorkflowTemplatePage implements OnInit {
       });
       this.fillPhases(template.phases);
       this.readyForPhase2 = true;
-    })
+      const arr = new Uint8Array(this.originalFile.Body.data);
+      this.blob = new Blob([arr], { type: 'application/pdf;base64' });
+    });
+
+  }
+
+  displayWebViewer(){
+    console.log(this.viewerRef);
+    WebViewer({
+      path: './../../../assets/lib',
+      fullAPI:true
+    }, this.viewerRef.nativeElement).then(async instance =>{
+
+      instance.Core.PDFNet.initialize();
+
+      instance.UI.loadDocument(this.blob, {filename: 'Preview Document'});
+      instance.UI.disableElements(['ribbons']);
+      instance.UI.setToolbarGroup('toolbarGroup-View',false);
+
+      instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
+      });
+
+    });
   }
 
   fillPhases(phases: any){
@@ -214,62 +235,6 @@ export class WorkflowTemplatePage implements OnInit {
       } else {
         //not delete
       }
-    });
-  }
-
-  async uploadFile(event: EventTarget) {
-    const eventObj: MSInputMethodContext = event as MSInputMethodContext;
-    const target: HTMLInputElement = eventObj.target as HTMLInputElement;
-    this.file = target.files[0];
-    console.log(typeof this.file);
-    console.log('file', await this.file.arrayBuffer());
-    // const buff = response.data.filedata.Body.data; //wut
-
-    this.srcFile = new Uint8Array(await this.file.arrayBuffer());
-
-    this.templateForm.get('workflowFile').setValue(this.file);
-    this.blob = new Blob([this.file], { type: 'application/pdf;base64' });
-    console.log(this.blob.arrayBuffer());
-    const obj = URL.createObjectURL(this.blob);
-    console.log(obj);
-    this.srcFile = obj;
-    // this.addFile = true;
-
-    this.displayWebViewer(this.blob);
-
-    const addDocButton = document.getElementById('uploadFile');
-    addDocButton.parentNode.removeChild(addDocButton);
-  }
-
-  displayWebViewer(blob: Blob){
-    WebViewer({
-      path: './../../../assets/lib',
-      fullAPI:true
-    }, this.viewerRef.nativeElement).then(async instance =>{
-
-      instance.Core.PDFNet.initialize();
-
-      instance.UI.loadDocument(blob, {filename: 'Preview Document'});
-      instance.UI.disableElements(['ribbons']);
-      instance.UI.setToolbarGroup('toolbarGroup-View',false);
-
-      instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
-        const PDFNet = instance.Core.PDFNet;
-        const doc = await PDFNet.PDFDoc.createFromBuffer(await this.file.arrayBuffer());
-
-        let extractedText = "";
-
-        const txt = await PDFNet.TextExtractor.create();
-        ;
-        const pageCount = await doc.getPageCount();
-        for(let i=1; i<=pageCount; ++i){
-          const page = await doc.getPage(i);
-          const rect = await page.getCropBox();
-          txt.begin(page, rect); // Read the page.
-          extractedText += await txt.getAsText();
-        }
-        this.aiService.categorizeDocument(extractedText);
-      });
     });
   }
 

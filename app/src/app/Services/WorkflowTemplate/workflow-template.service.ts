@@ -130,7 +130,8 @@ export class WorkflowTemplateService {
         async (data) => {
           this.dismissLoading();
           if (data) {
-            data['template']['phases'] = this.formatPhases(data['template']['phases'])
+            data['template']['phases'] = this.formatPhases(data['template']['phases']);
+            data['fileData'] = data['fileData'];
             callback(data);
           } else {
             callback({ status: 'error', message: 'Cannot connect to Server' });
