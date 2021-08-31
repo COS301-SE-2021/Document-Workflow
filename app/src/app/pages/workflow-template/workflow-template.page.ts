@@ -29,7 +29,7 @@ export class WorkflowTemplatePage implements OnInit {
   phaseViewers: boolean[]=[];
   originalFile: any ;
   ownerEmail:string;
-  file:any;
+  file:File;
   blob: Blob;
   srcFile: any;
 
@@ -92,6 +92,7 @@ export class WorkflowTemplatePage implements OnInit {
       this.readyForPhase2 = true;
       const arr = new Uint8Array(this.originalFile.Body.data);
       this.blob = new Blob([arr], { type: 'application/pdf;base64' });
+      this.file = new File([this.blob], template.documentName);
     });
 
   }
@@ -239,9 +240,9 @@ export class WorkflowTemplatePage implements OnInit {
   }
 
   async submit() {
-    console.log('here')
-    console.log(this.templateForm)
-    // await this.createWorkflow();
+    console.log('here');
+    console.log(this.templateForm);
+    await this.createWorkflow();
   }
 
 
@@ -267,7 +268,7 @@ export class WorkflowTemplatePage implements OnInit {
       name,
       description,
       phases,
-      this.originalFile,
+      this.file,
       template,
       (response) => {
         if (response.status === 'success') {
