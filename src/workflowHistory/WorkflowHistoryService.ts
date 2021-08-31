@@ -49,6 +49,7 @@ export default class WorkflowHistoryService {
         entry.userEmail = user.email;
         entry.type = eventType;
         entry.currentPhase = currentPhase;
+        entry.date = Date.now();
         // @ts-ignore
         workflowHistory.entries.push(JSON.stringify(entry));
 
