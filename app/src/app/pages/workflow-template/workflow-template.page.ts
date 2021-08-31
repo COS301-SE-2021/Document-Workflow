@@ -78,7 +78,7 @@ export class WorkflowTemplatePage implements OnInit {
   }
 
   async useThisTemplate(id:string){
-    await this.templateService.getWorkflowTemplateData(id, (response)=>{
+    await this.templateService.getWorkflowTemplateData(id, async (response)=>{
       let template = response.template;
       this.ownerEmail = template.templateOwnerEmail;
       this.originalFile = response.fileData;
@@ -89,6 +89,7 @@ export class WorkflowTemplatePage implements OnInit {
         phases: this.fb.array([]),
       });
       this.fillPhases(template.phases);
+
       this.readyForPhase2 = true;
       const arr = new Uint8Array(this.originalFile.Body.data);
       this.blob = new Blob([arr], { type: 'application/pdf;base64' });
@@ -151,7 +152,8 @@ export class WorkflowTemplatePage implements OnInit {
     })
   }
 
-  nextPhase(){
+  async nextPhase(){
+
     this.phase2 = !this.phase2;
   }
 

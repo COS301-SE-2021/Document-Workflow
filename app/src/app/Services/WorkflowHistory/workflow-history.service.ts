@@ -51,5 +51,3 @@ export class WorkflowHistoryService {
   }
 }
 
-// getWorkflowHistory
-// saveWorkflowHistory

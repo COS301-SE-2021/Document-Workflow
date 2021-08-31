@@ -9,6 +9,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { User, UserAPIService } from '../../Services/User/user-api.service';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 import { WorkflowHistoryService } from 'src/app/Services/WorkflowHistory/workflow-history.service';
+
+export interface history{
+  currentPhase: number;
+  date: string;
+  hash: string;
+  type: string;
+  userEmail: String;
+}
 @Component({
   selector: 'app-workflow-history',
   templateUrl: './workflow-history.page.html',
@@ -62,6 +70,14 @@ export class WorkflowHistoryPage implements OnInit {
   async getWorkflowHistory(){
     this.workflowHistory.getHistory(this.workflowId, (response)=>{
       console.log(response)
+      if(response.status === "success"){
+        for(let entry of response.data.history.entries){
+          let temp = JSON.parse(entry);
+          console.log(temp)
+        }
+      }else{
+        console.log('error boi')
+      }
     })
   }
 }
