@@ -297,7 +297,7 @@ export class DocumentAddPage implements OnInit {
 
     this.displayWebViewer(this.blob);
 
-    const addDocButton = document.getElementById('uploadFile'); 
+    const addDocButton = document.getElementById('uploadFile');
     addDocButton.parentNode.removeChild(addDocButton);
   }
 
@@ -312,7 +312,7 @@ export class DocumentAddPage implements OnInit {
 
       instance.UI.loadDocument(blob, {filename: 'Preview Document'});
       instance.UI.disableElements(['ribbons']);
-      instance.UI.setToolbarGroup('toolbarGroup-View',false); 
+      instance.UI.setToolbarGroup('toolbarGroup-View',false);
 
       instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
         const PDFNet = instance.Core.PDFNet;
@@ -329,7 +329,8 @@ export class DocumentAddPage implements OnInit {
           txt.begin(page, rect); // Read the page.
           extractedText += await txt.getAsText();
         }
-        this.aiService.categorizeDocument(extractedText); 
+        console.log("Text successfully extracted");
+        this.aiService.categorizeDocument(extractedText);
       });
 
     });

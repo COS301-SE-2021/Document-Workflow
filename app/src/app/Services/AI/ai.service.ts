@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as tfjs from '@tensorflow/tfjs';
+import * as natural from 'natural';
 
 @Injectable({
   providedIn: 'root'
@@ -7,11 +7,19 @@ import * as tfjs from '@tensorflow/tfjs';
 export class AIService {
 
 
-  constructor() { 
+  constructor() {
 
   }
+  categorizeDocument(extractedText: string){
+    const tokenizer = new natural.WordTokenizer();
+    const classifier = new natural.BayesClassifier();
+    classifier.addDocument('i am long qqqq', 'buy');
+    classifier.addDocument('buy the q\'s', 'buy');
+    classifier.addDocument('short gold', 'sell');
+    classifier.addDocument('sell gold', 'sell');
+    classifier.train();
 
-  categorizeDocument(extractedText: String){  
-    console.log(tfjs);
+    console.log(classifier.classify('i am short silver'));
+    console.log(classifier.classify('i am long copper'));
   }
 }

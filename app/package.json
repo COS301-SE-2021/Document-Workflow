@@ -12,6 +12,12 @@
     "e2e": "ng e2e"
   },
   "private": true,
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false,
+    "webworkers": false
+  },
   "dependencies": {
     "@angular-devkit/build-webpack": "^0.1102.13",
     "@angular/common": "~12.0.1",
@@ -49,6 +55,7 @@
     "jspdf": "^2.3.1",
     "jspdf-autotable": "^3.5.14",
     "jspdf-html2canvas": "^1.4.9",
+    "natural": "^5.0.5",
     "ng2-pdf-viewer": "^7.0.1",
     "nodemailer": "^6.6.1",
     "pdf-lib": "^1.16.0",
@@ -75,6 +82,7 @@
     "@ionic/lab": "3.2.10",
     "@types/jasmine": "~3.6.0",
     "@types/jasminewd2": "~2.0.3",
+    "@types/natural": "^5.0.0",
     "@types/node": "^12.11.1",
     "@typescript-eslint/eslint-plugin": "4.16.1",
     "@typescript-eslint/parser": "4.16.1",
