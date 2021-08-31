@@ -350,7 +350,7 @@ export class WorkflowPage implements OnInit {
   viewHistory(workflowID: string){
     this.leave=true;
     this.router.navigate([
-      '/home/workflowHistory ',
+      '/home/workflowHistory',
       {
         workflowId: workflowID,
       },

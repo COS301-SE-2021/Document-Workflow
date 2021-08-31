@@ -57,7 +57,7 @@ export default class DocumentRepository {
         const uploadParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
             Body: file.data,
-            Key: doc.workflowId +"/"+ file.name
+            Key: 'workflows/' + doc.workflowId +"/"+ file.name
         }
         try{
             await s3.upload(uploadParams, (err, data) => {
@@ -77,7 +77,7 @@ export default class DocumentRepository {
         const uploadParams2 = {
             Bucket: process.env.AWS_BUCKET_NAME,
             Body: file.data,
-            Key: doc.workflowId +"/phase0/"+ file.name
+            Key: 'workflows/' + doc.workflowId +"/phase0/"+ file.name
         }
 
         await s3.upload(uploadParams2, (err, data) => {
@@ -96,7 +96,7 @@ export default class DocumentRepository {
         const uploadParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
             Body: file.data,
-            Key: workflowId +"/phase"+phaseNumber +"/" + file.name
+            Key: 'workflows/' + workflowId +"/phase"+phaseNumber +"/" + file.name
         }
         try{
             console.log(uploadParams);

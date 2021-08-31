@@ -11,6 +11,7 @@ import encryption from "../crypto/encryption";
 import WorkflowTemplateService from "../workflowTemplate/WorkflowTemplateService";
 import WorkflowHistoryService from "../workflowHistory/WorkflowHistoryService";
 import {ENTRY_TYPE} from "../workflowHistory/WorkflowHistory";
+import {logger} from "../LoggingConfig";
 
 @injectable()
 export default class WorkflowService{
@@ -645,10 +646,13 @@ export default class WorkflowService{
 
     async getWorkflowHistory(workflowId, email) {
         const workflow = await this.workflowRepository.getWorkflow(workflowId);
+        logger.info(workflow);
         if(!await this.isUserMemberOfWorkflow(workflow, email)){
+            logger.info("Cannot fetch workflow history, user not part of workflow");
             return new AuthorizationError("You do not have the privilege of viewing this workflow's history");
         }
         const workflowHistory = await this.workflowHistoryService.getWorkflowHistory(workflow.historyId);
+        logger.info(workflowHistory);
         return {status:"success", data: {history: workflowHistory}, message:""};
     }
 }

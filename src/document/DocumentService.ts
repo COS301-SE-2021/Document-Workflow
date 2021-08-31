@@ -62,7 +62,7 @@ export default class DocumentService {
     async retrieveOriginalDocument(docId, workflowId){
         try {
             const documentMetadata = await this.documentRepository.getDocument(docId);
-            const filedata = await this.documentRepository.getDocumentFromS3(workflowId + '/' + documentMetadata.name);
+            const filedata = await this.documentRepository.getDocumentFromS3('workflows/' + workflowId + '/' + documentMetadata.name);
             return {status: "success", data: {filedata: filedata, metadata: documentMetadata}, message: ""};
         }
         catch(err){
@@ -77,7 +77,7 @@ export default class DocumentService {
         const metadata = await this.documentRepository.getDocument(docId);
         console.log(metadata);
         console.log("Fetching document from S3 server with path: ", workflowId +'/phase' + currentPhase +'/', metadata.name);
-        const filedata = await this.documentRepository.getDocumentFromS3(workflowId +'/phase' + currentPhase +'/' + metadata.name);
+        const filedata = await this.documentRepository.getDocumentFromS3('workflows/' + workflowId +'/phase' + currentPhase +'/' + metadata.name);
         if(filedata === null)
             throw "The specified document does not exist.";
         console.log({status:"success", data:{metadata: metadata, filedata: filedata}, message:"" });
@@ -106,8 +106,8 @@ export default class DocumentService {
     async resetFirstPhaseDocument(workflowId, documentId) {
         const metadata = await this.documentRepository.getDocument(documentId);
         console.log("Resetting first phase document to original, path to original: ",workflowId + '/' + metadata.name);
-        const originalDocument = await this.documentRepository.getDocumentFromS3(workflowId + '/' + metadata.name);
-        await this.documentRepository.updateDocumentS3WithBuffer(workflowId +'/phase0/' + metadata.name, originalDocument.Body);
+        const originalDocument = await this.documentRepository.getDocumentFromS3('workflows/' + workflowId + '/' + metadata.name);
+        await this.documentRepository.updateDocumentS3WithBuffer('workflows/' + workflowId +'/phase0/' + metadata.name, originalDocument.Body);
 
     }
 }
