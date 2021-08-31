@@ -4,17 +4,17 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { DocumentArchivePageRoutingModule } from './document-archive-routing.module';
+import { WorkflowHistoryPageRoutingModule } from './workflow-history-routing.module';
 
-import { DocumentArchivePage } from './document-archive.page';
+import { WorkflowHistoryPage } from './workflow-history.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    DocumentArchivePageRoutingModule
+    WorkflowHistoryPageRoutingModule
   ],
-  declarations: [DocumentArchivePage]
+  declarations: [WorkflowHistoryPage]
 })
-export class DocumentArchivePageModule {}
+export class WorkflowHistoryPageModule {}

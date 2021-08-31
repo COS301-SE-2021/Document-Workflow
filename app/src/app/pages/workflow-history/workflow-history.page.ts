@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/member-ordering */
 import { Component, OnInit, Input } from '@angular/core';
 import { IonicModule, Platform } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
@@ -7,35 +6,34 @@ import * as Cookies from 'js-cookie';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
-
-
-// for the module pages
-
-
-//imports for services and interfaces
 import { User, UserAPIService } from '../../Services/User/user-api.service';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
-
-
+import { WorkflowHistoryService } from 'src/app/Services/WorkflowHistory/workflow-history.service';
 @Component({
-  selector: 'app-document-archive',
-  templateUrl: './document-archive.page.html',
-  styleUrls: ['./document-archive.page.scss'],
+  selector: 'app-workflow-history',
+  templateUrl: './workflow-history.page.html',
+  styleUrls: ['./workflow-history.page.scss'],
 })
-export class DocumentArchivePage implements OnInit {
+export class WorkflowHistoryPage implements OnInit {
   sizeMe: boolean;
+  @Input('workflowId') workflowId: string;
 
   constructor(
     private modals: ModalController,
     private plat: Platform,
     private router: Router,
+    private route: ActivatedRoute,
     private userApiService: UserAPIService,
-    private workflowService: WorkFlowService
+    private workflowService: WorkFlowService,
+    private workflowHistory: WorkflowHistoryService
   ) {}
 
-  @Input() user: User;
 
   async ngOnInit() {
+    await this.route.params.subscribe((data) => {
+      this.workflowId = data['workflowId'];
+    });
+
     if (this.plat.width() > 572) {
       this.sizeMe = false;
     } else {
@@ -57,5 +55,13 @@ export class DocumentArchivePage implements OnInit {
         }
       );
     }
+
+    await this.getWorkflowHistory();
+  }
+
+  async getWorkflowHistory(){
+    this.workflowHistory.getHistory(this.workflowId, (response)=>{
+      console.log(response)
+    })
   }
 }

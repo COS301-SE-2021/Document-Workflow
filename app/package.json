@@ -35,6 +35,7 @@
     "@ionic/pwa-elements": "^3.0.2",
     "@ionic/storage-angular": "^3.0.6",
     "@pdftron/webviewer": "^8.0.0",
+    "@tensorflow/tfjs": "^3.8.0",
     "angular2-signaturepad": "^3.0.4",
     "bootstrap": "^5.0.1",
     "capacitor-native-biometric": "^3.0.3",

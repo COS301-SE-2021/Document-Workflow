@@ -478,8 +478,6 @@ export class WorkflowEditPage implements OnInit {
       }
       i++;
     }
-
-    console.log(phases)
     const name = this.workflowForm.controls.workflowName.value;
     const description = this.workflowForm.controls.workflowDescription.value;
 
