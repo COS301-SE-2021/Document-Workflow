@@ -317,16 +317,17 @@ export default class WorkflowService{
 
             if(permission === 'sign'){
                 await this.documentService.updateDocument(document, workflowId, workflow.currentPhase);
-                await this.workflowHistoryService.updateWorkflowHistory(workflow.historyId, user, ENTRY_TYPE.SIGN, workflow.currentPhase);
+                const hash = await this.workflowHistoryService.updateWorkflowHistory(workflow.historyId, user, ENTRY_TYPE.SIGN, workflow.currentPhase);
+                workflow.currentHash = hash;
             }
 
             if(accept){
-                await this.workflowHistoryService.updateWorkflowHistory(workflow.historyId, user, ENTRY_TYPE.ACCEPT, workflow.currentPhase);
-
+                const hash =await this.workflowHistoryService.updateWorkflowHistory(workflow.historyId, user, ENTRY_TYPE.ACCEPT, workflow.currentPhase);
+                workflow.currentHash = hash;
             }
             else{
-                await this.workflowHistoryService.updateWorkflowHistory(workflow.historyId, user, ENTRY_TYPE.REJECT, workflow.currentPhase);
-
+                const hash = await this.workflowHistoryService.updateWorkflowHistory(workflow.historyId, user, ENTRY_TYPE.REJECT, workflow.currentPhase);
+                workflow.currentHash = hash;
             }
             //At this point there are two things that must be done:
             //1) The phase must be checked to see if everyone accepts the phase. If they do, then the workflow
@@ -545,8 +546,9 @@ export default class WorkflowService{
             }
 
             workflowOriginal.phases = preservePhasesIds.concat(addPhaseIds);
+            const hash = await this.workflowHistoryService.updateWorkflowHistory(workflowOriginal.historyId, {user: requestingUser}, ENTRY_TYPE.EDIT, workflowOriginal.currentPhase);
+            workflowOriginal.currentHash = hash;
             await this.workflowRepository.updateWorkflow(workflowOriginal);
-            await this.workflowHistoryService.updateWorkflowHistory(workflowOriginal.historyId, {user: requestingUser}, ENTRY_TYPE.EDIT, workflowOriginal.currentPhase);
 
             return {status: "success", data: {}, message: ''};
         }
@@ -621,13 +623,14 @@ export default class WorkflowService{
             }
 
             workflow.status = WorkflowStatus.INPROGRESS;
+            const hash = await this.workflowHistoryService.updateWorkflowHistory(workflow.historyId, {email: email}, ENTRY_TYPE.REVERT, originalPhase);
+            workflow.currentHash = hash;
             console.log('Updating the workflow values')
             await this.workflowRepository.updateWorkflow(workflow); //the update workflow function does not appear to work
             console.log('Workflow in database looks as follows: ');
             console.log(await this.workflowRepository.getWorkflow(workflow._id));
             //await this.workflowRepository.saveWorkflow(workflow); //But thankfully the saveWorkflow function fills the correct role
 
-            await this.workflowHistoryService.updateWorkflowHistory(workflow.historyId, {email: email}, ENTRY_TYPE.REVERT, originalPhase);
 
             return {status:"success", data: {}, message: ""}
         }

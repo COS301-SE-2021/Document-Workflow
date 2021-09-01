@@ -49,7 +49,7 @@ export default class WorkflowHistoryService {
         return historyData;
     }
 
-    async updateWorkflowHistory(historyId, user, eventType, currentPhase){
+    async updateWorkflowHistory(historyId, user, eventType, currentPhase):Promise<String>{
         logger.info("Updating a workflow history, history id is: " + historyId);
         const workflowHistory = await this.workflowHistoryRepository.getWorkflowHistory(historyId);
         // @ts-ignore
