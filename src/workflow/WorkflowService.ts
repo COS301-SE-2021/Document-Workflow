@@ -400,6 +400,7 @@ export default class WorkflowService{
             let data = await this.documentService.retrieveDocument(workflow.documentId, workflowId, workflow.currentPhase);
             const phase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
             data.annotations = phase.annotations;
+            data.hash =  workflow.currentHash;
             return {status: 'success', data: data, message:''};
         }
         catch(err){

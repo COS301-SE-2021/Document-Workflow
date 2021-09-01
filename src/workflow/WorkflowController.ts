@@ -6,6 +6,7 @@ import { RequestError, ServerError } from "../error/Error";
 import { handleErrors } from "../error/ErrorHandler";
 import { WorkflowProps } from "./Workflow";
 import { PhaseProps, Phase } from "../phase/Phase";
+import {logger} from "../LoggingConfig";
 
 @injectable()
 export default class WorkflowController {
@@ -111,7 +112,7 @@ export default class WorkflowController {
     }
 
     private async retrieveDocument(req) {
-
+        logger.info("Retrieving a document given a workflow id");
         if(!req.body.workflowId){
             throw new RequestError("There was something wrong with the request");
         }
