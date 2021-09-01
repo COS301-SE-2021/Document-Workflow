@@ -17,21 +17,23 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-<ion-card *ngFor="let history of histories">
+  <ion-card *ngFor="let history of histories">
 
     <ion-card-header>
       <ion-card-title>
         Phase {{history.currentPhase}}
       </ion-card-title>
     </ion-card-header>
-  <ion-card-content>
-    <ion-item lines='none'>
-    The User {{history.userEmail}} has {{history.type}}
-  </ion-item>
-<ion-item lines='none'>
-  Hash: {{history.hash}}
-</ion-item>
+    <ion-card-content>
+      <ion-item lines='none'>
+        The User {{history.userEmail}} has {{history.type}}
+      </ion-item>
+      <ion-item lines='none'>
+        <ion-label class="ion-text-wrap">
+          Hash: {{history.hash}}
+        </ion-label>
+      </ion-item>
 
-  </ion-card-content>
-</ion-card>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
