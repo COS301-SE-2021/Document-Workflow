@@ -1,12 +1,13 @@
 import { injectable } from "tsyringe";
 import UserRepository from "./UserRepository";
-import { UserProps } from "./User";
+import { UserDoc, UserProps } from "./User";
 import nodemailer from 'nodemailer';
 import jwt, { Jwt } from "jsonwebtoken";
 import { AuthenticationError, RequestError } from "../error/Error";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import Database from "../Database";
+import { ObjectId } from "mongoose";
 
 @injectable()
 export default class UserService {
@@ -274,5 +275,18 @@ export default class UserService {
 
     async verifyEmailExistence(email, requestingUserId) {
         return Promise.resolve(undefined);
+    }
+
+    async addContact(contactEmail: string, user): Promise<ObjectId> {
+        //check if email of contact exists:
+        const contact: UserDoc = await this.userRepository.findUser({email: contactEmail});
+        if(contact){
+            const currentUser: UserDoc = await this.userRepository.findUser({_id: user._id});
+            currentUser.contacts.push(contactEmail);
+            await this.userRepository.updateUser(currentUser);
+            return contact._id;
+        }else{
+            throw new RequestError("Contact does not exist");
+        }
     }
 }
