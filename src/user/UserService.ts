@@ -273,8 +273,26 @@ export default class UserService {
 
     }
 
-    async verifyEmailExistence(email, requestingUserId) {
+    /*async verifyEmailExistence(email, requestingUserId) {
         return Promise.resolve(undefined);
+    }*/
+
+    async removeContact(contactEmail: string, user): Promise<ObjectId>{
+        //check if email of contact exists:
+        const contact: UserDoc = await this.userRepository.findUser({email: contactEmail});
+        if(contact){
+            const currentUser: UserDoc = await this.userRepository.findUser({_id: user._id});
+            const indexOfRemovedEmail = currentUser.contacts.indexOf(contactEmail);
+            if(indexOfRemovedEmail != -1){
+                currentUser.contacts.splice(indexOfRemovedEmail, 1);
+                await this.userRepository.updateUser(currentUser);
+            }else{
+                throw new RequestError("This person is not a contact");
+            }
+            return contact._id;
+        }else{
+            throw new RequestError("Contact does not exist");
+        }
     }
 
     async addContact(contactEmail: string, user): Promise<ObjectId> {
@@ -282,6 +300,10 @@ export default class UserService {
         const contact: UserDoc = await this.userRepository.findUser({email: contactEmail});
         if(contact){
             const currentUser: UserDoc = await this.userRepository.findUser({_id: user._id});
+            //check if they're already a contact
+            if(currentUser.contacts.indexOf(contactEmail) != -1){
+                throw new RequestError("This contact is already a contact of this user");
+            }
             currentUser.contacts.push(contactEmail);
             await this.userRepository.updateUser(currentUser);
             return contact._id;
