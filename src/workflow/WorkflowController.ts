@@ -248,7 +248,7 @@ export default class WorkflowController {
 
     private async getWorkflowHistory(req) {
         if(!req.body.workflowId)
-            throw new RequestError("An id must be supplied to revert the phase of a workflow");
+            throw new RequestError("A workflowId must be supplied to revert the phase of a workflow");
         try{
             return await this.workflowService.getWorkflowHistory(req.body.workflowId, req.user.email);
         }
@@ -256,6 +256,15 @@ export default class WorkflowController {
             console.log(err);
             throw err;
         }
+    }
+
+    private async verifyDocument(req) {
+
+        if(!req.body.workflowId || ! req.files.document){
+            throw new RequestError("A workflowId and input document is required to verify a document");
+        }
+
+        return await this.workflowService.verifyDocument(req.body.workflowId, req.files.document, req.user);
     }
 
     //----------------------------------------------------------------------------------
@@ -361,6 +370,14 @@ export default class WorkflowController {
             }
         });
 
+        this.router.post("/verifyDocument", this.auth, async(req,res)=>{
+            try{
+                res.status(200).json(await this.verifyDocument(req));
+            }
+            catch(err){
+                await handleErrors(err, res);
+            }
+        });
 
         this.router.post("/delete",this.auth, async(req,res)=>{
             try {

@@ -375,6 +375,7 @@ export default class WorkflowService{
      * While there will exists a copy of the document for each phase of the workflow, the one that is fetched
      * by this function is determined by the currentPhase member/feature of a workflow. Doing this prevents
      * users from potentially inputting their own phaseNumber into the request and breaking the server.
+     *  //TODO: add the hash of the currentWorkflowHistory entry to this document
      * @param workflowId
      * @param userEmail
      */
@@ -383,16 +384,15 @@ export default class WorkflowService{
         try{
             const workflow = await this.workflowRepository.getWorkflow(workflowId);
             console.log(workflow);
-            if(!workflow.documentId)
-                console.log("BIG ERROR THIS WORKFLOW DOES NOT HAVE A DOCUMEnt ID!!!");
+            if(!workflow.documentId){
+                throw new ServerError("There is no document associated with this workflow");
+            }
+
             if(!await this.isUserMemberOfWorkflow(workflow, userEmail)){
-                console.log("REquesting user is NOT a member of this workflow");
                 throw new AuthorizationError("You may not retrieve this workflow's details");
             }
-            console.log("REquesting user is a member of this workflow");
 
             let data = await this.documentService.retrieveDocument(workflow.documentId, workflowId, workflow.currentPhase);
-            //console.log(this.encrypt.encyrpt(data,workflow.workflowId, userEmail));
             const phase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
             data.annotations = phase.annotations;
             return {status: 'success', data: data, message:''};
@@ -659,5 +659,9 @@ export default class WorkflowService{
         const workflowHistory = await this.workflowHistoryService.getWorkflowHistory(workflow.historyId);
         logger.info(workflowHistory);
         return {status:"success", data: {history: workflowHistory}, message:""};
+    }
+
+    async verifyDocument(workflowId, document, user) {
+        return {status:"success", data:{}, message:""};
     }
 }
