@@ -71,7 +71,7 @@ export default class WorkflowService{
             await this.workflowRepository.addDocumentId(workflowId, documentId);
 
             //Step5 create the workflow history for this workflow and save the returned id to this workflow.
-            const historyId = await this.workflowHistoryService.createWorkflowHistory(workflow.ownerEmail);
+            const historyId = await this.workflowHistoryService.createWorkflowHistory(workflow.ownerEmail, workflowId);
             await this.workflowRepository.addWorkflowHistoryId(workflowId, historyId);
 
             await this.addWorkFlowIdToUsersWorkflows(phases, workflowId, workflow.ownerEmail);
@@ -313,9 +313,17 @@ export default class WorkflowService{
 
             if(permission === 'sign'){
                 await this.documentService.updateDocument(document, workflowId, workflow.currentPhase);
-                await this.workflowHistoryService.updateWorkflowHistory(workflow.historyId, user, ENTRY_TYPE.EDIT, workflow.currentPhase);
+                await this.workflowHistoryService.updateWorkflowHistory(workflow.historyId, user, ENTRY_TYPE.SIGN, workflow.currentPhase);
             }
 
+            if(accept){
+                await this.workflowHistoryService.updateWorkflowHistory(workflow.historyId, user, ENTRY_TYPE.ACCEPT, workflow.currentPhase);
+
+            }
+            else{
+                await this.workflowHistoryService.updateWorkflowHistory(workflow.historyId, user, ENTRY_TYPE.REJECT, workflow.currentPhase);
+
+            }
             //At this point there are two things that must be done:
             //1) The phase must be checked to see if everyone accepts the phase. If they do, then the workflow
             //Progresses to the next phase. If this is the last phase of the workflow, the workflow must be considered
@@ -487,8 +495,6 @@ export default class WorkflowService{
         try{
             //1) Retrieve the workflow that we are going to be editing based on the input workflowId
             const workflowOriginal = await this.workflowRepository.getWorkflow(workflowId);
-            console.log(workflowOriginal);
-            console.log(convertedPhases);
 
             //2) Check that the requesting user has the correct permissions to edit this workflow
             if(! workflowOriginal.ownerEmail === requestingUser)
@@ -500,8 +506,6 @@ export default class WorkflowService{
             if(!this.allPhasesCanBeEdited(convertedPhases, preservePhasesIds)){
                 return {status:"error", data:{}, message:""};
             }
-
-            console.log(preservePhasesIds);
 
             //5) For each phase, either create, edit, or delete.
             let addPhaseIds = [];
@@ -538,6 +542,7 @@ export default class WorkflowService{
 
             workflowOriginal.phases = preservePhasesIds.concat(addPhaseIds);
             await this.workflowRepository.updateWorkflow(workflowOriginal);
+            await this.workflowHistoryService.updateWorkflowHistory(workflowOriginal.historyId, {user: requestingUser}, ENTRY_TYPE.EDIT, workflowOriginal.currentPhase);
 
             return {status: "success", data: {}, message: ''};
         }
@@ -579,7 +584,7 @@ export default class WorkflowService{
         try{
 
             let workflow = await this.workflowRepository.getWorkflow(workflowId);
-            console.log(workflow);
+            let originalPhase = workflow.currentPhase;
 
             if(workflow.ownerEmail !== email){
                 return {status: "error", data: {}, message: "Insufficient privileges to revert a workflow phase"};
@@ -618,7 +623,7 @@ export default class WorkflowService{
             console.log(await this.workflowRepository.getWorkflow(workflow._id));
             //await this.workflowRepository.saveWorkflow(workflow); //But thankfully the saveWorkflow function fills the correct role
 
-            await this.workflowHistoryService.updateWorkflowHistory(workflow.historyId, {email: email}, ENTRY_TYPE.REVERT, workflow.currentPhase +1);
+            await this.workflowHistoryService.updateWorkflowHistory(workflow.historyId, {email: email}, ENTRY_TYPE.REVERT, originalPhase);
 
             return {status:"success", data: {}, message: ""}
         }

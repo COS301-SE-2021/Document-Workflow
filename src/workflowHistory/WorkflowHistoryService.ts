@@ -14,21 +14,32 @@ export default class WorkflowHistoryService {
         private encrypt: encryption) {
     }
 
-    async createWorkflowHistory(ownerEmail):Promise<ObjectId>{
+    /**
+     *
+     * @param ownerEmail
+     * @param workflowId
+     * @return Returns the workflowId of the created document in the mongoDB that needs to be added to a workflow.
+     */
+    async createWorkflowHistory(ownerEmail, workflowId):Promise<ObjectId>{
         logger.info("Creating a new workflow history");
-
+        const date = Date.now();
         const entry = new Entry();
-        entry.hash = "";
+        //The hash for the creation entry is unique since it does not have a previous entry to base its
+        //Hash off of. Thus, we generate its hash based on partly on non-public data so that it cannot be forged.
+        entry.hash = await bcrypt.hash((workflowId + date + process.env.WORKFLOW_CREATION_SECRET), parseInt(process.env.SALT_ROUNDS)).then(function(hash){
+            return hash;
+        })
+            .catch(err => {
+                throw new Error(err);
+            });
         entry.userEmail = ownerEmail;
-        entry.date = Date.now();
+        entry.date = date;
         entry.type = ENTRY_TYPE.CREATE;
         entry.currentPhase = 0;
 
         const history = new WorkflowHistory({
-            entries: [JSON.stringify(entry)]
+            entries: [JSON.stringify(entry)],
         });
-
-        logger.info(history);
 
         return await this.workflowHistoryRepository.saveWorkflowHistory(history);
     }
@@ -56,6 +67,11 @@ export default class WorkflowHistoryService {
         await this.workflowHistoryRepository.saveWorkflowHistory(workflowHistory);
     }
 
+    /**
+     * Retrieves a unique workflowHistory based on the input id. This id can only be found bt the workflow
+     * which this history corresponds to, since we only want histories to be fetched in the contacts of workflows.
+     * @param historyId
+     */
     async getWorkflowHistory(historyId){
         return await this.workflowHistoryRepository.getWorkflowHistory(historyId);
     }
