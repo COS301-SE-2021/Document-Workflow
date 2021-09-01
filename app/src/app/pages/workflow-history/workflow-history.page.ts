@@ -10,9 +10,9 @@ import { User, UserAPIService } from '../../Services/User/user-api.service';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 import { WorkflowHistoryService } from 'src/app/Services/WorkflowHistory/workflow-history.service';
 
-export interface history{
+export interface History{
   currentPhase: number;
-  date: string;
+  date: Date;
   hash: string;
   type: string;
   userEmail: String;
@@ -24,6 +24,7 @@ export interface history{
 })
 export class WorkflowHistoryPage implements OnInit {
   sizeMe: boolean;
+  histories: History[]=[];
   @Input('workflowId') workflowId: string;
 
   constructor(
@@ -72,9 +73,12 @@ export class WorkflowHistoryPage implements OnInit {
       console.log(response)
       if(response.status === "success"){
         for(let entry of response.data.history.entries){
-          let temp = JSON.parse(entry);
-          console.log(temp)
+          let tmp: History = JSON.parse(entry);
+          let date:Date = tmp.date;
+          console.log(date)
+          this.histories.push(tmp);
         }
+        console.log(this.histories)
       }else{
         console.log('error boi')
       }
