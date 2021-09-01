@@ -36,8 +36,7 @@ export default class WorkflowService{
      * @param phases
      */
     async createWorkFlow(workflow: WorkflowProps, file: File, phases: PhaseProps[], template: any, user): Promise<any>{
-
-        console.log("In the createWorkFlow function");
+        logger.info("Creating a workflow");
         try {
             //Before any creation of objects takes place, checks must be done on the inputs to ensure that they are valid.
             const areValid = await this.arePhasesValid(phases);
@@ -45,7 +44,7 @@ export default class WorkflowService{
                 console.log("Phase was malformed");
                 return {status: "error", data:{}, message: "A phase contains a user that does not exist"}
             }
-            console.log("ALL PHASES ARE VALID");
+            console.log("All phases valid");
             phases[0].status = PhaseStatus.INPROGRESS;
 
             //Step 1 create Phases:
@@ -63,20 +62,25 @@ export default class WorkflowService{
 
             //Step 3 save document with workflowId:
             const documentId = await this.documentService.uploadDocument(file, workflowId);
-            console.log("THE DOCUMENT HAS BEEN CREATED AND THE WORKFLOW SHOULD HAVE THE DOCUMENT ID NOW!!!");
-            console.log(workflow);
             console.log("Document saved, updating workflow");
 
-            //Step 4 update workflow with documentId:
-            await this.workflowRepository.addDocumentId(workflowId, documentId);
+            //Step 4: Create the Workflow History for this workflow
+            const historyData = await this.workflowHistoryService.createWorkflowHistory(workflow.ownerEmail, workflowId);
 
-            //Step5 create the workflow history for this workflow and save the returned id to this workflow.
-            const historyId = await this.workflowHistoryService.createWorkflowHistory(workflow.ownerEmail, workflowId);
-            await this.workflowRepository.addWorkflowHistoryId(workflowId, historyId);
+            //Step 5: update the workflows documentId, historyId, and hash
+            //In order to use the save function to update a document, we require a document, not a documentProps
+            //thus we fetch the workflow we have created in the database, update its parameters then we can update it effectively
+            const workflowForUpdate = await this.workflowRepository.getWorkflow(String(workflowId));
+            workflowForUpdate.documentId = documentId;
+            workflowForUpdate.historyId = historyData.id;
+            workflowForUpdate.currentHash = historyData.hash;
+            await this.workflowRepository.saveWorkflow(workflowForUpdate);
 
+            //6) Add the new workflow Id to the workflow and ownedWorkflows fields of its participating users
             await this.addWorkFlowIdToUsersWorkflows(phases, workflowId, workflow.ownerEmail);
             await this.addWorkFlowIdToOwnedWorkflows(workflowId, workflow.ownerEmail);
 
+            //Creat a template if this field is set
             if(template !== null){
                 console.log("Creating a template from the created workflow");
                 const templateId = await this.workflowTemplateService.createWorkflowTemplate(workflow, file, phases, template);

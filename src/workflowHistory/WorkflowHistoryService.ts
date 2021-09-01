@@ -18,9 +18,9 @@ export default class WorkflowHistoryService {
      *
      * @param ownerEmail
      * @param workflowId
-     * @return Returns the workflowId of the created document in the mongoDB that needs to be added to a workflow.
+     * @return historyData A json object containing the id of the workflowHistory and hash generated for the first entry.
      */
-    async createWorkflowHistory(ownerEmail, workflowId):Promise<ObjectId>{
+    async createWorkflowHistory(ownerEmail, workflowId):Promise<{ id: ObjectId; hash: String }>{
         logger.info("Creating a new workflow history");
         const date = Date.now();
         const entry = new Entry();
@@ -41,7 +41,12 @@ export default class WorkflowHistoryService {
             entries: [JSON.stringify(entry)],
         });
 
-        return await this.workflowHistoryRepository.saveWorkflowHistory(history);
+        const historyData = {
+            hash: entry.hash,
+            id: await this.workflowHistoryRepository.saveWorkflowHistory(history)
+        };
+
+        return historyData;
     }
 
     async updateWorkflowHistory(historyId, user, eventType, currentPhase){
@@ -65,6 +70,7 @@ export default class WorkflowHistoryService {
         workflowHistory.entries.push(JSON.stringify(entry));
 
         await this.workflowHistoryRepository.saveWorkflowHistory(workflowHistory);
+        return entry.hash;
     }
 
     /**

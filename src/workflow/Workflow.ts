@@ -22,6 +22,7 @@ export const workflowSchema = createSchema({
     phases: [{type:String}],
     currentPhase: Type.number({default: 0}),
     status: Type.string({default: WorkflowStatus.INPROGRESS}),
+    currentHash: Type.string({default: ""})
 
 }, {_id: true, _v: false});
 
