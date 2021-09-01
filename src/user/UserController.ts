@@ -139,7 +139,7 @@ export default class UserController{
         }
     }
 
-    private async verifyEmailExistence(req) {
+    /*private async verifyEmailExistence(req) {
         if(!req.body.email)
             throw new RequestError("Cannot verify existence of null email");
         try{
@@ -148,7 +148,7 @@ export default class UserController{
         catch(err){
             throw err;
         }
-    }
+    }*/
 
     routes() {
         this.router.get("", this.authenticationService.Authenticate, async (req, res) => {
@@ -276,14 +276,14 @@ export default class UserController{
             }
         });
 
-        this.router.post("/verifyEmailExistence", this.authenticationService.Authenticate, async (req, res) => {
+        /*this.router.post("/verifyEmailExistence", this.authenticationService.Authenticate, async (req, res) => {
             try {
                 return await this.verifyEmailExistence(req);
             } catch(err){
                 res.status(200).json({status:"error", data: {}, message: ""});
                 try{await handleErrors(err,res);}catch{}
             }
-        });
+        });*/
 
         this.router.get("/test", async (req, res) => {
             res.status(200).json("Server is running");
