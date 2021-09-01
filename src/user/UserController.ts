@@ -6,6 +6,8 @@ import sanitize from "../security/Sanitize";
 import { RequestError, ServerError } from "../error/Error";
 import { handleErrors } from "../error/ErrorHandler";
 import Authenticator from "../security/Authenticate";
+import { ObjectId } from "mongoose";
+
 
 @injectable()
 export default class UserController{
@@ -73,6 +75,18 @@ export default class UserController{
         }
     }
 
+    private async addContactRoute(req): Promise<ObjectId> {
+        if(!req.body.contactemail){
+            throw new RequestError("Missing contactEmail")
+        }
+        try{
+            return await this.userService.addContact(req.body.contactemail, req.user);
+        }
+        catch(err){
+            throw err;
+        }
+    }
+
     private async getUserDetails(req) {
         try{
             return await this.userService.getUserDetails(req);
@@ -135,6 +149,15 @@ export default class UserController{
                 await handleErrors(err,res);
             }
         });
+
+        this.router.post("/addContact", this.auth, async (req, res) => {
+            try{
+                const contactId = await this.addContactRoute(req);
+                res.status(200).json({status: "success", data:{"ObjectId": contactId }, message: "Contact added"})
+            } catch(err){
+                await handleErrors(err,res);
+            }
+        })
 
         this.router.get("/verify", sanitize, async(req,res) =>{
             try {
