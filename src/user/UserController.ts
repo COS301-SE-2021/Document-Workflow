@@ -77,10 +77,22 @@ export default class UserController{
 
     private async addContactRoute(req): Promise<ObjectId> {
         if(!req.body.contactemail){
-            throw new RequestError("Missing contactEmail")
+            throw new RequestError("Missing contactEmail");
         }
         try{
             return await this.userService.addContact(req.body.contactemail, req.user);
+        }
+        catch(err){
+            throw err;
+        }
+    }
+
+    private async removeContactRoute(req): Promise<ObjectId> {
+        if(!req.body.contactemail){
+            throw new RequestError("Missing contactEmail");
+        }
+        try{
+            return await this.userService.removeContact(req.body.contactemail, req.user);
         }
         catch(err){
             throw err;
@@ -130,12 +142,11 @@ export default class UserController{
     private async verifyEmailExistence(req) {
         if(!req.body.email)
             throw new RequestError("Cannot verify existence of null email");
-
         try{
             return await this.userService.verifyEmailExistence(req.body.email, req.user._id);
         }
-        catch(e){
-            throw e;
+        catch(err){
+            throw err;
         }
     }
 
@@ -146,7 +157,7 @@ export default class UserController{
                 if(users) res.status(200).json(users);
                 else res.status(404).send();
             } catch(err){
-                await handleErrors(err,res);
+                try{await handleErrors(err,res);}catch{}
             }
         });
 
@@ -155,15 +166,24 @@ export default class UserController{
                 const contactId = await this.addContactRoute(req);
                 res.status(200).json({status: "success", data:{"ObjectId": contactId }, message: "Contact added"})
             } catch(err){
-                await handleErrors(err,res);
+                try{await handleErrors(err,res);}catch{}
             }
-        })
+        });
+
+        this.router.post("/removeContact", this.auth, async (req, res) => {
+            try{
+                const contactId = await this.removeContactRoute(req);
+                res.status(200).json({status: "success", data:{"ObjectId": contactId }, message: "Contact removed"})
+            } catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        });
 
         this.router.get("/verify", sanitize, async(req,res) =>{
             try {
                 res.status(200).send(await this.verifyUserRoute(req));
             } catch(err){
-                await handleErrors(err,res);
+                try{await handleErrors(err,res);}catch{}
             }
         });
 
@@ -172,7 +192,7 @@ export default class UserController{
                 res.status(200).json(await this.getUserDetails(req));
             } catch(err){
                 console.log("Fetching user details had an error");
-                await handleErrors(err,res);
+                try{await handleErrors(err,res);}catch{}
             }
         });
 
@@ -182,7 +202,7 @@ export default class UserController{
                 if(user) res.status(200).json(user);
                 else res.status(404).send("Could not find User");
             } catch(err){
-                await handleErrors(err,res);
+                try{await handleErrors(err,res);}catch{}
             }
         });
 
@@ -192,7 +212,7 @@ export default class UserController{
                 if(user) res.status(200).json(user);
                 else res.status(404).send("Could not find User");
             } catch(err){
-                await handleErrors(err,res);
+                try{await handleErrors(err,res);}catch{}
             }
         });
 
@@ -202,7 +222,7 @@ export default class UserController{
                 if(token) res.status(200).json({status: "success", data:{"token": token}, message: ""});
                 else res.status(400).send("Could not log in user");
             } catch(err){
-                await handleErrors(err,res);
+                try{await handleErrors(err,res);}catch{}
             }
         });
 
@@ -212,7 +232,7 @@ export default class UserController{
                 else res.status(400).send("User could not be logged out");
             }
             catch(err){
-                await handleErrors(err,res);
+                try{await handleErrors(err,res);}catch{}
             }
         });
 
@@ -222,7 +242,7 @@ export default class UserController{
                 if(user) res.status(201).json(user);
                 else res.status(400).send("Could not register User");
             } catch(err){
-                await handleErrors(err,res);
+                try{await handleErrors(err,res);}catch{}
             }
         });
 
@@ -231,7 +251,7 @@ export default class UserController{
             try{
                 res.status(200).json({status:"success", data:{}, message:""});
             } catch(err){
-                await handleErrors(err, res);
+                try{await handleErrors(err,res);}catch{}
             }
 
         });
@@ -242,7 +262,7 @@ export default class UserController{
                 if(user) res.status(200).json(user);
                 else res.status(400).send("Could not update User");
             } catch(err){
-                await handleErrors(err,res);
+                try{await handleErrors(err,res);}catch{}
             }
         });
 
@@ -252,7 +272,7 @@ export default class UserController{
                 if(user) res.status(203).json(user);
                 else res.status(404).send("User does not exist");
             } catch(err){
-                await handleErrors(err,res);
+                try{await handleErrors(err,res);}catch{}
             }
         });
 
@@ -261,7 +281,7 @@ export default class UserController{
                 return await this.verifyEmailExistence(req);
             } catch(err){
                 res.status(200).json({status:"error", data: {}, message: ""});
-                await handleErrors(err,res);
+                try{await handleErrors(err,res);}catch{}
             }
         });
 
