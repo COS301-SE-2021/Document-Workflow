@@ -243,7 +243,6 @@ export default class UserController{
             try {
                 return await this.verifyEmailExistence(req);
             } catch(err){
-                res.status(200).json({status:"error", data: {}, message: ""});
                 await handleErrors(err,res);
             }
         });
@@ -252,7 +251,6 @@ export default class UserController{
             try {
                 res.status(200).json(await this.getWorkflowTemplatesIds(req));
             } catch(err){
-                res.status(200).json({status:"error", data: {}, message: ""});
                 await handleErrors(err,res);
             }
         });
