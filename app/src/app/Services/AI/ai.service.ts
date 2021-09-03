@@ -31,9 +31,7 @@ export class AIService {
    */
   loadClassifier(response){
     this.classifier = new natural.BayesClassifier();
-    console.log(this.classifier);
     const classifierData = JSON.parse(response.data.classifierData);
-    console.log(classifierData);
     this.classifier.docs = classifierData.docs;
     this.classifier.features = classifierData.features;
     this.classifier.events = classifierData.events;
@@ -41,7 +39,7 @@ export class AIService {
     this.classifier.classifier.classFeatures = classifierData.classifier.classFeatures;
     this.classifier.classifier.classTotals = classifierData.classifier.classTotals;
     this.classifier.classifier.totalExamples = classifierData.classifier.totalExamples;
-    console.log(this.classifier);
+    console.log('Document classifier successfully loaded');
   }
 
   categorizeDocument(extractedText: string){
