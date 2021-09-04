@@ -1,9 +1,9 @@
 import { injectable } from "tsyringe";
 import UserRepository from "./UserRepository";
-import { UserDoc, UserProps } from "./User";
+import { PrivilegeLevel, UserDoc, UserProps } from "./User";
 import nodemailer from 'nodemailer';
 import jwt, { Jwt } from "jsonwebtoken";
-import { AuthenticationError, RequestError } from "../error/Error";
+import { AuthenticationError, RequestError, ServerError } from "../error/Error";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import Database from "../Database";
@@ -16,7 +16,7 @@ export default class UserService {
     async authenticateUser(password, usr: UserProps): Promise<String> {
         const result = await bcrypt.compare(password, await usr.password);
         if(result){
-            return this.generateToken(usr.email, usr._id);
+            return this.generateToken(usr.email, usr._id, usr.privilegeLevel);
             /*const user: UserDoc = await this.userRepository.findUser(usr.email);
             user.tokens.push(token);
             await this.userRepository.updateUser(user);*/
@@ -35,8 +35,8 @@ export default class UserService {
             });
     }
 
-    async generateToken(email, id): Promise<String>{
-        return jwt.sign({id: id, email: email}, process.env.SECRET, {expiresIn: "1h"});
+    async generateToken(email, id, privilege): Promise<String>{
+        return jwt.sign({id: id, email: email, privilege: privilege}, process.env.SECRET, {expiresIn: "1h"});
     }
 
     //TODO: check that its safe to save a user the way we are saving them here. We arent creating an entirely new
@@ -163,14 +163,10 @@ export default class UserService {
 
     async loginUser(email, password): Promise<String> {
 
-        let user;
-        try{
-            user = await this.userRepository.findUser({email: email});
-        } catch(err){
-            throw err;
-        }
+        const user = await this.userRepository.findUser({email: email});
+        if(!user){ throw new RequestError("User does not exist.")}
 
-        if(user && user.validated){
+        if(user.validated){
             try{
                 return await this.authenticateUser(password, user);
             }
@@ -178,7 +174,7 @@ export default class UserService {
                 throw new AuthenticationError(err.message);
             }
         } else {
-            throw new RequestError("User does not exist");
+            throw new RequestError("User is not validated.");
         }
     }
 
@@ -256,6 +252,7 @@ export default class UserService {
         return result;
     }
 
+    //too generic, dangerous for elevating user privilege
     async updateUser(req): Promise<UserProps> {
         if(!req.body || !req.params.id){
             throw new RequestError("Missing Parameters");
@@ -277,7 +274,118 @@ export default class UserService {
         return Promise.resolve(undefined);
     }*/
 
-    async removeContact(contactEmail: string, user): Promise<ObjectId>{
+    private static removeFromArray(array: Array<any>, value): Boolean{
+        const indexOfRemovedValue = array.indexOf(value);
+        if(indexOfRemovedValue != -1) {
+            array.splice(indexOfRemovedValue, 1);
+            return true;
+        }
+        return false;
+    }
+
+    private static addToArrayIfNotPresent(array: Array<any>, value): Boolean{
+        if(array.indexOf(value) != -1){
+            return false;
+        }
+        array.push(value);
+        return true;
+    }
+
+    async blockUser(contactEmail: string, user): Promise<ObjectId>{
+        //check if email of contact exists:
+        const contact: UserDoc = await this.userRepository.findUser({email: contactEmail});
+        if(contact){
+            const currentUser: UserDoc = await this.userRepository.findUser({_id: user._id});
+            //check if they're already a contact
+            if(currentUser.blockedList.indexOf(contactEmail) != -1){
+                throw new RequestError("This contact is already blocked by this user");
+            }
+            currentUser.blockedList.push(contactEmail);
+            await this.userRepository.updateUser(currentUser);
+            return contact._id;
+        }else{
+            throw new RequestError("Contact does not exist");
+        }
+    }
+
+    async unblockUser(contactEmail: string, user): Promise<ObjectId>{
+        //check if email of contact exists:
+        const contact: UserDoc = await this.userRepository.findUser({email: contactEmail});
+        if(contact){
+            const currentUser: UserDoc = await this.userRepository.findUser({_id: user._id});
+            const indexOfRemovedEmail = currentUser.blockedList.indexOf(contactEmail);
+            if(indexOfRemovedEmail != -1){
+                currentUser.blockedList.splice(indexOfRemovedEmail, 1);
+                await this.userRepository.updateUser(currentUser);
+            }else{
+                throw new RequestError("This person is not blocked");
+            }
+            return contact._id;
+        }else{
+            throw new RequestError("Contact does not exist");
+        }
+    }
+
+    async acceptContactRequest(contactEmail: string, user): Promise<ObjectId>{
+        //get User
+        const usr: UserDoc = await this.userRepository.findUser({email: user.email});
+        //check if contact exists:
+        const contact: UserDoc = await this.userRepository.findUser({email: contactEmail});
+        if(!contact) throw new RequestError("contact doesn't exist");
+
+        //find contact in requests array:
+        const removed = UserService.removeFromArray(usr.contactRequests, contactEmail);
+        if(removed){
+            //add to contacts array:
+            const added = UserService.addToArrayIfNotPresent(usr.contacts, contactEmail);
+            if(added){
+                await this.userRepository.updateUser(usr);
+                return usr._id;
+            }else{
+                throw new ServerError("Couldn't accept contact request");
+            }
+        }else{
+            throw new ServerError("Couldn't accept contact request");
+        }
+    }
+
+    async sendContactRequest(recipientEmail, user): Promise<ObjectId>{
+        //check if email of contact exists:
+        //add MY email to Contact's contact requests
+        const recipient: UserDoc = await this.userRepository.findUser({email: recipientEmail});
+        if(recipient){
+            const index = recipient.blockedList.indexOf(user.email);
+            if(index != -1){
+                throw new RequestError("User is on recipient's blocked list");
+            }
+            if(!(UserService.addToArrayIfNotPresent(recipient.contactRequests, user.email)))
+                throw new RequestError("Contact request already exists");
+            await this.userRepository.updateUser(recipient);
+            return recipient._id;
+        }else{
+            throw new RequestError("Recipient does not exist");
+        }
+    }
+
+    async rejectContactRequest(contactEmail: string, user): Promise<ObjectId>{
+        //check if email of contact exists:
+        const contact: UserDoc = await this.userRepository.findUser({email: contactEmail});
+        if(contact){
+            const currentUser: UserDoc = await this.userRepository.findUser({_id: user._id});
+            const indexOfRemovedEmail = currentUser.contactRequests.indexOf(contactEmail);
+            if(indexOfRemovedEmail != -1){
+                currentUser.contactRequests.splice(indexOfRemovedEmail, 1);
+                await this.userRepository.updateUser(currentUser);
+            }else{
+                throw new RequestError("Contact request does not exist");
+            }
+            return contact._id;
+        }else{
+            throw new RequestError("Contact does not exist");
+        }
+    }
+
+    async deleteContact(contactEmail: string, user): Promise<ObjectId>{
         //check if email of contact exists:
         const contact: UserDoc = await this.userRepository.findUser({email: contactEmail});
         if(contact){
@@ -297,6 +405,7 @@ export default class UserService {
 
     async addContact(contactEmail: string, user): Promise<ObjectId> {
         //check if email of contact exists:
+        if(user.privilegeLevel != PrivilegeLevel.ADMIN){ throw new AuthenticationError("Unauthorized")}
         const contact: UserDoc = await this.userRepository.findUser({email: contactEmail});
         if(contact){
             const currentUser: UserDoc = await this.userRepository.findUser({_id: user._id});
