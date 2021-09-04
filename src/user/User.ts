@@ -16,6 +16,8 @@ import { isStrongPassword, isEmail } from "validator";
  * @param Object definition object containing the properties and their options used to create the Schema
  */
 
+export const PrivilegeLevel = Object.freeze({ADMIN: "Admin", USER: "User"});
+
 export const userSchema = createSchema({
     name: Type.string({required: true}),
     surname: Type.string({type: String, required: true}),
@@ -44,7 +46,10 @@ export const userSchema = createSchema({
     validateCode: Type.string(),
     ownedWorkflows: [{type:String}],
     workflows: [{type: String}],
-    contacts: Type.array({required: false}).of(Type.string())
+    contacts: Type.array({required: false}).of(Type.string()),
+    contactRequests: Type.array({required: false}).of(Type.string()),
+    blockedList: Type.array({required: false}).of(Type.string()),
+    privilegeLevel: Type.string({ default: PrivilegeLevel.USER })
 });
 
 export const User = typedModel('User', userSchema);
