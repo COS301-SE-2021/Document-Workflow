@@ -36,7 +36,7 @@ export default class Authenticator {
                 throw new AuthenticationError("Invalid access token");
             }
 
-            req.user = {email: decoded.email, _id: decoded.id};
+            req.user = {email: decoded.email, _id: decoded.id, privilege: decoded.privilege};
             next();
         }catch(err){
             await handleErrors(err, res);
