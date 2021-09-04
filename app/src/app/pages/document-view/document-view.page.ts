@@ -9,7 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DocumentAPIService } from 'src/app/Services/Document/document-api.service';
 import {WorkFlowService} from 'src/app/Services/Workflow/work-flow.service';
 import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
-import WebViewer from '@pdftron/webviewer';
+import WebViewer, {Core} from '@pdftron/webviewer';
 import { UserAPIService } from 'src/app/Services/User/user-api.service';
 
 @Component({
@@ -62,10 +62,12 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
     await this.workflowService.retrieveDocument(this.workflowId, async (response) => {
       console.log(response);
       if (response) {
+
         this.documentMetadata = response.data.metadata;
         this.docName = this.documentMetadata.name;
         this.srcFileBase64 = response.data.filedata.Body.data;
         const arr = new Uint8Array(response.data.filedata.Body.data);
+
         const blob = new Blob([arr], {type: 'application/pdf'});
 
         this.pdfDoc = await PDFDocument.load(arr);
@@ -73,13 +75,58 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
         this.srcFile = pdfBytes;
         WebViewer({
           path: './../../../assets/lib',
-          annotationUser: this.userEmail
-        }, this.viewerRef.nativeElement).then(instance =>{
+          annotationUser: this.userEmail,
+          fullAPI: true
+        }, this.viewerRef.nativeElement).then(async instance =>{
 
+            await instance.Core.PDFNet.initialize(); //To use pdftron in the non-demo mode supply a licence key here
+            /*Test to add metadata to document */
+          const docorig = await instance.Core.PDFNet.PDFDoc.createFromBuffer(arr);
+          const metadata = await docorig.getDocInfo();
+          console.log("METADATA: ");
+          console.log(await metadata.getKeywords());
+          await metadata.setKeywords("hash");
+          console.log(await metadata.getKeywords());
+          const doc = await docorig.getSDFDoc();
+          doc.initSecurityHandler();
+          doc.lock();
+          console.log('Modifying into dictionary, adding custom properties, embedding a stream...');
+
+          const trailer = await doc.getTrailer(); // Get the trailer
+
+          // Now we will change PDF document information properties using SDF API
+
+          // Get the Info dictionary.
+
+          let itr = await trailer.find('Info');
+          let info;
+          if (await itr.hasNext()) {
+            info = await itr.value();
+            // Modify 'Producer' entry.
+            info.putString('Producer', 'PDFTron PDFNet');
+
+            // read title entry if it is present
+            itr = await info.find('Author');
+            if (await itr.hasNext()) {
+              const itrval = await itr.value();
+              const oldstr = await itrval.getAsPDFText();
+              info.putText('Author', oldstr + ' - Modified');
+            } else {
+              info.putString('Author', 'Me, myself, and I');
+            }
+          } else {
+            // Info dict is missing.
+            info = await trailer.putDict('Info');
+            info.putString('Producer', 'PDFTron PDFNet');
+            info.putString('Title', 'My document');
+          }
+          const docbuf = await doc.saveMemory(0, '%PDF-1.4');
+          let blob2 = new Blob([new Uint8Array(docbuf)], {type: 'application/pdf'});
+            /*   */
             this.annotationManager = instance.Core.annotationManager;
             this.documentViewer = instance.Core.documentViewer;
 
-            instance.UI.loadDocument(blob, {filename: this.docName});
+            instance.UI.loadDocument(blob2, {filename: this.docName});
             instance.UI.disableElements(['ribbons']);
             instance.UI.setToolbarGroup('toolbarGroup-View',false);
             instance.UI.setHeaderItems(header =>{
