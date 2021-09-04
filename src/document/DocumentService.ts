@@ -19,7 +19,15 @@ export default class DocumentService {
     }
 
     async uploadTemplateDocumentToCloud(file: File, workflowTemplateId){
+        await this.documentRepository.saveDocumentToS3(file, 'templateFiles/' + workflowTemplateId + '/' + file.name);
+    }
 
+    async retrieveTemplateDocumentFromCloud(workflowTemplateId, filename){
+        return await this.documentRepository.getDocumentFromS3('templateFiles/' + workflowTemplateId + '/' +filename);
+    }
+
+    async deleteTemplateDocumentFromCloud(workflowTemplateId){
+        await this.deleteTemplateDocumentFromCloud("templateFiles/" + workflowTemplateId);
     }
 
     async uploadDocument(file: File, id: ObjectId): Promise<ObjectId>{
@@ -47,23 +55,14 @@ export default class DocumentService {
     }
 
     async deleteDocument(workflowId, documentId){
-        console.log("Deleting document from CLoud server");
-        try {
-            await this.documentRepository.deleteDocumentFromS3(workflowId);
-        }
-        catch(err){
-            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
-        }
-        console.log("deleting document from metadata database ", documentId);
-
-            await this.documentRepository.deleteDocument(documentId);
-
+        await this.documentRepository.deleteDocumentFromS3(workflowId);
+        await this.documentRepository.deleteDocument(documentId);
     }
 
     async retrieveOriginalDocument(docId, workflowId){
         try {
             const documentMetadata = await this.documentRepository.getDocument(docId);
-            const filedata = await this.documentRepository.getDocumentFromS3(workflowId + '/' + documentMetadata.name);
+            const filedata = await this.documentRepository.getDocumentFromS3('workflows/' + workflowId + '/' + documentMetadata.name);
             return {status: "success", data: {filedata: filedata, metadata: documentMetadata}, message: ""};
         }
         catch(err){
@@ -78,7 +77,7 @@ export default class DocumentService {
         const metadata = await this.documentRepository.getDocument(docId);
         console.log(metadata);
         console.log("Fetching document from S3 server with path: ", workflowId +'/phase' + currentPhase +'/', metadata.name);
-        const filedata = await this.documentRepository.getDocumentFromS3(workflowId +'/phase' + currentPhase +'/' + metadata.name);
+        const filedata = await this.documentRepository.getDocumentFromS3('workflows/' + workflowId +'/phase' + currentPhase +'/' + metadata.name);
         if(filedata === null)
             throw "The specified document does not exist.";
         console.log({status:"success", data:{metadata: metadata, filedata: filedata}, message:"" });
@@ -107,9 +106,8 @@ export default class DocumentService {
     async resetFirstPhaseDocument(workflowId, documentId) {
         const metadata = await this.documentRepository.getDocument(documentId);
         console.log("Resetting first phase document to original, path to original: ",workflowId + '/' + metadata.name);
-        const originalDocument = await this.documentRepository.getDocumentFromS3(workflowId + '/' + metadata.name);
-        await this.documentRepository.updateDocumentS3WithBuffer(workflowId +'/phase0/' + metadata.name, originalDocument.Body);
+        const originalDocument = await this.documentRepository.getDocumentFromS3('workflows/' + workflowId + '/' + metadata.name);
+        await this.documentRepository.updateDocumentS3WithBuffer('workflows/' + workflowId +'/phase0/' + metadata.name, originalDocument.Body);
 
     }
 }
-

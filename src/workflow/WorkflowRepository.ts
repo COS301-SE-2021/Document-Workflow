@@ -1,6 +1,7 @@
 import {Workflow, WorkflowProps} from "./Workflow";
 import { ObjectId } from "mongoose";
 import {ServerError} from "../error/Error";
+import {logger} from "../LoggingConfig";
 
 export default class WorkflowRepository{
 
@@ -14,7 +15,6 @@ export default class WorkflowRepository{
             throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
         }
     }
-    //This function does not work as intended. the updateOne function should take in the values to update eg {name: 'John Snow'}. See https://masteringjs.io/tutorials/mongoose/update
 
     async updateWorkflow(workflow: WorkflowProps): Promise<Boolean>{
         console.log("Updating a workflow to have new values: ");
@@ -60,6 +60,16 @@ export default class WorkflowRepository{
         console.log("Adding documentID: ", documentId, " to workflow of id: ", workflowId);
         try {
             await Workflow.updateOne({_id: workflowId}, {$set: {documentId: documentId}}, {upsert: true});
+        }
+        catch(err){
+            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
+        }
+    }
+
+    async addWorkflowHistoryId(workflowId, workflowHistoryId){
+        logger.info("Saving the historyId: " + workflowHistoryId + " to workflow " + workflowId);
+        try {
+            await Workflow.updateOne({_id: workflowId}, {$set: {historyId: workflowHistoryId}}, {upsert: true});
         }
         catch(err){
             throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");

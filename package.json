@@ -8,7 +8,7 @@
     "build:server": "tsc",
     "test:server": "jest --verbose",
     "run:server": "node dist/src/server.js",
-    "dev:server": "ts-node src/server.ts",
+    "dev:server": "nodemon index.ts",
     "build:app": "echo 'this is for anything that needs to be compiled before execution'",
     "test:app": "echo 'testing for frontend must run in cli'",
     "run:app": "echo 'this is for running in production'",
@@ -42,15 +42,17 @@
     "swagger-ui-express": "^4.1.6",
     "ts-mongoose": "^0.0.24",
     "tsyringe": "^4.5.0",
-    "validator": "^13.6.0"
+    "validator": "^13.6.0",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.3",
     "@babel/preset-env": "^7.14.4",
     "@types/jest": "^26.0.23",
+    "@types/mongo-sanitize": "^1.0.1",
     "jest": "^27.0.4",
     "mocha": "^8.4.0",
-    "nodemon": "^2.0.7",
+    "nodemon": "^2.0.12",
     "prettier": "^2.3.0",
     "sinon": "^11.1.1",
     "supertest": "^6.1.3",

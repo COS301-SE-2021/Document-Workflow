@@ -29,10 +29,9 @@ import { DocumentActionAreaComponent } from 'src/app/components/document-action-
 import { User, UserAPIService } from 'src/app/Services/User/user-api.service';
 import * as Cookies from 'js-cookie';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
+import { AIService } from 'src/app/Services/AI/ai.service';
 import { verifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
 import WebViewer, {Core} from '@pdftron/webviewer';
-import 'convertapi-js';
-
 
 @Component({
   selector: 'app-document-add',
@@ -65,6 +64,8 @@ export class DocumentAddPage implements OnInit {
   ownerEmail: any;
   sizeMe: boolean;
 
+  template: boolean = false;
+
   showPhase: boolean[] = [];
 
   controller: boolean;
@@ -76,6 +77,7 @@ export class DocumentAddPage implements OnInit {
     private modal: ModalController,
     private router: Router,
     private userApiService: UserAPIService,
+    private aiService: AIService,
     private sanitizer: DomSanitizer,
     private workflowService: WorkFlowService
   ) {}
@@ -288,7 +290,7 @@ export class DocumentAddPage implements OnInit {
     this.workflowForm.get('workflowFile').setValue(this.file);
     this.blob = new Blob([this.file], { type: 'application/pdf;base64' });
     console.log(this.blob.arrayBuffer());
-    const obj = new IonicSafeString(URL.createObjectURL(this.blob));
+    const obj = URL.createObjectURL(this.blob);
     console.log(obj);
     this.srcFile = obj;
     this.addFile = true;
@@ -327,8 +329,8 @@ export class DocumentAddPage implements OnInit {
           txt.begin(page, rect); // Read the page.
           extractedText += await txt.getAsText();
         }
-        console.log(extractedText);
-
+        console.log("Text successfully extracted");
+        this.aiService.categorizeDocument(extractedText);
       });
 
     });
@@ -384,6 +386,11 @@ export class DocumentAddPage implements OnInit {
       this.workflowForm.controls.workflowDescription.value
     );
     console.log(this.workflowForm);
+    let template = null;
+    if(this.workflowForm.controls.templateName !== undefined){
+      template = {templateName: this.workflowForm.controls.templateName.value, templateDescription: this.workflowForm.controls.templateDescription.value};
+    }
+
 
     const phases = this.workflowForm.controls.phases.value;
     const name = this.workflowForm.controls.workflowName.value;
@@ -393,13 +400,13 @@ export class DocumentAddPage implements OnInit {
       description,
       phases,
       this.file,
+      template,
       (response) => {
         if (response.status === 'success') {
           this.userApiService.displayPopOver('Success', 'You have successfully created a workflow');
           this.router.navigate(['/home']);
         } else {
           this.userApiService.displayPopOver('Error', 'Something has gone wrong, please try again');
-          this.router.navigate(['/home']);
         }
       }
     );
@@ -411,5 +418,20 @@ export class DocumentAddPage implements OnInit {
 
   toggleVisibility(i: number){
     this.showPhase[i] = !this.showPhase[i];
+  }
+
+  addTemplate(){
+    this.template = !this.template;
+    if(this.template === false){
+      this.removeTemplate();
+    }else{
+      this.workflowForm.addControl('templateName', new FormControl('', Validators.required));
+      this.workflowForm.addControl('templateDescription', new FormControl('', Validators.required));
+    }
+  }
+
+  removeTemplate(){
+    this.workflowForm.removeControl('templateName');
+    this.workflowForm.removeControl('templateDescription');
   }
 }

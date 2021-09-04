@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as Cookies from 'js-cookie';
 import {LoadingController, PopoverController} from '@ionic/angular';
 import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
-
+import {config} from 'src/app/Services/configuration'
 export interface workflowFormat {
   showWorkflow?: boolean;
   currentPercent: number;
@@ -37,7 +37,7 @@ export interface phaseUserFormat {
   providedIn: 'root',
 })
 export class WorkFlowService {
-  static url = 'http://localhost:3000/api'; //TODO: change this url
+  // static url = 'http://localhost:3000/api'; //TODO: change this url
   constructor(
     private http: HttpClient,
     public loadingCtrl: LoadingController,
@@ -67,6 +67,7 @@ export class WorkFlowService {
     workflowDescription,
     phases,
     document,
+    template,
     callback
   ): Promise<any> {
     this.displayLoading();
@@ -75,6 +76,10 @@ export class WorkFlowService {
     formData.append('description', workflowDescription);
     formData.append('document', document);
     formData.append('phases', JSON.stringify(phases));
+    if(template !== null){
+      formData.append('template', JSON.stringify(template));
+    }
+
 
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
@@ -82,7 +87,7 @@ export class WorkFlowService {
     });
 
     this.http
-      .post(WorkFlowService.url + '/workflows', formData, {
+      .post(config.url + '/workflows', formData, {
         headers: httpHeaders,
       })
       .subscribe(
@@ -95,7 +100,12 @@ export class WorkFlowService {
         },
         async (error) => {
           this.dismissLoading();
-          await this.displayPopOver('Error creating new Workflow', error.error);
+          if(error.statusText === 'Unknown Error'){
+            await this.displayPopOver('Login Error', 'Could not connect to the Document Workflow Server at this time. Please try again later.');
+          }
+          else {
+            await this.displayPopOver('Error creating new Workflow', error.error);
+          }
         }
       );
   }
@@ -110,7 +120,7 @@ export class WorkFlowService {
     });
 
     this.http
-      .post(WorkFlowService.url + '/workflows/delete', formData, {
+      .post(config.url + '/workflows/delete', formData, {
         headers: httpHeaders,
       })
       .subscribe(
@@ -137,7 +147,7 @@ export class WorkFlowService {
     });
 
     this.http
-      .post(WorkFlowService.url + '/workflows/getDetails', formData, {
+      .post(config.url + '/workflows/getDetails', formData, {
         headers: httpHeaders,
       })
       .subscribe(
@@ -166,7 +176,7 @@ export class WorkFlowService {
     });
 
     this.http
-      .post(WorkFlowService.url + '/workflows/updatePhase', formData, {
+      .post(config.url + '/workflows/updatePhase', formData, {
         headers: httpHeaders,
       })
       .subscribe(
@@ -192,7 +202,7 @@ export class WorkFlowService {
     });
 
     this.http
-      .post(WorkFlowService.url + '/workflows/retrieveDocument', formData, {
+      .post(config.url + '/workflows/retrieveDocument', formData, {
         headers: httpHeaders,
       })
       .subscribe((data) => {
@@ -214,7 +224,7 @@ export class WorkFlowService {
     });
 
     this.http
-      .post(WorkFlowService.url + '/workflows/retrieveWorkflow', formData, {
+      .post(config.url + '/workflows/retrieveWorkflow', formData, {
         headers: httpHeaders,
       })
       .subscribe((data) => {
@@ -237,7 +247,7 @@ export class WorkFlowService {
 
     this.http
       .post(
-        WorkFlowService.url + '/workflows/updatePhaseAnnotations',
+        config.url + '/workflows/updatePhaseAnnotations',
         formData,
         {
           headers: httpHeaders,
@@ -260,12 +270,13 @@ export class WorkFlowService {
     });
 
     this.http
-      .post(WorkFlowService.url + '/workflows/getUserWorkflowsData', formData, {
+      .post(config.url + '/workflows/getUserWorkflowsData', formData, {
         headers: httpHeaders,
       })
       .subscribe(
         (data) => {
           if (data) {
+            console.log(data['data'].ownedWorkflows)
             data['data'].ownedWorkflows = this.formatWorkflows(
               data['data'].ownedWorkflows
             );
@@ -290,6 +301,7 @@ export class WorkFlowService {
       let tmpWorkflow: workflowFormat;
       let completedCounter: number = 0;
       for (let phase of document.phases) {
+        phase = JSON.parse(phase);
         let tempUser: phaseUserFormat[] = [];
         for (let user of JSON.parse(phase['users'])) {
           let tmpUser: phaseUserFormat;
@@ -359,7 +371,7 @@ export class WorkFlowService {
     });
 
     this.http
-      .post(WorkFlowService.url + '/workflows/edit', formData, {
+      .post(config.url + '/workflows/edit', formData, {
         headers: httpHeaders,
       })
       .subscribe(
@@ -385,7 +397,7 @@ export class WorkFlowService {
     });
 
     this.http
-      .post(WorkFlowService.url + '/workflows/revertPhase', formData, {
+      .post(config.url + '/workflows/revertPhase', formData, {
         headers: httpHeaders,
       })
       .subscribe(
@@ -432,7 +444,7 @@ export class WorkFlowService {
     });
 
     this.http
-      .post(WorkFlowService.url + '/workflows/updateDocument', formData, {
+      .post(config.url + '/workflows/updateDocument', formData, {
         headers: httpHeaders,
       })
       .subscribe(
@@ -459,7 +471,7 @@ export class WorkFlowService {
     });
 
     this.http
-      .post(WorkFlowService.url + '/workflows/getOriginalDocument', formData, {
+      .post(config.url + '/workflows/getOriginalDocument', formData, {
         headers: httpHeaders,
       })
       .subscribe(
