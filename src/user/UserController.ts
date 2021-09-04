@@ -20,7 +20,7 @@ export default class UserController{
 
     auth = this.authenticationService.Authenticate;
 
-    async getUsersRoute(): Promise<UserProps[]> {
+    private async getUsersRoute(): Promise<UserProps[]> {
         try{
             return await this.userService.getAllUsers();
         } catch(err) {
@@ -28,7 +28,7 @@ export default class UserController{
         }
     }
 
-    async getUserByIdRoute(request): Promise<UserProps> {
+    private async getUserByIdRoute(request): Promise<UserProps> {
         try{
             return await this.userService.getUser(request);
         }catch(err) {
@@ -36,7 +36,7 @@ export default class UserController{
         }
     }
 
-    async getUserByEmailRoute(request): Promise<UserProps> {
+    private async getUserByEmailRoute(request): Promise<UserProps> {
         try{
             return await this.userService.getUserByEmail(request);
         }catch(err) {
@@ -44,7 +44,7 @@ export default class UserController{
         }
     }
 
-    async registerUserRoute(request): Promise<UserProps>{
+    private async registerUserRoute(request): Promise<UserProps>{
         try{
             return await this.userService.registerUser(request)
         }
@@ -53,7 +53,7 @@ export default class UserController{
         }
     }
 
-    async verifyUserRoute(request): Promise<UserProps>{
+    private async verifyUserRoute(request): Promise<UserProps>{
         try {
             return await this.userService.verifyUser(request);
         }
@@ -62,7 +62,7 @@ export default class UserController{
         }
     }
 
-    async loginUserRoute(req): Promise<String> {
+    private async loginUserRoute(req): Promise<String> {
         if(!req.body.email || !req.body.password){
             throw new RequestError("Could not log in");
         }
@@ -75,25 +75,53 @@ export default class UserController{
         }
     }
 
-    private async addContactRoute(req): Promise<ObjectId> {
-        if(!req.body.contactemail){
+    private async sendContactRequestRoute(req): Promise<ObjectId> {
+        if(!req.body.contactemail)
             throw new RequestError("Missing contactEmail");
-        }
-        try{
-            return await this.userService.addContact(req.body.contactemail, req.user);
-        }
+        try{return await this.userService.sendContactRequest(req.body.contactemail, req.user);}
         catch(err){
             throw err;
         }
     }
 
-    private async removeContactRoute(req): Promise<ObjectId> {
-        if(!req.body.contactemail){
+    private async rejectContactRequestRoute(req): Promise<ObjectId> {
+        if(!req.body.contactemail)
             throw new RequestError("Missing contactEmail");
+        try{return await this.userService.rejectContactRequest(req.body.contactemail, req.user);}
+        catch(err){
+            throw err;
         }
-        try{
-            return await this.userService.removeContact(req.body.contactemail, req.user);
+    }
+
+    private async addBlockedContactRoute(req){
+        if(!req.body.contactemail)
+            throw new RequestError("Missing contactEmail");
+        try{return await this.userService.blockUser(req.body.contactemail, req.user);}
+        catch(err){
+            throw err;
         }
+    }
+    private async removeBlockedContactRoute(req){
+        if(!req.body.contactemail)
+            throw new RequestError("Missing contactEmail");
+        try{return await this.userService.unblockUser(req.body.contactemail, req.user);}
+        catch(err){
+            throw err;
+        }
+    }
+
+    private async deleteContactRoute(req){
+        if(!req.body.contactemail)
+            throw new RequestError("Missing contactEmail");
+        try{return await this.userService.deleteContact(req.body.contactemail, req.user);}
+        catch(err){
+            throw err;
+        }
+    }
+    private async acceptContactRequestRoute(req){
+        if(!req.body.contactemail)
+            throw new RequestError("Missing contactEmail");
+        try{return await this.userService.acceptContactRequest(req.body.contactemail, req.user);}
         catch(err){
             throw err;
         }
@@ -108,7 +136,7 @@ export default class UserController{
         }
     }
 
-    async logoutUserRoute(req): Promise<Boolean> {
+    private async logoutUserRoute(req): Promise<Boolean> {
         try{
             const { headers } = req;
             if(headers.authorization){
@@ -122,7 +150,7 @@ export default class UserController{
         }
     }
 
-    async deleteUserRoute(request): Promise<UserProps> {
+    private async deleteUserRoute(request): Promise<UserProps> {
         try{
             return await this.userService.deleteUser(request);
         }catch(err){
@@ -130,7 +158,7 @@ export default class UserController{
         }
     }
 
-    async updateUserRoute(request): Promise<UserProps> {
+    private async updateUserRoute(request): Promise<UserProps> {
         try{
             return await this.userService.updateUser(request);
         }
@@ -161,19 +189,55 @@ export default class UserController{
             }
         });
 
-        this.router.post("/addContact", this.auth, async (req, res) => {
+        this.router.post("/sendContactRequest", this.auth, async (req, res) => {
             try{
-                const contactId = await this.addContactRoute(req);
-                res.status(200).json({status: "success", data:{"ObjectId": contactId }, message: "Contact added"})
+                const contactId = await this.sendContactRequestRoute(req);
+                res.status(200).json({status: "success", data:{"ObjectId": contactId }, message: "Contact request added"});
             } catch(err){
                 try{await handleErrors(err,res);}catch{}
             }
         });
 
-        this.router.post("/removeContact", this.auth, async (req, res) => {
+        this.router.delete("/rejectContactRequest", this.auth, async (req, res) => {
             try{
-                const contactId = await this.removeContactRoute(req);
-                res.status(200).json({status: "success", data:{"ObjectId": contactId }, message: "Contact removed"})
+                const contactId = await this.rejectContactRequestRoute(req);
+                res.status(200).json({status: "success", data:{"RequestingUserId": contactId }, message: "Contact request rejected"});
+            } catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        });
+
+        this.router.delete("/deleteContact", this.auth, async (req, res) => {
+            try{
+                const contactId = await this.deleteContactRoute(req);
+                res.status(200).json({status: "success", data:{"DeletedUserId": contactId }, message: "Contact removed"});
+            } catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        });
+
+        this.router.post("/blockUser", this.auth, async (req, res) => {
+            try{
+                const contactId = await this.addBlockedContactRoute(req);
+                res.status(200).json({status: "success", data:{"BlockedUserId": contactId }, message: "Contact blocked"});
+            } catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        });
+
+        this.router.delete("/unblockUser", this.auth, async (req, res) => {
+            try{
+                const contactId = await this.removeBlockedContactRoute(req);
+                res.status(200).json({status: "success", data:{"UnblockedUserId": contactId }, message: "Contact removed from blocked list"});
+            } catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        });
+
+        this.router.post("/acceptContactRequest", this.auth, async (req, res) => {
+            try{
+                const contactId = await this.acceptContactRequestRoute(req);
+                res.status(200).json({status: "success", data:{"ObjectId": contactId }, message: "Contact request accepted"});
             } catch(err){
                 try{await handleErrors(err,res);}catch{}
             }
@@ -291,5 +355,4 @@ export default class UserController{
 
         return this.router;
     }
-
 }
