@@ -75,6 +75,7 @@ export class WorkflowHistoryPage implements OnInit {
           let tmp: History = JSON.parse(entry);
           let date: Date = tmp.date;
           tmp.type = this.textConverter(tmp.type);
+          tmp.currentPhase += 1;
           this.histories.push(tmp);
         }
         console.log(this.histories);
