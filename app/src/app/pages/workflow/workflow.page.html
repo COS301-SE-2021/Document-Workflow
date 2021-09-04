@@ -67,6 +67,9 @@
                 <ion-fab-button (click)="revertPhase(document._id)" *ngIf="document.ownerEmail === userEmail">
                   <ion-icon name="git-pull-request-outline" style="font-size: 22px;color:white"></ion-icon>
                 </ion-fab-button>
+                <ion-fab-button (click)="viewHistory(document._id)" *ngIf="document.ownerEmail === userEmail">
+                  <ion-icon name="skull-outline" style="font-size: 22px;color:white"></ion-icon>
+                </ion-fab-button>
               </ion-fab-list>
             </ion-fab>
           </ion-header>
@@ -123,9 +126,9 @@
       </ion-reorder>
     </div>
   </ion-reorder-group>
-  <!-- <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="addWorkflow()">
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="debug()">
       <ion-icon name="add-circle-outline"></ion-icon>
     </ion-fab-button>
-  </ion-fab> -->
+  </ion-fab>
 </ion-content>

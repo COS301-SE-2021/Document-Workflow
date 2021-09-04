@@ -62,10 +62,10 @@ export class LoginRegisterPage implements OnInit {
 
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
-      loginEmail: ['', [Validators.required, Validators.email]],
-      loginPassword: ['', [Validators.required, Validators.minLength(8)]],
-      // loginEmail: ['brenton.stroberg@yahoo.co.za', [Validators.required, Validators.email]],
-      // loginPassword: ['Password#1', [Validators.required, Validators.minLength(8)]],
+      // loginEmail: ['', [Validators.required, Validators.email]],
+      // loginPassword: ['', [Validators.required, Validators.minLength(8)]],
+      loginEmail: ['brenton.stroberg@yahoo.co.za', [Validators.required, Validators.email]],
+      loginPassword: ['Password#1', [Validators.required, Validators.minLength(8)]],
     });
     const formOptions: AbstractControlOptions = {
       validators: match('password', 'confirmPassword'),
@@ -126,8 +126,8 @@ export class LoginRegisterPage implements OnInit {
       'termsOfService',
       '',
       (response) => {
-        if (response.confirm === 'true') {
-          this.workFlowService.displayLoading();
+        console.log(response);
+        if (response.data.confirm === true) {
           const userdata = this.registerForm.value;
           console.log('Printing file:');
           console.log(this.file);
@@ -147,20 +147,14 @@ export class LoginRegisterPage implements OnInit {
             password: userdata.password,
           };
 
-          this.userAPIService.register(user, this.file, (response) => {
+          this.userAPIService.register(user, userdata.confirmPassword, this.file, (response) => {
             if (response.status === 'success') {
               this.userAPIService.displayPopOver(
                 'Successfully created new user account',
                 'check your email for account verification'
               );
-              this.workFlowService.dismissLoading();
+
               this.router.navigate(['login']);
-            } else {
-              this.workFlowService.dismissLoading();
-              this.userAPIService.displayPopOver(
-                'Failed to make a new account:',
-                response.message
-              );
             }
           });
         }

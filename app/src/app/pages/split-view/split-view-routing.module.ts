@@ -9,14 +9,6 @@ const routes: Routes = [
     component: SplitViewPage,
     children: [
       {
-        path: 'archive',
-        loadChildren: () =>
-          import('./../document-archive/document-archive.module').then(
-            (m) => m.DocumentArchivePageModule
-          ),
-        pathMatch: 'full',
-      },
-      {
         path: 'documentView',
         loadChildren: () =>
           import('./../document-view/document-view.module').then(
@@ -71,6 +63,17 @@ const routes: Routes = [
             (m) => m.DocumentAddPageModule
           ),
         pathMatch: 'full',
+      },
+      {
+        path: 'workflowTemplate',
+        loadChildren: () =>
+          import('./../workflow-template/workflow-template.module').then(
+            (m) => m.WorkflowTemplatePageModule
+          ),
+      },
+      {
+        path: 'workflowHistory',
+        loadChildren: () => import('./../workflow-history/workflow-history.module').then( m => m.WorkflowHistoryPageModule)
       },
       {
         path: '',

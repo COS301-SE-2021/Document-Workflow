@@ -322,6 +322,7 @@ export class WorkflowEditPage implements OnInit {
     });
   }
 
+
   addPhase() {
     let phase = this.workflowForm.get('phases') as FormArray;
     phase.push(this.createPhase(phase.length)); //was + 1 but then it seems we skip a phaseNumber
@@ -477,8 +478,6 @@ export class WorkflowEditPage implements OnInit {
       }
       i++;
     }
-
-    console.log(phases)
     const name = this.workflowForm.controls.workflowName.value;
     const description = this.workflowForm.controls.workflowDescription.value;
 

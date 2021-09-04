@@ -65,6 +65,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     await this.workflowService.retrieveDocument(this.workflowId, async (response) => {
       console.log(response);
       if (response) {
+        console.log(response.data);
         this.documentMetadata = response.data.metadata;
         this.docName = this.documentMetadata.name;
         this.srcFileBase64 = response.data.filedata.Body.data;
@@ -76,12 +77,20 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
         this.srcFile = pdfBytes;
         WebViewer({
           path: './../../../assets/lib',
-          annotationUser: this.userEmail
-        }, this.viewerRef.nativeElement).then(instance =>{
+          annotationUser: this.userEmail,
+          fullAPI: true
+        }, this.viewerRef.nativeElement).then(async instance =>{
 
           this.annotationManager = instance.Core.annotationManager;
           this.PDFNet = instance.Core.PDFNet;
           this.documentViewer = instance.Core.documentViewer;
+          /*
+          const pdfDoc = this.PDFNet.PDFDoc.createFromBuffer(arr.buffer);
+          const doc =  await pdfDoc.getSDFDoc();
+          const trailer = await doc.getTrailer(); // Get the trailer
+          const info = await trailer.putDict('Info');
+          await info.putString('Producer', 'PDFTron PDFNet');
+          */
 
           instance.UI.loadDocument(blob, {filename: this.docName});
           instance.UI.disableElements(['toolbarGroup-Annotate']);

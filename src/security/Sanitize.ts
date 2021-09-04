@@ -1,4 +1,4 @@
-import { sanitize } from "mongo-sanitize";
+import sanitize  from "mongo-sanitize";
 
 export default async function sanitizeRequest(req, res, next): Promise<void>{
     if(req.body) sanitize(req.body);

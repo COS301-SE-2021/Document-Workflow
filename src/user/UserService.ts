@@ -1,11 +1,13 @@
 import { injectable } from "tsyringe";
 import UserRepository from "./UserRepository";
-import { UserProps } from "./User";
+import { UserProps} from "./User"; //, Token } from "./User";
 import nodemailer from 'nodemailer';
 import jwt from "jsonwebtoken";
 import { AuthenticationError, RequestError } from "../error/Error";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
+import { isStrongPassword, isEmail } from "validator";
+import {logger} from "../LoggingConfig";
 
 @injectable()
 export default class UserService {
@@ -14,9 +16,6 @@ export default class UserService {
         const result = await bcrypt.compare(password, await usr.password);
         if(result){
             return this.generateToken(usr.email, usr._id);
-            /*const user: UserDoc = await this.userRepository.findUser(usr.email);
-            user.tokens.push(token);
-            await this.userRepository.updateUser(user);*/
         }else{
             throw new AuthenticationError("Password or Email is incorrect");
         }
@@ -33,7 +32,7 @@ export default class UserService {
     }
 
     generateToken(email, id): string{
-        return jwt.sign({id: id, email: email}, process.env.SECRET, {expiresIn: "1h"});
+        return jwt.sign({id: id, email: email}, process.env.SECRET, {expiresIn: "24h"});
     }
 
     //TODO: check that its safe to save a user the way we are saving them here. We arent creating an entirely new
@@ -92,28 +91,49 @@ export default class UserService {
         if (req.body.length === 0 || !req.body || !req.files.signature.data) {
             throw new RequestError("Missing required information to register user");
         }
-        try {
-            const usr: UserProps = req.body;
-            usr.signature = req.files.signature.data;
-            usr.validateCode = crypto.randomBytes(64).toString('hex');
-            usr.password = await this.getHashedPassword(usr.password);
 
-            //const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
-            //usr.tokens = [token];
-
-            const user: UserProps = await this.userRepository.saveUser(usr);
-            if(user){
-                await this.sendVerificationEmail(usr.email, usr.validateCode)//,
-                return user;
-            }
-        } catch (err) {
-            console.error(err);
-            throw new RequestError("Could not register user");
+        if(!isEmail(req.body.email)){
+            throw new RequestError("The given email address is invalid.");
         }
+
+        const checkForUser = await this.getUserByEmail(req.body.email);
+        if(checkForUser){
+            throw new RequestError("The given email address already has a Document Workflow Account");
+        }
+
+        if(req.body.password !== req.body.confirmPassword){
+            throw new RequestError("The two passwords do not match.");
+        }
+
+        if(!isStrongPassword(req.body.password)){
+            throw new RequestError("Password is not strong enough. Ensure that it is at least 8 characters long with one uppercase character, lowercase character, number and special character");
+        }
+
+        const usr: UserProps = req.body;
+        usr.signature = req.files.signature.data;
+        usr.validateCode = crypto.randomBytes(64).toString('hex');
+        usr.password = await this.getHashedPassword(usr.password);
+        usr.ownedWorkflows = [];
+        usr.workflows = [];
+        usr.workflowTemplates = [];
+        const tempValidateCode = usr.validateCode;
+        //const user: UserProps = await this.userRepository.postUser(usr);
+        //const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
+        //usr.tokens = [token];
+        const user: UserProps = await this.userRepository.saveUser(usr);
+        //const response = await this.userRepository.putUser(usr);
+        if(user){
+            //logger.info(usr); It seems as though the usr object gets changed after it is saved to the database
+            logger.info(req.body.email + " " + tempValidateCode);
+            await this.sendVerificationEmail(req.body.email, tempValidateCode);//,
+            return user;
+        }
+
     }
 
+
     async verifyUser(req): Promise<any> {
-        const redirect_url = "http://localhost:3000/login-register";
+        const redirect_url = process.env.REDIRECT_URL; 
         if(!req.query.email || !req.query.verificationCode){
             throw new RequestError("Missing required properties");
         }
@@ -125,20 +145,25 @@ export default class UserService {
             await this.userRepository.updateUser(user);
             return ('<html lang="en">Successfully verified. Click<a href= ' + redirect_url + '> here</a> to return to login</html>');
         } else {
-            throw new AuthenticationError("Could not Validate User Email");
+            throw new AuthenticationError("Could not Validate User Account");
         }
     }
 
-    async sendVerificationEmail(code, emailAddress): Promise<void> {
+    async sendVerificationEmail(emailAddress, code ): Promise<void> {
+        logger.info("Sending an email to the new email address");
         let url = process.env.BASE_URL + '/users/verify?verificationCode=' + code + '&email=' + emailAddress;
         let transporter = nodemailer.createTransport({
             service: 'gmail',
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true,
             auth: {
                 user: process.env.EMAIL_ADDRESS,
                 pass: process.env.EMAIL_PASSWORD
-            }
+            },
+            tls:{ rejectUnauthorized:false} 
         });
-
+        
         let mailOptions = {
             from: process.env.EMAIL_ADDRESS,
             to: emailAddress,
@@ -160,35 +185,32 @@ export default class UserService {
 
     async loginUser(req): Promise<any> {
         if(!req.body.email || !req.body.password){
-            throw new RequestError("Could not log in");
+            throw new RequestError("Please supply an email and a password");
         }
         const user = await this.userRepository.findUser({"email": req.body.email});
-        if(!user) throw new RequestError("User does not exist");
+        if(!user)
+            throw new AuthenticationError("The entered email or password was incorrect");
+
         if(user.validated){
             try{
                 return await this.authenticateUser(req.body.password, user);
             }
             catch(err){
-                throw new AuthenticationError(err.message);
+                throw new AuthenticationError("The entered email or password was incorrect");
             }
         } else {
-            throw new AuthenticationError("User must be validated");
+            throw new AuthenticationError("Please check your emails and validate your account.");
         }
     }
 
-    //TODO: Implement JWT blacklist in order to facilitate explicit logout
-    /*async logoutUser(req): Promise<UserProps> {
-        if(!req.user || !req.user.email || !req.user.tokens){
+    async logoutUser(req): Promise<UserProps> {
+        if(!req.user){
             throw new RequestError("Missing required properties");
         }
-
         const user = await this.userRepository.findUser({email: req.user.email});
-        const tokens: Token[] = req.user.tokens;
-        const tokensFiltered = tokens.filter(token => {return token.token !== req.user.token});
-        console.log("Filtered tokens when logging out user: ");
-        console.log(tokensFiltered);
-        user.tokens = tokens as any;
-
+        //const tokens: Token[] = req.user.tokens;
+        //tokens.filter(token => {return token.token !== req.user.token});
+        //user.tokens = tokens as any;
         try {
             return await this.userRepository.updateUser(user);
         }
@@ -196,9 +218,8 @@ export default class UserService {
             console.error(err);
             throw new RequestError("Could not log out user");
         }
-    }*/
+    }
 
-    //TODO: Delete User from workflows and phases.
     async deleteUser(req): Promise<UserProps> {
         if (!req.params.id) {
             throw new RequestError("Missing Parameter");
@@ -238,7 +259,7 @@ export default class UserService {
                 email: user.email,
                 signature:user.signature.toString()
                 //ownedWorkflows: user.ownedWorkflows,
-               // workflows: user.workflows
+                //workflows: user.workflows
             };
             return {status: "success", data: data, message:""};
         }
@@ -281,5 +302,10 @@ export default class UserService {
 
     async verifyEmailExistence(email, requestingUserId) {
         return Promise.resolve(undefined);
+    }
+
+    async getWorkflowTemplatesIds(user) {
+        const usr = await this.getUserById(user._id);
+        return {status:"success", data:{templateIds: usr.workflowTemplates}, message:""};
     }
 }
