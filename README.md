@@ -24,16 +24,12 @@
 # Team Jar-gon
 ## Team Members
 
-**Team Members**        
- ![GitHub Contributors Image](https://contrib.rocks/image?repo=COS301-SE-2021/Document-Workflow)|                                                                                  **Profiles**                                                                                  |                                     **Profile Description**                                     |
+**Team Members**                                                                |                                                                                  **Profiles**                                                                                  |                                     **Profile Description**                                     |
 | :-------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: |
 |<img src="Images/delarey.jpeg" width="100" height="150"><br/> Delaray Botha <br/> u14011639 |       [GitHub](https://github.com/delareytuks) <br/> [Profile Page](https://delareytuks.github.io) <br/> [LinkedIn](https://www.linkedin.com/in/delarey-botha-82886820b/) <br/> | Full-time Backend debugger, part-time regretter of early design decisions |
 |<img src="Images/Brent.jpg" width="150" height="150" style="border-radius:30%;"> <br/> Brenton Stroberg <br/> u17015741 | [GitHub](https://github.com/u17015741) <br/> [Profile Page](https://u17015741.github.io) <br/> [LinkedIn](https://www.linkedin.com/in/brenton-stroberg-a15219172/) <br/> | Web developer, who enjoys the challenges of developing new software. Has more dogs than he has bugs in his code.<br>|
 |<img src= "Images/Tim.jpg" width="150" height="150" style="border-radius:30%;"> <br/>Timothy Hill <br/> u17326622 <br/> | [GitHub]([https://github.com/u17112592]) <br/> [Profile Page](https://u17112592.github.io/) <br/> [LinkedIn](https://www.linkedin.com/in/timothy-hill-759a0b20b/) <br/> | Backend developer. Interested in theoretical computer sciences and math. Loves cats and endurance sports |
-|<img src="Images/Mosa.jpg" width="150" height="150" style="border-radius:30%;"> <br/> Mosa Letswalo <br/> u14168970|       [GitHub](https://github.com/tomosaHub) <br/> [Profile Page](https://tomosaHub.github.io) <br/> [LinkedIn](https://www.linkedin.com/in/mosa-letswalo) <br/> |  Android enthusiast who has experience with Java, Android Studios and Python. Interested in complex problem solving using mathematical computation.  
-<!--
-|<img src="Images/Happiness.jpg" width="150" height="150" style="border-radius:30%;"> <br/>Happiness Masombuka<br/> u16324804  |       [GitHub]%%(https://github.com/HappinessMasombuka) <br/> [Profile Page](https://HappinessMasombuka.github.io) <br/> [LinkedIn](https://www.linkedin.com/in/happiness-masombuka-0128071a7) <br/> | Web developer specializing in database systems and UX designs. Passionate about the upliftment of communities.
--->
+|<img src="Images/Mosa.jpg" width="150" height="150" style="border-radius:30%;"> <br/> Mosa Letswalo <br/> u14168970|       [GitHub](https://github.com/tomosaHub) <br/> [Profile Page](https://tomosaHub.github.io) <br/> [LinkedIn](www.linkedin.com/in/mosa-letswalo) <br/> |  Android enthusiast who has experience with Java, Android Studios and Python. Interested in complex problem solving using mathematical computation.  |
 
 
 # GitHub-Management
