@@ -22,6 +22,15 @@ describe("User sub-system integration tests:", () => {
     let testUserValidationToken;
     let testUserValidationCode;
 
+    const contactUserPassword = "An0tHeRgReAtpaSsW*or^d123";
+    const contactUserEmail = "jigglyjelly@test.test";
+    const contactUserName = "Jiggly";
+    const contactUserSurname = "Jelly";
+    const contactUserInitials = "JJ";
+    const contactUserSignature = {
+        data: "textrepresentingabufferofthesignature"
+    }
+
     beforeAll(async () => {
       await Database.get();
     });
@@ -37,17 +46,14 @@ describe("User sub-system integration tests:", () => {
 
   describe("User Lifecycle:", () => {
 
-      it("Should create a new user:", async () => {
+      it("Should create user1:", async () => {
 
         //Create new user if it doesn't exist
         //Check if user exists
         //Delete User if it exists:
-        let getResponse;
-        try {
-            getResponse = await userService.getUserByEmail(testUserEmail);
-        }catch(err){
 
-        }
+        const getResponse = await userService.getUserByEmail(testUserEmail);
+
         if(getResponse){
           const deleteRequest = {
             params: {
@@ -82,7 +88,7 @@ describe("User sub-system integration tests:", () => {
         testUserValidationCode = createdUser.validateCode;
       });
 
-      it("Should verify the user", async () => {
+      it("Should verify user1", async () => {
           const verifyRequest = {
               query: {
                   email: testUserEmail,
@@ -96,7 +102,7 @@ describe("User sub-system integration tests:", () => {
           expect(user.validated).toBe(true);
       });
 
-      it("Should login a user", async () => {
+      it("Should login user1", async () => {
           const loginRequest = {
               body: {
                   email: testUserEmail,
@@ -107,7 +113,7 @@ describe("User sub-system integration tests:", () => {
           expect(testUserValidationToken).toBeDefined();
       });
 
-      it("Should Authenticate the User", async () => {
+      it("Should authenticate user1", async () => {
           request(app)
               .post('/api/users/authenticate')
               .set('Authorization', 'Bearer ' + testUserValidationToken)
@@ -115,7 +121,7 @@ describe("User sub-system integration tests:", () => {
               .expect(200);
       })
 
-      it("Should invalidate the user's access token", async () => {
+      it("Should invalidate user1's access token", async () => {
           request(app)
               .delete('/api/users/logout')
               .set('Authorization', 'Bearer ' + testUserValidationToken)
@@ -132,4 +138,17 @@ describe("User sub-system integration tests:", () => {
       });
 
     });
+
+  describe("User Contacts Lifecycle:", () => {
+
+      it("Should create a user2")
+
+      it("Should verify user2")
+
+      it("Should login user1")
+
+      it("Should send a contact request to user2")
+
+
+  });
 });
