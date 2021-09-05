@@ -19,6 +19,10 @@ export default class AIController{
         return this.aiService.retrieveClassifierData();
     }
 
+    private async getDecisionTrees(req) {
+        return this.aiService.getDecisionTreesData();
+    }
+
 
     routes() {
         this.router.get("/getClassifier", async(req,res)=>{
@@ -29,8 +33,14 @@ export default class AIController{
             }
         });
 
+        this.router.get("/getDecisionTrees", async(req,res)=>{
+            try {
+                res.status(200).json(await this.getDecisionTrees(req));
+            } catch(err){
+                await handleErrors(err,res);
+            }
+        });
+
         return this.router;
     }
-
-
 }
