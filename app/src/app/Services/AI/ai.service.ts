@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import * as natural from 'natural';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import {config} from "../configuration";
+import {config} from '../configuration';
+import * as DecisionTree from 'decision-tree';
 
 const DOCUMENT_TYPES = Object.freeze({EXPENSE:'Expense Report', CONSULTING:'Consulting Contract', EMPLOYMENT:'Employment Contract' });
 
@@ -11,15 +12,17 @@ const DOCUMENT_TYPES = Object.freeze({EXPENSE:'Expense Report', CONSULTING:'Cons
 export class AIService {
 
   classifier;
+  decisionTree;
+  decisionTreesData;
 
   constructor( private http: HttpClient) {
-    this.classifier = new natural.BayesClassifier();
     this.http.get(config.url +'/ai/getClassifier').subscribe((response)=>{
-     console.log('AI Service');
-     console.log(response);
      this.loadClassifier(response);
     });
 
+    this.http.get(config.url +'/ai/getDecisionTrees').subscribe((response)=>{
+        this.loadDecisionTrees(response);
+    });
   }
 
   /**
@@ -40,6 +43,22 @@ export class AIService {
     this.classifier.classifier.classTotals = classifierData.classifier.classTotals;
     this.classifier.classifier.totalExamples = classifierData.classifier.totalExamples;
     console.log('Document classifier successfully loaded');
+  }
+
+  loadDecisionTrees(response){
+    console.log(response);
+    this.decisionTree = new DecisionTree(JSON.parse(response.data.consultantData));
+    console.log(this.decisionTree);
+    console.log(this.decisionTree.predict({
+      'Length': 36,
+      'ConsecutiveUnderscores': false,
+      'ContainsSemiColon': false,
+      'SignatureKeyword': false,
+      'ProjectNoKeyWord': false,
+      'DateKeyword': false,
+      'NameKeyword': false,
+      'WitnessKeyword': false
+    }));
   }
 
   categorizeDocument(extractedText: string){
