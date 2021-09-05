@@ -11,7 +11,7 @@ export default class encryption {
 
   createHash(workflowId: string, userId: string, userPassword: string): any {
     console.log(Date.now());
-    const hash = crypt.createHash("sha256");
+    const hash = crypt.createHash('sha512');
     return hash.update("thisIsTest" + workflowId + userId + Date.now()+ userPassword).digest();
   }
 
