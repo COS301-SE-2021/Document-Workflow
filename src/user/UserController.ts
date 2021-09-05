@@ -6,13 +6,13 @@ import sanitize from "../security/Sanitize";
 import { RequestError, ServerError } from "../error/Error";
 import { handleErrors } from "../error/ErrorHandler";
 import Authenticator from "../security/Authenticate";
+import sanitizeRequest from "./../security/Sanitize";
 import { ObjectId } from "mongoose";
 
 
 @injectable()
 export default class UserController{
     private readonly router: Router;
-
 
     constructor(private userService: UserService, private authenticationService: Authenticator) {
         this.router = new Router();
@@ -70,7 +70,6 @@ export default class UserController{
             return await this.userService.loginUser(req.body.email, req.body.password);
         }
         catch(err){
-            console.error(err);
             throw err;
         }
     }
@@ -178,6 +177,19 @@ export default class UserController{
         }
     }*/
 
+    /**
+     * This function is used to fetch the ids of the workflow templates owned by a user.
+     * We don't allow the user to pass through any data: that is, we get the user making the request
+     * from the input JWT. If we did this differently, it could be a security risk since then users
+     * could make requests to this api endpoint but get the data for workflow templates belonging to other users.
+     * @param req
+     * @private
+     */
+    private async getWorkflowTemplatesIds(req) {
+
+        return await this.userService.getWorkflowTemplatesIds(req.user);
+    }
+
     routes() {
         this.router.get("", this.authenticationService.Authenticate, async (req, res) => {
             try {
@@ -243,7 +255,16 @@ export default class UserController{
             }
         });
 
-        this.router.get("/verify", sanitize, async(req,res) =>{
+        this.router.post("", async(req, res) =>{
+            try{
+                res.status(200).send(await this.registerUserRoute(req));
+            }
+            catch(err){
+                await handleErrors(err, res);
+            }
+        });
+
+        this.router.get("/verify", sanitizeRequest, async(req,res) =>{
             try {
                 res.status(200).send(await this.verifyUserRoute(req));
             } catch(err){
@@ -346,8 +367,17 @@ export default class UserController{
             } catch(err){
                 res.status(200).json({status:"error", data: {}, message: ""});
                 try{await handleErrors(err,res);}catch{}
+                await handleErrors(err,res);
             }
         });*/
+
+        this.router.post("/getWorkflowTemplatesIds", this.authenticationService.Authenticate, async(req, res) =>{
+            try {
+                res.status(200).json(await this.getWorkflowTemplatesIds(req));
+            } catch(err){
+                await handleErrors(err,res);
+            }
+        });
 
         this.router.get("/test", async (req, res) => {
             res.status(200).json("Server is running");
@@ -355,4 +385,5 @@ export default class UserController{
 
         return this.router;
     }
+
 }

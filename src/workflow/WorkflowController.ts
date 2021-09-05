@@ -5,7 +5,8 @@ import Authenticator from "../security/Authenticate";
 import { RequestError, ServerError } from "../error/Error";
 import { handleErrors } from "../error/ErrorHandler";
 import { WorkflowProps } from "./Workflow";
-import { Phase } from "../phase/Phase";
+import { PhaseProps, Phase } from "../phase/Phase";
+import {logger} from "../LoggingConfig";
 
 @injectable()
 export default class WorkflowController {
@@ -54,7 +55,7 @@ export default class WorkflowController {
             if(!phase.annotations || !phase.description || !phase.users){
                 throw new RequestError("There was something wrong with the request");
             }
-        })
+        });
 
         //parse request, setup WorkflowProps object to send through
         const workflow: WorkflowProps = {
@@ -64,6 +65,7 @@ export default class WorkflowController {
             ownerId: req.user._id,
             ownerEmail: req.user.email,
             documentId: undefined,
+            historyId: undefined,
             description: req.body.description,
             phases: undefined
         }
@@ -71,8 +73,6 @@ export default class WorkflowController {
         const convertedPhases = [];
 
         phases.forEach( phase => {
-            console.log("THIS PHASE HAS THE FOLLOWING USERS OBJECT");
-            console.log(phase.users);
             convertedPhases.push(new Phase({
                 users: JSON.stringify(phase.users), //The input users array is actually an array with a single JSON string
                 description: phase.description,
@@ -80,12 +80,11 @@ export default class WorkflowController {
             }));
         })
 
-        try{
-            return await this.workflowService.createWorkFlow(workflow, req.files.document,req.files.document.data, convertedPhases);
-
-        } catch(err) {
-            throw err;
+        if(!req.body.template){
+            req.body.template = null;
         }
+
+        return await this.workflowService.createWorkFlow(workflow, req.files.document, convertedPhases, req.body.template, req.user);
     }
 
     async getWorkFlowDetails(req):Promise<any>{
@@ -113,7 +112,7 @@ export default class WorkflowController {
     }
 
     private async retrieveDocument(req) {
-
+        logger.info("Retrieving a document given a workflow id");
         if(!req.body.workflowId){
             throw new RequestError("There was something wrong with the request");
         }
@@ -162,22 +161,33 @@ export default class WorkflowController {
     }
 
     private async retrieveWorkflow(req) {
+
         if(!req.body.workflowId){
             throw new RequestError("There was something wrong with the request");
         }
-        return await this.workflowService.retrieveWorkflow(req.body.workflowId, req.user.email);
+
+        try{
+            return await this.workflowService.retrieveWorkflow(req.body.workflowId, req.user.email);
+        } catch(err) {
+            console.log(err)
+            throw new ServerError(err.toString());
+        }
     }
 
     private async deleteWorkFlow(req) {
         if(!req.body.workflowId)
             throw new RequestError("There was something wrong with the request");
 
-        return await this.workflowService.deleteWorkFlow(req.body.workflowId, req.user.email);
+        try{
+            return await this.workflowService.deleteWorkFlow(req.body.workflowId, req.user.email);
+        } catch(err) {
+            throw new ServerError(err.toString());
+        }
     }
 
     private async editWorkflow(req) {
         if(!req.body.name || !req.body.description
-             || !req.body.phases || !req.body.workflowId) { //owner ID will be added after the auth is used!!! dont check for it here
+            || !req.body.phases || !req.body.workflowId) { //owner ID will be added after the auth is used!!! dont check for it here
             throw new RequestError("There was something wrong with the request");
         }
 
@@ -235,6 +245,27 @@ export default class WorkflowController {
             console.log(err);
             throw err;
         }
+    }
+
+    private async getWorkflowHistory(req) {
+        if(!req.body.workflowId)
+            throw new RequestError("A workflowId must be supplied to revert the phase of a workflow");
+        try{
+            return await this.workflowService.getWorkflowHistory(req.body.workflowId, req.user.email);
+        }
+        catch(err){
+            console.log(err);
+            throw err;
+        }
+    }
+
+    private async verifyDocument(req) {
+
+        if(!req.body.workflowId || ! req.files.document){
+            throw new RequestError("A workflowId and input document is required to verify a document");
+        }
+
+        return await this.workflowService.verifyDocument(req.body.workflowId, req.files.document, req.user);
     }
 
     //----------------------------------------------------------------------------------
@@ -328,11 +359,26 @@ export default class WorkflowController {
             try {
                 res.status(200).json(await this.getOriginalDocument(req));
             } catch(err){
-                res.status(500).json({})
                 await handleErrors(err,res);
             }
         });
 
+        this.router.post("/getWorkflowHistory", this.auth, async(req,res)=>{
+            try {
+                res.status(200).json(await this.getWorkflowHistory(req));
+            } catch(err){
+                await handleErrors(err,res);
+            }
+        });
+
+        this.router.post("/verifyDocument", this.auth, async(req,res)=>{
+            try{
+                res.status(200).json(await this.verifyDocument(req));
+            }
+            catch(err){
+                await handleErrors(err, res);
+            }
+        });
 
         this.router.post("/delete",this.auth, async(req,res)=>{
             try {
@@ -344,3 +390,10 @@ export default class WorkflowController {
         return this.router;
     }
 }
+
+/*
+      \    /\
+       )  ( ') Meow Meow Meow
+      (  /  )
+       \(__)|
+ */

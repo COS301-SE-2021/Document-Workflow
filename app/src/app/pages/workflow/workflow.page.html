@@ -55,7 +55,7 @@
                   <ion-icon name="arrow-redo-outline" style="font-size: 22px; color:white"></ion-icon>
                 </ion-fab-button>
                 <ion-fab-button (click)="editDocument(document._id, document.name)" *ngIf='documentPermission[p] === 1'>
-                  <ion-icon name="construct-outline" style="font-size: 22px;color:white"></ion-icon>
+                  <ion-icon name="pencil-outline" style="font-size: 22px;color:white"></ion-icon>
                 </ion-fab-button>
                 <ion-fab-button (click)="editWorkflow(document._id)"
                   *ngIf="document.ownerEmail === userEmail && document.status !=='Completed'">
@@ -65,14 +65,21 @@
                   <ion-icon name="close-outline" style="font-size: 22px;color:white"></ion-icon>
                 </ion-fab-button>
                 <ion-fab-button (click)="revertPhase(document._id)" *ngIf="document.ownerEmail === userEmail">
-                  <ion-icon name="git-pull-request-outline"></ion-icon>
+                  <ion-icon name="git-pull-request-outline" style="font-size: 22px;color:white"></ion-icon>
+                </ion-fab-button>
+                <ion-fab-button (click)="viewHistory(document._id)" *ngIf="document.ownerEmail === userEmail">
+                  <ion-icon name="skull-outline" style="font-size: 22px;color:white"></ion-icon>
                 </ion-fab-button>
               </ion-fab-list>
             </ion-fab>
           </ion-header>
           <ion-card-content style="width:100%">
             <ion-item lines="none" name="workflowDescription">
+              <ion-label position="stacked">Document description</ion-label>
               <p>{{document.description}}</p>
+            </ion-item>
+            <ion-item lines="none">
+              <p>Current Phase {{document.currentPhase+1}}</p>
             </ion-item>
             <ion-grid style="width: 100%;">
               <ion-row *ngFor="let phase of document.phases; let i = index">
@@ -89,7 +96,6 @@
                 </ion-col>
                 <ion-col *ngIf='phase.showPhase' lines="none" sizeXs='12'>
                   <ion-row *ngFor="let user of phase.users">
-
                     <ion-col sizeXs='12' sizeMd='7' sizeSm='7' style="text-align: left;">
                       <ion-item lines="none">
                         <ion-label position="stacked" style="width: 100%;">User email:</ion-label>
@@ -120,9 +126,9 @@
       </ion-reorder>
     </div>
   </ion-reorder-group>
-  <!-- <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="addWorkflow()">
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="debug()">
       <ion-icon name="add-circle-outline"></ion-icon>
     </ion-fab-button>
-  </ion-fab> -->
+  </ion-fab>
 </ion-content>

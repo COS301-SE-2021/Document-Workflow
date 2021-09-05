@@ -1,4 +1,4 @@
-import { sanitize } from "mongo-sanitize";
+import sanitize  from "mongo-sanitize";
 
 /**
  * @description This method sanitizes the input from the request object

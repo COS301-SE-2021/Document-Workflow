@@ -316,11 +316,12 @@ export class WorkflowEditPage implements OnInit {
         this.fb.group({
           user: new FormControl('', [Validators.email, Validators.required]),
           permission: new FormControl('', [Validators.required]),
-          accepted: new FormControl(false, [Validators.required]),
+          accepted: new FormControl("false", [Validators.required]),
         }),
       ]),
     });
   }
+
 
   addPhase() {
     let phase = this.workflowForm.get('phases') as FormArray;
@@ -477,8 +478,6 @@ export class WorkflowEditPage implements OnInit {
       }
       i++;
     }
-
-    console.log(phases)
     const name = this.workflowForm.controls.workflowName.value;
     const description = this.workflowForm.controls.workflowDescription.value;
 

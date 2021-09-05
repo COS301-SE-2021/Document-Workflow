@@ -44,12 +44,14 @@ export const userSchema = createSchema({
     signature: Type.buffer({required: true }),
     validated: Type.boolean({ default: false }),
     validateCode: Type.string(),
-    ownedWorkflows: [{type:String}],
-    workflows: [{type: String}],
     contacts: Type.array({required: false}).of(Type.string()),
     contactRequests: Type.array({required: false}).of(Type.string()),
     blockedList: Type.array({required: false}).of(Type.string()),
-    privilegeLevel: Type.string({ default: PrivilegeLevel.USER })
+    privilegeLevel: Type.string({ default: PrivilegeLevel.USER }),
+    ownedWorkflows: [String],
+    workflows: [String],
+    workflowTemplates: [String]
+
 });
 
 export const User = typedModel('User', userSchema);

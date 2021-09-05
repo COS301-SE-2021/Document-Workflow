@@ -1,33 +1,50 @@
 import {Workflow, WorkflowProps} from "./Workflow";
 import { ObjectId } from "mongoose";
+import {ServerError} from "../error/Error";
+import {logger} from "../LoggingConfig";
 
 export default class WorkflowRepository{
 
     async saveWorkflow(workflow: WorkflowProps): Promise<ObjectId> {
-        const newWorkflow = new Workflow(workflow);
-        await newWorkflow.save();
-        return newWorkflow._id;
+        try {
+            const newWorkflow = new Workflow(workflow);
+            await newWorkflow.save();
+            return newWorkflow._id;
+        }
+        catch(err){
+            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
+        }
     }
-    //This function does not work as intended. the updateOne function should take in the values to update eg {name: 'John Snow'}. See https://masteringjs.io/tutorials/mongoose/update
 
     async updateWorkflow(workflow: WorkflowProps): Promise<Boolean>{
         console.log("Updating a workflow to have new values: ");
         console.log(workflow);
-        await Workflow.updateOne({_id: workflow._id}, {name: workflow.name,
-            ownerId: workflow.ownerId,
-            ownerEmail: workflow.ownerEmail,
-            documentId: workflow.documentId,
-            description: workflow.description,
-            phases: workflow.phases,
-            currentPhase: workflow.currentPhase,
-            status: workflow.status
-        });
-        return true;
+        try {
+            await Workflow.updateOne({_id: workflow._id}, {
+                name: workflow.name,
+                ownerId: workflow.ownerId,
+                ownerEmail: workflow.ownerEmail,
+                documentId: workflow.documentId,
+                description: workflow.description,
+                phases: workflow.phases,
+                currentPhase: workflow.currentPhase,
+                status: workflow.status
+            });
+            return true;
+        }
+        catch(err){
+            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
+        }
     }
 
 
     async deleteWorkflow(id: ObjectId) {
-        await Workflow.deleteOne({_id: id});
+        try {
+            await Workflow.deleteOne({_id: id});
+        }
+        catch(err){
+            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
+        }
     }
 
     async getWorkflow(id:string):Promise<WorkflowProps>{
@@ -35,12 +52,27 @@ export default class WorkflowRepository{
             return await Workflow.findById(id);
         }
         catch(err){
-            throw err;
+            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
         }
     }
 
-    async addDocumentId(workflowId, documentId){
+    async addDocumentId(workflowId, documentId) {
         console.log("Adding documentID: ", documentId, " to workflow of id: ", workflowId);
-        await Workflow.updateOne({_id: workflowId}, {$set: {documentId: documentId}}, {upsert: true});
+        try {
+            await Workflow.updateOne({_id: workflowId}, {$set: {documentId: documentId}}, {upsert: true});
+        }
+        catch(err){
+            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
+        }
+    }
+
+    async addWorkflowHistoryId(workflowId, workflowHistoryId){
+        logger.info("Saving the historyId: " + workflowHistoryId + " to workflow " + workflowId);
+        try {
+            await Workflow.updateOne({_id: workflowId}, {$set: {historyId: workflowHistoryId}}, {upsert: true});
+        }
+        catch(err){
+            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
+        }
     }
 }

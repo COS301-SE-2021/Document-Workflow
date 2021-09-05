@@ -6,12 +6,13 @@ import jwt, { Jwt } from "jsonwebtoken";
 import { AuthenticationError, RequestError, ServerError } from "../error/Error";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
+import { isStrongPassword, isEmail } from "validator";
+import {logger} from "../LoggingConfig";
 import Database from "../Database";
 import { ObjectId } from "mongoose";
 
 @injectable()
 export default class UserService {
-
     constructor(private userRepository: UserRepository) {}
     async authenticateUser(password, usr: UserProps): Promise<String> {
         const result = await bcrypt.compare(password, await usr.password);
@@ -95,28 +96,65 @@ export default class UserService {
         if (req.body.length === 0 || !req.body || !req.files.signature.data) {
             throw new RequestError("Missing required information to register user");
         }
-        try {
-            const usr: UserProps = req.body;
-            usr.signature = req.files.signature.data;
-            usr.validateCode = crypto.randomBytes(64).toString('hex');
-            usr.password = await this.getHashedPassword(usr.password);
 
-            /*const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
-            usr.tokens = [token];*/
+        if (!isEmail(req.body.email)) {
+            throw new RequestError("The given email address is invalid.");
+        }
 
-            const user: UserProps = await this.userRepository.saveUser(usr);
-            if(user){
-                await this.sendVerificationEmail(usr.email, usr.validateCode)//,
-                return user;
+        const checkForUser = await this.getUserByEmail(req.body.email);
+        if (checkForUser) {
+            throw new RequestError("The given email address already has a Document Workflow Account");
+        }
+
+        if (req.body.password !== req.body.confirmPassword) {
+            throw new RequestError("The two passwords do not match.");
+        }
+
+        if (!isStrongPassword(req.body.password)) {
+            throw new RequestError("Password is not strong enough. Ensure that it is at least 8 characters long with one uppercase character, lowercase character, number and special character");
+        }
+
+        const usr: UserProps = req.body;
+        usr.signature = req.files.signature.data;
+        usr.validateCode = crypto.randomBytes(64).toString('hex');
+        usr.password = await this.getHashedPassword(usr.password);
+        usr.ownedWorkflows = [];
+        usr.workflows = [];
+        usr.workflowTemplates = [];
+        const tempValidateCode = usr.validateCode;
+        //const user: UserProps = await this.userRepository.postUser(usr);
+        //const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
+        //usr.tokens = [token];
+        const user: UserProps = await this.userRepository.saveUser(usr);
+        //const response = await this.userRepository.putUser(usr);
+        if (user) {
+            //logger.info(usr); It seems as though the usr object gets changed after it is saved to the database
+            logger.info(req.body.email + " " + tempValidateCode);
+            await this.sendVerificationEmail(req.body.email, tempValidateCode);//,
+            return user;
+            try {
+                const usr: UserProps = req.body;
+                usr.signature = req.files.signature.data;
+                usr.validateCode = crypto.randomBytes(64).toString('hex');
+                usr.password = await this.getHashedPassword(usr.password);
+
+                /*const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
+                usr.tokens = [token];*/
+
+                const user: UserProps = await this.userRepository.saveUser(usr);
+                if (user) {
+                    await this.sendVerificationEmail(usr.email, usr.validateCode)//,
+                    return user;
+                }
+            } catch (err) {
+                console.error(err);
+                throw new RequestError("Could not register user");
             }
-        } catch (err) {
-            console.error(err);
-            throw new RequestError("Could not register user");
         }
     }
 
     async verifyUser(req): Promise<any> {
-        const redirect_url = "http://localhost:3000/login-register";
+        const redirect_url = process.env.REDIRECT_URL;
         if(!req.query.email || !req.query.verificationCode){
             throw new RequestError("Missing required properties");
         }
@@ -128,18 +166,23 @@ export default class UserService {
             await this.userRepository.updateUser(user);
             return ('<html lang="en">Successfully verified. Click<a href= ' + redirect_url + '> here</a> to return to login</html>');
         } else {
-            throw new AuthenticationError("Could not Validate User Email");
+            throw new AuthenticationError("Could not Validate User Account");
         }
     }
 
-    async sendVerificationEmail(code, emailAddress): Promise<void> {
+    async sendVerificationEmail(emailAddress, code ): Promise<void> {
+        logger.info("Sending an email to the new email address");
         let url = process.env.BASE_URL + '/users/verify?verificationCode=' + code + '&email=' + emailAddress;
         let transporter = nodemailer.createTransport({
             service: 'gmail',
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true,
             auth: {
                 user: process.env.EMAIL_ADDRESS,
                 pass: process.env.EMAIL_PASSWORD
-            }
+            },
+            tls:{ rejectUnauthorized:false}
         });
 
         let mailOptions = {
@@ -171,10 +214,10 @@ export default class UserService {
                 return await this.authenticateUser(password, user);
             }
             catch(err){
-                throw new AuthenticationError(err.message);
+                throw new AuthenticationError("The entered email or password was incorrect");
             }
         } else {
-            throw new RequestError("User is not validated.");
+            throw new AuthenticationError("Please check your emails and validate your account.");
         }
     }
 
@@ -188,7 +231,6 @@ export default class UserService {
         }
     }
 
-    //TODO: Delete User from workflows and phases.
     async deleteUser(req): Promise<UserProps> {
         if (!req.params.id) {
             throw new RequestError("Missing Parameter");
@@ -228,7 +270,7 @@ export default class UserService {
                 email: user.email,
                 signature:user.signature.toString()
                 //ownedWorkflows: user.ownedWorkflows,
-               // workflows: user.workflows
+                //workflows: user.workflows
             };
             return {status: "success", data: data, message:""};
         }
@@ -419,5 +461,10 @@ export default class UserService {
         }else{
             throw new RequestError("Contact does not exist");
         }
+    }
+
+    async getWorkflowTemplatesIds(user) {
+        const usr = await this.getUserById(user._id);
+        return {status:"success", data:{templateIds: usr.workflowTemplates}, message:""};
     }
 }

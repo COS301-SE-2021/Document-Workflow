@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="end" size="large">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-grid style="max-height: 194px;">
+      <ion-row>
+        <ion-col style="top:50%;" sizeXs='9' sizeMd='4' sizeLg='3' sizeXl='2'>
+          <ion-img src="../../../assets/LogoWhiteBackground.png" style="max-height: 100px; max-width: 320px; top:50%;">
+          </ion-img>
+        </ion-col>
+        <ion-col style="top:50%;" *ngIf='!sizeMe'>
+          <h1 style="top:50%; font-size:xx-large;">History</h1>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-card *ngFor="let history of histories">
+
+    <ion-card-header>
+      <ion-card-title>
+        Phase {{history.currentPhase}}
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item lines='none'>
+        The User {{history.userEmail}} has {{history.type}}
+      </ion-item>
+      <ion-item lines='none'>
+        <ion-label class="ion-text-wrap">
+          Hash: {{history.hash}}
+        </ion-label>
+      </ion-item>
+
+    </ion-card-content>
+  </ion-card>
+</ion-content>

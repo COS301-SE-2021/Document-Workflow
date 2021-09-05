@@ -11,6 +11,31 @@ const s3 = new AWS.S3({
 
 export default class DocumentRepository {
 
+    async saveDocumentToS3(file, path) {
+        console.log("Testing new save file to S3 function");
+        const uploadParams = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Body: file.data,
+            Key: path
+        }
+        try {
+            //const response = await s3.upload(uploadParams).promise; //TODO: test this.
+            //console.log(response);
+            await s3.upload(uploadParams, (err, data) => {
+                console.log(err)
+                if(err) {
+                    throw new CloudError("The cloud server could not be reached at this time, please try again later.");
+                }
+                else console.log(data);
+
+            });
+        }
+        catch(e){
+            console.log(e);
+            throw new CloudError("The cloud server could not be reached at this time, please try again later.");
+        }
+    }
+
     /*
        This function should only be used when creating a document when the workflow is created.
        To update a document/create a new phase in the S3 bucket see the 'putDocument' function
@@ -29,16 +54,36 @@ export default class DocumentRepository {
         const uploadParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
             Body: fileData,
-            Key: doc.workflowId +"/"+ fileName
+            Key: 'workflows/' + doc.workflowId +"/"+ fileName
+        }
+        try{
+            await s3.upload(uploadParams, (err, data) => {
+                console.log(err)
+                if(err) {
+                    throw new CloudError("The cloud server could not be reached at this time, please try again later.");
+                }
+                else console.log(data);
+
+            });
+
+        }
+        catch(e){
+            console.log(e);
         }
 
-        s3.upload(uploadParams, (err, data) => {
+        const uploadParams2 = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Body: fileData,
+            Key: 'workflows/' + doc.workflowId +"/phase0/"+ fileName
+        }
+
+        await s3.upload(uploadParams2, (err, data) => {
             if(err) {
-                throw new CloudError(err.toString());
+                throw new Error("Error establishing connection to the cloud file server");
             }
             else console.log(data);
-
         });
+
         return doc._id;
     }
 
@@ -48,7 +93,7 @@ export default class DocumentRepository {
         const uploadParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
             Body: file.data,
-            Key: workflowId +"/phase"+phaseNumber +"/" + file.name
+            Key: 'workflows/' + workflowId +"/phase"+phaseNumber +"/" + file.name
         }
         try{
             console.log(uploadParams);
@@ -67,7 +112,7 @@ export default class DocumentRepository {
             return await Document.findById(id);
         }
         catch(err){
-            throw new Error("Could not find Document");
+            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
         }
     }
 
@@ -76,7 +121,7 @@ export default class DocumentRepository {
             return await s3.getObject({Bucket: process.env.AWS_BUCKET_NAME, Key:path}).promise();
         }
         catch(err){
-            throw "The document server could not be reached";
+            throw new CloudError("The cloud server could not be reached at this time, please try again later.");
         }
     }
 
@@ -87,7 +132,7 @@ export default class DocumentRepository {
                 await Document.deleteOne({_id: id});
         }
         catch(err){
-            throw 'Could not delete fileMetadata';
+            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
         }
     }
 
@@ -95,8 +140,8 @@ export default class DocumentRepository {
         try {
             return await Document.find();
         }
-        catch(err) {
-            throw new Error("Could not find Documents " + err.toString());
+        catch(err){
+            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
         }
     }
 
@@ -124,15 +169,15 @@ export default class DocumentRepository {
         }
         catch(e){
             console.log(e);
-            throw new ServerError("The cloud server could not be reached");
+            throw new CloudError("The cloud server could not be reached");
         }
     }
 
-    async deleteDocumentFromS3(workflowId){ //workflowId is the folder name
+    async deleteDocumentFromS3(folderName){
         try {
             const listParams = {
                 Bucket: process.env.AWS_BUCKET_NAME,
-                Prefix: workflowId
+                Prefix: folderName
             };
 
             const listedObjects = await s3.listObjectsV2(listParams).promise();
@@ -150,10 +195,10 @@ export default class DocumentRepository {
 
             await s3.deleteObjects(deleteParams).promise();
 
-            if (listedObjects.IsTruncated) await this.deleteDocument(workflowId);
+            if (listedObjects.IsTruncated) await this.deleteDocument(folderName);
         }
         catch(err){
-            throw "Could not delete document from File Server";
+            throw new CloudError("The cloud server could not be reached at this time, please try again later.");
         }
     }
 }
