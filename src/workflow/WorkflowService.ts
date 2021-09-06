@@ -4,7 +4,6 @@ import WorkFlowRepository from './WorkflowRepository';
 import DocumentService from "../document/DocumentService";
 import UserService from "../user/UserService";
 import {PhaseProps, PhaseStatus} from "../phase/Phase";
-import { ObjectId } from "mongoose";
 import { PhaseService } from "../phase/PhaseService";
 import {AuthorizationError, RequestError, ServerError} from "../error/Error";
 import encryption from "../crypto/encryption";
@@ -34,8 +33,10 @@ export default class WorkflowService{
      * @param workflow
      * @param file
      * @param phases
+     * @param template
+     * @param user
      */
-    async createWorkFlow(workflow: WorkflowProps, file: File, phases: PhaseProps[], template: any, user): Promise<any>{
+    async createWorkFlow(workflow: WorkflowProps, file, phases: PhaseProps[], template: any, user): Promise<any>{
         logger.info("Creating a workflow");
         try {
             //Before any creation of objects takes place, checks must be done on the inputs to ensure that they are valid.
@@ -61,7 +62,7 @@ export default class WorkflowService{
             console.log("Workflow saved, saving document");
 
             //Step 3 save document with workflowId:
-            const documentId = await this.documentService.uploadDocument(file, workflowId);
+            const documentId = await this.documentService.saveDocument(file, file.data, workflowId);
             console.log("Document saved, updating workflow");
 
             //Step 4: Create the Workflow History for this workflow
