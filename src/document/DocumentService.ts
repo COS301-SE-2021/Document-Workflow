@@ -30,7 +30,7 @@ export default class DocumentService {
         await this.deleteTemplateDocumentFromCloud("templateFiles/" + workflowTemplateId);
     }
 
-    async uploadDocument(file: File, id: ObjectId): Promise<ObjectId>{
+    async saveDocument(file: File, fileData: Buffer, id: ObjectId): Promise<ObjectId>{
         try{
             const doc = new Document({
                 name: file.name,
@@ -38,7 +38,7 @@ export default class DocumentService {
                 path: id + '/' +file.name,
                 workflowId: id
             })
-            return await this.documentRepository.postDocument(doc, file);
+            return await this.documentRepository.saveDocument(doc, fileData, file.name);
         }
         catch(err){
             throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
@@ -111,3 +111,4 @@ export default class DocumentService {
 
     }
 }
+

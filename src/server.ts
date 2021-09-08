@@ -17,7 +17,7 @@ const onError = error => {
 
 const onListen = () => {
     console.log("Listening on port " + port);
-    if(process.env.TEST_MODE !== 'true'){
+    if(process.env.UNIT_TEST_MODE !== 'true'){
         Database.get().then(()=>{
             console.log("Connection Established to MongoDB server");
         });

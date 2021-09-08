@@ -104,7 +104,7 @@ export default class WorkflowController {
         //user parameter which is set by the middleware call to authenticate,which
         //extracts this data from the input JWT.
         try{
-            return await this.workflowService.getUsersWorkflowData(req.user);
+            return await this.workflowService.getUsersWorkflowData(req.user.id);
         } catch(err) {
             console.log(err);
             throw new ServerError(err.toString());
@@ -140,7 +140,7 @@ export default class WorkflowController {
         }
 
         try{
-            return await this.workflowService.updatePhase(req.user, req.body.workflowId, req.body.accept, req.files.document);
+            return await this.workflowService.updatePhase(req.user.email, req.body.workflowId, req.body.accept, req.files.document);
         } catch(err) {
             console.log(err)
             throw new ServerError(err.toString());

@@ -17,7 +17,7 @@ describe("user unit tests", () => {
     userService = new UserService(userRepository);
     userController = new UserController(
       userService,
-      new Authenticator(userService)
+      new Authenticator()
     );
   });
 
@@ -67,19 +67,11 @@ describe("user unit tests", () => {
       },
     } as any as Request;
 
-    await expect(userService.loginUser(request)).rejects.toThrow(
+    await expect(userController.loginUserRoute(request)).rejects.toThrow(
         RequestError
     );
   });
   it("Should encode user email and id as JWT", async () => {
-    //fake req.body.email and req.body.password:
-    const request = {
-      body: {
-        email: "unittest@test.com",
-        password: "AgR3aTP4SsW0rd",
-      },
-    } as any as Request;
-
     const hashedPassword: string =
       userService.getHashedPassword("AgR3aTP4SsW0rd");
 
@@ -92,8 +84,8 @@ describe("user unit tests", () => {
 
     sinon.stub(userRepository, "findUser").returns(response);
     try {
-      const token = await userService.loginUser(request);
-      const decoded = jwt.verify(token, process.env.SECRET);
+      const token = await userService.loginUser("unittest@test.com", "AgR3aTP4SsW0rd");
+      let decoded: any = jwt.verify(token, process.env.SECRET);
       expect(decoded.id).toBe("1234567890");
       expect(decoded.email).toBe("unittest@test.com");
     } catch (err) {
@@ -126,4 +118,8 @@ describe("user unit tests", () => {
       AuthenticationError
     );
   });
+
+  it("Should replace mongo special characters with escaped versions", async () => {
+
+  })
 });

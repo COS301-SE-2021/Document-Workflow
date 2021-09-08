@@ -15,9 +15,8 @@ import { isStrongPassword, isEmail } from "validator";
  * <p>
  * @param Object definition object containing the properties and their options used to create the Schema
  */
-/*const tokenSchema = createSchema({
-    token: Type.string({required: true})
-}, { _id: false, _v: false });*/
+
+export const PrivilegeLevel = Object.freeze({ADMIN: "Admin", USER: "User"});
 
 export const userSchema = createSchema({
     name: Type.string({required: true}),
@@ -45,7 +44,10 @@ export const userSchema = createSchema({
     signature: Type.buffer({required: true }),
     validated: Type.boolean({ default: false }),
     validateCode: Type.string(),
-    //tokens: Type.array().of(tokenSchema),
+    contacts: Type.array({required: false}).of(Type.string()),
+    contactRequests: Type.array({required: false}).of(Type.string()),
+    blockedList: Type.array({required: false}).of(Type.string()),
+    privilegeLevel: Type.string({ default: PrivilegeLevel.USER }),
     ownedWorkflows: [String],
     workflows: [String],
     workflowTemplates: [String]
@@ -55,5 +57,3 @@ export const userSchema = createSchema({
 export const User = typedModel('User', userSchema);
 export type UserDoc = ExtractDoc<typeof userSchema>;
 export type UserProps = ExtractProps<typeof userSchema>;
-/*export type Token = ExtractProps<typeof tokenSchema>;
-export type TokenDoc = ExtractDoc<typeof tokenSchema>;*/
