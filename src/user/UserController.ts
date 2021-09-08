@@ -311,7 +311,7 @@ export default class UserController{
             }
         });
 
-        this.router.delete("/logout", this.auth, async (req,res) => {
+        this.router.post("/logout", this.auth, async (req,res) => {
             try{
                 if(await this.logoutUserRoute(req)) res.status(200).json({status: "success", data: {}, message: "Successfully logged out"});
                 else res.status(400).send("User could not be logged out");

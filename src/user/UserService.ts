@@ -222,6 +222,7 @@ export default class UserService {
     }
 
     async logoutUser(token: Jwt): Promise<Boolean> {
+        console.log("Logging out a user");
         try {
             return await Database.addToBlacklist(token);
         }
