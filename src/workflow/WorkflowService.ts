@@ -306,6 +306,7 @@ export default class WorkflowService{
             let permission = '';
             let userFound = false;
             for(let i=0; i<phaseUsers.length; ++i){
+                console.log(phaseUsers[i]);
                 if(phaseUsers[i].user === user.email){
                     userFound = true;
                     permission = phaseUsers[i].permission;
@@ -314,7 +315,7 @@ export default class WorkflowService{
             }
             currentPhaseObject.users = JSON.stringify(phaseUsers);
             if(!userFound)
-                return {status:"error", data:{}, message:'You are not a part of this phase'};
+                throw new AuthorizationError("You are not a part of this phase");
 
             if(permission === 'sign'){
                 await this.documentService.updateDocument(document, workflowId, workflow.currentPhase);
@@ -420,6 +421,7 @@ export default class WorkflowService{
     async isUserMemberOfWorkflow(workflow, email):Promise<boolean>{
 
         console.log('Checking if user: ', email, 'is a member of workflow ', workflow._id);
+        console.log(workflow.ownerEmail);
         if(workflow.ownerEmail === email)
             return true;
 
@@ -450,7 +452,7 @@ export default class WorkflowService{
             const workflow = await this.workflowRepository.getWorkflow(workflowId);
             if(!await this.isUserMemberOfWorkflow(workflow, userEmail)){
                 console.log("REquesting user is NOT a member of this workflow");
-                return {status:"error", data:{}, message:"You are not a member of this workflow"};
+                throw new AuthorizationError("You are not a member of this workflow");
             }
             let phase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
             phase.annotations = annotations;
