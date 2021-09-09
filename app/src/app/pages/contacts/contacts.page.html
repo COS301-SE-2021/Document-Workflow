@@ -17,19 +17,77 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content [fullscreen]="true">
+  <ion-searchbar (ionInput)="filterList($event)"></ion-searchbar>
+  <ion-list lines="none">
+    <ion-item *ngFor="let contacts of contactList">
+      <ion-label class="ion-text-wrap">
+        <ion-text color="primary">
+          <h3>{{ contacts.name }}</h3>
+        </ion-text>
+        <p>{{ contacts.phoneNumber }} -- {{ contacts.email }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <!--  Use form to add new contact to contactList -->
   <ion-card>
-    <ion-card-header></ion-card-header>
+    <ion-card-header color="primary">New Contacts</ion-card-header>
     <ion-card-content>
-      <ion-list>
-        <ion-item>
-          Beverley Stroberg
-        </ion-item>
-        <ion-item>
-          Email
-        </ion-item>
-          Phone Number
-      </ion-list>
+
+      <form [formGroup]="addContactForm" (ngSubmit)="submitAddContact()">
+        <ion-list>
+          <ion-item>
+            <ion-label position="stacked">Email:</ion-label>
+            <ion-input inputmode="email" formControlName="email" placeholder="tim@jargon.com" name="email" id="emailId"></ion-input>
+          </ion-item>
+
+          <!-- <div formArrayName="contacts" margin-bottom>
+            <section [formGroupName]="i" *ngFor=" addContactForm.controls.contacts; let i = index">
+              <ion-item-group> -->
+          <!-- Allow generated input field to be removed -->
+          <!-- <span float-right ion-button icon-left clear *ngIf="addContactForm.controls.contacts > 1"
+                (click)="removeInputField(i)"><ion-icon name="close"></ion-icon>Remove
+          </span>
+        </ion-item-group>
+      </section>
+    </div> -->
+
+          <!-- Allow new input field to be generated/added -->
+          <span>
+            <ion-button float-left icon-left clear (click)="addNewContactList()">
+                   <ion-icon style="size:15px;" name="person-add-outline"></ion-icon>
+                   Contacts
+              </ion-button>
+            <p id="listUpdate"></p>
+             </span>
+        </ion-list>
+
+        <!--          Submit if not empty -->
+        <ion-button expand="block" color="primary" fill="outline" [disabled]="!addContactForm.valid" type="submit">Submit</ion-button>
+      </form>
+
+      <div>
+        <ion-button (click)="confirmStatus()" style="margin-top: 3%; margin-left: 0%" color ="transparent">Show Contact Request</ion-button>
+        <!--       <span> <ion-button style="margin-top:10%; margin-left: 7%%" color ="transparent">Contacts</ion-button> </span>-->
+      </div>
     </ion-card-content>
   </ion-card>
 </ion-content>
+
+<!--<ion-content>-->
+<!--  <ion-card>-->
+<!--    <ion-card-header></ion-card-header>-->
+<!--    <ion-card-content>-->
+<!--      <ion-list>-->
+<!--        <ion-item>-->
+<!--          Beverley Stroberg-->
+<!--        </ion-item>-->
+<!--        <ion-item>-->
+<!--          Email-->
+<!--        </ion-item>-->
+<!--          Phone Number-->
+<!--      </ion-list>-->
+<!--    </ion-card-content>-->
+<!--  </ion-card>-->
+<!--</ion-content>-->
