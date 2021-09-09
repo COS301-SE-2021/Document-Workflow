@@ -1,9 +1,7 @@
 import { Document, DocumentProps } from "./Document";
 import * as AWS from 'aws-sdk';
 import { ObjectId, Types } from "mongoose";
-import * as multer from 'multer';
-import * as multerS3 from 'multer-s3';
-import {CloudError, ServerError} from "../error/Error";
+import { CloudError, DatabaseError, ServerError } from "../error/Error";
 
 const s3 = new AWS.S3({
     region: process.env.AWS_REGION,
@@ -43,21 +41,20 @@ export default class DocumentRepository {
        To update a document/create a new phase in the S3 bucket see the 'putDocument' function
      */
     //TODO: when saving documents to s3, use promises instead of callbacks
-    async postDocument(doc: DocumentProps, file): Promise<ObjectId> {
-        console.log(file);
+    async saveDocument(doc: DocumentProps, fileData: Buffer, fileName: String): Promise<ObjectId> {
+        //console.log(file);
         try{
             const newDoc = new Document(doc);
             await newDoc.save();
         }
         catch(err) {
-            console.log(err);
-            throw new ServerError("Could not save Document data");
+            throw new DatabaseError("Could not save Document data");
         }
 
         const uploadParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
-            Body: file.data,
-            Key: 'workflows/' + doc.workflowId +"/"+ file.name
+            Body: fileData,
+            Key: 'workflows/' + doc.workflowId +"/"+ fileName
         }
         try{
             await s3.upload(uploadParams, (err, data) => {
@@ -76,8 +73,8 @@ export default class DocumentRepository {
 
         const uploadParams2 = {
             Bucket: process.env.AWS_BUCKET_NAME,
-            Body: file.data,
-            Key: 'workflows/' + doc.workflowId +"/phase0/"+ file.name
+            Body: fileData,
+            Key: 'workflows/' + doc.workflowId +"/phase0/"+ fileName
         }
 
         await s3.upload(uploadParams2, (err, data) => {
@@ -156,7 +153,7 @@ export default class DocumentRepository {
      * object, we create this function that instead takes the buffer in directly.
      * TODO: change the update files3 function to take in filedata instead of a file, then we can destroy this function.
      * @param path
-     * @param data
+     * @param fileData
      */
     async updateDocumentS3WithBuffer(path, fileData){
         const uploadParams = {

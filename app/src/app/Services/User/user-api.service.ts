@@ -127,9 +127,10 @@ export class UserAPIService {
         Authorization: 'Bearer ' + token,
       });
       this.http
-      .post(config.url + '/users/getWorkflowTemplatesIds', formData, {
+        .post(config.url + '/users/getWorkflowTemplatesIds', formData, {
           headers: httpHeaders,
-        }).subscribe(async (response) => {
+        })
+        .subscribe(async (response) => {
           callback(response);
         });
     } catch (error) {
@@ -261,8 +262,73 @@ export class UserAPIService {
   }
   logout() {
     //TODO: call the backend logout function
-    Cookies.remove('token');
+  logout(callback) {
+    const formData = new FormData();
+    //const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+
+    this.http
+      .post(config.url + '/users/logout', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          console.log(data);
+          Cookies.remove('token');
+          callback();
+        },
+        async (error) => {
+          await this.displayPopOver('Logout error', error.error);
+        }
+      );
   }
+
+  getContacts(callback){
+    const formData = new FormData();
+    //const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/getContacts', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          callback(data);
+        },
+        async (error) => {
+          await this.displayPopOver('Logout error', error.error);
+        }
+      );
+  }
+
+  getContactRequests(callback){
+    const formData = new FormData();
+    //const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/getContactRequests', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          callback(data);
+        },
+        async (error) => {
+          await this.displayPopOver('Logout error', error.error);
+        }
+      );
+  }
+
+
 
   private async couldNotConnectToServer() {
     await this.displayPopOver(

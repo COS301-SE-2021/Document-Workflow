@@ -18,7 +18,9 @@ export class SplitViewPage implements OnInit {
   }
 
   logout(){
-    this.userServices.logout();
-    this.router.navigate(['login']);
+    this.userServices.logout(()=>{
+      this.router.navigate(['login']);
+    });
+    
   }
 }

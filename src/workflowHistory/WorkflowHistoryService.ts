@@ -1,5 +1,4 @@
 import { injectable } from "tsyringe";
-import encryption from "../crypto/encryption";
 import WorkflowHistoryRepository from "./WorkflowHistoryRepository";
 import { ObjectId } from "mongoose";
 import {Entry, ENTRY_TYPE, WorkflowHistory} from './WorkflowHistory';
@@ -10,8 +9,7 @@ import bcrypt from "bcrypt";
 export default class WorkflowHistoryService {
 
     constructor(
-        private workflowHistoryRepository: WorkflowHistoryRepository,
-        private encrypt: encryption) {
+        private workflowHistoryRepository: WorkflowHistoryRepository) {
     }
 
     /**
