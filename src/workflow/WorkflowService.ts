@@ -6,7 +6,6 @@ import UserService from "../user/UserService";
 import {PhaseProps, PhaseStatus} from "../phase/Phase";
 import { PhaseService } from "../phase/PhaseService";
 import {AuthorizationError, RequestError, ServerError} from "../error/Error";
-import encryption from "../crypto/encryption";
 import WorkflowTemplateService from "../workflowTemplate/WorkflowTemplateService";
 import WorkflowHistoryService from "../workflowHistory/WorkflowHistoryService";
 import {ENTRY_TYPE} from "../workflowHistory/WorkflowHistory";
@@ -22,8 +21,7 @@ export default class WorkflowService{
         private userService: UserService,
         private phaseService: PhaseService,
         private workflowTemplateService: WorkflowTemplateService,
-        private workflowHistoryService: WorkflowHistoryService,
-        private encrypt: encryption) {
+        private workflowHistoryService: WorkflowHistoryService,) {
     }
 
     /**
