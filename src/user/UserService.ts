@@ -447,6 +447,24 @@ export default class UserService {
         }
     }
 
+    async getContacts(email: string) {
+        const user: UserDoc = await this.userRepository.findUser({email: email});
+        if(user){
+            return user.contacts;
+        }else{
+            throw new ServerError("User not found");
+        }
+    }
+
+    async getContactRequests(email: string) {
+        const user: UserDoc = await this.userRepository.findUser({email: email});
+        if(user){
+            return user.contactRequests;
+        }else{
+            throw new ServerError("User not found");
+        }
+    }
+
     async addContact(contactEmail: string, user): Promise<ObjectId> {
         //check if email of contact exists:
         if(user.privilegeLevel != PrivilegeLevel.ADMIN){ throw new AuthenticationError("Unauthorized")}

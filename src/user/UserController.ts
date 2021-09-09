@@ -117,12 +117,33 @@ export default class UserController{
             throw err;
         }
     }
+    
     private async acceptContactRequestRoute(req){
         if(!req.body.contactemail)
             throw new RequestError("Missing contactEmail");
         try{return await this.userService.acceptContactRequest(req.body.contactemail, req.user);}
         catch(err){
             throw err;
+        }
+    }
+
+    private async getContactsRoute(req): Promise<String[]> {
+        if(!req.user.email) throw new RequestError("Missing User details for this request");
+        try{
+            return await this.userService.getContacts(req.user.email);
+        }
+        catch(err){
+            throw new ServerError(err.toString());
+        }
+    }
+
+    private async getContactRequestsRoute(req): Promise<String[]> {
+        if(!req.user.email) throw new RequestError("Missing User details for this request");
+        try{
+            return await this.userService.getContactRequests(req.user.email);
+        }
+        catch(err){
+            throw new ServerError(err.toString());
         }
     }
 
@@ -282,6 +303,38 @@ export default class UserController{
                 try{await handleErrors(err,res);}catch{}
             }
         });
+
+        this.router.get("/getContactRequests", this.authenticationService.Authenticate , async (req, res) => {
+            try {
+                const userContactRequests = await this.getContactRequestsRoute(req);
+                if(userContactRequests) {
+                    if(userContactRequests.length == 0){
+                        res.status(200).json({status: "success", data:{}, message: "This user does not have any contact requests"});
+                    }
+                    res.status(200).json({status: "success", data:{"requests": userContactRequests }, message: "Contact Requests successfully retrieved"});
+                }
+                else res.status(404).send("Could not find User");
+            } catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        });
+
+        this.router.get("/getContacts", this.authenticationService.Authenticate , async (req, res) => {
+            try {
+                const userContacts = await this.getContactsRoute(req);
+                if(userContacts) res.status(200).json({status: "success", data:{"contacts": userContacts }, message: "Contacts successfully retrieved"});
+                if(userContacts) {
+                    if(userContacts.length == 0){
+                        res.status(200).json({status: "success", data:{}, message: "This user does not have contacts yet"});
+                    }
+                    res.status(200).json({status: "success", data:{"contacts": userContacts }, message: "Contacts successfully retrieved"});
+                }
+                else res.status(404).send("Could not find User");
+            } catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        });
+
 
         this.router.post("", async(req, res) =>{
             try{

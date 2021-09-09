@@ -4,6 +4,9 @@ import { Platform } from '@ionic/angular';
 import * as Cookies from 'js-cookie';
 import { UserAPIService } from 'src/app/Services/User/user-api.service';
 
+export interface contact{
+  email: string;
+}
 @Component({
   selector: 'app-contacts',
   templateUrl: './contacts.page.html',
