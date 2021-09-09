@@ -475,11 +475,35 @@ export default class UserService {
         usr.antiCSRFToken = crypto.randomBytes(64).toString('hex');
         usr.csrfTokenTime = Date.now();
         await this.userRepository.saveUser(usr); 
+        const res = await this.sendResetRequestEmail(user.email, usr.antiCSRFToken);
         
         return {status: 'success', data:{}, message:''};
     }
 
     async sendResetRequestEmail(emailAddress, antiCSRFCode){
+        logger.info("Sending an email to the new email address");
+        let transporter = nodemailer.createTransport({
+            service: 'gmail',
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true,
+            auth: {
+                user: process.env.EMAIL_ADDRESS,
+                pass: process.env.EMAIL_PASSWORD
+            },
+            tls:{ rejectUnauthorized:false}
+        });
 
+        let mailOptions = {
+            from: process.env.EMAIL_ADDRESS,
+            to: emailAddress,
+            subject: 'DocumentWorkflow Password Reset Code',
+            html: "<html lang='en'><p>Hello new DocumentWorkflow User, use this code to reset your password: " 
+                    + antiCSRFCode + "</p></html"
+        
+        };
+
+        const emailResponse = transporter.sendMail(mailOptions);
+        return emailResponse;
     }
 }
