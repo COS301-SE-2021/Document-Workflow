@@ -80,53 +80,10 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
         }, this.viewerRef.nativeElement).then(async instance =>{
 
             await instance.Core.PDFNet.initialize(); //To use pdftron in the non-demo mode supply a licence key here
-            /*Test to add metadata to document */
-          const docorig = await instance.Core.PDFNet.PDFDoc.createFromBuffer(arr);
-          const metadata = await docorig.getDocInfo();
-          console.log("METADATA: ");
-          console.log(await metadata.getKeywords());
-          await metadata.setKeywords("hash");
-          console.log(await metadata.getKeywords());
-          const doc = await docorig.getSDFDoc();
-          doc.initSecurityHandler();
-          doc.lock();
-          console.log('Modifying into dictionary, adding custom properties, embedding a stream...');
-
-          const trailer = await doc.getTrailer(); // Get the trailer
-
-          // Now we will change PDF document information properties using SDF API
-
-          // Get the Info dictionary.
-
-          let itr = await trailer.find('Info');
-          let info;
-          if (await itr.hasNext()) {
-            info = await itr.value();
-            // Modify 'Producer' entry.
-            info.putString('Producer', 'PDFTron PDFNet');
-
-            // read title entry if it is present
-            itr = await info.find('Author');
-            if (await itr.hasNext()) {
-              const itrval = await itr.value();
-              const oldstr = await itrval.getAsPDFText();
-              info.putText('Author', oldstr + ' - Modified');
-            } else {
-              info.putString('Author', 'Me, myself, and I');
-            }
-          } else {
-            // Info dict is missing.
-            info = await trailer.putDict('Info');
-            info.putString('Producer', 'PDFTron PDFNet');
-            info.putString('Title', 'My document');
-          }
-          const docbuf = await doc.saveMemory(0, '%PDF-1.4');
-          let blob2 = new Blob([new Uint8Array(docbuf)], {type: 'application/pdf'});
-            /*   */
             this.annotationManager = instance.Core.annotationManager;
             this.documentViewer = instance.Core.documentViewer;
 
-            instance.UI.loadDocument(blob2, {filename: this.docName});
+            instance.UI.loadDocument(blob, {filename: this.docName});
             instance.UI.disableElements(['ribbons']);
             instance.UI.setToolbarGroup('toolbarGroup-View',false);
             instance.UI.setHeaderItems(header =>{
@@ -155,8 +112,9 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
               //We disable the action areas from showing through a check of the workflow status
               //This is to ensure pringint of the document does not include action areas.
               console.log(this.workflowStatus);
-              if(this.workflowStatus !== 'Complete') //TODO: swap with enum
+              if(this.workflowStatus !== 'Completed'){ //TODO: swap with enum
                 instance.Core.annotationManager.importAnnotations(response.data.annotations);
+              }
             });
 
         });
