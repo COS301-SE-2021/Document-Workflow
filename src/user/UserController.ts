@@ -166,6 +166,10 @@ export default class UserController{
         }
     }
 
+    private async generatePasswordResetRequest(req){
+        return await this.userService.generatePasswordReset(req.user);
+    }
+
     /*private async verifyEmailExistence(req) {
         if(!req.body.email)
             throw new RequestError("Cannot verify existence of null email");
@@ -358,6 +362,14 @@ export default class UserController{
                 else res.status(404).send("User does not exist");
             } catch(err){
                 try{await handleErrors(err,res);}catch{}
+            }
+        });
+
+        this.router.post("/generatePasswordResetRequest", this.authenticationService.Authenticate, async(req, res)=>{
+            try{
+                res.status(200).json(this.generatePasswordResetRequest(req));
+            } catch(err){
+                await handleErrors(err,res)
             }
         });
 

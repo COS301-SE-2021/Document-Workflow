@@ -468,4 +468,18 @@ export default class UserService {
         const usr = await this.getUserById(user._id);
         return {status:"success", data:{templateIds: usr.workflowTemplates}, message:""};
     }
+
+    async generatePasswordReset(user){
+
+        const usr = await this.getUserById(user._id);
+        usr.antiCSRFToken = crypto.randomBytes(64).toString('hex');
+        usr.csrfTokenTime = Date.now();
+        await this.userRepository.saveUser(usr); 
+        
+        return {status: 'success', data:{}, message:''};
+    }
+
+    async sendResetRequestEmail(emailAddress, antiCSRFCode){
+
+    }
 }

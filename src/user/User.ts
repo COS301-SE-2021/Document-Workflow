@@ -44,6 +44,8 @@ export const userSchema = createSchema({
     signature: Type.buffer({required: true }),
     validated: Type.boolean({ default: false }),
     validateCode: Type.string(),
+    antiCSRFToken: Type.string({default: ''}),
+    csrfTokenTime: Type.number(),
     contacts: Type.array({required: false}).of(Type.string()),
     contactRequests: Type.array({required: false}).of(Type.string()),
     blockedList: Type.array({required: false}).of(Type.string()),
