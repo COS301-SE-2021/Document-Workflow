@@ -13,6 +13,7 @@ import { ObjectId } from "mongoose";
 
 @injectable()
 export default class UserService {
+
     constructor(private userRepository: UserRepository) {}
     async authenticateUser(password, usr: UserProps): Promise<String> {
         const result = await bcrypt.compare(password, await usr.password);
@@ -469,13 +470,13 @@ export default class UserService {
         return {status:"success", data:{templateIds: usr.workflowTemplates}, message:""};
     }
 
-    async generatePasswordReset(user){
+    async generatePasswordReset(userEmail){
 
-        const usr = await this.getUserById(user._id);
+        const usr = await this.getUserByEmail(userEmail);
         usr.antiCSRFToken = crypto.randomBytes(64).toString('hex');
         usr.csrfTokenTime = Date.now();
         await this.userRepository.saveUser(usr); 
-        const res = await this.sendResetRequestEmail(user.email, usr.antiCSRFToken);
+        const res = await this.sendResetRequestEmail(userEmail, usr.antiCSRFToken);
         
         return {status: 'success', data:{}, message:''};
     }
@@ -505,5 +506,26 @@ export default class UserService {
 
         const emailResponse = transporter.sendMail(mailOptions);
         return emailResponse;
+    }
+
+    async resetPassword(email, password, token) {
+        const usr = await this.getUserByEmail(email);
+        //This check is here to ensure that hackers cant use the default value of an antiSCRF token to
+        //reset a user's account
+        if(usr.antiCSRFToken === ""){ 
+            throw new RequestError("Something is wrong with the token, please generate a new request");
+        }
+
+        if(!usr.antiCSRFToken !== token){
+            throw new RequestError("The password reset token is incorrect");
+        }
+
+        if((Date.now() - usr.csrfTokenTime) > parseInt(process.env.CSRF_TOKEN_TIMEOUT_MILLISECONDS)){
+            throw new RequestError("The password reset token has expired, please create a new request");
+        }
+
+        usr.password = await this.getHashedPassword(password);
+        await this.userRepository.saveUser(usr);
+        return {status:"success", data:{}, message:""};
     }
 }

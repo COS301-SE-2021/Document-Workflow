@@ -167,8 +167,32 @@ export default class UserController{
     }
 
     private async generatePasswordResetRequest(req){
-        return await this.userService.generatePasswordReset(req.user);
+        if(!req.body.email){
+            throw new RequestError("Must list the email address of the user");
+        }
+        return await this.userService.generatePasswordReset(req.body.email);
     }
+
+    private async generatePResetPassword(req){
+        if(!req.body.email){
+            throw new RequestError("You must list the email address of the user");
+        }
+
+        if(!req.body.password || !req.body.confirmPassword){
+            throw new RequestError("You must include the new password as well ass the password confirmationfield");
+        }
+
+        if(req.body.password != req.body.confirmPassword){
+            throw new RequestError("The input password and confirmation password do not match");
+        }
+
+        if(!req.body.token){
+            throw new RequestError("You must include the password reset token with this request");
+        }
+
+        this.userService.resetPassword(req.body.email, req.body.password, req.body.token);
+    }
+
 
     /*private async verifyEmailExistence(req) {
         if(!req.body.email)
@@ -365,9 +389,18 @@ export default class UserController{
             }
         });
 
-        this.router.post("/generatePasswordResetRequest", this.authenticationService.Authenticate, async(req, res)=>{
+        this.router.post("/generatePasswordResetRequest", async(req, res)=>{
+        
             try{
                 res.status(200).json(this.generatePasswordResetRequest(req));
+            } catch(err){
+                await handleErrors(err,res)
+            }
+        });
+
+        this.router.post("/resetPassword", async(req,res) =>{
+            try{
+                res.status(200).json(this.generatePResetPassword(req));
             } catch(err){
                 await handleErrors(err,res)
             }
