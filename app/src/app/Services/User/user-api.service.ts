@@ -18,7 +18,9 @@ export interface LoginData {
   email: string;
   password: string;
 }
-
+export interface AddContactData{
+  email: string;
+}
 @Injectable({
   providedIn: 'root',
 })
@@ -191,6 +193,43 @@ export class UserAPIService {
           );
         }
       );
+  }
+
+  //add new user to contact list
+  public submitContact(addData: AddContactData,callback)
+  {
+    console.log('add user to your contact-list');
+    const addContactForm = new FormData();
+    addContactForm.append('email',addData.email);
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    try
+    {
+      this.http.post(UserAPIService.url + '/users/addContact', addContactForm).subscribe
+      (
+        async (data) =>
+        {
+          if (data)
+          {
+            callback(data);
+          }
+          else
+          {await this.couldNotConnectToServer();}
+        },
+        async (error) =>
+        {
+          console.log(error);
+          await this.displayPopOver('Error!',
+            'Unable to update contact list');
+        }
+      );
+    }
+    catch (e)
+    {
+      alert('An unexpected error occurred, please try again later');
+    }
   }
 
   logout() {
