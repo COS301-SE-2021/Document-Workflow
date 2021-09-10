@@ -4,6 +4,7 @@ import { Platform } from '@ionic/angular';
 import * as Cookies from 'js-cookie';
 import { UserAPIService } from 'src/app/Services/User/user-api.service';
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface contact{
   email: string;
 }
@@ -53,7 +54,7 @@ export class ContactsPage implements OnInit {
   async getContactInformation(){
     await this.userApiService.getContacts(this.userEmail, (response)=>{
       console.log(response);
-    })
+    });
   }
 
   async getUser() {
@@ -66,11 +67,9 @@ export class ContactsPage implements OnInit {
       }
     });
   }
-  // delete contact from contacList <backend>
+  // delete contact from contactList <backend>
   async deleteContact(cont): Promise<void>
   {
-
-    //ToDo backend function >>> call submitContact:
     await this.userApiService.displayPopOverWithButtons(
       'Confirmation of deletion',
       'Removing contact from contact list',
@@ -78,6 +77,7 @@ export class ContactsPage implements OnInit {
         console.log(response);
         if (response.data.confirm === true) {
           this.userApiService.displayLoading();
+          //call to deleteContact from <backend side>
           this.userApiService.deleteContact(cont, (resp) => {
 
             console.log(resp);

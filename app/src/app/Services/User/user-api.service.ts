@@ -260,6 +260,59 @@ export class UserAPIService {
         }
       );
   }
+
+
+public async rejectContactRequest(callback)
+{
+  const formData = new FormData();
+  const token = Cookies.get('token');
+  const httpHeaders: HttpHeaders = new HttpHeaders({
+    Authorization: 'Bearer ' + token,
+  });
+
+  this.http.post(config.url + '/users/rejectContactRequest', formData, {
+    headers: httpHeaders,})
+    .subscribe(
+      (data) => {
+        if (data) {
+          callback(data);
+        } else
+        {callback({ status: 'error', message: 'Cannot connect to Server' });}
+      },
+      (error) => {
+        alert('An unexpected error occurred');
+      }
+    );
+}
+
+public async sendContactRequest(contactId, callback)
+{
+  const formData = new FormData();
+  formData.append('contactId', contactId);
+
+  const token = Cookies.get('token');
+  const httpHeaders: HttpHeaders = new HttpHeaders({
+    Authorization: 'Bearer ' + token,
+  });
+
+  this.http.post(config.url + '/users/deleteContact', formData, {
+    headers: httpHeaders,})
+    .subscribe(
+      (data) => {
+        //TODO: change url
+        if (data) {
+          callback(data);
+        } else
+        {callback({ status: 'error', message: 'Cannot connect to Server' });}
+      },
+      (error) => {
+        alert('An unexpected error occurred');
+      }
+    );
+}
+
+
+
   logout() {
     //TODO: call the backend logout function
   logout(callback) {
