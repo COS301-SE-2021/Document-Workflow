@@ -261,7 +261,6 @@ export class UserAPIService {
 
   getContacts(email: string, callback) {
     const formData = new FormData();
-    // formData.append('email', email);
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: 'Bearer ' + token,
@@ -309,6 +308,111 @@ export class UserAPIService {
     });
     this.http
       .post(config.url + '/users/getContactRequests', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          callback(data);
+        },
+        async (error) => {
+          await this.displayPopOver('Logout error', error.error);
+        }
+      );
+  }
+
+  unblockUser(contactID, callback){
+    const formData = new FormData();
+    formData.append('UnblockedUserId', contactID);
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/unblockUser', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          callback(data);
+        },
+        async (error) => {
+          await this.displayPopOver('Logout error', error.error);
+        }
+      );
+  }
+
+  blockUser(contactID, callback){
+    const formData = new FormData();
+    formData.append('BlockedUserId', contactID);
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/blockUser', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          callback(data);
+        },
+        async (error) => {
+          await this.displayPopOver('Logout error', error.error);
+        }
+      );
+  }
+
+  deleteContact(contactID, callback){
+    const formData = new FormData();
+    formData.append('DeletedUserId', contactID);
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/deleteContact', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          callback(data);
+        },
+        async (error) => {
+          await this.displayPopOver('Logout error', error.error);
+        }
+      );
+  }
+
+  rejectContactRequest(pendingID, callback){
+    const formData = new FormData();
+    formData.append('RequestingUserId', pendingID);
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/rejectContactRequest', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          callback(data);
+        },
+        async (error) => {
+          await this.displayPopOver('Logout error', error.error);
+        }
+      );
+  }
+
+  sendContactRequest(pendingID, callback){
+    const formData = new FormData();
+    formData.append('ObjectId', pendingID);
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/sendContactRequest', formData, {
         headers: httpHeaders,
       })
       .subscribe(
