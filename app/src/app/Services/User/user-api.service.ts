@@ -23,8 +23,6 @@ export interface LoginData {
   providedIn: 'root',
 })
 export class UserAPIService {
-  static url = 'http://localhost:3000/api';
-
   constructor(
     private http: HttpClient,
     private pop: PopoverController,
@@ -261,9 +259,9 @@ export class UserAPIService {
       );
   }
 
-  getContacts(email:string, callback){
+  getContacts(email: string, callback) {
     const formData = new FormData();
-    formData.append('email', email);
+    // formData.append('email', email);
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: 'Bearer ' + token,
@@ -282,7 +280,7 @@ export class UserAPIService {
       );
   }
 
-  getContactRequests(callback){
+  getContactRequests(callback) {
     const formData = new FormData();
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
@@ -302,7 +300,7 @@ export class UserAPIService {
       );
   }
 
-  acceptContactRequest(contactid, callback){
+  acceptContactRequest(contactid, callback) {
     const formData = new FormData();
     formData.append('email', contactid);
     const token = Cookies.get('token');
@@ -322,8 +320,6 @@ export class UserAPIService {
         }
       );
   }
-
-
 
   private async couldNotConnectToServer() {
     await this.displayPopOver(
