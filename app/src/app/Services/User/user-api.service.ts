@@ -259,7 +259,7 @@ export class UserAPIService {
       );
   }
 
-  getContacts(email: string, callback) {
+  getContacts(callback) {
     const formData = new FormData();
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
@@ -271,6 +271,7 @@ export class UserAPIService {
       })
       .subscribe(
         (data) => {
+          console.log(data);
           callback(data);
         },
         async (error) => {

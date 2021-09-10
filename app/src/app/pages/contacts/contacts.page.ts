@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { Form, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import * as Cookies from 'js-cookie';
 import { UserAPIService } from 'src/app/Services/User/user-api.service';
 
-export interface contact{
+export interface contact {
   email: string;
 }
 @Component({
@@ -13,21 +14,24 @@ export interface contact{
   styleUrls: ['./contacts.page.scss'],
 })
 export class ContactsPage implements OnInit {
-
   sizeMe: boolean;
   user;
   userEmail: string;
+  contacts: contact[] =[];
+
+  addContact: FormGroup;
 
   constructor(
-    private plat: Platform,private userApiService: UserAPIService,
+    private plat: Platform,
+    private userApiService: UserAPIService,
     private route: Router,
-    private router: ActivatedRoute
-  ) { }
+    private fb: FormBuilder
+  ) {}
 
   async ngOnInit() {
-    if(this.plat.width() > 572){
+    if (this.plat.width() > 572) {
       this.sizeMe = false;
-    }else{
+    } else {
       this.sizeMe = true;
     }
     if (Cookies.get('token') === undefined) {
@@ -46,13 +50,26 @@ export class ContactsPage implements OnInit {
       );
     }
 
+    this.addContact = this.fb.group({
+      workflowName: ['', [Validators.required]],
+    });
+
     await this.getContactInformation();
   }
 
-  async getContactInformation(){
-    await this.userApiService.getContacts(this.userEmail, (response)=>{
+  async getContactInformation() {
+    await this.userApiService.getContacts((response) => {
       console.log(response);
-    })
+      if (response.status === 'success') {
+      } else {
+        this.userApiService.displayPopOver('error', 'Failed to get users');
+      }
+    });
+    await this.userApiService.getContactRequests((response) => {
+      console.log(response);
+      if (response.status === 'success') {
+      }
+    });
   }
 
   async getUser() {
@@ -61,8 +78,36 @@ export class ContactsPage implements OnInit {
         this.user = response.data;
         this.userEmail = this.user.email;
       } else {
-
+        this.userApiService.displayPopOver('error', 'Failed to get users');
       }
     });
+  }
+
+  async deleteContact(contact) {
+    await this.userApiService.deleteContact(contact, (response)=>{
+
+    })
+  }
+
+  async acceptContactRequest(contact) {
+    await this.userApiService.acceptContactRequest(contact, (response) => {});
+  }
+
+  async blockUser(contact){
+    await this.userApiService.blockUser(contact, (response)=>{
+
+    })
+  }
+
+  async unBlockUser(contact){
+    await this.userApiService.unblockUser(contact, (response)=>{
+
+    })
+  }
+
+  async sendContactRequest(contact){
+    await this.userApiService.sendContactRequest(contact, (reponse)=>{
+
+    })
   }
 }
