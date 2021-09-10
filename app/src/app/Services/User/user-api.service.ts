@@ -286,9 +286,9 @@ export class UserAPIService {
       );
   }
 
-  getContacts(callback){
+  getContacts(email:string, callback){
     const formData = new FormData();
-    //const token = localStorage.getItem('token');
+    formData.append('email', email);
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: 'Bearer ' + token,
@@ -309,7 +309,27 @@ export class UserAPIService {
 
   getContactRequests(callback){
     const formData = new FormData();
-    //const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/getContactRequests', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          callback(data);
+        },
+        async (error) => {
+          await this.displayPopOver('Logout error', error.error);
+        }
+      );
+  }
+
+  acceptContactRequest(contactid, callback){
+    const formData = new FormData();
+    formData.append('email', contactid);
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: 'Bearer ' + token,

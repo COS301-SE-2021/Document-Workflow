@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import * as Cookies from 'js-cookie';
 import { UserAPIService } from 'src/app/Services/User/user-api.service';
@@ -14,13 +15,14 @@ export interface contact{
 export class ContactsPage implements OnInit {
 
   sizeMe: boolean;
+  user;
+  userEmail: string;
 
   constructor(
     private plat: Platform,
-    private userApiService: UserAPIService  )
-  { }
-    private plat: Platform,private userApiService: UserAPIService,
-    private router: Router,
+    private userApiService: UserAPIService,
+    private route: Router,
+    private router: ActivatedRoute
   ) { }
 
   async ngOnInit() {
@@ -30,7 +32,7 @@ export class ContactsPage implements OnInit {
       this.sizeMe = true;
     }
     if (Cookies.get('token') === undefined) {
-      await this.router.navigate(['/login']);
+      await this.route.navigate(['/login']);
       return;
     } else {
       this.userApiService.checkIfAuthorized().subscribe(
@@ -39,13 +41,31 @@ export class ContactsPage implements OnInit {
         },
         async (error) => {
           console.log(error);
-          await this.router.navigate(['/login']);
+          await this.route.navigate(['/login']);
           return;
         }
       );
     }
+
+    await this.getContactInformation();
   }
 
+  async getContactInformation(){
+    await this.userApiService.getContacts(this.userEmail, (response)=>{
+      console.log(response);
+    })
+  }
+
+  async getUser() {
+    await this.userApiService.getUserDetails(async (response) => {
+      if (response) {
+        this.user = response.data;
+        this.userEmail = this.user.email;
+      } else {
+
+      }
+    });
+  }
   // delete contact from contacList <backend>
   async deleteContact(cont): Promise<void>
   {
