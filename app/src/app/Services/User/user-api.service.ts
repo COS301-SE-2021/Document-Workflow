@@ -302,7 +302,7 @@ export class UserAPIService {
 
   acceptContactRequest(contactid, callback) {
     const formData = new FormData();
-    formData.append('email', contactid);
+    formData.append('contactemail', contactid);
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: 'Bearer ' + token,
@@ -386,7 +386,7 @@ export class UserAPIService {
 
   rejectContactRequest(pendingID, callback){
     const formData = new FormData();
-    formData.append('RequestingUserId', pendingID);
+    formData.append('contactemail', pendingID);
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: 'Bearer ' + token,
@@ -406,8 +406,9 @@ export class UserAPIService {
   }
 
   sendContactRequest(pendingID, callback){
+    console.log(pendingID)
     const formData = new FormData();
-    formData.append('ObjectId', pendingID);
+    formData.append('contactemail', pendingID);
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: 'Bearer ' + token,
@@ -421,7 +422,7 @@ export class UserAPIService {
           callback(data);
         },
         async (error) => {
-          await this.displayPopOver('Logout error', error.error);
+          await this.displayPopOver('Send Contact request error', error.error);
         }
       );
   }

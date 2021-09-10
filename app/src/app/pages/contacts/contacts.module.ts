@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
-
 import { ContactsPageRoutingModule } from './contacts-routing.module';
 
 import { ContactsPage } from './contacts.page';
@@ -14,7 +13,7 @@ import { ContactsPage } from './contacts.page';
     FormsModule,
     IonicModule,
     ReactiveFormsModule,
-    ContactsPageRoutingModule
+    ContactsPageRoutingModule,
   ],
   declarations: [ContactsPage]
 })

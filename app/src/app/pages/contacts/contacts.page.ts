@@ -18,8 +18,9 @@ export class ContactsPage implements OnInit {
   user;
   userEmail: string;
   contacts: contact[] =[];
+  pendingContacts: contact[] =[];
 
-  addContact: FormGroup;
+  addContactForm: FormGroup;
 
   constructor(
     private plat: Platform,
@@ -50,24 +51,30 @@ export class ContactsPage implements OnInit {
       );
     }
 
-    this.addContact = this.fb.group({
-      workflowName: ['', [Validators.required]],
+    this.addContactForm = this.fb.group({
+      contact: ['', [Validators.required, Validators.email]],
     });
 
     await this.getContactInformation();
+
   }
 
   async getContactInformation() {
     await this.userApiService.getContacts((response) => {
       console.log(response);
       if (response.status === 'success') {
+        this.contacts = response.data.contacts;
       } else {
-        this.userApiService.displayPopOver('error', 'Failed to get users');
+        this.userApiService.displayPopOver('Error', 'Failed to get users');
       }
     });
     await this.userApiService.getContactRequests((response) => {
       console.log(response);
       if (response.status === 'success') {
+        this.pendingContacts = response.data.requests;
+        console.log(this.pendingContacts)
+      }else {
+        this.userApiService.displayPopOver('Error', 'Failed to get pending users');
       }
     });
   }
@@ -78,7 +85,7 @@ export class ContactsPage implements OnInit {
         this.user = response.data;
         this.userEmail = this.user.email;
       } else {
-        this.userApiService.displayPopOver('error', 'Failed to get users');
+        this.userApiService.displayPopOver('Error', 'Failed to get users');
       }
     });
   }
@@ -89,8 +96,26 @@ export class ContactsPage implements OnInit {
     })
   }
 
+  async rejectContactRequest(contact){
+    console.log(contact);
+    await this.userApiService.rejectContactRequest(contact, (response)=>{
+      if(response.status === 'success'){
+        this.userApiService.displayPopOver('success','rejected the user')
+      }else{
+        this.userApiService.displayPopOver('Error', 'Failed to reject the users');
+      }
+    })
+  }
+
   async acceptContactRequest(contact) {
-    await this.userApiService.acceptContactRequest(contact, (response) => {});
+    console.log(contact)
+    await this.userApiService.acceptContactRequest(contact, (response) => {
+      if(response.status === 'success'){
+        this.userApiService.displayPopOver('success','Added the user')
+      }else{
+        this.userApiService.displayPopOver('Error', 'Failed to add users');
+      }
+    });
   }
 
   async blockUser(contact){
@@ -106,8 +131,19 @@ export class ContactsPage implements OnInit {
   }
 
   async sendContactRequest(contact){
-    await this.userApiService.sendContactRequest(contact, (reponse)=>{
-
+    console.log(contact)
+    await this.userApiService.sendContactRequest(contact.contact, (response)=>{
+        if(response){
+          if(response.status === 'success'){
+            this.userApiService.displayPopOver('Success', 'Sent the request to the user');
+          }else{
+            this.userApiService.displayPopOver('Failed','To send friend request');
+          }
+        }
     })
+  }
+
+  submit(){
+    this.sendContactRequest(this.addContactForm.value);
   }
 }

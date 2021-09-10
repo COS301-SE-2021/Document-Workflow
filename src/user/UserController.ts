@@ -75,6 +75,7 @@ export default class UserController{
     }
 
     private async sendContactRequestRoute(req): Promise<ObjectId> {
+        console.log(req);
         if(!req.body.contactemail)
             throw new RequestError("Missing contactEmail");
         try{return await this.userService.sendContactRequest(req.body.contactemail, req.user);}
@@ -259,7 +260,7 @@ export default class UserController{
             }
         });
 
-        this.router.delete("/rejectContactRequest", this.auth, async (req, res) => {
+        this.router.post("/rejectContactRequest", this.auth, async (req, res) => {
             try{
                 const contactId = await this.rejectContactRequestRoute(req);
                 res.status(200).json({status: "success", data:{"RequestingUserId": contactId }, message: "Contact request rejected"});
@@ -268,7 +269,7 @@ export default class UserController{
             }
         });
 
-        this.router.delete("/deleteContact", this.auth, async (req, res) => {
+        this.router.post("/deleteContact", this.auth, async (req, res) => {
             try{
                 const contactId = await this.deleteContactRoute(req);
                 res.status(200).json({status: "success", data:{"DeletedUserId": contactId }, message: "Contact removed"});
