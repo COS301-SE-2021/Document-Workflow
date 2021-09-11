@@ -70,7 +70,6 @@ export class ContactsPage implements OnInit {
     });
     await this.userApiService.getContactRequests((response) => {
       console.log(response);
-    });
       if (response.status === 'success') {
         this.pendingContacts = response.data.requests;
         console.log(this.pendingContacts)
@@ -162,25 +161,4 @@ export class ContactsPage implements OnInit {
   submit(){
     this.sendContactRequest(this.addContactForm.value);
   }
-  // delete contact from contactList <backend>
-  async deleteContact(cont): Promise<void>
-  {
-    await this.userApiService.displayPopOverWithButtons(
-      'Confirmation of deletion',
-      'Removing contact from contact list',
-      (response) => {
-        console.log(response);
-        if (response.data.confirm === true) {
-          this.userApiService.displayLoading();
-          //call to deleteContact from <backend side>
-          this.userApiService.deleteContact(cont, (resp) => {
-
-            console.log(resp);
-            this.userApiService.dismissLoading();
-          });
-        }
-      }
-    );
-  }
-
 }

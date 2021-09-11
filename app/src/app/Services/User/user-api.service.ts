@@ -5,6 +5,7 @@ import * as Cookies from 'js-cookie';
 import { LoadingController, PopoverController } from '@ionic/angular';
 import { config } from 'src/app/Services/configuration';
 import { Logger } from '../Logger';
+import { Observable, of } from 'rxjs';
 export interface User {
   Fname: string;
   Lname: string;
@@ -26,6 +27,7 @@ export class UserAPIService {
     public loadingCtrl: LoadingController,
     private logger: Logger
   ) {}
+
   displayLoading() {
     const loading = this.loadingCtrl
       .create({
@@ -35,12 +37,14 @@ export class UserAPIService {
         response.present();
       });
   }
+
   dismissLoading() {
     this.loadingCtrl
       .dismiss()
       .then((response) => {})
       .catch((err) => {});
   }
+
   public checkIfAuthorized() {
     //callback){
     const formData = new FormData();
@@ -53,6 +57,7 @@ export class UserAPIService {
       headers: httpHeaders,
     });
   }
+
   // eslint-disable-next-line @typescript-eslint/member-ordering
   public register(user: User, confirmPassword: string, file: File, callback) {
     //this.displayLoading();
@@ -79,6 +84,7 @@ export class UserAPIService {
       }
     );
   }
+
   public login(loginData: LoginData, callback) {
     console.log('Logging in a user');
     const formData = new FormData();
@@ -107,6 +113,7 @@ export class UserAPIService {
       alert('An unexpected error occurred, please try again later');
     }
   }
+
   async getTemplateIDs(callback) {
     try {
       const formData = new FormData();
@@ -125,6 +132,7 @@ export class UserAPIService {
       await this.displayPopOver('Template ID Error', error.error);
     }
   }
+
   //for the pop over
   async displayPopOver(title: string, message: string) {
     const poper = await this.pop.create({
@@ -156,34 +164,40 @@ export class UserAPIService {
   }
   // return true if email is valid else return false.
   //Can be used with register as it must return false
-  async verifyEmail(email: string): Promise<boolean> {
+  verifyEmail(email: string): Observable<boolean> {
     console.log(email);
-    // const formData = new FormData();
-    // //const token = localStorage.getItem('token');
-    // const token = Cookies.get('token');
-    // const httpHeaders: HttpHeaders = new HttpHeaders({
-    //   Authorization: 'Bearer ' + token,
-    // });
-    // this.http
-    //   .post(config.url + '/users/verifyEmailExistence', formData, {
-    //     headers: httpHeaders,
-    //   })
-    //   .subscribe(
-    //     (data) => {
-    //       //TODO: change url
-    //       if (data) {
-    //         console.log(data);
-    //       }
-    //     },
-    //     async (error) => {
-    //       await this.displayPopOver(
-    //         'Error',
-    //         'The Document Workflow server could not be reached at this time'
-    //       );
-    //     }
-    //   );
-    return true;
+    const formData = new FormData();
+    //const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/verifyEmailExistence', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          //TODO: change url
+          if (data) {
+            console.log(data);
+            return true;
+          }
+          else{
+            return false;
+          }
+        },
+        async (error) => {
+          await this.displayPopOver(
+            'Error',
+            'The Document Workflow server could not be reached at this time'
+          );
+          return false;
+        }
+      );
+     return of(false);
   }
+
   async getUserDetails(callback) {
     const formData = new FormData();
     //const token = localStorage.getItem('token');
@@ -211,6 +225,7 @@ export class UserAPIService {
         }
       );
   }
+
   logout(callback) {
     const formData = new FormData();
     //const token = localStorage.getItem('token');
@@ -233,6 +248,7 @@ export class UserAPIService {
         }
       );
   }
+
   getContacts(callback) {
     const formData = new FormData();
     const token = Cookies.get('token');
@@ -253,6 +269,7 @@ export class UserAPIService {
         }
       );
   }
+
   getContactRequests(callback) {
     const formData = new FormData();
     const token = Cookies.get('token');
@@ -293,6 +310,7 @@ export class UserAPIService {
         }
       );
   }
+
   unblockUser(contactID, callback) {
     const formData = new FormData();
     formData.append('UnblockedUserId', contactID);
@@ -313,6 +331,7 @@ export class UserAPIService {
         }
       );
   }
+
   blockUser(contactID, callback) {
     const formData = new FormData();
     formData.append('BlockedUserId', contactID);
@@ -333,6 +352,7 @@ export class UserAPIService {
         }
       );
   }
+
   deleteContact(contactID, callback) {
     const formData = new FormData();
     formData.append('DeletedUserId', contactID);
@@ -397,6 +417,7 @@ export class UserAPIService {
         }
       );
   }
+
   private async couldNotConnectToServer() {
     await this.displayPopOver(
       'Error',
