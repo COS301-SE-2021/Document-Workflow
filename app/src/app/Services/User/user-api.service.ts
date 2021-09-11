@@ -248,6 +248,7 @@ export class UserAPIService {
         headers: httpHeaders,})
       .subscribe(
         (data) => {
+          //TODO: change url
           if (data) {
             callback(data);
           } else
@@ -297,6 +298,7 @@ public async sendContactRequest(contactId, callback)
     headers: httpHeaders,})
     .subscribe(
       (data) => {
+        //TODO: change url
         if (data) {
           callback(data);
         } else
@@ -308,7 +310,58 @@ public async sendContactRequest(contactId, callback)
     );
 }
 
+public blockUser(contactId, callback)
+{
+  const formData = new FormData();
+  formData.append('contactId', contactId);
 
+  const token = Cookies.get('token');
+  const httpHeaders: HttpHeaders = new HttpHeaders({
+    Authorization: 'Bearer ' + token,
+  });
+
+  this.http.post(config.url + '/users/blockUser', formData, {
+    headers: httpHeaders,})
+    .subscribe(
+      (data) => {
+        //TODO: change url
+        if (data) {
+          callback(data);
+        } else
+        {callback({ status: 'error', message: 'Cannot connect to Server' });}
+      },
+      (error) => {
+        alert('An unexpected error occurred');
+      }
+    );
+}
+  public unblockUser(contactId, callback)
+  {
+    const formData = new FormData();
+    formData.append('contactId', contactId);
+
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+
+    this.http.post(config.url + '/users/unblockUser', formData, {
+      headers: httpHeaders,})
+      .subscribe(
+        (data) => {
+         if (data) {
+            callback(data);
+          } else
+          {callback({ status: 'error', message: 'Cannot connect to Server' });}
+        },
+        (error) => {
+          alert('An unexpected error occurred');
+        }
+      );
+  }
+
+  logout() {
+    //TODO: call the backend logout function
   logout(callback) {
     const formData = new FormData();
     //const token = localStorage.getItem('token');
