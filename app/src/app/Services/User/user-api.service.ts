@@ -5,8 +5,6 @@ import * as Cookies from 'js-cookie';
 import { LoadingController, PopoverController } from '@ionic/angular';
 import { config } from 'src/app/Services/configuration';
 import { Logger } from '../Logger';
-import { NativeBiometric } from "capacitor-native-biometric";
-
 export interface User {
   Fname: string;
   Lname: string;
@@ -14,12 +12,10 @@ export interface User {
   email: string;
   password: string;
 }
-
 export interface LoginData {
   email: string;
   password: string;
 }
-
 @Injectable({
   providedIn: 'root',
 })
@@ -30,7 +26,6 @@ export class UserAPIService {
     public loadingCtrl: LoadingController,
     private logger: Logger
   ) {}
-
   displayLoading() {
     const loading = this.loadingCtrl
       .create({
@@ -40,17 +35,14 @@ export class UserAPIService {
         response.present();
       });
   }
-
   dismissLoading() {
     this.loadingCtrl
       .dismiss()
       .then((response) => {})
       .catch((err) => {});
   }
-
   public checkIfAuthorized() {
     //callback){
-
     const formData = new FormData();
     //const token = localStorage.getItem('token');
     const token = Cookies.get('token');
@@ -61,7 +53,6 @@ export class UserAPIService {
       headers: httpHeaders,
     });
   }
-
   // eslint-disable-next-line @typescript-eslint/member-ordering
   public register(user: User, confirmPassword: string, file: File, callback) {
     //this.displayLoading();
@@ -88,7 +79,6 @@ export class UserAPIService {
       }
     );
   }
-
   public login(loginData: LoginData, callback) {
     console.log('Logging in a user');
     const formData = new FormData();
@@ -117,7 +107,6 @@ export class UserAPIService {
       alert('An unexpected error occurred, please try again later');
     }
   }
-
   async getTemplateIDs(callback) {
     try {
       const formData = new FormData();
@@ -136,7 +125,6 @@ export class UserAPIService {
       await this.displayPopOver('Template ID Error', error.error);
     }
   }
-
   //for the pop over
   async displayPopOver(title: string, message: string) {
     const poper = await this.pop.create({
@@ -147,14 +135,11 @@ export class UserAPIService {
         displayButton: false,
       },
     });
-
     await poper.present();
-
     (await poper).onDidDismiss().then(async (data) => {
       return await data;
     });
   }
-
   async displayPopOverWithButtons(title: string, message: string, callback) {
     const poper = await this.pop.create({
       component: UserNotificationsComponent,
@@ -164,14 +149,11 @@ export class UserAPIService {
         displayButton: true,
       },
     });
-
     await poper.present();
-
     (await poper).onDidDismiss().then(async (data) => {
       callback(data);
     });
   }
-
   // return true if email is valid else return false.
   //Can be used with register as it must return false
   async verifyEmail(email: string): Promise<boolean> {
@@ -182,7 +164,6 @@ export class UserAPIService {
     // const httpHeaders: HttpHeaders = new HttpHeaders({
     //   Authorization: 'Bearer ' + token,
     // });
-
     // this.http
     //   .post(config.url + '/users/verifyEmailExistence', formData, {
     //     headers: httpHeaders,
@@ -190,7 +171,6 @@ export class UserAPIService {
     //   .subscribe(
     //     (data) => {
     //       //TODO: change url
-
     //       if (data) {
     //         console.log(data);
     //       }
@@ -202,10 +182,8 @@ export class UserAPIService {
     //       );
     //     }
     //   );
-
     return true;
   }
-
   async getUserDetails(callback) {
     const formData = new FormData();
     //const token = localStorage.getItem('token');
@@ -213,7 +191,6 @@ export class UserAPIService {
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: 'Bearer ' + token,
     });
-
     this.http
       .post(config.url + '/users/getDetails', formData, {
         headers: httpHeaders,
@@ -221,7 +198,6 @@ export class UserAPIService {
       .subscribe(
         (data) => {
           //TODO: change url
-
           if (data) {
             callback(data);
           } else
@@ -235,133 +211,6 @@ export class UserAPIService {
         }
       );
   }
-  public async deleteContact(contactId, callback) {
-    const formData = new FormData();
-    formData.append('contactId', contactId);
-
-    const token = Cookies.get('token');
-    const httpHeaders: HttpHeaders = new HttpHeaders({
-      Authorization: 'Bearer ' + token,
-    });
-
-    this.http.post(config.url + '/users/deleteContact', formData, {
-        headers: httpHeaders,})
-      .subscribe(
-        (data) => {
-          //TODO: change url
-          if (data) {
-            callback(data);
-          } else
-            {callback({ status: 'error', message: 'Cannot connect to Server' });}
-        },
-        (error) => {
-          alert('An unexpected error occurred');
-        }
-      );
-  }
-
-
-public async rejectContactRequest(callback)
-{
-  const formData = new FormData();
-  const token = Cookies.get('token');
-  const httpHeaders: HttpHeaders = new HttpHeaders({
-    Authorization: 'Bearer ' + token,
-  });
-
-  this.http.post(config.url + '/users/rejectContactRequest', formData, {
-    headers: httpHeaders,})
-    .subscribe(
-      (data) => {
-        if (data) {
-          callback(data);
-        } else
-        {callback({ status: 'error', message: 'Cannot connect to Server' });}
-      },
-      (error) => {
-        alert('An unexpected error occurred');
-      }
-    );
-}
-
-public async sendContactRequest(contactId, callback)
-{
-  const formData = new FormData();
-  formData.append('contactId', contactId);
-
-  const token = Cookies.get('token');
-  const httpHeaders: HttpHeaders = new HttpHeaders({
-    Authorization: 'Bearer ' + token,
-  });
-
-  this.http.post(config.url + '/users/deleteContact', formData, {
-    headers: httpHeaders,})
-    .subscribe(
-      (data) => {
-        //TODO: change url
-        if (data) {
-          callback(data);
-        } else
-        {callback({ status: 'error', message: 'Cannot connect to Server' });}
-      },
-      (error) => {
-        alert('An unexpected error occurred');
-      }
-    );
-}
-
-public blockUser(contactId, callback)
-{
-  const formData = new FormData();
-  formData.append('contactId', contactId);
-
-  const token = Cookies.get('token');
-  const httpHeaders: HttpHeaders = new HttpHeaders({
-    Authorization: 'Bearer ' + token,
-  });
-
-  this.http.post(config.url + '/users/blockUser', formData, {
-    headers: httpHeaders,})
-    .subscribe(
-      (data) => {
-        //TODO: change url
-        if (data) {
-          callback(data);
-        } else
-        {callback({ status: 'error', message: 'Cannot connect to Server' });}
-      },
-      (error) => {
-        alert('An unexpected error occurred');
-      }
-    );
-}
-  public unblockUser(contactId, callback)
-  {
-    const formData = new FormData();
-    formData.append('contactId', contactId);
-
-    const token = Cookies.get('token');
-    const httpHeaders: HttpHeaders = new HttpHeaders({
-      Authorization: 'Bearer ' + token,
-    });
-
-    this.http.post(config.url + '/users/unblockUser', formData, {
-      headers: httpHeaders,})
-      .subscribe(
-        (data) => {
-         if (data) {
-            callback(data);
-          } else
-          {callback({ status: 'error', message: 'Cannot connect to Server' });}
-        },
-        (error) => {
-          alert('An unexpected error occurred');
-        }
-      );
-  }
-
-  logout() {
-    //TODO: call the backend logout function
   logout(callback) {
     const formData = new FormData();
     //const token = localStorage.getItem('token');
@@ -369,7 +218,6 @@ public blockUser(contactId, callback)
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: 'Bearer ' + token,
     });
-
     this.http
       .post(config.url + '/users/logout', formData, {
         headers: httpHeaders,
@@ -385,7 +233,6 @@ public blockUser(contactId, callback)
         }
       );
   }
-
   getContacts(callback) {
     const formData = new FormData();
     const token = Cookies.get('token');
@@ -406,7 +253,6 @@ public blockUser(contactId, callback)
         }
       );
   }
-
   getContactRequests(callback) {
     const formData = new FormData();
     const token = Cookies.get('token');
@@ -447,9 +293,110 @@ public blockUser(contactId, callback)
         }
       );
   }
+  unblockUser(contactID, callback) {
+    const formData = new FormData();
+    formData.append('UnblockedUserId', contactID);
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/unblockUser', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          callback(data);
+        },
+        async (error) => {
+          await this.displayPopOver('Logout error', error.error);
+        }
+      );
+  }
+  blockUser(contactID, callback) {
+    const formData = new FormData();
+    formData.append('BlockedUserId', contactID);
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/blockUser', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          callback(data);
+        },
+        async (error) => {
+          await this.displayPopOver('Logout error', error.error);
+        }
+      );
+  }
+  deleteContact(contactID, callback) {
+    const formData = new FormData();
+    formData.append('DeletedUserId', contactID);
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/deleteContact', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          callback(data);
+        },
+        async (error) => {
+          await this.displayPopOver('Logout error', error.error);
+        }
+      );
+  }
 
+  rejectContactRequest(pendingID, callback) {
+    const formData = new FormData();
+    formData.append('contactemail', pendingID);
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/rejectContactRequest', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          callback(data);
+        },
+        async (error) => {
+          await this.displayPopOver('Logout error', error.error);
+        }
+      );
+  }
 
-
+  sendContactRequest(pendingID, callback) {
+    console.log(pendingID);
+    const formData = new FormData();
+    formData.append('contactemail', pendingID);
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/sendContactRequest', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          callback(data);
+        },
+        async (error) => {
+          await this.displayPopOver('Logout error', error.error);
+          await this.displayPopOver('Send Contact request error', error.error);
+        }
+      );
+  }
   private async couldNotConnectToServer() {
     await this.displayPopOver(
       'Error',
