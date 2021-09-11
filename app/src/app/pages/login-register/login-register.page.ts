@@ -51,9 +51,7 @@ export class LoginRegisterPage implements OnInit {
     private userAPIService: UserAPIService,
     private plat: Platform,
     private actionSheetController: ActionSheetController,
-    private loadCtrl: LoadingController,
     private modal: ModalController,
-    private workFlowService: WorkFlowService
   ) {}
 
   ngOnInit() {
@@ -109,6 +107,9 @@ export class LoginRegisterPage implements OnInit {
       if (response.status === 'success') {
         //localStorage.setItem('token', response.data.token);
         Cookies.set('token', response.data.token, { expires: 1 });
+        if(this.plat.is("android")){
+          this.setCredentials();
+        }
         // this.userAPIService.displayPopOver('Success', 'login was successful');
         this.router.navigate(['home']);
       } else {
@@ -244,5 +245,46 @@ export class LoginRegisterPage implements OnInit {
     (await mod).present();
 
     (await mod).onDidDismiss();
+  }
+
+  loginUsingBiometric() {
+    NativeBiometric.getCredentials({
+      server: 'www.documentWorkflow.com',
+    }).then((credentials: Credentials) => {
+      NativeBiometric.verifyIdentity({}).then(() => {
+        const loginData: LoginData = {
+          email: credentials.username,
+          password: credentials.password
+        };
+        console.log(loginData);
+        this.userAPIService.login(loginData, (response) => {
+          if (response.status === 'success') {
+            //localStorage.setItem('token', response.data.token);
+            Cookies.set('token', response.data.token, { expires: 1 });
+            // this.userAPIService.displayPopOver('Success', 'login was successful');
+            this.router.navigate(['home']);
+          } else {
+            console.log(response);
+            this.userAPIService.displayPopOver(
+              'Failure in logging in',
+              'Email or password is incorrect'
+            );
+          }
+        });
+      },
+      (error)=>{
+        this.userAPIService.displayPopOver('Failure in logging in','Fingerprint incorrect')
+      });
+    });
+  }
+
+  setCredentials(){
+    if(this.biometricAvaliable){
+      NativeBiometric.setCredentials({
+        username: this.loginForm.value.loginEmail,
+        password: this.loginForm.value.loginPassword,
+        server: 'www.documentWorkflow.com'
+      })
+    }
   }
 }
