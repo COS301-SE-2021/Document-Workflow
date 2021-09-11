@@ -10,16 +10,12 @@ import { AvailableResult, BiometryType } from 'capacitor-native-biometric';
 import { Credentials, NativeBiometric } from 'capacitor-native-biometric';
 //popover
 
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { match } from '../../Services/Validators/match.validator';
 
 //popover
-import { ModalController, PopoverController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 // import { RegisterLoginPopoverComponent } from './../../Popovers/register-login-popover/register-login-popover.component';
-
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-
-//import for the users API and interface
 
 import {
   UserAPIService,
@@ -33,7 +29,6 @@ import * as Cookies from 'js-cookie';
 import { LoadingController } from '@ionic/angular';
 import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
 import { ResetPasswordComponent } from 'src/app/components/reset-password/reset-password.component';
-import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 
 @Component({
@@ -46,6 +41,7 @@ export class LoginRegisterPage implements OnInit {
   registerForm: FormGroup;
   file: File;
   registerButton: boolean; //for the toggle to change modes
+  biometricAvaliable: boolean;
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
@@ -64,8 +60,14 @@ export class LoginRegisterPage implements OnInit {
     this.loginForm = this.formBuilder.group({
       // loginEmail: ['', [Validators.required, Validators.email]],
       // loginPassword: ['', [Validators.required, Validators.minLength(8)]],
-      loginEmail: ['brenton.stroberg@yahoo.co.za', [Validators.required, Validators.email]],
-      loginPassword: ['Password#1', [Validators.required, Validators.minLength(8)]],
+      loginEmail: [
+        'brenton.stroberg@yahoo.co.za',
+        [Validators.required, Validators.email],
+      ],
+      loginPassword: [
+        'Password#1',
+        [Validators.required, Validators.minLength(8)],
+      ],
     });
     const formOptions: AbstractControlOptions = {
       validators: match('password', 'confirmPassword'),
@@ -90,6 +92,11 @@ export class LoginRegisterPage implements OnInit {
       },
       formOptions
     );
+
+    NativeBiometric.isAvailable().then((result: AvailableResult) => {
+      const isAvailable = result.isAvailable;
+      this.biometricAvaliable = result.isAvailable;
+    });
   }
 
   async login(): Promise<void> {
@@ -147,16 +154,21 @@ export class LoginRegisterPage implements OnInit {
             password: userdata.password,
           };
 
-          this.userAPIService.register(user, userdata.confirmPassword, this.file, (response) => {
-            if (response.status === 'success') {
-              this.userAPIService.displayPopOver(
-                'Successfully created new user account',
-                'check your email for account verification'
-              );
+          this.userAPIService.register(
+            user,
+            userdata.confirmPassword,
+            this.file,
+            (response) => {
+              if (response.status === 'success') {
+                this.userAPIService.displayPopOver(
+                  'Successfully created new user account',
+                  'check your email for account verification'
+                );
 
-              this.router.navigate(['login']);
+                this.router.navigate(['login']);
+              }
             }
-          });
+          );
         }
       }
     );
