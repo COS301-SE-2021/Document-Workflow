@@ -26,10 +26,8 @@ import {
 import { ActionSheetController, Platform } from '@ionic/angular';
 import * as Cookies from 'js-cookie';
 //import for the loading controller
-import { LoadingController } from '@ionic/angular';
 import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
 import { ResetPasswordComponent } from 'src/app/components/reset-password/reset-password.component';
-import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 
 @Component({
   selector: 'app-login-register',
