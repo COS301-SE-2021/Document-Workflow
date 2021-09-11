@@ -92,6 +92,11 @@ export class ContactsPage implements OnInit {
 
   async deleteContact(contact) {
     await this.userApiService.deleteContact(contact, (response)=>{
+      if(response.status === 'success'){
+        this.userApiService.displayPopOver('Success','deleted the user')
+      }else{
+        this.userApiService.displayPopOver('Error', 'Failed to delete the user');
+      }
 
     })
   }
@@ -100,7 +105,7 @@ export class ContactsPage implements OnInit {
     console.log(contact);
     await this.userApiService.rejectContactRequest(contact, (response)=>{
       if(response.status === 'success'){
-        this.userApiService.displayPopOver('success','rejected the user')
+        this.userApiService.displayPopOver('Success','rejected the user')
       }else{
         this.userApiService.displayPopOver('Error', 'Failed to reject the users');
       }
@@ -111,7 +116,7 @@ export class ContactsPage implements OnInit {
     console.log(contact)
     await this.userApiService.acceptContactRequest(contact, (response) => {
       if(response.status === 'success'){
-        this.userApiService.displayPopOver('success','Added the user')
+        this.userApiService.displayPopOver('Success','Added the user')
       }else{
         this.userApiService.displayPopOver('Error', 'Failed to add users');
       }
@@ -120,13 +125,23 @@ export class ContactsPage implements OnInit {
 
   async blockUser(contact){
     await this.userApiService.blockUser(contact, (response)=>{
-
+      if(response){
+        if(response.status === 'success'){
+          this.userApiService.displayPopOver('Success', 'Blocked the user');
+        }else{
+          this.userApiService.displayPopOver('Failed','To block the user');
+        }
+      }
     })
   }
 
   async unBlockUser(contact){
     await this.userApiService.unblockUser(contact, (response)=>{
-
+      if(response.status === 'success'){
+        this.userApiService.displayPopOver('Success', 'unblocked the user');
+      }else{
+        this.userApiService.displayPopOver('Failed','To unblock the user');
+      }
     })
   }
 
