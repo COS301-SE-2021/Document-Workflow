@@ -5,6 +5,7 @@ import * as Cookies from 'js-cookie';
 import { LoadingController, PopoverController } from '@ionic/angular';
 import { config } from 'src/app/Services/configuration';
 import { Logger } from '../Logger';
+import { NativeBiometric } from "capacitor-native-biometric";
 
 export interface User {
   Fname: string;
@@ -23,8 +24,6 @@ export interface LoginData {
   providedIn: 'root',
 })
 export class UserAPIService {
-  static url = 'http://localhost:3000/api';
-
   constructor(
     private http: HttpClient,
     private pop: PopoverController,
@@ -387,9 +386,8 @@ public blockUser(contactId, callback)
       );
   }
 
-  getContacts(email: string, callback){
+  getContacts(callback) {
     const formData = new FormData();
-    formData.append('email', email);
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: 'Bearer ' + token,
@@ -400,6 +398,7 @@ public blockUser(contactId, callback)
       })
       .subscribe(
         (data) => {
+          console.log(data);
           callback(data);
         },
         async (error) => {
@@ -408,7 +407,7 @@ public blockUser(contactId, callback)
       );
   }
 
-  getContactRequests(callback){
+  getContactRequests(callback) {
     const formData = new FormData();
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
@@ -428,9 +427,9 @@ public blockUser(contactId, callback)
       );
   }
 
-  acceptContactRequest(contactid, callback){
+  acceptContactRequest(contactid, callback) {
     const formData = new FormData();
-    formData.append('email', contactid);
+    formData.append('contactemail', contactid);
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: 'Bearer ' + token,

@@ -1,5 +1,5 @@
 
 
 export const config={
-  url: 'http://localhost:3000/api',
+  url: 'https://c4cb-41-193-212-154.ngrok.io/api',
 }

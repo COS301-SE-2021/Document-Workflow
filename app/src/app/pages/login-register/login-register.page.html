@@ -35,6 +35,8 @@
                 </div>
                 <ion-button padding expand="block" color="primary" fill="outline" [disabled]="!loginForm.valid"
                   type="submit" id="login">Login</ion-button>
+                  <ion-button padding expand="block" color="primary" fill="outline" *ngIf="biometricAvaliable"
+                (click)="loginUsingBiometric()">Login using fingerprint</ion-button>
               </form>
             </ion-card-content>
 
