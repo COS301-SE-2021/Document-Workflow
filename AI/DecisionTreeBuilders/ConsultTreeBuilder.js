@@ -1,18 +1,16 @@
 const DecisionTree = require('decision-tree');
 const fs = require('fs');
 
-const ESCAPE_CODE = '#/ESCAPE_CODE';
-const text = fs.readFileSync('./SampleLines.txt',{flag:'r'} ).toString();
-const lines = text.split(/\r\n|\r|\n/);
+const lines = fs.readFileSync('./sampleLines.txt',{flag:'r'} ).toString().split(/\r\n|\r|\n/);
+const labels = fs.readFileSync('./labels.txt',{flag:'r'}).toString().split(/\r\n|\r|\n/);
 const TRAIN_DATA_FRACTION = 0.7;
 const outputFileName = './ConsultDecisionTree.json';
 
 let data = [];
 
 for(let i=0;i<lines.length; ++i){
-	const tokens = lines[i].split(ESCAPE_CODE);
-	let features = extractFeatures(tokens[0]);
-	features["label"] = tokens[1].replace(' ', '') == '1';
+	let features = extractFeatures(lines[i]);
+	features["label"] = labels[i];
 	//console.log(tokens[0]);
 	//console.log(features);
 	//console.log();
@@ -26,8 +24,8 @@ data.sort(() => Math.random() -0.5 );
 const trainData = data.slice(0, data.length * TRAIN_DATA_FRACTION);
 const testData = data.slice(data.length * TRAIN_DATA_FRACTION);
 
-const features = ['Length', 'ConsecutiveUnderscores', 'ContainsSemicolon', 'SignatureKeyword', 'ContractNoKeyword','ProjectNoKeyword',
-				'DateKeyword','NameKeyword', 'WitnessKeyword'];  
+const features = ['Length', 'ConsecutiveUnderscores', 'NumberSemicolons', 'SignKeyword','SignatureKeyword', 'ContractNoKeyword','ProjectNoKeyword',
+	'DateKeyword','NameKeyword', 'WitnessKeyword', 'ByKeyword'];
 const className = 'label';
 const dt = new DecisionTree(className, features);
 dt.train(trainData);
@@ -43,13 +41,15 @@ function extractFeatures(content){
 	let features = {
 		"Length": content.length,
 		"ConsecutiveUnderscores": hasConsecutiveUnderscores(content),
-		"ContainsSemicolon": content.replace(/[^:]/gi, '').length != 0,
-		"SignatureKeyword": (/signature/g.test(content) || /signed/g.test(content) || /sign/g.test(content)),
-		"ContractNoKeyword": (/contract no/g.test(content)),
-		"ProjectNoKeyword": (/project no/g.test(content)),
+		"NumberSemicolons": content.replace(/[^:]/gi, '').length,
+		"SignatureKeyword": (/signature/g.test(content)),
+		"SignKeyword": (/sign/g.test(content)) || (/signed/g.test(content)),
+		"ContractNoKeyword": (/contract no/g.test(content)) || (/contract #/g.test(content)),
+		"ProjectNoKeyword": (/project no/g.test(content)) || (/project #/g.test(content)),
 		"DateKeyword": (/date/g.test(content)),
 		"NameKeyword": (/name/g.test(content) || (/initial/g.test(content)) || (/title/g.test(content))),
-		"WitnessKeyword": (/witness/g.test(content))
+		"WitnessKeyword": (/witness/g.test(content)) || (/witnesses/g.test(content)),
+		"ByKeyword": (/by/g.test(content))
 	};
 
 	return features;
@@ -58,7 +58,7 @@ function extractFeatures(content){
 function hasConsecutiveUnderscores(content){
 	const onlyUnderscores = content.replace(/[^_]/gi, ' ');
 	const consecutives = onlyUnderscores.match(/([_])\1*/g);
-	
+
 	if(consecutives === null){
 		return false;
 	}
