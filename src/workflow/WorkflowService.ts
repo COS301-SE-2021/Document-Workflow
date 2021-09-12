@@ -22,6 +22,7 @@ export default class WorkflowService{
         private phaseService: PhaseService,
         private workflowTemplateService: WorkflowTemplateService,
         private workflowHistoryService: WorkflowHistoryService) {
+
     }
 
     /**

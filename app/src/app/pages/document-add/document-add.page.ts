@@ -30,7 +30,7 @@ import { User, UserAPIService } from 'src/app/Services/User/user-api.service';
 import * as Cookies from 'js-cookie';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 import { AIService } from 'src/app/Services/AI/ai.service';
-import { verifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
+import { VerifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
 import WebViewer, {Core} from '@pdftron/webviewer';
 
 @Component({
@@ -104,9 +104,9 @@ export class DocumentAddPage implements OnInit {
       this.sizeMe = true;
     }
 
-    const formOptions: AbstractControlOptions = {
-      validators: verifyEmail('user', this.userApiService),
-    };
+    // const formOptions: AbstractControlOptions = {
+    //   validators: verifyEmail('user', this.userApiService),
+    // };
 
     this.next = false;
     this.rotated = 0;
@@ -119,6 +119,8 @@ export class DocumentAddPage implements OnInit {
     this.addDescription = false;
     this.addName = false;
     this.controller = false;
+
+    const verifierEmail = new VerifyEmail(this.userApiService);
 
     this.workflowForm = this.fb.group({
       workflowName: ['', [Validators.required]],
@@ -134,7 +136,7 @@ export class DocumentAddPage implements OnInit {
                 Validators.email,
                 Validators.required,
                 Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")
-              ]),
+              ], [verifierEmail.verifyEmail.bind(verifierEmail)] ),
               permission: new FormControl('', [Validators.required]),
               accepted: new FormControl('false', [Validators.required]),
             }),
@@ -184,9 +186,7 @@ export class DocumentAddPage implements OnInit {
   }
 
   createNewUser(): FormGroup {
-    const formOptions: AbstractControlOptions = {
-      validators: verifyEmail('user', this.userApiService),
-    };
+
     return this.fb.group({
       user: new FormControl('', [Validators.email, Validators.required, Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")]),
       permission: new FormControl('', [Validators.required]),
@@ -215,9 +215,7 @@ export class DocumentAddPage implements OnInit {
   }
 
   createPhase(): FormGroup {
-    const formOptions: AbstractControlOptions = {
-      validators: verifyEmail('user', this.userApiService),
-    };
+    const verifierEmail = new VerifyEmail(this.userApiService);
     return this.fb.group({
       description: new FormControl('', Validators.required),
       annotations: new FormControl('', [Validators.required]),
@@ -227,7 +225,7 @@ export class DocumentAddPage implements OnInit {
             Validators.email,
             Validators.required,
             , Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")
-          ]),
+          ],[verifierEmail.verifyEmail.bind(verifierEmail)] ),
           permission: new FormControl('', [Validators.required]),
           accepted: new FormControl('false', [Validators.required]),
         } ),
