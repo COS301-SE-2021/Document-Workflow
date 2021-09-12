@@ -78,8 +78,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
           annotationUser: this.userEmail,
           fullAPI: true
         }, this.viewerRef.nativeElement).then(async instance =>{
-
-            await instance.Core.PDFNet.initialize(); //To use pdftron in the non-demo mode supply a licence key here
+          await instance.Core.PDFNet.initialize(); //To use pdftron in the non-demo mode supply a licence key here
             /*Test to add metadata to document */
           const docorig = await instance.Core.PDFNet.PDFDoc.createFromBuffer(arr);
           const metadata = await docorig.getDocInfo();
@@ -93,17 +92,24 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
           console.log('Modifying into dictionary, adding custom properties, embedding a stream...');
 
           const trailer = await doc.getTrailer(); // Get the trailer
+          const info = await trailer.putDict('Info');
+          info.putString('Producer', 'PDFTron PDFNet');
+
+           // Create a custom inline dictionary within Infor dictionary
+          const customDict = await info.putDict('My Direct Dict');
+          customDict.putNumber('My Number', 100);
 
           // Now we will change PDF document information properties using SDF API
 
           // Get the Info dictionary.
-
+          /*
           let itr = await trailer.find('Info');
           let info;
           if (await itr.hasNext()) {
             info = await itr.value();
             // Modify 'Producer' entry.
             info.putString('Producer', 'PDFTron PDFNet');
+            info.putString('reeee', 'reeeeeeeeeeee');
 
             // read title entry if it is present
             itr = await info.find('Author');
@@ -119,12 +125,20 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
             info = await trailer.putDict('Info');
             info.putString('Producer', 'PDFTron PDFNet');
             info.putString('Title', 'My document');
+            info.putString('reeee', 'reeeeeeeeeeee');
           }
-          const docbuf = await doc.saveMemory(0, '%PDF-1.4');
+          const customDict = await info.putDict('My Direct Dict');
+          customDict.putNumber('My Number', 100); */
+          const docbuf = await doc.saveMemory(0, '%PDF-1.4'); 
           let blob2 = new Blob([new Uint8Array(docbuf)], {type: 'application/pdf'});
             /*   */
+
+            await instance.Core.PDFNet.initialize(); //To use pdftron in the non-demo mode supply a licence key here
             this.annotationManager = instance.Core.annotationManager;
             this.documentViewer = instance.Core.documentViewer;
+            const documentTest = await instance.Core.createDocument(blob2, {filename: this.docName});
+            console.log('Document Metadata----------------------------');
+            console.log(await documentTest.getMetadata());
 
             instance.UI.loadDocument(blob2, {filename: this.docName});
             instance.UI.disableElements(['ribbons']);
@@ -155,8 +169,9 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
               //We disable the action areas from showing through a check of the workflow status
               //This is to ensure pringint of the document does not include action areas.
               console.log(this.workflowStatus);
-              if(this.workflowStatus !== 'Complete') //TODO: swap with enum
+              if(this.workflowStatus !== 'Completed'){ //TODO: swap with enum
                 instance.Core.annotationManager.importAnnotations(response.data.annotations);
+              }
             });
 
         });

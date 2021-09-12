@@ -317,7 +317,15 @@ export class DocumentAddPage implements OnInit {
         const doc = await PDFNet.PDFDoc.createFromBuffer(await this.file.arrayBuffer());
 
         let extractedText = "";
+        /*Testing if we can retrive hash stored in a document*/
+        const doc1 = await doc.getSDFDoc();
+        doc1.initSecurityHandler();
+        doc1.lock();  
+        const trailer = await doc1.getTrailer(); // Get the trailer
+        let itr = await trailer.find('Info');
+        console.log((await itr.value()).getAsPDFText());
 
+        /*    */
         const txt = await PDFNet.TextExtractor.create();
         ;
         const pageCount = await doc.getPageCount();
