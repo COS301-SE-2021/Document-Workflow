@@ -37,8 +37,8 @@ import { AddSignatureComponent } from 'src/app/components/add-signature/add-sign
 export class LoginRegisterPage implements OnInit {
   loginForm: FormGroup;
   registerForm: FormGroup;
-  resetForm: FormGroup;
-  resetPasswordForm: FormGroup;
+  resetFormPhase1: FormGroup;
+  resetFormPhase2: FormGroup;
 
   file: File;
 
@@ -101,7 +101,7 @@ export class LoginRegisterPage implements OnInit {
       formOptions
     );
 
-    this.resetForm = this.formBuilder.group({
+    this.resetFormPhase1 = this.formBuilder.group({
       email: [
         '',
         [
@@ -113,7 +113,7 @@ export class LoginRegisterPage implements OnInit {
     });
 
 
-    this.resetPasswordForm = this.formBuilder.group({
+    this.resetFormPhase2 = this.formBuilder.group({
       confirmationString: ['',[Validators.required]],
       password: [
         '',
@@ -283,6 +283,7 @@ export class LoginRegisterPage implements OnInit {
   async displayResetPassword() {
     this.loginAndRegister = false;
     this.resetPassword = true;
+    this.phase1 = true;
   }
 
   loginUsingBiometric() {
@@ -333,15 +334,29 @@ export class LoginRegisterPage implements OnInit {
     this.phase1 = true;
   }
 
-  reset(){
-
-  }
-
+  // send a email to user with token
   resetPassword1(){
-
+    this.userAPIService.sendResetPasswordEmail(this.resetFormPhase1.value.email, (response)=>{
+      if(response){
+        if(response.status === 'success'){
+          this.userAPIService.displayPopOver('Success', 'Email has been sent');
+          this.phase1 = false;
+        }else{
+          this.userAPIService.displayPopOver('Error', 'Failed to send email');
+        }
+      }
+    });
   }
 
+  //add token and confirm passwords
   resetPassword2(){
-
+    this.userAPIService.resetPassword( this.resetFormPhase2.value, (response)=>{
+      if(response.status === 'success'){
+        this.userAPIService.displayPopOver('Success', 'Password has been changed');
+        this.back();
+      }else{
+        this.userAPIService.displayPopOver('Error', 'Failed to change Password');
+      }
+    });
   }
 }

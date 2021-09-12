@@ -182,8 +182,7 @@ export class UserAPIService {
           if (data) {
             console.log(data);
             return true;
-          }
-          else{
+          } else {
             return false;
           }
         },
@@ -195,7 +194,7 @@ export class UserAPIService {
           return false;
         }
       );
-     return of(false);
+    return of(false);
   }
 
   async getUserDetails(callback) {
@@ -418,13 +417,13 @@ export class UserAPIService {
       );
   }
 
-  resetPassword(data,callback){
+  resetPassword(data, callback) {
     console.log(data);
     const formData = new FormData();
     formData.append('token', data.token);
     formData.append('confirmPassword', data.confirmPassword);
     formData.append('password', data.password);
-    this.http.post(config.url + '/resetPassword', formData).subscribe(
+    this.http.post(config.url + '/users/resetPassword', formData).subscribe(
       (data) => {
         //this.dismissLoading();
         if (data) {
@@ -438,7 +437,28 @@ export class UserAPIService {
         this.displayPopOver('Error', error.error);
       }
     );
+  }
 
+  sendResetPasswordEmail(data, callback) {
+    console.log(data);
+    const formData = new FormData();
+    formData.append('email', data.token);
+    this.http
+      .post(config.url + '/users/generatePasswordResetRequest', formData)
+      .subscribe(
+        (data) => {
+          //this.dismissLoading();
+          if (data) {
+            callback(data);
+          } else
+            callback({ status: 'error', message: 'Cannot connect to Server' });
+        },
+        (error) => {
+          console.log(error);
+          //this.dismissLoading();
+          this.displayPopOver('Error', error.error);
+        }
+      );
   }
 
   private async couldNotConnectToServer() {

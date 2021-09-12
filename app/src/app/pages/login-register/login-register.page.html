@@ -99,17 +99,17 @@
       </ion-grid>
     </ion-card-header>
     <ion-card-content *ngIf="phase1">
-      <form [formGroup]="resetForm" (ngSubmit)="resetPassword1()">
+      <form [formGroup]="resetFormPhase1" (ngSubmit)="resetPassword1()">
         <ion-item>
           <ion-label position="floating">Account Email</ion-label>
           <ion-input type="text" formControlName="email"></ion-input>
         </ion-item>
-        <ion-button expand="block" color="primary" [disabled]="!resetForm.valid" type="submit">
+        <ion-button expand="block" color="primary" [disabled]="!resetFormPhase1.valid" type="submit">
           Send the email</ion-button>
       </form>
     </ion-card-content>
     <ion-card-content *ngIf="!phase1">
-      <form [formGroup]="resetPasswordForm" (ngSubmit)="resetPassword2()">
+      <form [formGroup]="resetFormPhase2" (ngSubmit)="resetPassword2()">
         <ion-item>
           <ion-label position="floating">Please add your Confirmation string for your email</ion-label>
           <ion-input formControlName="confirmationString"></ion-input>
@@ -122,7 +122,7 @@
           <ion-label position="floating">Confirm your new Password</ion-label>
           <ion-input formControlName="confirmPassword"></ion-input>
         </ion-item>
-        <ion-button expand="block" color="primary" [disabled]="!resetPasswordForm.valid" type="submit">
+        <ion-button expand="block" color="primary" [disabled]="!resetFormPhase2.valid" type="submit">
           Reset password</ion-button>
       </form>
     </ion-card-content>
