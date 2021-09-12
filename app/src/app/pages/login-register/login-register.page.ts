@@ -25,11 +25,9 @@ import {
 
 import { ActionSheetController, Platform } from '@ionic/angular';
 import * as Cookies from 'js-cookie';
-//import for the loading controller
-import { LoadingController } from '@ionic/angular';
+
 import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
-import { ResetPasswordComponent } from 'src/app/components/reset-password/reset-password.component';
-import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
+
 
 @Component({
   selector: 'app-login-register',
@@ -39,12 +37,18 @@ import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 export class LoginRegisterPage implements OnInit {
   loginForm: FormGroup;
   registerForm: FormGroup;
+  resetForm: FormGroup;
+  resetPasswordForm: FormGroup;
+
   file: File;
+
   registerButton: boolean; //for the toggle to change modes
   biometricAvaliable: boolean;
   resetPassword: boolean;
-  resetForm: FormGroup;
-  resetPasswordForm: FormGroup;
+  loginAndRegister: boolean;
+  phase1: boolean;
+  sizeMe:boolean;
+  loginRegisterScreen: boolean;
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
@@ -58,7 +62,9 @@ export class LoginRegisterPage implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.loginAndRegister = true;
     this.resetPassword = false;
+    this.loginRegisterScreen = true;
     this.loginForm = this.formBuilder.group({
       // loginEmail: ['', [Validators.required, Validators.email]],
       // loginPassword: ['', [Validators.required, Validators.minLength(8)]],
@@ -127,10 +133,18 @@ export class LoginRegisterPage implements OnInit {
       ],
     }, formOptions);
 
-    NativeBiometric.isAvailable().then((result: AvailableResult) => {
-      const isAvailable = result.isAvailable;
-      this.biometricAvaliable = result.isAvailable;
-    });
+    if(this.plat.is("android")){
+      NativeBiometric.isAvailable().then((result: AvailableResult) => {
+        const isAvailable = result.isAvailable;
+        this.biometricAvaliable = result.isAvailable;
+      });
+    }
+
+    if (this.plat.width() > 572) {
+      this.sizeMe = false;
+    } else {
+      this.sizeMe = true;
+    }
   }
 
   async login(): Promise<void> {
@@ -138,7 +152,6 @@ export class LoginRegisterPage implements OnInit {
       email: this.loginForm.value.loginEmail,
       password: this.loginForm.value.loginPassword,
     };
-    console.log(loginData);
     this.userAPIService.login(loginData, (response) => {
       if (response.status === 'success') {
         //localStorage.setItem('token', response.data.token);
@@ -211,14 +224,8 @@ export class LoginRegisterPage implements OnInit {
     );
   }
 
-  changeOver(): boolean {
-    if (this.registerButton) {
-      this.registerButton = false;
-      return false;
-    } else {
-      this.registerButton = true;
-      return true;
-    }
+  changeOver() {
+    this.loginRegisterScreen = !this.loginRegisterScreen;
   }
 
   async selectImageSource() {
@@ -274,15 +281,8 @@ export class LoginRegisterPage implements OnInit {
   }
 
   async displayResetPassword() {
-    // const mod = this.modal.create({
-    //   component: ResetPasswordComponent,
-    // });
-
-    // (await mod).present();
-
-    // (await mod).onDidDismiss();
-
-
+    this.loginAndRegister = false;
+    this.resetPassword = true;
   }
 
   loginUsingBiometric() {
@@ -326,11 +326,22 @@ export class LoginRegisterPage implements OnInit {
     }
   }
 
+  back(){
+    this.loginAndRegister=true;
+    this.loginRegisterScreen = true;
+    this.resetPassword =false;
+    this.phase1 = true;
+  }
+
   reset(){
 
   }
 
-  resetPasswords(){
+  resetPassword1(){
+
+  }
+
+  resetPassword2(){
 
   }
 }
