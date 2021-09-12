@@ -42,6 +42,9 @@ export class LoginRegisterPage implements OnInit {
   file: File;
   registerButton: boolean; //for the toggle to change modes
   biometricAvaliable: boolean;
+  resetPassword: boolean;
+  resetForm: FormGroup;
+  resetPasswordForm: FormGroup;
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
@@ -55,6 +58,7 @@ export class LoginRegisterPage implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.resetPassword = false;
     this.loginForm = this.formBuilder.group({
       // loginEmail: ['', [Validators.required, Validators.email]],
       // loginPassword: ['', [Validators.required, Validators.minLength(8)]],
@@ -90,6 +94,38 @@ export class LoginRegisterPage implements OnInit {
       },
       formOptions
     );
+
+    this.resetForm = this.formBuilder.group({
+      email: [
+        '',
+        [
+          Validators.required,
+          Validators.email,
+          Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
+        ],
+      ],
+    });
+
+
+    this.resetPasswordForm = this.formBuilder.group({
+      confirmationString: ['',[Validators.required]],
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.email,
+          Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
+        ],
+      ],
+      confirmPassword: [
+        '',
+        [
+          Validators.required,
+          Validators.email,
+          Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
+        ],
+      ],
+    }, formOptions);
 
     NativeBiometric.isAvailable().then((result: AvailableResult) => {
       const isAvailable = result.isAvailable;
@@ -238,13 +274,15 @@ export class LoginRegisterPage implements OnInit {
   }
 
   async displayResetPassword() {
-    const mod = this.modal.create({
-      component: ResetPasswordComponent,
-    });
+    // const mod = this.modal.create({
+    //   component: ResetPasswordComponent,
+    // });
 
-    (await mod).present();
+    // (await mod).present();
 
-    (await mod).onDidDismiss();
+    // (await mod).onDidDismiss();
+
+
   }
 
   loginUsingBiometric() {
@@ -286,5 +324,13 @@ export class LoginRegisterPage implements OnInit {
         server: 'www.documentWorkflow.com'
       })
     }
+  }
+
+  reset(){
+
+  }
+
+  resetPasswords(){
+
   }
 }
