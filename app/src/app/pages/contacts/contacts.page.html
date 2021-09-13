@@ -19,43 +19,72 @@
 </ion-header>
 
 <ion-content>
-<ion-card>
-  <ion-card-header>
-    <ion-card-title>
-      Add a contact
-    </ion-card-title>
-  </ion-card-header>
-  <ion-card-content>
-    <form [formGroup]="addContactForm" (ngSubmit)="submit()">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        Add a contact
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <form [formGroup]="addContactForm" (ngSubmit)="submit()">
         <ion-item>
           <ion-label position='floating'>Add contact by email</ion-label>
           <ion-input formControlName='contact' type='email'></ion-input>
         </ion-item>
         <ion-button type='submit'>Add as friend</ion-button>
-    </form>
-  </ion-card-content>
-</ion-card>
+      </form>
+    </ion-card-content>
+  </ion-card>
 
-<ion-card>
-  <ion-card-header>
-    <ion-card-title>
-      Pending Requests
-    </ion-card-title>
-  </ion-card-header>
-  <ion-card-content>
-    <ion-grid>
-      <ion-row>
-        <ion-col *ngFor="let pending of pendingContacts">
-          <ion-item lines="none">
-            {{pending}}
-          </ion-item>
-          <ion-button (click)="acceptContactRequest(pending)">Accept</ion-button>
-          <ion-button (click)="rejectContactRequest(pending)">Reject</ion-button>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </ion-card-content>
-</ion-card>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        Pending Requests
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-slides [options]="{slidesPerView: '3'}">
+        <ion-grid>
+          <ion-row>
+            <ion-slide *ngFor="let pending of pendingContacts;">
+              <ion-card>
+                <ion-item lines="none">
+                  {{pending}}
+                </ion-item>
+                <ion-button (click)="acceptContactRequest(pending)">Accept</ion-button>
+                <ion-button (click)="rejectContactRequest(pending)">Reject</ion-button>
+              </ion-card>
+            </ion-slide>
+          </ion-row>
+        </ion-grid>
+      </ion-slides>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        Blocked Requests
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-slides [options]="{slidesPerView: '3'}">
+        <ion-grid>
+          <ion-row>
+            <ion-slide *ngFor="let pending of pendingContacts;">
+              <ion-card>
+                <ion-item lines="none">
+                  {{pending}}
+                </ion-item>
+                <ion-button (click)="unBlockUser(pending)">unblock user</ion-button>
+              </ion-card>
+            </ion-slide>
+          </ion-row>
+        </ion-grid>
+      </ion-slides>
+    </ion-card-content>
+  </ion-card>
+
 
   <ion-grid>
     <ion-row>
