@@ -10,8 +10,6 @@ import {WorkFlowService} from 'src/app/Services/Workflow/work-flow.service';
 import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import WebViewer from '@pdftron/webviewer';
 import { UserAPIService } from 'src/app/Services/User/user-api.service';
-import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
-
 
 @Component({
   selector: 'app-document-edit',
@@ -223,7 +221,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
    }
 
    removeActionAreasFromAnnotations(){
-
+    console.log("Removing action areas from document before saving");
     const toDelete = [];
     this.annotationManager.getAnnotationsList().forEach(annot =>{
       this.annotationSubjects.forEach(a =>{

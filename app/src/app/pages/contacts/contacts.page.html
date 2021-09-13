@@ -7,10 +7,11 @@
     <ion-grid style="max-height: 194px;">
       <ion-row>
         <ion-col style="top:50%;" sizeXs='9' sizeMd='4' sizeLg='3' sizeXl='2'>
-          <ion-img src="../../../assets/LogoWhiteBackground.png" style="max-height: 100px; max-width: 320px; top:50%;"></ion-img>
+          <ion-img src="../../../assets/LogoWhiteBackground.png" style="max-height: 100px; max-width: 320px; top:50%;">
+          </ion-img>
         </ion-col>
         <ion-col style="top:50%;" *ngIf='!sizeMe'>
-          <h1 style="top:50%; font-size:xx-large;">Contracts</h1>
+          <h1 style="top:50%; font-size:xx-large;">Contacts</h1>
         </ion-col>
       </ion-row>
     </ion-grid>
@@ -19,17 +20,90 @@
 
 <ion-content>
   <ion-card>
-    <ion-card-header></ion-card-header>
+    <ion-card-header>
+      <ion-card-title>
+        Add a contact
+      </ion-card-title>
+    </ion-card-header>
     <ion-card-content>
-      <ion-list>
+      <form [formGroup]="addContactForm" (ngSubmit)="submit()">
         <ion-item>
-          Beverley Stroberg
+          <ion-label position='floating'>Add contact by email</ion-label>
+          <ion-input formControlName='contact' type='email'></ion-input>
         </ion-item>
-        <ion-item>
-          Email
-        </ion-item>
-          Phone Number
-      </ion-list>
+        <ion-button type='submit'>Add as friend</ion-button>
+      </form>
     </ion-card-content>
   </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        Pending Requests
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-slides [options]="{slidesPerView: '3'}">
+        <ion-grid>
+          <ion-row>
+            <ion-slide *ngFor="let pending of pendingContacts;">
+              <ion-card>
+                <ion-item lines="none">
+                  {{pending}}
+                </ion-item>
+                <ion-button (click)="acceptContactRequest(pending)">Accept</ion-button>
+                <ion-button (click)="rejectContactRequest(pending)">Reject</ion-button>
+              </ion-card>
+            </ion-slide>
+          </ion-row>
+        </ion-grid>
+      </ion-slides>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        Blocked Requests
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-slides [options]="{slidesPerView: '3'}">
+        <ion-grid>
+          <ion-row>
+            <ion-slide *ngFor="let pending of pendingContacts;">
+              <ion-card>
+                <ion-item lines="none">
+                  {{pending}}
+                </ion-item>
+                <ion-button (click)="unBlockUser(pending)">unblock user</ion-button>
+              </ion-card>
+            </ion-slide>
+          </ion-row>
+        </ion-grid>
+      </ion-slides>
+    </ion-card-content>
+  </ion-card>
+
+
+  <ion-grid>
+    <ion-row>
+      <ion-col sizeMd="4" sizeXs="6" *ngFor="let contact of contacts">
+        <ion-card>
+          <ion-card-content>
+            <ion-item lines="none" style="text-align: center;margin:auto;justify-content: center;">
+              Maybe name and surname?
+            </ion-item>
+            <ion-item lines="none">
+              <ion-label position="stacked">Email address:</ion-label>
+              {{contact}}
+            </ion-item>
+
+            <ion-button (click)="deleteContact(contact)">Delete contact</ion-button>
+            <ion-button (click)="blockUser(contact)">Block contact</ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>

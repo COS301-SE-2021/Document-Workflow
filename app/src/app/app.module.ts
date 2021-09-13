@@ -26,6 +26,7 @@ import { AddSignatureComponent } from './components/add-signature/add-signature.
 import { UserNotificationsComponent } from './components/user-notifications/user-notifications.component';
 import { DocumentActionAreaComponent } from './components/document-action-area/document-action-area.component';
 import { Logger } from './Services/Logger';
+import { SwiperModule } from "swiper/angular";
 @NgModule({
   declarations: [
     AppComponent,
@@ -44,7 +45,7 @@ import { Logger } from './Services/Logger';
     FormsModule,
     IonicStorageModule.forRoot(),
     HttpClientModule,
-    PdfViewerModule,
+    PdfViewerModule
   ],
   providers: [
     {
