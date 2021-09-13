@@ -297,7 +297,7 @@ export default class UserController{
             }
         });
 
-        this.router.delete("/unblockUser", this.auth, async (req, res) => {
+        this.router.post("/unblockUser", this.auth, async (req, res) => {
             try{
                 const contactId = await this.removeBlockedContactRoute(req);
                 res.status(200).json({status: "success", data:{"UnblockedUserId": contactId }, message: "Contact removed from blocked list"});
@@ -319,7 +319,7 @@ export default class UserController{
             try {
                 const userContactRequests = await this.getContactRequestsRoute(req);
                 if(userContactRequests) {
-                    if(userContactRequests.length == 0){
+                    if(userContactRequests.length === 0){
                         res.status(200).json({status: "success", data:{}, message: "This user does not have any contact requests"});
                     }else{
                         res.status(200).json({status: "success", data:{"requests": userContactRequests }, message: "Contact Requests successfully retrieved"});
@@ -334,9 +334,9 @@ export default class UserController{
         this.router.post("/getContacts", this.authenticationService.Authenticate , async (req, res) => {
             try {
                 const userContacts = await this.getContactsRoute(req);
-                if(userContacts) res.status(200).json({status: "success", data:{"contacts": userContacts }, message: "Contacts successfully retrieved"});
+                // if(userContacts) res.status(200).json({status: "success", data:{"contacts": userContacts }, message: "Contacts successfully retrieved"});
                 if(userContacts) {
-                    if(userContacts.length == 0){
+                    if(userContacts.length === 0){
                         res.status(200).json({status: "success", data:{}, message: "This user does not have contacts yet"});
                     }else{
                         res.status(200).json({status: "success", data:{"contacts": userContacts }, message: "Contacts successfully retrieved"});
@@ -351,9 +351,9 @@ export default class UserController{
         this.router.post("/getBlockedContacts", this.authenticationService.Authenticate, async(req, res)=>{
             try{
                 const userBlockedContacts = await this.getBlockedContacts(req);
-                if(userBlockedContacts) res.status(200).json({status: "success", data:{"contacts": userBlockedContacts }, message: "Contacts successfully retrieved"});
+                // if(userBlockedContacts) res.status(200).json({status: "success", data:{"contacts": userBlockedContacts }, message: "Contacts successfully retrieved"});
                 if(userBlockedContacts) {
-                    if(userBlockedContacts.length == 0){
+                    if(userBlockedContacts.length === 0){
                         res.status(200).json({status: "success", data:{}, message: "This user does not have contacts yet"});
                     }else{
                         res.status(200).json({status: "success", data:{"contacts": userBlockedContacts }, message: "Contacts successfully retrieved"});
