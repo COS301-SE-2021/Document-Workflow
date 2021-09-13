@@ -500,7 +500,7 @@ export default class UserService {
         usr.csrfTokenTime = Date.now();
         await this.userRepository.saveUser(usr); 
         const res = await this.sendResetRequestEmail(userEmail, usr.antiCSRFToken);
-        logger.info(res);
+        logger.info(res); //TODO: check this for errors thrown
         return {status: 'success', data:{}, message:''};
     }
 

@@ -450,7 +450,16 @@ export default class UserController{
             try{
                 res.status(200).json(await this.generatePasswordResetRequest(req));
             } catch(err){
-                await handleErrors(err,res)
+                await handleErrors(err,res);
+            }
+        });
+
+        this.router.post("/resetPassword", async(req,res) =>{
+            try{
+                res.status(200).json(await this.resetPassword(req));
+            }
+            catch(err){
+                await handleErrors(err,res);
             }
         });
 

@@ -417,12 +417,14 @@ export class UserAPIService {
       );
   }
 
-  resetPassword(data, callback) {
+  resetPassword(data, email, callback) {
     console.log(data);
+    console.log(email); 
     const formData = new FormData();
     formData.append('token', data.token);
     formData.append('confirmPassword', data.confirmPassword);
     formData.append('password', data.password);
+    formData.append('email', email);
     this.http.post(config.url + '/users/resetPassword', formData).subscribe(
       (data) => {
         //this.dismissLoading();

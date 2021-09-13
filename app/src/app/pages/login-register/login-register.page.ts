@@ -49,6 +49,7 @@ export class LoginRegisterPage implements OnInit {
   phase1: boolean;
   sizeMe:boolean;
   loginRegisterScreen: boolean;
+  userEmailForReset: string;
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
@@ -332,6 +333,7 @@ export class LoginRegisterPage implements OnInit {
 
   // send a email to user with token
   resetPassword1(){
+    this.userEmailForReset = this.resetFormPhase1.value.email;
     this.userAPIService.sendResetPasswordEmail(this.resetFormPhase1.value.email, (response)=>{
       console.log(response);
       if(response){
@@ -347,7 +349,7 @@ export class LoginRegisterPage implements OnInit {
 
   //add token and confirm passwords
   resetPassword2(){
-    this.userAPIService.resetPassword( this.resetFormPhase2.value, (response)=>{
+    this.userAPIService.resetPassword( this.resetFormPhase2.value, this.userEmailForReset, (response)=>{
       if(response.status === 'success'){
         this.userAPIService.displayPopOver('Success', 'Password has been changed');
         this.back();
@@ -355,5 +357,6 @@ export class LoginRegisterPage implements OnInit {
         this.userAPIService.displayPopOver('Error', 'Failed to change Password');
       }
     });
+    this.phase1 = true;
   }
 }
