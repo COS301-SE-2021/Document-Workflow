@@ -195,7 +195,7 @@ export default class UserController{
         return await this.userService.generatePasswordReset(req.body.email);
     }
 
-    private async generatePResetPassword(req){
+    private async resetPassword(req){
         if(!req.body.email){
             throw new RequestError("You must list the email address of the user");
         }
@@ -212,7 +212,7 @@ export default class UserController{
             throw new RequestError("You must include the password reset token with this request");
         }
 
-        this.userService.resetPassword(req.body.email, req.body.password, req.body.token);
+        return await this.userService.resetPassword(req.body.email, req.body.password, req.body.token);
     }
 
 
@@ -448,15 +448,7 @@ export default class UserController{
         this.router.post("/generatePasswordResetRequest", async(req, res)=>{
         
             try{
-                res.status(200).json(this.generatePasswordResetRequest(req));
-            } catch(err){
-                await handleErrors(err,res)
-            }
-        });
-
-        this.router.post("/resetPassword", async(req,res) =>{
-            try{
-                res.status(200).json(this.generatePResetPassword(req));
+                res.status(200).json(await this.generatePasswordResetRequest(req));
             } catch(err){
                 await handleErrors(err,res)
             }
