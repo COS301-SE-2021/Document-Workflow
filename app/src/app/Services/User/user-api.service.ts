@@ -439,10 +439,10 @@ export class UserAPIService {
     );
   }
 
-  sendResetPasswordEmail(data, callback) {
-    console.log(data);
+  sendResetPasswordEmail(email, callback) {
+    console.log(email);
     const formData = new FormData();
-    formData.append('email', data.token);
+    formData.append('email', email);
     this.http
       .post(config.url + '/users/generatePasswordResetRequest', formData)
       .subscribe(

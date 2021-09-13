@@ -337,6 +337,7 @@ export class LoginRegisterPage implements OnInit {
   // send a email to user with token
   resetPassword1(){
     this.userAPIService.sendResetPasswordEmail(this.resetFormPhase1.value.email, (response)=>{
+      console.log(response);
       if(response){
         if(response.status === 'success'){
           this.userAPIService.displayPopOver('Success', 'Email has been sent');

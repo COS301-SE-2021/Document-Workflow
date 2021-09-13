@@ -491,11 +491,16 @@ export default class UserService {
     async generatePasswordReset(userEmail){
 
         const usr = await this.getUserByEmail(userEmail);
+        logger.info("Resetting email of userwith email address: " + userEmail);
+        
+        if(usr === null){
+            throw new RequestError("No user with that email address was found.");
+        }
         usr.antiCSRFToken = crypto.randomBytes(64).toString('hex');
         usr.csrfTokenTime = Date.now();
         await this.userRepository.saveUser(usr); 
         const res = await this.sendResetRequestEmail(userEmail, usr.antiCSRFToken);
-        
+        logger.info(res);
         return {status: 'success', data:{}, message:''};
     }
 
@@ -518,7 +523,7 @@ export default class UserService {
             to: emailAddress,
             subject: 'DocumentWorkflow Password Reset Code',
             html: "<html lang='en'><p>Hello new DocumentWorkflow User, use this code to reset your password: " 
-                    + antiCSRFCode + "</p></html"
+                    + antiCSRFCode + "</p></html>"
         
         };
 

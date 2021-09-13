@@ -92,24 +92,17 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
           console.log('Modifying into dictionary, adding custom properties, embedding a stream...');
 
           const trailer = await doc.getTrailer(); // Get the trailer
-          const info = await trailer.putDict('Info');
-          info.putString('Producer', 'PDFTron PDFNet');
-
-           // Create a custom inline dictionary within Infor dictionary
-          const customDict = await info.putDict('My Direct Dict');
-          customDict.putNumber('My Number', 100);
 
           // Now we will change PDF document information properties using SDF API
 
           // Get the Info dictionary.
-          /*
+          
           let itr = await trailer.find('Info');
           let info;
           if (await itr.hasNext()) {
             info = await itr.value();
             // Modify 'Producer' entry.
             info.putString('Producer', 'PDFTron PDFNet');
-            info.putString('reeee', 'reeeeeeeeeeee');
 
             // read title entry if it is present
             itr = await info.find('Author');
@@ -125,10 +118,9 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
             info = await trailer.putDict('Info');
             info.putString('Producer', 'PDFTron PDFNet');
             info.putString('Title', 'My document');
-            info.putString('reeee', 'reeeeeeeeeeee');
           }
           const customDict = await info.putDict('My Direct Dict');
-          customDict.putNumber('My Number', 100); */
+          customDict.putNumber('My Number', 100); 
           const docbuf = await doc.saveMemory(0, '%PDF-1.4'); 
           let blob2 = new Blob([new Uint8Array(docbuf)], {type: 'application/pdf'});
             /*   */
