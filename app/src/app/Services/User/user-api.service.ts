@@ -421,7 +421,7 @@ export class UserAPIService {
     console.log(data);
     console.log(email); 
     const formData = new FormData();
-    formData.append('token', data.token);
+    formData.append('token', data.confirmationString);
     formData.append('confirmPassword', data.confirmPassword);
     formData.append('password', data.password);
     formData.append('email', email);

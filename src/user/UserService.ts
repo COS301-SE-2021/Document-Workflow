@@ -539,12 +539,18 @@ export default class UserService {
             throw new RequestError("Something is wrong with the token, please generate a new request");
         }
 
-        if(!usr.antiCSRFToken !== token){
+        console.log(token);
+        console.log(typeof token);
+        if(usr.antiCSRFToken !== token){
             throw new RequestError("The password reset token is incorrect");
         }
 
         if((Date.now() - usr.csrfTokenTime) > parseInt(process.env.CSRF_TOKEN_TIMEOUT_MILLISECONDS)){
             throw new RequestError("The password reset token has expired, please create a new request");
+        }
+
+        if(!isStrongPassword(password)){
+            throw new RequestError("The new password is not strong enough");
         }
 
         usr.password = await this.getHashedPassword(password);

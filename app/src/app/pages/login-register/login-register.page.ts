@@ -349,6 +349,7 @@ export class LoginRegisterPage implements OnInit {
 
   //add token and confirm passwords
   resetPassword2(){
+    console.log(this.resetFormPhase2.value);
     this.userAPIService.resetPassword( this.resetFormPhase2.value, this.userEmailForReset, (response)=>{
       if(response.status === 'success'){
         this.userAPIService.displayPopOver('Success', 'Password has been changed');
@@ -357,6 +358,5 @@ export class LoginRegisterPage implements OnInit {
         this.userAPIService.displayPopOver('Error', 'Failed to change Password');
       }
     });
-    this.phase1 = true;
   }
 }
