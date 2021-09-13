@@ -352,6 +352,27 @@ export class UserAPIService {
       );
   }
 
+  // getBlockedContacts
+  getBlockedContacts( callback){
+    const formData = new FormData();
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/getBlockedContacts', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          callback(data);
+        },
+        async (error) => {
+          await this.displayPopOver('Logout error', error.error);
+        }
+      );
+  }
+
   deleteContact(contactID, callback) {
     const formData = new FormData();
     formData.append('DeletedUserId', contactID);

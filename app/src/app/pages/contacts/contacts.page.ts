@@ -19,6 +19,7 @@ export class ContactsPage implements OnInit {
   userEmail: string;
   contacts: contact[] =[];
   pendingContacts: contact[] =[];
+  blockedContacts: contact[] =[];
 
   addContactForm: FormGroup;
 
@@ -77,6 +78,16 @@ export class ContactsPage implements OnInit {
         this.userApiService.displayPopOver('Error', 'Failed to get pending users');
       }
     });
+    await this.userApiService.getBlockedContacts((response) => {
+      console.log(response);
+      if (response.status === 'success') {
+        this.blockedContacts = response.data.contacts;
+        console.log(this.blockedContacts)
+      }else {
+        this.userApiService.displayPopOver('Error', 'Failed to get blocked users');
+      }
+    });
+
   }
 
   async getUser() {

@@ -438,6 +438,15 @@ export default class UserService {
         }
     }
 
+    async getBlockedContacts(email: string) {
+        const user: UserDoc = await this.userRepository.findUser({email: email});
+        if(user){
+            return user.blockedList;
+        }else{
+            throw new ServerError("User not found");
+        }
+    }
+
     async getContactRequests(email: string) {
         const user: UserDoc = await this.userRepository.findUser({email: email});
         if(user){

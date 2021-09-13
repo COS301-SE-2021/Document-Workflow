@@ -130,7 +130,8 @@ export class LoginRegisterPage implements OnInit {
       ],
     }, formOptions);
 
-    if(this.plat.is("android")){
+    if(this.plat.is('android') && this.plat.is('capacitor')){
+      console.log('jere');
       NativeBiometric.isAvailable().then((result: AvailableResult) => {
         const isAvailable = result.isAvailable;
         this.biometricAvaliable = result.isAvailable;
@@ -153,7 +154,8 @@ export class LoginRegisterPage implements OnInit {
       if (response.status === 'success') {
         //localStorage.setItem('token', response.data.token);
         Cookies.set('token', response.data.token, { expires: 1 });
-        if(this.plat.is("android")){
+        if(this.plat.is('android')  && this.plat.is('capacitor')){
+          console.log("here")
           this.setCredentials();
         }
         // this.userAPIService.displayPopOver('Success', 'login was successful');

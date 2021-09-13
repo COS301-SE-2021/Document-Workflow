@@ -128,6 +128,16 @@ export default class UserController{
         }
     }
 
+    private async getBlockedContacts(req): Promise<String[]>{
+        if(!req.user.email) throw new RequestError("Missing User details for this request");
+        try{
+            return await this.userService.getBlockedContacts(req.user.email);
+        }
+        catch(err){
+            throw new ServerError(err.toString());
+        }
+    }
+
     private async getContactsRoute(req): Promise<String[]> {
         if(!req.user.email) throw new RequestError("Missing User details for this request");
         try{
@@ -334,6 +344,24 @@ export default class UserController{
                 }
                 else res.status(404).send("Could not find User");
             } catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        });
+
+        this.router.post("/getBlockedContacts", this.authenticationService.Authenticate, async(req, res)=>{
+            try{
+                const userBlockedContacts = await this.getBlockedContacts(req);
+                if(userBlockedContacts) res.status(200).json({status: "success", data:{"contacts": userBlockedContacts }, message: "Contacts successfully retrieved"});
+                if(userBlockedContacts) {
+                    if(userBlockedContacts.length == 0){
+                        res.status(200).json({status: "success", data:{}, message: "This user does not have contacts yet"});
+                    }else{
+                        res.status(200).json({status: "success", data:{"contacts": userBlockedContacts }, message: "Contacts successfully retrieved"});
+                    }
+                }
+                else res.status(404).send("Could not find User");
+            }
+            catch(err){
                 try{await handleErrors(err,res);}catch{}
             }
         });
