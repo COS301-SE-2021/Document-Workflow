@@ -133,24 +133,6 @@ export default class UserService {
             logger.info(req.body.email + " " + tempValidateCode);
             await this.sendVerificationEmail(req.body.email, tempValidateCode);//,
             return user;
-            try {
-                const usr: UserProps = req.body;
-                usr.signature = req.files.signature.data;
-                usr.validateCode = crypto.randomBytes(64).toString('hex');
-                usr.password = await this.getHashedPassword(usr.password);
-
-                /*const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
-                usr.tokens = [token];*/
-
-                const user: UserProps = await this.userRepository.saveUser(usr);
-                if (user) {
-                    await this.sendVerificationEmail(usr.email, usr.validateCode)//,
-                    return user;
-                }
-            } catch (err) {
-                console.error(err);
-                throw new RequestError("Could not register user");
-            }
         }
     }
 
@@ -175,9 +157,9 @@ export default class UserService {
         logger.info("Sending an email to the new email address");
         let url = process.env.BASE_URL + '/users/verify?verificationCode=' + code + '&email=' + emailAddress;
         let transporter = nodemailer.createTransport({
-            service: 'gmail',
-            host: "smtp.gmail.com",
-            port: 465,
+            service:  process.env.NODEMAILER_SERVICE,
+            host: process.env.NODEMAILER_SMTP,
+            port: process.env.NODEMAILER_PORT,
             secure: true,
             auth: {
                 user: process.env.EMAIL_ADDRESS,
@@ -507,9 +489,9 @@ export default class UserService {
     async sendResetRequestEmail(emailAddress, antiCSRFCode){
         logger.info("Sending an email to the new email address");
         let transporter = nodemailer.createTransport({
-            service: 'gmail',
-            host: "smtp.gmail.com",
-            port: 465,
+            service:  process.env.NODEMAILER_SERVICE,
+            host: process.env.NODEMAILER_SMTP,
+            port: process.env.NODEMAILER_PORT,
             secure: true,
             auth: {
                 user: process.env.EMAIL_ADDRESS,
@@ -539,8 +521,6 @@ export default class UserService {
             throw new RequestError("Something is wrong with the token, please generate a new request");
         }
 
-        console.log(token);
-        console.log(typeof token);
         if(usr.antiCSRFToken !== token){
             throw new RequestError("The password reset token is incorrect");
         }
