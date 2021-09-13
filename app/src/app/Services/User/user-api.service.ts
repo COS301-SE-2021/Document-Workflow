@@ -411,7 +411,6 @@ export class UserAPIService {
           callback(data);
         },
         async (error) => {
-          await this.displayPopOver('Logout error', error.error);
           await this.displayPopOver('Send Contact request error', error.error);
         }
       );
@@ -419,7 +418,7 @@ export class UserAPIService {
 
   resetPassword(data, email, callback) {
     console.log(data);
-    console.log(email); 
+    console.log(email);
     const formData = new FormData();
     formData.append('token', data.token);
     formData.append('confirmPassword', data.confirmPassword);
