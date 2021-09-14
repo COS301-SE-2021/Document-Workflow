@@ -5,8 +5,8 @@ import {config} from '../configuration';
 import * as DecisionTree from 'decision-tree';
 import {DocumentClassifier} from './BagOfWordsClassifier';
 
-const DOCUMENT_TYPES = Object.freeze({EXPENSE:'Expense Report', 
-        CONSULTING:'Consulting Contract', 
+const DOCUMENT_TYPES = Object.freeze({EXPENSE:'Expense Report',
+        CONSULTING:'Consulting Contract',
         EMPLOYMENT:'Employment Contract',
         LEASE: 'Lease Agreement',
         LOAN: 'Loan Agreement',
@@ -93,25 +93,220 @@ export class AIService {
     let features = {};
       switch(documentType){
         case DOCUMENT_TYPES.EXPENSE: console.log("Extracting features for document of type: EXPENSE" );
-        break;  
+            features = this.extractExpenseFeatures(text);
+        break;
         case DOCUMENT_TYPES.CONSULTING: console.log("Extracting features for document of type: CONSULTING" );
+          features = this.extractConsultingFeatures(text);
         break;
         case DOCUMENT_TYPES.LOAN: console.log("Extracting features for document of type: LOAN" );
+          features = this.extractLoanFeatures(text);
         break;
         case DOCUMENT_TYPES.LEASE: console.log("Extracting features for document of type: LEASE" );
+          features = this.extractLeaseFeatures(text);
         break;
         case DOCUMENT_TYPES.TIMESHEET: console.log("Extracting features for document of type: TIMESHEET" );
+          features = this.extractTimesheetFeatures(text);
         break;
         case DOCUMENT_TYPES.COVID: console.log("Extracting features for document of type: COVID" );
+          features = this.extractCovidFeatures(text);
         break;
         case DOCUMENT_TYPES.INVOICE: console.log("Extracting features for document of type: INVOICE" );
+          features = this.extractInvoiceFeatures(text);
         break;
         case DOCUMENT_TYPES.NDA: console.log("Extracting features for document of type: NDA" );
+          features = this.extractNDAFeatures(text);
         break;
         case DOCUMENT_TYPES.EMPLOYMENT: console.log("Extracting features for document of type: EMPLOYMENT" );
+          features = this.extractEmploymentFeatures(text);
         break;
       }
 
       return features;
+  }
+
+  extractExpenseFeatures(content){
+      content = content.toLowerCase();
+      let features = {
+        "Length": content.length,
+        "ConsecutiveUnderscores": this.hasConsecutiveUnderscores(content),
+        "NumberSemicolons": content.replace(/[^:]/gi, '').length,
+        "SignatureKeyword": (/signature/g.test(content)) || (/signatures/g.test(content)),
+        "SignKeyword": (/sign/g.test(content)) || (/signed/g.test(content)),
+        "DateKeyword": (/date/g.test(content)) || (/dated/g.test(content)),
+        "NameKeyword": (/name/g.test(content) || (/initial/g.test(content)) || (/title/g.test(content))),
+        "Amount": (/amount/g.test(content)),
+        "Total": (/total/g.test(content)) || (/totals/g.test(content))
+      };
+
+      return features;
+  }
+
+  extractConsultingFeatures(content){
+    content = content.toLowerCase();
+    const features = {
+      "Length": content.length,
+      "ConsecutiveUnderscores": this.hasConsecutiveUnderscores(content),
+      "NumberSemicolons": content.replace(/[^:]/gi, '').length,
+      "SignatureKeyword": (/signature/g.test(content)),
+      "SignKeyword": (/sign/g.test(content)) || (/signed/g.test(content)),
+      "ContractNoKeyword": (/contract no/g.test(content)) || (/contract #/g.test(content)),
+      "ProjectNoKeyword": (/project no/g.test(content)) || (/project #/g.test(content)),
+      "DateKeyword": (/date/g.test(content)),
+      "NameKeyword": (/name/g.test(content) || (/initial/g.test(content)) || (/title/g.test(content))),
+      "WitnessKeyword": (/witness/g.test(content)) || (/witnesses/g.test(content)),
+      "ByKeyword": (/by/g.test(content))
+    };
+
+    return features;
+  }
+
+  extractEmploymentFeatures(content){
+    content = content.toLowerCase();
+    let features = {
+      "Length": content.length,
+      "ConsecutiveUnderscores": this.hasConsecutiveUnderscores(content),
+      "NumberSemicolons": content.replace(/[^:]/gi, '').length,
+      "SignatureKeyword": (/signature/g.test(content)) || (/signatures/g.test(content)),
+      "SignKeyword": (/sign/g.test(content)) || (/signed/g.test(content)),
+      "DateKeyword": (/date/g.test(content)) || (/dated/g.test(content)),
+      "NameKeyword": (/name/g.test(content) || (/initial/g.test(content)) || (/title/g.test(content))),
+      "WitnessKeyword": (/witness/g.test(content)) || (/witnesses/g.test(content)),
+      "ByKeyword": (/by/g.test(content)),
+      "Employee": (/employee/g.test(content)),
+      "Employeer": (/employer/g.test(content)),
+      "Address": (/address/g.test(content))
+    };
+
+    return features;
+  }
+  extractLoanFeatures(content){
+    content = content.toLowerCase();
+    const features = {
+      "Length": content.length,
+      "ConsecutiveUnderscores": this.hasConsecutiveUnderscores(content),
+      "NumberSemicolons": content.replace(/[^:]/gi, '').length,
+      "SignatureKeyword": (/signature/g.test(content)),
+      "SignKeyword": (/sign/g.test(content)) || (/signed/g.test(content)),
+      "Borrower": (/borrower/g.test(content)),
+      "Amount": (/amount/g.test(content)),
+      "DateKeyword": (/date/g.test(content)),
+      "NameKeyword": (/name/g.test(content) || (/initial/g.test(content)) || (/title/g.test(content))) || (/initials/g.test(content)),
+      "WitnessKeyword": (/witness/g.test(content)) || (/witnesses/g.test(content)),
+      "ByKeyword": (/by/g.test(content)),
+      'AddressKeyword': (/address/g.test(content))
+    };
+    return features;
+  }
+
+  extractLeaseFeatures(content){
+    content = content.toLowerCase();
+    const features = {
+      "Length": content.length,
+      "ConsecutiveUnderscores": this.hasConsecutiveUnderscores(content),
+      "NumberSemicolons": content.replace(/[^:]/gi, '').length,
+      "SignatureKeyword": (/signature/g.test(content)),
+      "SignKeyword": (/sign/g.test(content)) || (/signed/g.test(content)),
+      "Landlord": (/landlord/g.test(content)) || (/lessor/g.test(content)),
+      "Tenant": (/tenant/g.test(content)) || (/lessee/g.test(content)),
+      "DateKeyword": (/date/g.test(content)),
+      "NameKeyword": (/name/g.test(content) || (/initial/g.test(content)) || (/title/g.test(content))) || (/initials/g.test(content)),
+      "WitnessKeyword": (/witness/g.test(content)) || (/witnesses/g.test(content)),
+      "ByKeyword": (/by/g.test(content)),
+      'AddressKeyword': (/address/g.test(content))
+    };
+
+    return features;
+  }
+
+  extractCovidFeatures(content){
+    content = content.toLowerCase();
+    const features = {
+      "Length": content.length,
+      "SignatureKeyword": (/signature/g.test(content)),
+      "SignKeyword": (/sign/g.test(content)) || (/signed/g.test(content)),
+      "DateKeyword": (/date/g.test(content)),
+      "NameKeyword": (/name/g.test(content) || (/initial/g.test(content)) || (/title/g.test(content))),
+      "Temperature": (/temperature/g.test(content)),
+      "Symptoms": this.containsSymptomsKeywords(content),
+      'YesOrNo': (/no/g.test(content)) || (/yes/g.test(content)),
+      'IsQuestion': (/\?/g.test(content))
+    };
+
+    return features;
+  }
+
+  containsSymptomsKeywords(content){
+    const bool = ( (/temperature/g.test(content)) || (/congestion/g.test(content)) || (/nausea/g.test(content))
+      || (/headache/g.test(content)) || (/aches/g.test(content)) || (/cough/g.test(content)) ||(/fever/g.test(content))
+      || (/fatigue/g.test(content)) || (/breathing/g.test(content)) );
+    return bool;
+  }
+
+  extractNDAFeatures(content){
+    content = content.toLowerCase();
+    const features = {
+      "Length": content.length,
+      "ConsecutiveUnderscores": this.hasConsecutiveUnderscores(content),
+      "NumberSemicolons": content.replace(/[^:]/gi, '').length,
+      "SignatureKeyword": (/signature/g.test(content)),
+      "SignKeyword": (/sign/g.test(content)) || (/signed/g.test(content)),
+      "DateKeyword": (/date/g.test(content)),
+      "NameKeyword": (/name/g.test(content) || (/initial/g.test(content)) || (/title/g.test(content))) || (/initials/g.test(content)),
+      "WitnessKeyword": (/witness/g.test(content)) || (/witnesses/g.test(content)),
+      "ByKeyword": (/by/g.test(content)),
+    };
+
+    return features;
+  }
+
+  extractTimesheetFeatures(content){
+    content = content.toLowerCase();
+    let features = {
+      "Length": content.length,
+      "ConsecutiveUnderscores": this.hasConsecutiveUnderscores(content),
+      "NumberSemicolons": content.replace(/[^:]/gi, '').length,
+      "SignatureKeyword": (/signature/g.test(content)) || (/signatures/g.test(content)),
+      "SignKeyword": (/sign/g.test(content)) || (/signed/g.test(content)),
+      "DateKeyword": (/date/g.test(content)) || (/dated/g.test(content)),
+      "NameKeyword": (/name/g.test(content) || (/initial/g.test(content)) || (/title/g.test(content))),
+      "Hours": (/hours/g.test(content)),
+      "Total": (/total/g.test(content)) || (/totals/g.test(content))
+    };
+
+    return features;
+  }
+
+  extractInvoiceFeatures(content){
+    content = content.toLowerCase();
+    const features = {
+      "Length": content.length,
+      "ConsecutiveUnderscores": this.hasConsecutiveUnderscores(content),
+      "NumberSemicolons": content.replace(/[^:]/gi, '').length,
+      "SignatureKeyword": (/signature/g.test(content)) || (/signatures/g.test(content)),
+      "SignKeyword": (/sign/g.test(content)) || (/signed/g.test(content)),
+      "DateKeyword": (/date/g.test(content)) || (/dated/g.test(content)),
+      "NameKeyword": (/name/g.test(content) || (/initial/g.test(content)) || (/title/g.test(content))),
+      "Amount": (/amount/g.test(content)),
+      "Total": (/total/g.test(content)) || (/totals/g.test(content)) || (/subtotal/g.test(content)),
+      "Description": (/description/g.test(content))
+    };
+
+    return features;
+  }
+
+  hasConsecutiveUnderscores(content){
+    const onlyUnderscores = content.replace(/[^_/.]/gi, ' ');
+    const consecutives = onlyUnderscores.match(/([_/.])\1*/g);
+
+    if(consecutives === null){
+      return false;
+    }
+    for(let i=0;  i<consecutives.length; ++i){
+      if(consecutives[i].length >= 2){
+        return true;
+      }
+    }
+
+    return false;
   }
 }
