@@ -30,7 +30,7 @@ import { User, UserAPIService } from 'src/app/Services/User/user-api.service';
 import * as Cookies from 'js-cookie';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 import { AIService } from 'src/app/Services/AI/ai.service';
-import { VerifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
+// import { VerifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
 import WebViewer, {Core} from '@pdftron/webviewer';
 
 @Component({
@@ -220,7 +220,7 @@ export class DocumentAddPage implements OnInit {
 //     const verifierEmail = new VerifyEmail(this.userApiService);
   // [verifierEmail.verifyEmail.bind(verifierEmail)]
   createPhase(): FormGroup {
-    const verifierEmail = new VerifyEmail(this.userApiService);
+    // const verifierEmail = new VerifyEmail(this.userApiService);
     return this.fb.group({
       description: new FormControl('', Validators.required),
       annotations: new FormControl('', [Validators.required]),
@@ -327,7 +327,7 @@ export class DocumentAddPage implements OnInit {
         doc1.initSecurityHandler();
         doc1.lock();
         const trailer = await doc1.getTrailer(); // Get the trailer
-    
+
         const metadata = await doc.getDocInfo();
         console.log("METADATA: ");
         console.log(await metadata.getKeywords());

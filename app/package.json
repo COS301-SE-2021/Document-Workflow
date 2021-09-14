@@ -64,6 +64,7 @@
     "jspdf-html2canvas": "^1.4.9",
     "natural": "^5.0.5",
     "ng2-pdf-viewer": "^7.0.1",
+    "ng2-search-filter": "^0.5.1",
     "node-nlp": "^4.22.1",
     "nodemailer": "^6.6.1",
     "pdf-lib": "^1.16.0",
