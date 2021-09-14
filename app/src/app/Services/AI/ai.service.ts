@@ -84,40 +84,37 @@ export class AIService {
   }
 
   identifyActionAreas(text, documentType){
-      const features = this.extractFeatures(text, documentType);
-      console.log(features);
-
+    console.log("Extracting features for documnt of type: ", documentType)
+      const lines = text.toLowerCase().split('\n');
+      console.log(lines);
+      let actionAreas = [];
+      for(const line of lines){
+        const features = this.extractFeatures(line, documentType);
+        console.log(line);
+        console.log(features);
+      }
   }
 
   extractFeatures(text, documentType){
     let features = {};
       switch(documentType){
-        case DOCUMENT_TYPES.EXPENSE: console.log("Extracting features for document of type: EXPENSE" );
-            features = this.extractExpenseFeatures(text);
+        case DOCUMENT_TYPES.EXPENSE: features = this.extractExpenseFeatures(text);
         break;
-        case DOCUMENT_TYPES.CONSULTING: console.log("Extracting features for document of type: CONSULTING" );
-          features = this.extractConsultingFeatures(text);
+        case DOCUMENT_TYPES.CONSULTING: features = this.extractConsultingFeatures(text);
         break;
-        case DOCUMENT_TYPES.LOAN: console.log("Extracting features for document of type: LOAN" );
-          features = this.extractLoanFeatures(text);
+        case DOCUMENT_TYPES.LOAN: features = this.extractLoanFeatures(text);
         break;
-        case DOCUMENT_TYPES.LEASE: console.log("Extracting features for document of type: LEASE" );
-          features = this.extractLeaseFeatures(text);
+        case DOCUMENT_TYPES.LEASE: features = this.extractLeaseFeatures(text);
         break;
-        case DOCUMENT_TYPES.TIMESHEET: console.log("Extracting features for document of type: TIMESHEET" );
-          features = this.extractTimesheetFeatures(text);
+        case DOCUMENT_TYPES.TIMESHEET: features = this.extractTimesheetFeatures(text);
         break;
-        case DOCUMENT_TYPES.COVID: console.log("Extracting features for document of type: COVID" );
-          features = this.extractCovidFeatures(text);
+        case DOCUMENT_TYPES.COVID: features = this.extractCovidFeatures(text);
         break;
-        case DOCUMENT_TYPES.INVOICE: console.log("Extracting features for document of type: INVOICE" );
-          features = this.extractInvoiceFeatures(text);
+        case DOCUMENT_TYPES.INVOICE:  features = this.extractInvoiceFeatures(text);
         break;
-        case DOCUMENT_TYPES.NDA: console.log("Extracting features for document of type: NDA" );
-          features = this.extractNDAFeatures(text);
+        case DOCUMENT_TYPES.NDA: features = this.extractNDAFeatures(text);
         break;
-        case DOCUMENT_TYPES.EMPLOYMENT: console.log("Extracting features for document of type: EMPLOYMENT" );
-          features = this.extractEmploymentFeatures(text);
+        case DOCUMENT_TYPES.EMPLOYMENT: features = this.extractEmploymentFeatures(text);
         break;
       }
 
