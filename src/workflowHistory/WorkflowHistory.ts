@@ -10,6 +10,10 @@ export class Entry{
     userEmail: String;
     currentPhase: Number;
     type: string;
+
+    loadFromJSONString(json){
+        
+    }
 };
 
 export const workflowHistorySchema = createSchema({

@@ -261,11 +261,11 @@ export default class WorkflowController {
 
     private async verifyDocument(req) {
 
-        if(!req.body.workflowId || ! req.files.document){
+        if(!req.body.workflowId || ! req.body.hash){
             throw new RequestError("A workflowId and input document is required to verify a document");
         }
 
-        return await this.workflowService.verifyDocument(req.body.workflowId, req.files.document, req.user);
+        return await this.workflowService.verifyDocument(req.body.workflowId, req.body.hash, req.user);
     }
 
     //----------------------------------------------------------------------------------

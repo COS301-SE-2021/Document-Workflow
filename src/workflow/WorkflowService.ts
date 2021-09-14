@@ -671,7 +671,22 @@ export default class WorkflowService{
         return {status:"success", data: {history: workflowHistory}, message:""};
     }
 
-    async verifyDocument(workflowId, document, user) {
-        return {status:"success", data:{}, message:""};
+    async verifyDocument(workflowId, hash, user) {
+
+        const workflow = await this.workflowRepository.getWorkflow(workflowId);
+        const usr = await this.userService.getUserById(user._id);
+
+        if(!this.isUserMemberOfWorkflow(workflow, user.email)){
+            throw new AuthorizationError("You are not a member of this workflow");
+        }
+
+        const workflowHistory = await this.workflowHistoryService.getWorkflowHistory(workflow.historyId);
+        
+        /*for(const entry of workflowHistory.entries){
+            const entryParsed = JSON.parse(entry);
+
+        }*/
+
+        return {status:"error", data:{}, message:"No corresponding history entry was found for this document"};
     }
 }
