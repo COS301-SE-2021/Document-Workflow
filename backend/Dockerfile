@@ -2,5 +2,5 @@ FROM node:14-slim
 WORKDIR /app
 COPY package*.json ./
 RUN npm install -f
-COPY . .
+COPY .. .
 CMD ["npm", "run","build:server"]

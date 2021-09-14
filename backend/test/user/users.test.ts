@@ -3,9 +3,12 @@ import UserRepository from "../../src/user/UserRepository";
 import UserService from "../../src/user/UserService";
 import UserController from "../../src/user/UserController";
 import Authenticator from "../../src/security/Authenticate";
-import { UserDoc } from "../../src/user/User";
-import jwt from "jsonwebtoken";
+//import jwt from 'jsonwebtoken';
 import { AuthenticationError, RequestError } from "../../src/error/Error";
+import { IUser } from "../../src/user/IUser";
+import { Schema, Types } from "mongoose";
+// @ts-ignore
+import jwt from "jsonwebtoken";
 
 describe("user unit tests", () => {
   let userRepository;
@@ -76,11 +79,11 @@ describe("user unit tests", () => {
       userService.getHashedPassword("AgR3aTP4SsW0rd");
 
     const response = {
+      _id: new Types.ObjectId("0x012345678911"),
       password: hashedPassword,
-      _id: "1234567890",
       validated: true,
       email: "unittest@test.com",
-    } as any as UserDoc;
+    } as any as IUser;
 
     sinon.stub(userRepository, "findUser").returns(response);
     try {
@@ -95,11 +98,9 @@ describe("user unit tests", () => {
   it("Should not login user with incorrect password", async () => {
     //fake req.body.email and req.body.password:
     const request = {
-      body: {
         email: "unittest@test.com",
         password: "AgR3aTP4SsW0rd"
-      },
-    } as any as Request;
+    }
 
     const hashedPassword: string = userService.getHashedPassword(
       "AgR3aTP4SsW0rd212311"
@@ -110,11 +111,11 @@ describe("user unit tests", () => {
       _id: "1234567890",
       validated: true,
       email: "unittest@test.com",
-    } as any as UserDoc;
+    } as any as IUser;
 
     sinon.stub(userRepository, "findUser").returns(response);
 
-    await expect(userService.loginUser(request)).rejects.toThrow(
+    await expect(userService.loginUser(request.email, request.password)).rejects.toThrow(
       AuthenticationError
     );
   });

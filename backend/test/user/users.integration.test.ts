@@ -4,7 +4,7 @@ import UserController from "../../src/user/UserController";
 import Database from "../../src/Database";
 import Authenticator from "../../src/security/Authenticate";
 import request from "supertest";
-import app from "../../src/index";
+import app from "../../src";
 
 let userService;
 let userController;
@@ -68,11 +68,12 @@ describe("User sub-system integration tests:", () => {
         //const currentDate = Date.now();
         const mockPostRequest = {
           body: {
-            name: testUserName,
-            surname: testUserSurname,
-            initials: testUserInitials,
-            email: testUserEmail,
-            password: testUserPassword
+              name: testUserName,
+              surname: testUserSurname,
+              initials: testUserInitials,
+              email: testUserEmail,
+              password: testUserPassword,
+              confirmPassword: testUserPassword
           },
           files: {
             signature: testUserSignature
@@ -141,13 +142,13 @@ describe("User sub-system integration tests:", () => {
 
   describe("User Contacts Lifecycle:", () => {
 
-      it("Should create a user2")
+      /*it("Should create a user2")
 
       it("Should verify user2")
 
       it("Should login user1")
 
-      it("Should send a contact request to user2")
+      it("Should send a contact request to user2")*/
 
 
   });
