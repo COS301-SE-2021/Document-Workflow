@@ -1,10 +1,11 @@
 import { injectable } from "tsyringe";
 import encryption from "../crypto/encryption";
 import WorkflowHistoryRepository from "./WorkflowHistoryRepository";
-import { ObjectId } from "mongoose";
+import { Types } from "mongoose";
 import {Entry, ENTRY_TYPE, WorkflowHistory} from './WorkflowHistory';
-import {logger} from './../LoggingConfig';
+import {logger} from '../LoggingConfig';
 import bcrypt from "bcrypt";
+type ObjectId = Types.ObjectId;
 
 @injectable()
 export default class WorkflowHistoryService {
@@ -20,7 +21,7 @@ export default class WorkflowHistoryService {
      * @param workflowId
      * @return historyData A json object containing the id of the workflowHistory and hash generated for the first entry.
      */
-    async createWorkflowHistory(ownerEmail, workflowId):Promise<{ id: ObjectId; hash: String }>{
+    async createWorkflowHistory(ownerEmail, workflowId):Promise<{ id: ObjectId; hash: string }>{
         logger.info("Creating a new workflow history");
         const date = Date.now();
         const entry = new Entry();
@@ -41,15 +42,13 @@ export default class WorkflowHistoryService {
             entries: [JSON.stringify(entry)],
         });
 
-        const historyData = {
+        return {
             hash: entry.hash,
             id: await this.workflowHistoryRepository.saveWorkflowHistory(history)
         };
-
-        return historyData;
     }
 
-    async updateWorkflowHistory(historyId, user, eventType, currentPhase):Promise<String>{
+    async updateWorkflowHistory(historyId, user, eventType, currentPhase): Promise<string>{
         logger.info("Updating a workflow history, history id is: " + historyId);
         const workflowHistory = await this.workflowHistoryRepository.getWorkflowHistory(historyId);
         // @ts-ignore
