@@ -67,6 +67,7 @@ export class DocumentAddPage implements OnInit {
   template: boolean = false;
 
   showPhase: boolean[] = [];
+  contacts: string[] =[];
 
   controller: boolean;
   @ViewChild('viewer') viewerRef: ElementRef;
@@ -444,5 +445,17 @@ export class DocumentAddPage implements OnInit {
   removeTemplate(){
     this.workflowForm.removeControl('templateName');
     this.workflowForm.removeControl('templateDescription');
+  }
+
+   async getContacts(){
+    await this.userApiService.getContacts((response)=>{
+      if(response){
+        if (response.status === 'success') {
+          this.contacts = response.data.contacts;
+        } else {
+          this.userApiService.displayPopOver('Error', 'Failed to get users');
+        }
+      }
+    });
   }
 }
