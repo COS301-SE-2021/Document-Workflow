@@ -1,11 +1,13 @@
-import { ObjectId, Types } from "mongoose";
-import {CloudError, ServerError} from "../error/Error";
-import {AI, AIProps} from "./AI";
-import {Phase, PhaseProps} from "../phase/Phase";
+import { Types } from "mongoose";
+import { CloudError, ServerError } from "../error/Error";
+import { AI } from "./AI";
+import { Phase } from "../phase/Phase";
+import { IAI } from "./IAI";
+type ObjectId = Types.ObjectId;
 
 export default class AIRepository {
 
-    async saveAI(ai: AIProps): Promise<ObjectId> {
+    async saveAI(ai: IAI): Promise<ObjectId> {
         try {
             const newAI = new Phase(ai);
             await newAI.save();
