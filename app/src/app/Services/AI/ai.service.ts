@@ -63,18 +63,8 @@ export class AIService {
 
   loadDecisionTrees(response){
     console.log(response);
-    this.decisionTree = new DecisionTree(JSON.parse(response.data.consultantData));
-    console.log(this.decisionTree);
-    console.log(this.decisionTree.predict({
-      'Length': 36,
-      'ConsecutiveUnderscores': false,
-      'ContainsSemiColon': false,
-      'SignatureKeyword': false,
-      'ProjectNoKeyWord': false,
-      'DateKeyword': false,
-      'NameKeyword': false,
-      'WitnessKeyword': false
-    }));
+    this.decisionTreesData = response.data;
+    console.log(response.data);
   }
 
   categorizeDocument(extractedText: string){
@@ -84,15 +74,15 @@ export class AIService {
   }
 
   identifyActionAreas(text, documentType){
+    this.decisionTree = new DecisionTree(JSON.parse(this.decisionTreesData[documentType]));
     console.log("Extracting features for documnt of type: ", documentType)
       const lines = text.toLowerCase().split('\n');
-      console.log(lines);
       let actionAreas = [];
       for(const line of lines){
         const features = this.extractFeatures(line, documentType);
-        console.log(line);
-        console.log(features);
+        actionAreas.push([line, this.decisionTree.predict(line)]);
       }
+      console.log(actionAreas);
   }
 
   extractFeatures(text, documentType){
