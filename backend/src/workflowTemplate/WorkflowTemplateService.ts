@@ -1,14 +1,14 @@
-import {injectable} from "tsyringe";
+import { injectable } from "tsyringe";
 import WorkflowTemplateRepository from "./WorkflowTemplateRepository";
 import DocumentService from "../document/DocumentService";
 import UserService from "../user/UserService";
-import {Workflow} from "../workflow/Workflow";
-import {WorkflowTemplate, WorkflowTemplateProps} from "./WorkflowTemplate";
-import {PhaseProps} from "../phase/Phase";
-import {ObjectId} from "mongoose";
-import {RequestError} from "../error/Error";
+import { RequestError } from "../error/Error";
+import { WorkflowTemplate } from "./WorkflowTemplate";
+import { Types } from "mongoose";
+import { IPhase } from "../phase/IPhase";
+import { IUser } from "../user/IUser";
 
-
+type ObjectId = Types.ObjectId;
 
 @injectable()
 export default class WorkflowTemplateService{
@@ -27,9 +27,9 @@ export default class WorkflowTemplateService{
      * @param workflow
      * @param file
      * @param phases
-     * @param templateName
+     * @param template
      */
-    async createWorkflowTemplate(workflow, file: File, phases: PhaseProps[], template): Promise<ObjectId>{
+    async createWorkflowTemplate(workflow, file: File, phases: IPhase[], template): Promise<ObjectId>{
 
         template = JSON.parse(template);
         let newTemplate = new WorkflowTemplate({
@@ -56,6 +56,7 @@ export default class WorkflowTemplateService{
      * get name and description function. Since this function returns sensitive data (the document)
      * we must verify that this templateId belongs to teh requesting user.
      * @param templateId
+     * @param usr
      */
     async getWorkflowTemplateData(templateId, usr){
 
@@ -77,12 +78,11 @@ export default class WorkflowTemplateService{
      */
     async getWorkflowTemplateNameAndDescription(templateId){
         const template = await this.workflowTemplateRepository.findWorkflowTemplate(templateId);
-        const data = {templateName: template.templateName, templateDescription: template.templateDescription};
-        return data;
+        return {templateName: template.templateName, templateDescription: template.templateDescription};
     }
 
-    async deleteWorkflowTemplate(user, templateId) {
-        const usr = await this.userService.getUserById(user._id);
+    async deleteWorkflowTemplate(user: IUser, templateId) {
+        const usr: IUser = await this.userService.getUserById(user._id);
         if(!user.workflowTemplates.includes(templateId)){
             throw new RequestError("This template does not belong to you");
         }
