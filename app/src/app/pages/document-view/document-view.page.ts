@@ -25,6 +25,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   annotationManager: any;
   documentViewer: any;
   documentMetadata: any;
+  hash: string;
   annotationSubjects = ['Note', 'Rectangle', 'Squiggly', 'Underline', 'Highlight', 'Strikeout'];
 
   @Input('workflowStatus') workflowStatus:string;
@@ -66,6 +67,8 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
         this.documentMetadata = response.data.metadata;
         this.docName = this.documentMetadata.name;
         this.srcFileBase64 = response.data.filedata.Body.data;
+        this.hash = response.data.hash;
+        console.log("Hash: ", this.hash);
         const arr = new Uint8Array(response.data.filedata.Body.data);
 
         const blob = new Blob([arr], {type: 'application/pdf'});
@@ -105,19 +108,20 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
             info.putString('Producer', 'PDFTron PDFNet');
 
             // read title entry if it is present
-            itr = await info.find('Author');
+            itr = await info.find('Keywords');
             if (await itr.hasNext()) {
               const itrval = await itr.value();
               const oldstr = await itrval.getAsPDFText();
-              info.putText('Author', oldstr + ' - Modified');
+              info.putText('Keywords', oldstr + ' - ' + this.hash);
             } else {
-              info.putString('Author', 'Me, myself, and I');
+              info.putString('Keywords', this.hash);
             }
           } else {
             // Info dict is missing.
             info = await trailer.putDict('Info');
             info.putString('Producer', 'PDFTron PDFNet');
             info.putString('Title', 'My document');
+            info.putString('Keywords', this.hash);
           }
           const customDict = await info.putDict('My Direct Dict');
           customDict.putNumber('My Number', 100); 

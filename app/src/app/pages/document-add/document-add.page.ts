@@ -327,8 +327,10 @@ export class DocumentAddPage implements OnInit {
         doc1.initSecurityHandler();
         doc1.lock();
         const trailer = await doc1.getTrailer(); // Get the trailer
-        let itr = await trailer.find('Info');
-        console.log((await itr.value()).getAsPDFText());
+    
+        const metadata = await doc.getDocInfo();
+        console.log("METADATA: ");
+        console.log(await metadata.getKeywords());
 
         /*    */
         const txt = await PDFNet.TextExtractor.create();
