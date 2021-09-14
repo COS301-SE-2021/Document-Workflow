@@ -1,16 +1,18 @@
 import { injectable } from "tsyringe";
 import DocumentRepository from "./DocumentRepository";
-import { Document, DocumentProps } from "./Document";
+import { Document } from "./Document";
 import {RequestError, ServerError} from "../error/Error";
 import fs from 'fs';
-import { ObjectId } from "mongoose";
+import { Types } from "mongoose";
+import { IDocument } from "./IDocument";
+type ObjectId = Types.ObjectId;
 
 @injectable()
 export default class DocumentService {
 
     constructor(private documentRepository: DocumentRepository) {}
 
-    async getDocuments(): Promise<DocumentProps[]> {
+    async getDocuments(): Promise<IDocument[]> {
         try{
             return await this.documentRepository.getDocuments();
         }catch(err){
@@ -26,6 +28,7 @@ export default class DocumentService {
         return await this.documentRepository.getDocumentFromS3('templateFiles/' + workflowTemplateId + '/' +filename);
     }
 
+    //this is dangerous
     async deleteTemplateDocumentFromCloud(workflowTemplateId){
         await this.deleteTemplateDocumentFromCloud("templateFiles/" + workflowTemplateId);
     }
