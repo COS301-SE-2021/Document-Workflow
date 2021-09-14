@@ -1,7 +1,9 @@
-import { Document, DocumentProps } from "./Document";
+import { Document } from "./Document";
 import * as AWS from 'aws-sdk';
-import { ObjectId, Types } from "mongoose";
+import { Types } from "mongoose";
 import { CloudError, DatabaseError, ServerError } from "../error/Error";
+import { IDocument } from "./IDocument";
+type ObjectId = Types.ObjectId;
 
 const s3 = new AWS.S3({
     region: process.env.AWS_REGION,
@@ -41,7 +43,7 @@ export default class DocumentRepository {
        To update a document/create a new phase in the S3 bucket see the 'putDocument' function
      */
     //TODO: when saving documents to s3, use promises instead of callbacks
-    async saveDocument(doc: DocumentProps, fileData: Buffer, fileName: String): Promise<ObjectId> {
+    async saveDocument(doc: IDocument, fileData: Buffer, fileName: String): Promise<ObjectId> {
         //console.log(file);
         try{
             const newDoc = new Document(doc);
@@ -107,7 +109,7 @@ export default class DocumentRepository {
         }
     }
 
-    async getDocument(id: Types.ObjectId): Promise<DocumentProps> {
+    async getDocument(id: Types.ObjectId): Promise<IDocument> {
         try {
             return await Document.findById(id);
         }
@@ -136,7 +138,7 @@ export default class DocumentRepository {
         }
     }
 
-    async getDocuments(): Promise<DocumentProps[]> {
+    async getDocuments(): Promise<IDocument[]> {
         try {
             return await Document.find();
         }
