@@ -4,7 +4,7 @@ const fs = require('fs');
 const lines = fs.readFileSync('./sampleLines.txt',{flag:'r'} ).toString().split(/\r\n|\r|\n/);
 const labels = fs.readFileSync('./labels.txt',{flag:'r'}).toString().split(/\r\n|\r|\n/);
 const TRAIN_DATA_FRACTION = 0.7;
-const outputFileName = './ConsultDecisionTree.json';
+const outputFileName = './CovidDecisionTree.json';
 
 let data = [];
 

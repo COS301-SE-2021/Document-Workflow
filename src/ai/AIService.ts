@@ -7,7 +7,7 @@ import {logger} from "../LoggingConfig";
 export class AIService{
     constructor() {
     }
-    classifierFilePath = 'src/ai/classifier.json';
+    classifierFilePath = 'src/ai/ClassifierData/DocumentClassifier.json';
     decisionTreesPath = 'src/ai/decisionTreesData'; //TODO: perhaps move these paths
     retrieveClassifierData(){
         const classifierData = fs.readFileSync(this.classifierFilePath).toString();

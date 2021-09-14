@@ -336,7 +336,8 @@ export class DocumentAddPage implements OnInit {
           extractedText += await txt.getAsText();
         }
         console.log("Text successfully extracted");
-        this.aiService.categorizeDocument(extractedText);
+        const docType = this.aiService.categorizeDocument(extractedText);
+        this.aiService.identifyActionAreas(extractedText, docType);
       });
 
     });
