@@ -82,6 +82,8 @@ export class DocumentAddPage implements OnInit {
     private workflowService: WorkFlowService
   ) {}
 
+  //  [verifierEmail.verifyEmail.bind(verifierEmail)]
+
   async ngOnInit() {
     if (Cookies.get('token') === undefined) {
       await this.router.navigate(['/login']);
@@ -120,7 +122,7 @@ export class DocumentAddPage implements OnInit {
     this.addName = false;
     this.controller = false;
 
-    const verifierEmail = new VerifyEmail(this.userApiService);
+    // const verifierEmail = new VerifyEmail(this.userApiService);
 
     this.workflowForm = this.fb.group({
       workflowName: ['', [Validators.required]],
@@ -136,7 +138,7 @@ export class DocumentAddPage implements OnInit {
                 Validators.email,
                 Validators.required,
                 Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")
-              ], [verifierEmail.verifyEmail.bind(verifierEmail)] ),
+              ], ),
               permission: new FormControl('', [Validators.required]),
               accepted: new FormControl('false', [Validators.required]),
             }),
@@ -214,6 +216,8 @@ export class DocumentAddPage implements OnInit {
     control.setValue(str);
   }
 
+//     const verifierEmail = new VerifyEmail(this.userApiService);
+  // [verifierEmail.verifyEmail.bind(verifierEmail)]
   createPhase(): FormGroup {
     const verifierEmail = new VerifyEmail(this.userApiService);
     return this.fb.group({
@@ -225,7 +229,7 @@ export class DocumentAddPage implements OnInit {
             Validators.email,
             Validators.required,
             , Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")
-          ],[verifierEmail.verifyEmail.bind(verifierEmail)] ),
+          ], ),
           permission: new FormControl('', [Validators.required]),
           accepted: new FormControl('false', [Validators.required]),
         } ),
@@ -320,7 +324,7 @@ export class DocumentAddPage implements OnInit {
         /*Testing if we can retrive hash stored in a document*/
         const doc1 = await doc.getSDFDoc();
         doc1.initSecurityHandler();
-        doc1.lock();  
+        doc1.lock();
         const trailer = await doc1.getTrailer(); // Get the trailer
         let itr = await trailer.find('Info');
         console.log((await itr.value()).getAsPDFText());
