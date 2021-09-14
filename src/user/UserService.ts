@@ -358,14 +358,18 @@ export default class UserService {
         //check if contact exists:
         const contact: UserDoc = await this.userRepository.findUser({email: contactEmail});
         if(!contact) throw new RequestError("contact doesn't exist");
-
+        console.error(usr + " " + contact);
         //find contact in requests array:
         const removed = UserService.removeFromArray(usr.contactRequests, contactEmail);
+        console.error(removed);
         if(removed){
             //add to contacts array:
             const added = UserService.addToArrayIfNotPresent(usr.contacts, contactEmail);
-            if(added){
+            const addedToContact = UserService.addToArrayIfNotPresent(contact.contacts, user.email);
+            console.log(added + " " + addedToContact)
+            if(added && addedToContact){
                 await this.userRepository.updateUser(usr);
+                await this.userRepository.updateUser(contact);
                 return usr._id;
             }else{
                 throw new ServerError("Couldn't accept contact request");

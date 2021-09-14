@@ -74,7 +74,7 @@
       <ion-slides [options]="{slidesPerView: '3'}">
         <ion-grid>
           <ion-row>
-            <ion-slide *ngFor="let pending of pendingContacts;">
+            <ion-slide *ngFor="let pending of blockedContacts;">
               <ion-card>
                 <ion-item lines="none">
                   {{pending}}

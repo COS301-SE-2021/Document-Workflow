@@ -312,7 +312,7 @@ export class UserAPIService {
 
   unblockUser(contactID, callback) {
     const formData = new FormData();
-    formData.append('UnblockedUserId', contactID);
+    formData.append('contactemail', contactID);
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: 'Bearer ' + token,
@@ -333,7 +333,7 @@ export class UserAPIService {
 
   blockUser(contactID, callback) {
     const formData = new FormData();
-    formData.append('BlockedUserId', contactID);
+    formData.append('contactemail', contactID);
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: 'Bearer ' + token,
