@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { injectable } from "tsyringe";
 import sanitize from "../security/Sanitize";
-import {RequestError, ServerError} from "../error/Error";
+import { RequestError, ServerError } from "../error/Error";
 import { handleErrors } from "../error/ErrorHandler";
 import Authenticator from "../security/Authenticate";
-import sanitizeRequest from "./../security/Sanitize";
-import {AIService} from "./AIService";
+import sanitizeRequest from "../security/Sanitize";
+import { AIService } from "./AIService";
 
 @injectable()
 export default class AIController{
