@@ -5,6 +5,7 @@ import { Platform } from '@ionic/angular';
 import * as Cookies from 'js-cookie';
 import { UserAPIService } from 'src/app/Services/User/user-api.service';
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface contact{
   email: string;
 }
@@ -73,7 +74,7 @@ export class ContactsPage implements OnInit {
       console.log(response);
       if (response.status === 'success') {
         this.pendingContacts = response.data.requests;
-        console.log(this.pendingContacts)
+        console.log(this.pendingContacts);
       }else {
         this.userApiService.displayPopOver('Error', 'Failed to get pending users');
       }
@@ -104,30 +105,30 @@ export class ContactsPage implements OnInit {
   async deleteContact(contact) {
     await this.userApiService.deleteContact(contact, (response)=>{
       if(response.status === 'success'){
-        this.userApiService.displayPopOver('Success','deleted the user')
+        this.userApiService.displayPopOver('Success','deleted the user');
       }else{
         this.userApiService.displayPopOver('Error', 'Failed to delete the user');
       }
 
-    })
+    });
   }
 
   async rejectContactRequest(contact){
     console.log(contact);
     await this.userApiService.rejectContactRequest(contact, (response)=>{
       if(response.status === 'success'){
-        this.userApiService.displayPopOver('Success','rejected the user')
+        this.userApiService.displayPopOver('Success','rejected the user');
       }else{
         this.userApiService.displayPopOver('Error', 'Failed to reject the users');
       }
-    })
+    });
   }
 
   async acceptContactRequest(contact) {
-    console.log(contact)
+    console.log(contact);
     await this.userApiService.acceptContactRequest(contact, (response) => {
       if(response.status === 'success'){
-        this.userApiService.displayPopOver('Success','Added the user')
+        this.userApiService.displayPopOver('Success','Added the user');
       }else{
         this.userApiService.displayPopOver('Error', 'Failed to add users');
       }
@@ -143,7 +144,7 @@ export class ContactsPage implements OnInit {
           this.userApiService.displayPopOver('Failed','To block the user');
         }
       }
-    })
+    });
   }
 
   async unBlockUser(contact){
@@ -153,11 +154,11 @@ export class ContactsPage implements OnInit {
       }else{
         this.userApiService.displayPopOver('Failed','To unblock the user');
       }
-    })
+    });
   }
 
   async sendContactRequest(contact){
-    console.log(contact)
+    console.log(contact);
     await this.userApiService.sendContactRequest(contact.contact, (response)=>{
         if(response){
           if(response.status === 'success'){
@@ -166,7 +167,7 @@ export class ContactsPage implements OnInit {
             this.userApiService.displayPopOver('Failed','To send friend request');
           }
         }
-    })
+    });
   }
 
   submit(){

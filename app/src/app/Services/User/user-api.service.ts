@@ -262,12 +262,12 @@ export class UserAPIService {
         (data) => {
           console.log(data);
           callback(data);
-        },
+      },
         async (error) => {
           await this.displayPopOver('Logout error', error.error);
-        }
-      );
-  }
+      }
+    );
+}
 
   getContactRequests(callback) {
     const formData = new FormData();
@@ -282,12 +282,12 @@ export class UserAPIService {
       .subscribe(
         (data) => {
           callback(data);
-        },
+      },
         async (error) => {
           await this.displayPopOver('Logout error', error.error);
-        }
-      );
-  }
+      }
+    );
+}
 
   acceptContactRequest(contactid, callback) {
     const formData = new FormData();
@@ -303,12 +303,12 @@ export class UserAPIService {
       .subscribe(
         (data) => {
           callback(data);
-        },
+      },
         async (error) => {
           await this.displayPopOver('Logout error', error.error);
-        }
-      );
-  }
+      }
+    );
+}
 
   unblockUser(contactID, callback) {
     const formData = new FormData();
@@ -323,7 +323,7 @@ export class UserAPIService {
       })
       .subscribe(
         (data) => {
-          callback(data);
+            callback(data);
         },
         async (error) => {
           await this.displayPopOver('Logout error', error.error);

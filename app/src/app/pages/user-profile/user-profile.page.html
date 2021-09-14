@@ -18,6 +18,15 @@
 </ion-header>
 
 <ion-content *ngIf="ready">
+<!--  Adding Profile pic-->
+  <ion-grid class="Profile-pic">
+    <div align="center">
+      <ion-avatar>
+        <img src="assets/icon/Pp_avatar.png"/>
+      </ion-avatar>
+    </div>
+  </ion-grid>
+
   <form [formGroup]="userForm" (ngSubmit)="submit()">
     <ion-grid>
       <ion-row>
@@ -75,6 +84,7 @@
     <ion-button hide="true" expand="block" color="primary" fill="outline" [disabled]="!userForm.valid" type="submit">Save your edits
     </ion-button>
   </form>
+
 </ion-content>
 
 <ion-footer>

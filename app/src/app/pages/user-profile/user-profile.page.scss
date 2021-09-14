@@ -1,0 +1,23 @@
+ion-content {
+  * {
+    //font-family: lato;
+  }
+  .Profile-pic {
+    height: 35vh;
+    width: 120%;
+    background: linear-gradient(45deg, var(--ion-color-tertiary) 50%, var(--ion-color-primary) 100%);
+    box-shadow: 0 5px 13px var(--ion-color-light);
+    border-radius: 0 0 50% 50%;
+    margin-left: -20vh;
+    margin-top: -5px;
+    div {
+      transform: translateY(2vh);
+      ion-avatar {
+        width: 25vh;
+        height: 25vh;
+        background: var(--ion-color-white);
+        margin-bottom: 5px;
+        border: 7px solid var(--ion-color-primary);
+      }
+    }
+  }}
