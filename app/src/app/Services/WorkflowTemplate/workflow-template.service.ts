@@ -40,7 +40,7 @@ export interface templatePhaseUser{
   providedIn: 'root',
 })
 export class WorkflowTemplateService {
-  // static url = 'http://localhost:3000/api'; //TODO: change this url
+  
   constructor(
     private http: HttpClient,
     public loadingCtrl: LoadingController,
@@ -62,6 +62,41 @@ export class WorkflowTemplateService {
     (await poper).onDidDismiss().then(async (data) => {
       return await data;
     });
+  }
+
+  async deleteWorkflowTemplateService(workflowTemplateId, callback){
+    const formData = new FormData();
+    formData.append('templateId', workflowTemplateId);
+
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+
+    let url =
+      config.url + '/workflowTemplates/delete';
+    this.http.post(url, formData, { headers: httpHeaders }).subscribe(
+      async (data) => {
+        if (data) {
+          callback(data);
+        } else {
+          this.dismissLoading();
+          callback({ status: 'error', message: 'Cannot connect to Server' });
+        }
+      },
+      async (error) => {
+        this.dismissLoading();
+        if (error.statusText === 'Unknown Error') {
+          await this.displayPopOver(
+            'Login Error',
+            'Could not connect to the Document Workflow Server at this time. Please try again later.'
+          );
+        } else {
+          await this.displayPopOver('Error creating new Workflow', error.error);
+        }
+      }
+    );
+
   }
 
   displayLoading() {
