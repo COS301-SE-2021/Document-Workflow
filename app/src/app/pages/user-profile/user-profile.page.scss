@@ -20,4 +20,43 @@ ion-content {
         border: 7px solid var(--ion-color-primary);
       }
     }
-  }}
+  }
+//Styling form
+  ion-row
+  {
+    margin-top: 7px;
+    ion-col
+    {
+      ion-item
+      {
+        width: 77%;
+        margin: auto;
+        border: 3px solid var(--ion-color-light);
+        box-shadow: 2px var(--ion-color-dark);
+        border-radius: 8px;
+        border-spacing: inherit;
+        ion-label
+        {
+          font-size: 0.8rem;
+          font-weight: bold;
+          ion-input
+          {
+            font-size: 2.4rem;
+            font-weight: bold;
+            align-items: normal;
+            //ion-button
+            //{
+            //  width: 3px;
+            //  color: #2fdf75;
+            //}
+          }
+        }
+      }
+    }
+  }
+  ion-button
+  {
+    //width: 100rem;
+    //align-items: center;
+  }
+}

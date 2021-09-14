@@ -28,63 +28,56 @@
   </ion-grid>
 
   <form [formGroup]="userForm" (ngSubmit)="submit()">
-    <ion-grid>
-      <ion-row>
 
-        <ion-col size="12" style="justify-content: center; display: block;  text-align: center">
-          <div height="150px" width="150px">
-           <img [src]="srcFile" height="150px" width='200px'>
-          </div>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size='6'>
-          <ion-item>
-            <ion-label position="stacked">First name:</ion-label>
+  <ion-row class="ion-padding-horizontal">
+    <ion-col size="6">
+      <ion-item class="ion-text-center">
+            <ion-label style="color: grey">First name:</ion-label>
             <ion-input inputmode="text" formControlName="firstName"></ion-input>
-          </ion-item>
-        </ion-col>
-        <ion-col size='6'>
-          <ion-item>
-            <ion-label position="stacked">Last name:</ion-label>
-            <ion-input inputmode="text" formControlName="lastName"></ion-input>
-          </ion-item>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size='4'>
-          <ion-item>
-            <ion-label position="stacked">Initials:</ion-label>
-            <ion-input inputmode="text" formControlName="initials"></ion-input>
-          </ion-item>
-        </ion-col>
-        <ion-col size='8'>
-          <ion-item>
-            <ion-label position="stacked">Email:</ion-label>
-            <ion-input inputmode="text" formControlName="email"></ion-input>
-          </ion-item>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col size='6'>
-          <ion-item>
-            <ion-label position="stacked">Password</ion-label>
-            <ion-input type="password" formControlName="password"></ion-input>
-          </ion-item>
-        </ion-col>
-        <ion-col size='6'>
-          <ion-item>
-            <ion-label position="stacked">Confirm password</ion-label>
-            <ion-input type="password" formControlName="confirmPassword"></ion-input>
-          </ion-item>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+      </ion-item>
+    </ion-col>
+    <ion-col size="6">
+      <ion-item class="ion-text-center">
+          <ion-label style="color: grey">Last name:</ion-label>
+          <ion-input inputmode="text" formControlName="lastName"></ion-input>
+        </ion-item>
+    </ion-col>
+  </ion-row>
+
+    <ion-row class="ion-padding-horizontal">
+      <ion-col size="6">
+        <ion-item class="ion-text-center">
+          <ion-label style="color: grey">Initials:</ion-label>
+          <ion-input inputmode="text" formControlName="initials"></ion-input>
+        </ion-item>
+      </ion-col>
+      <ion-col size="6">
+        <ion-item class="ion-text-center">
+          <ion-label style="color: grey">Email:</ion-label>
+          <ion-input inputmode="text" formControlName="email"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="ion-padding-horizontal">
+      <ion-col size="6">
+        <ion-item class="ion-text-center">
+          <ion-label style="color: grey">Password</ion-label>
+          <ion-input type="password" formControlName="password"></ion-input>
+        </ion-item>
+      </ion-col>
+      <ion-col size="6">
+        <ion-item class="ion-text-center">
+          <ion-label style="color: grey">Confirm password</ion-label>
+          <ion-input type="password" formControlName="confirmPassword"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
 
     <ion-button hide="true" expand="block" color="primary" fill="outline" [disabled]="!userForm.valid" type="submit">Save your edits
     </ion-button>
-  </form>
 
+  </form>
 </ion-content>
 
 <ion-footer>
