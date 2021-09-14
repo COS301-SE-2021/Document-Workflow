@@ -1,14 +1,14 @@
 import { Router } from "express";
 import { injectable } from "tsyringe";
 import UserService from "./UserService";
-import { UserProps } from "./User";
 import sanitize from "../security/Sanitize";
 import { RequestError, ServerError } from "../error/Error";
 import { handleErrors } from "../error/ErrorHandler";
 import Authenticator from "../security/Authenticate";
-import sanitizeRequest from "./../security/Sanitize";
-import { ObjectId } from "mongoose";
-
+import sanitizeRequest from "../security/Sanitize";
+import { Types } from "mongoose";
+import { IUser } from "./IUser";
+type ObjectId = Types.ObjectId;
 
 @injectable()
 export default class UserController{
@@ -20,7 +20,7 @@ export default class UserController{
 
     auth = this.authenticationService.Authenticate;
 
-    private async getUsersRoute(): Promise<UserProps[]> {
+    private async getUsersRoute(): Promise<IUser[]> {
         try{
             return await this.userService.getAllUsers();
         } catch(err) {
@@ -28,7 +28,7 @@ export default class UserController{
         }
     }
 
-    private async getUserByIdRoute(request): Promise<UserProps> {
+    private async getUserByIdRoute(request): Promise<IUser> {
         try{
             return await this.userService.getUser(request);
         }catch(err) {
@@ -36,7 +36,7 @@ export default class UserController{
         }
     }
 
-    private async getUserByEmailRoute(request): Promise<UserProps> {
+    private async getUserByEmailRoute(request): Promise<IUser> {
         try{
             return await this.userService.getUserByEmail(request);
         }catch(err) {
@@ -44,7 +44,7 @@ export default class UserController{
         }
     }
 
-    private async registerUserRoute(request): Promise<UserProps>{
+    private async registerUserRoute(request): Promise<IUser>{
         try{
             return await this.userService.registerUser(request)
         }
@@ -53,7 +53,7 @@ export default class UserController{
         }
     }
 
-    private async verifyUserRoute(request): Promise<UserProps>{
+    private async verifyUserRoute(request): Promise<IUser>{
         try {
             return await this.userService.verifyUser(request);
         }
@@ -135,7 +135,7 @@ export default class UserController{
         }
     }
 
-    private async logoutUserRoute(req): Promise<Boolean> {
+    /*private async logoutUserRoute(req): Promise<Boolean> {
         try{
             const { headers } = req;
             if(headers.authorization){
@@ -147,9 +147,9 @@ export default class UserController{
         catch(err){
             throw new ServerError(err.toString());
         }
-    }
+    }*/
 
-    private async deleteUserRoute(request): Promise<UserProps> {
+    private async deleteUserRoute(request): Promise<IUser> {
         try{
             return await this.userService.deleteUser(request);
         }catch(err){
@@ -157,7 +157,7 @@ export default class UserController{
         }
     }
 
-    private async updateUserRoute(request): Promise<UserProps> {
+    private async updateUserRoute(request): Promise<IUser> {
         try{
             return await this.userService.updateUser(request);
         }
@@ -311,7 +311,7 @@ export default class UserController{
             }
         });
 
-        this.router.delete("/logout", this.auth, async (req,res) => {
+        /*this.router.delete("/logout", this.auth, async (req,res) => {
             try{
                 if(await this.logoutUserRoute(req)) res.status(200).json({status: "success", data: {}, message: "Successfully logged out"});
                 else res.status(400).send("User could not be logged out");
@@ -319,7 +319,7 @@ export default class UserController{
             catch(err){
                 try{await handleErrors(err,res);}catch{}
             }
-        });
+        });*/
 
         this.router.post("/register", async (req,res) => {
             try {
@@ -352,6 +352,9 @@ export default class UserController{
         });
 
         this.router.delete("", this.authenticationService.Authenticate, async (req, res) => {
+            if (!req.params.id) {
+                throw new RequestError("Missing Parameter");
+            }
             try {
                 const user = await this.deleteUserRoute(req);
                 if(user) res.status(203).json(user);
