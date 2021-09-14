@@ -15,12 +15,10 @@ const onError = error => {
         console.error("port is already in use");
 };
 
-const onListen = () => {
+const onListen = async () => {
     console.log("Listening on port " + port);
     if(process.env.UNIT_TEST_MODE !== 'true'){
-        Database.get().then(()=>{
-            console.log("Connection Established to MongoDB server");
-        });
+        await Database.get();
     }else{
         console.log("Application started in test mode");
     }
