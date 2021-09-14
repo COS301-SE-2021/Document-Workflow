@@ -1,6 +1,5 @@
 import { injectable } from "tsyringe";
 import UserRepository from "./UserRepository";
-import { PrivilegeLevel, UserDoc, UserProps } from "./User";
 import nodemailer from 'nodemailer';
 import jwt, { Jwt } from "jsonwebtoken";
 import { AuthenticationError, RequestError, ServerError } from "../error/Error";
@@ -8,19 +7,21 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { isStrongPassword, isEmail } from "validator";
 import {logger} from "../LoggingConfig";
-import Database from "../Database";
-import { ObjectId } from "mongoose";
+import { Types } from "mongoose";
+import { IUser, privilegeLevel } from "./IUser";
+import { Blacklist } from "../security/Blacklist";
+type ObjectId = Types.ObjectId;
 
 @injectable()
 export default class UserService {
-    constructor(private userRepository: UserRepository) {}
-    async authenticateUser(password, usr: UserProps): Promise<String> {
-        const result = await bcrypt.compare(password, await usr.password);
+    constructor(private userRepository: UserRepository) {
+
+    }
+
+    async authenticateUser(password, usr: IUser): Promise<String> {
+        const result = await bcrypt.compare(password, usr.password);
         if(result){
             return this.generateToken(usr.email, usr._id, usr.privilegeLevel);
-            /*const user: UserDoc = await this.userRepository.findUser(usr.email);
-            user.tokens.push(token);
-            await this.userRepository.updateUser(user);*/
         }else{
             throw new AuthenticationError("Password or Email is incorrect");
         }
@@ -32,7 +33,7 @@ export default class UserService {
                 return hash;
             })
             .catch(err => {
-                throw new Error(err);
+                throw new Error(err.message);
             });
     }
 
@@ -40,38 +41,33 @@ export default class UserService {
         return jwt.sign({id: id, email: email, privilege: privilege}, process.env.SECRET, {expiresIn: "1h"});
     }
 
-    //TODO: check that its safe to save a user the way we are saving them here. We arent creating an entirely new
-    //User since we do pass through a valid id, but should probably use an updateOne function in the
-    //User repository to be safe.
-    async updateUserWorkflows(user){
-        await this.userRepository.saveUser(user);
+    async updateUserWorkflows(user: IUser){
+        await this.userRepository.updateUser(user);
     }
 
-    async getUser(request): Promise<UserProps> {
+    async getUser(request): Promise<IUser> {
         if(request === undefined){
             throw new RequestError("Search criteria required");
         }
         try {
             return await this.userRepository.findUser(request.params);
         } catch (err) {
-            console.error(err);
-            throw new RequestError("Could not get user");
+            throw err;
         }
     }
 
-    async getUserById(id): Promise<UserProps> {
+    async getUserById(id): Promise<IUser> {
         if(id === undefined){
             throw new Error("Search criteria required");
         }
         try {
             return await this.userRepository.findUser({_id: id});
         } catch (err) {
-            console.error(err);
-            throw new RequestError("Could not get user");
+            throw err;
         }
     }
 
-    async getUserByEmail(email): Promise<UserProps> {
+    async getUserByEmail(email): Promise<IUser> {
         if(email === undefined){
             throw new Error("Search criteria required");
         }
@@ -79,20 +75,20 @@ export default class UserService {
             return await this.userRepository.findUser({email: email});
         } catch (err) {
             console.error(err);
-            throw new RequestError("Could not get user");
+            throw err;
         }
     }
 
-    async getAllUsers(): Promise<UserProps[]> {
+    async getAllUsers(): Promise<IUser[]> {
         try {
             return await this.userRepository.findUsers({});
         } catch (err) {
             console.error(err);
-            throw new RequestError("Could not get users");
+            throw err;
         }
     }
 
-    async registerUser(req): Promise<UserProps> {
+    async registerUser(req): Promise<IUser> {
         if (req.body.length === 0 || !req.body || !req.files.signature.data) {
             throw new RequestError("Missing required information to register user");
         }
@@ -114,7 +110,8 @@ export default class UserService {
             throw new RequestError("Password is not strong enough. Ensure that it is at least 8 characters long with one uppercase character, lowercase character, number and special character");
         }
 
-        const usr: UserProps = req.body;
+        const usr: IUser = req.body;
+
         usr.signature = req.files.signature.data;
         usr.validateCode = crypto.randomBytes(64).toString('hex');
         usr.password = await this.getHashedPassword(usr.password);
@@ -125,7 +122,7 @@ export default class UserService {
         //const user: UserProps = await this.userRepository.postUser(usr);
         //const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
         //usr.tokens = [token];
-        const user: UserProps = await this.userRepository.saveUser(usr);
+        const user: IUser = await this.userRepository.saveUser(usr);
         //const response = await this.userRepository.putUser(usr);
         if (user) {
             //logger.info(usr); It seems as though the usr object gets changed after it is saved to the database
@@ -133,15 +130,11 @@ export default class UserService {
             await this.sendVerificationEmail(req.body.email, tempValidateCode);//,
             return user;
             try {
-                const usr: UserProps = req.body;
+                const usr: IUser = req.body;
                 usr.signature = req.files.signature.data;
                 usr.validateCode = crypto.randomBytes(64).toString('hex');
                 usr.password = await this.getHashedPassword(usr.password);
-
-                /*const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
-                usr.tokens = [token];*/
-
-                const user: UserProps = await this.userRepository.saveUser(usr);
+                const user: IUser = await this.userRepository.saveUser(usr);
                 if (user) {
                     await this.sendVerificationEmail(usr.email, usr.validateCode)//,
                     return user;
@@ -204,6 +197,7 @@ export default class UserService {
         });
     }
 
+    //returns jwt string for authentication
     async loginUser(email, password): Promise<String> {
 
         const user = await this.userRepository.findUser({email: email});
@@ -221,9 +215,9 @@ export default class UserService {
         }
     }
 
-    async logoutUser(token: Jwt): Promise<Boolean> {
+    async logoutUser(token: string): Promise<void> {
         try {
-            return await Database.addToBlacklist(token);
+            await Blacklist.addToBlacklist(token);
         }
         catch(err){
             console.error(err);
@@ -231,10 +225,7 @@ export default class UserService {
         }
     }
 
-    async deleteUser(req): Promise<UserProps> {
-        if (!req.params.id) {
-            throw new RequestError("Missing Parameter");
-        }
+    async deleteUser(req): Promise<IUser> {
         if(!await this.userRepository.findUser(req.params.id)){
             throw new RequestError("User does not exist");
         }
@@ -245,7 +236,6 @@ export default class UserService {
             console.error(err);
             throw new RequestError("Could not remove user");
         }
-
     }
 
     encryptSignature(buffer){
@@ -260,19 +250,12 @@ export default class UserService {
         return result;
     }
 
-    async getUserDetails(req) {
+    async getUserDetails(email: string): Promise<IUser> {
         try{
-            let user = await this.userRepository.findUser({email: req.user.email});
-            const data = {
-                name: user.name,
-                surname: user.surname,
-                initials: user.initials,
-                email: user.email,
-                signature:user.signature.toString()
-                //ownedWorkflows: user.ownedWorkflows,
-                //workflows: user.workflows
-            };
-            return {status: "success", data: data, message:""};
+            const user: IUser = await this.userRepository.findUser({email: email});
+            if(user)
+                return user;
+            else return null;
         }
         catch(err){
             console.log(err);
@@ -295,7 +278,7 @@ export default class UserService {
     }
 
     //too generic, dangerous for elevating user privilege
-    async updateUser(req): Promise<UserProps> {
+    async updateUser(req): Promise<IUser> {
         if(!req.body || !req.params.id){
             throw new RequestError("Missing Parameters");
         }
@@ -335,9 +318,9 @@ export default class UserService {
 
     async blockUser(contactEmail: string, user): Promise<ObjectId>{
         //check if email of contact exists:
-        const contact: UserDoc = await this.userRepository.findUser({email: contactEmail});
+        const contact: IUser = await this.userRepository.findUser({email: contactEmail});
         if(contact){
-            const currentUser: UserDoc = await this.userRepository.findUser({_id: user._id});
+            const currentUser: IUser = await this.userRepository.findUser({_id: user._id});
             //check if they're already a contact
             if(currentUser.blockedList.indexOf(contactEmail) != -1){
                 throw new RequestError("This contact is already blocked by this user");
@@ -352,9 +335,9 @@ export default class UserService {
 
     async unblockUser(contactEmail: string, user): Promise<ObjectId>{
         //check if email of contact exists:
-        const contact: UserDoc = await this.userRepository.findUser({email: contactEmail});
+        const contact: IUser = await this.userRepository.findUser({email: contactEmail});
         if(contact){
-            const currentUser: UserDoc = await this.userRepository.findUser({_id: user._id});
+            const currentUser: IUser = await this.userRepository.findUser({_id: user._id});
             const indexOfRemovedEmail = currentUser.blockedList.indexOf(contactEmail);
             if(indexOfRemovedEmail != -1){
                 currentUser.blockedList.splice(indexOfRemovedEmail, 1);
@@ -370,9 +353,9 @@ export default class UserService {
 
     async acceptContactRequest(contactEmail: string, user): Promise<ObjectId>{
         //get User
-        const usr: UserDoc = await this.userRepository.findUser({email: user.email});
+        const usr: IUser = await this.userRepository.findUser({email: user.email});
         //check if contact exists:
-        const contact: UserDoc = await this.userRepository.findUser({email: contactEmail});
+        const contact: IUser = await this.userRepository.findUser({email: contactEmail});
         if(!contact) throw new RequestError("contact doesn't exist");
 
         //find contact in requests array:
@@ -394,7 +377,7 @@ export default class UserService {
     async sendContactRequest(recipientEmail, user): Promise<ObjectId>{
         //check if email of contact exists:
         //add MY email to Contact's contact requests
-        const recipient: UserDoc = await this.userRepository.findUser({email: recipientEmail});
+        const recipient: IUser = await this.userRepository.findUser({email: recipientEmail});
         if(recipient){
             const index = recipient.blockedList.indexOf(user.email);
             if(index != -1){
@@ -411,9 +394,9 @@ export default class UserService {
 
     async rejectContactRequest(contactEmail: string, user): Promise<ObjectId>{
         //check if email of contact exists:
-        const contact: UserDoc = await this.userRepository.findUser({email: contactEmail});
+        const contact: IUser = await this.userRepository.findUser({email: contactEmail});
         if(contact){
-            const currentUser: UserDoc = await this.userRepository.findUser({_id: user._id});
+            const currentUser: IUser = await this.userRepository.findUser({_id: user._id});
             const indexOfRemovedEmail = currentUser.contactRequests.indexOf(contactEmail);
             if(indexOfRemovedEmail != -1){
                 currentUser.contactRequests.splice(indexOfRemovedEmail, 1);
@@ -429,9 +412,9 @@ export default class UserService {
 
     async deleteContact(contactEmail: string, user): Promise<ObjectId>{
         //check if email of contact exists:
-        const contact: UserDoc = await this.userRepository.findUser({email: contactEmail});
+        const contact: IUser = await this.userRepository.findUser({email: contactEmail});
         if(contact){
-            const currentUser: UserDoc = await this.userRepository.findUser({_id: user._id});
+            const currentUser: IUser = await this.userRepository.findUser({_id: user._id});
             const indexOfRemovedEmail = currentUser.contacts.indexOf(contactEmail);
             if(indexOfRemovedEmail != -1){
                 currentUser.contacts.splice(indexOfRemovedEmail, 1);
@@ -447,10 +430,10 @@ export default class UserService {
 
     async addContact(contactEmail: string, user): Promise<ObjectId> {
         //check if email of contact exists:
-        if(user.privilegeLevel != PrivilegeLevel.ADMIN){ throw new AuthenticationError("Unauthorized")}
-        const contact: UserDoc = await this.userRepository.findUser({email: contactEmail});
+        if(user.privilegeLevel != privilegeLevel.ADMIN){ throw new AuthenticationError("Unauthorized")}
+        const contact: IUser = await this.userRepository.findUser({email: contactEmail});
         if(contact){
-            const currentUser: UserDoc = await this.userRepository.findUser({_id: user._id});
+            const currentUser: IUser = await this.userRepository.findUser({_id: user._id});
             //check if they're already a contact
             if(currentUser.contacts.indexOf(contactEmail) != -1){
                 throw new RequestError("This contact is already a contact of this user");
