@@ -2,7 +2,6 @@ import { injectable } from "tsyringe";
 import * as fs from 'fs';
 import {logger} from "../LoggingConfig";
 
-
 @injectable()
 export class AIService{
     constructor() {
