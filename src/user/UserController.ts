@@ -120,6 +120,7 @@ export default class UserController{
     }
     
     private async acceptContactRequestRoute(req){
+        console.log(req);
         if(!req.body.contactemail)
             throw new RequestError("Missing contactEmail");
         try{return await this.userService.acceptContactRequest(req.body.contactemail, req.user);}
@@ -307,6 +308,7 @@ export default class UserController{
         });
 
         this.router.post("/acceptContactRequest", this.auth, async (req, res) => {
+            console.log("here")
             try{
                 const contactId = await this.acceptContactRequestRoute(req);
                 res.status(200).json({status: "success", data:{"ObjectId": contactId }, message: "Contact request accepted"});

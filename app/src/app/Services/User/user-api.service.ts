@@ -297,7 +297,7 @@ export class UserAPIService {
       Authorization: 'Bearer ' + token,
     });
     this.http
-      .post(config.url + '/users/getContactRequests', formData, {
+      .post(config.url + '/users/acceptContactRequest', formData, {
         headers: httpHeaders,
       })
       .subscribe(
@@ -375,7 +375,7 @@ export class UserAPIService {
 
   deleteContact(contactID, callback) {
     const formData = new FormData();
-    formData.append('DeletedUserId', contactID);
+    formData.append('contactemail', contactID);
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: 'Bearer ' + token,
