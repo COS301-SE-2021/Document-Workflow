@@ -18,7 +18,7 @@ export class PhaseRepository{
 
     async getPhaseById(id: ObjectId): Promise<IPhase>{
         try{
-            return await Phase.findById(id);
+            return await Phase.findById(id).lean();
         }
         catch (err){
             throw new DatabaseError("Could not get phase by id" + err.message);
@@ -27,7 +27,7 @@ export class PhaseRepository{
 
     async updatePhase(phase: IPhase): Promise<IPhase>{
         try{
-            return await Phase.findOneAndUpdate(phase);
+            return await Phase.findOneAndUpdate(phase).lean();
         }catch(err){
             throw new DatabaseError("Could not update phase " + err.message);
         }

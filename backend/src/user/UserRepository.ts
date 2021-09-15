@@ -57,7 +57,15 @@ export default class UserRepository extends Repository<IUser>{
         try {
             return await User.findOne(filter).lean();
         } catch(err) {
-            throw new DatabaseError("Could not find User " + err.message);
+            throw new DatabaseError("Could not find User " + err.getMessage());
+        }
+    }
+
+    async findUserWithContacts(filter): Promise<any> {
+        try{
+            return await User.findOne(filter).populate("contacts").lean();
+        } catch(err) {
+            throw new DatabaseError("Could not find User " + err.getMessage());
         }
     }
 

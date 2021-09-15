@@ -6,7 +6,7 @@ import { AuthenticationError, RequestError, ServerError } from "../error/Error";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { isStrongPassword, isEmail } from "validator";
-import {logger} from "../LoggingConfig";
+import { logger } from "../LoggingConfig";
 import { Types } from "mongoose";
 import { IUser, privilegeLevel } from "./IUser";
 import { Blacklist } from "../security/Blacklist";
@@ -18,7 +18,7 @@ export default class UserService {
 
     }
 
-    async authenticateUser(password, usr: IUser): Promise<String> {
+    async authenticateUser(password, usr: IUser): Promise<string> {
         const result = await bcrypt.compare(password, usr.password);
         if(result){
             return this.generateToken(usr.email, usr._id, usr.privilegeLevel);
@@ -37,7 +37,7 @@ export default class UserService {
             });
     }
 
-    async generateToken(email, id, privilege): Promise<String>{
+    async generateToken(email, id, privilege): Promise<string>{
         return jwt.sign({id: id, email: email, privilege: privilege}, process.env.SECRET, {expiresIn: "1h"});
     }
 
@@ -198,9 +198,8 @@ export default class UserService {
     }
 
     //returns jwt string for authentication
-    async loginUser(email, password): Promise<String> {
-
-        const user = await this.userRepository.findUser({email: email});
+    async loginUser(email, password): Promise<string> {
+        const user = await this.userRepository.findUser({ email: email });
         if(!user){ throw new RequestError("User does not exist.")}
 
         if(user.validated){
@@ -252,7 +251,7 @@ export default class UserService {
 
     async getUserDetails(email: string): Promise<IUser> {
         try{
-            const user: IUser = await this.userRepository.findUser({email: email});
+            const user: IUser = await this.userRepository.findUser({ email: email});
             if(user)
                 return user;
             else return null;
@@ -362,7 +361,7 @@ export default class UserService {
         const removed = UserService.removeFromArray(usr.contactRequests, contactEmail);
         if(removed){
             //add to contacts array:
-            const added = UserService.addToArrayIfNotPresent(usr.contacts, contactEmail);
+            const added = UserService.addToArrayIfNotPresent(usr.contacts, contact._id);
             if(added){
                 await this.userRepository.updateUser(usr);
                 return usr._id;
@@ -415,7 +414,7 @@ export default class UserService {
         const contact: IUser = await this.userRepository.findUser({email: contactEmail});
         if(contact){
             const currentUser: IUser = await this.userRepository.findUser({_id: user._id});
-            const indexOfRemovedEmail = currentUser.contacts.indexOf(contactEmail);
+            const indexOfRemovedEmail = currentUser.contacts.indexOf(contact._id);
             if(indexOfRemovedEmail != -1){
                 currentUser.contacts.splice(indexOfRemovedEmail, 1);
                 await this.userRepository.updateUser(currentUser);
@@ -435,14 +434,23 @@ export default class UserService {
         if(contact){
             const currentUser: IUser = await this.userRepository.findUser({_id: user._id});
             //check if they're already a contact
-            if(currentUser.contacts.indexOf(contactEmail) != -1){
+            if(currentUser.contacts.indexOf(contact._id) != -1){
                 throw new RequestError("This contact is already a contact of this user");
             }
-            currentUser.contacts.push(contactEmail);
+            currentUser.contacts.push(contact._id);
             await this.userRepository.updateUser(currentUser);
             return contact._id;
         }else{
             throw new RequestError("Contact does not exist");
+        }
+    }
+
+    async getContacts(user): Promise<any> {
+        try{
+            const thisUser = await this.userRepository.findUserWithContacts({_id: user._id});
+            return thisUser.contacts;
+        } catch(err){
+            throw err;
         }
     }
 

@@ -36,6 +36,14 @@ export default class UserController{
         }
     }
 
+    private async getUserContactsRoute(request): Promise<any> {
+        try{
+            return await this.userService.getContacts(request.user);
+        }catch(err) {
+            throw new ServerError(err.toString());
+        }
+    }
+
     private async getUserByEmailRoute(request): Promise<IUser> {
         try{
             return await this.userService.getUserByEmail(request);
@@ -128,7 +136,7 @@ export default class UserController{
 
     private async getUserDetails(req) {
         try{
-            return await this.userService.getUserDetails(req);
+            return await this.userService.getUserDetails(req.user.email);
         }
         catch(err){
             throw err;
@@ -191,6 +199,17 @@ export default class UserController{
     }
 
     routes() {
+
+        this.router.get("/getContacts", this.auth, async (req, res) => {
+            try{
+                const contacts = await this.getUserContactsRoute(req);
+                if(contacts) res.status(200).json({status: "success", data:{"contacts": contacts }, message: "Contact request added"})
+                else res.status(400).send();
+            }catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        })
+
         this.router.get("", this.authenticationService.Authenticate, async (req, res) => {
             try {
                 const users = await this.getUsersRoute();
@@ -274,7 +293,7 @@ export default class UserController{
 
         this.router.post("/getDetails", this.authenticationService.Authenticate, async (req,res) => {
             try {
-                res.status(200).json(await this.getUserDetails(req));
+                res.status(200).json( {status: "success", data: await this.getUserDetails(req), message: "Details successfully retrieved"});
             } catch(err){
                 console.log("Fetching user details had an error");
                 try{await handleErrors(err,res);}catch{}

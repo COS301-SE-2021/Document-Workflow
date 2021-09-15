@@ -13,7 +13,7 @@ export interface IUser {
     signature: Types.Buffer,
     validated: boolean,
     validateCode: string,
-    contacts: string[],
+    contacts: ObjectId[],
     contactRequests: string[],
     blockedList: string[],
     privilegeLevel: string,

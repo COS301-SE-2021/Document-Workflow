@@ -27,6 +27,6 @@ export class Blacklist {
 
     static async checkBlacklist(token: string): Promise<boolean>{
         await Blacklist.removeExpiredTokens();
-        return !(Blacklist.blacklist.indexOf(token) != -1);
+        return (Blacklist.blacklist.indexOf(token) != -1);
     }
 }

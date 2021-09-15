@@ -6,9 +6,13 @@ import { IDocument } from "./IDocument";
 type ObjectId = Types.ObjectId;
 
 const s3 = new AWS.S3({
-    region: process.env.AWS_REGION,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID
+    // region: process.env.AWS_REGION,
+    // secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    // accessKeyId: process.env.AWS_ACCESS_KEY_ID
+
+    accessKeyId: process.env.BUCKETEER_AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.BUCKETEER_AWS_SECRET_ACCESS_KEY,
+    region: process.env.BUCKETEER_AWS_REGION
 });
 
 export default class DocumentRepository {
@@ -42,22 +46,23 @@ export default class DocumentRepository {
        This function should only be used when creating a document when the workflow is created.
        To update a document/create a new phase in the S3 bucket see the 'putDocument' function
      */
-    //TODO: when saving documents to s3, use promises instead of callbacks
     async saveDocument(doc: IDocument, fileData: Buffer, fileName: String): Promise<ObjectId> {
         //console.log(file);
+        let response: IDocument = null;
         try{
             const newDoc = new Document(doc);
-            await newDoc.save();
+            response = await newDoc.save();
         }
         catch(err) {
             throw new DatabaseError("Could not save Document data");
         }
 
         const uploadParams = {
-            Bucket: process.env.AWS_BUCKET_NAME,
+            Bucket: process.env.BUCKETEER_BUCKET_NAME,
             Body: fileData,
-            Key: 'workflows/' + doc.workflowId +"/"+ fileName
+            Key: 'workflows/' + doc.workflowId +"/phase0/"+ fileName
         }
+
         try{
             await s3.upload(uploadParams, (err, data) => {
                 console.log(err)
@@ -73,27 +78,14 @@ export default class DocumentRepository {
             console.log(e);
         }
 
-        const uploadParams2 = {
-            Bucket: process.env.AWS_BUCKET_NAME,
-            Body: fileData,
-            Key: 'workflows/' + doc.workflowId +"/phase0/"+ fileName
-        }
-
-        await s3.upload(uploadParams2, (err, data) => {
-            if(err) {
-                throw new Error("Error establishing connection to the cloud file server");
-            }
-            else console.log(data);
-        });
-
-        return doc._id;
+        return response._id;
     }
 
     async updateDocumentS3(file, workflowId, phaseNumber){
         console.log("Updating a document in S3, file looks as follows: ");
         console.log(file);
         const uploadParams = {
-            Bucket: process.env.AWS_BUCKET_NAME,
+            Bucket: process.env.BUCKETEER_BUCKET_NAME,
             Body: file.data,
             Key: 'workflows/' + workflowId +"/phase"+phaseNumber +"/" + file.name
         }
@@ -120,7 +112,7 @@ export default class DocumentRepository {
 
     async getDocumentFromS3(path):Promise<any>{
         try{
-            return await s3.getObject({Bucket: process.env.AWS_BUCKET_NAME, Key:path}).promise();
+            return await s3.getObject({Bucket: process.env.BUCKETEER_BUCKET_NAME, Key:path}).promise();
         }
         catch(err){
             throw new CloudError("The cloud server could not be reached at this time, please try again later.");
@@ -159,7 +151,7 @@ export default class DocumentRepository {
      */
     async updateDocumentS3WithBuffer(path, fileData){
         const uploadParams = {
-            Bucket: process.env.AWS_BUCKET_NAME,
+            Bucket: process.env.BUCKETEER_BUCKET_NAME,
             Body: fileData,
             Key: path
         }
@@ -178,7 +170,7 @@ export default class DocumentRepository {
     async deleteDocumentFromS3(folderName){
         try {
             const listParams = {
-                Bucket: process.env.AWS_BUCKET_NAME,
+                Bucket: process.env.BUCKETEER_BUCKET_NAMEE,
                 Prefix: folderName
             };
 
@@ -187,7 +179,7 @@ export default class DocumentRepository {
             if (listedObjects.Contents.length === 0) return;
 
             const deleteParams = {
-                Bucket: process.env.AWS_BUCKET_NAME,
+                Bucket: process.env.BUCKETEER_BUCKET_NAME,
                 Delete: { Objects: [] }
             };
 

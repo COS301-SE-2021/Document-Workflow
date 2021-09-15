@@ -19,7 +19,7 @@ export default class WorkflowHistoryRepository{
 
     async getWorkflowHistory(id: string): Promise<IWorkflowHistory>{
         try{
-            return await WorkflowHistory.findById(id);
+            return await WorkflowHistory.findById(id).lean();
         }
         catch(err){
             throw new DatabaseError("The Document Workflow database could not be reached at this time, please try again later.");

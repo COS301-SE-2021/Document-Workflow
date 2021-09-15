@@ -5,6 +5,7 @@
   "main": "backend/src/index.js",
   "scripts": {
     "start": "tsc && node dist/src/server.js",
+    "postinstall": "tsc --build tsconfig.json",
     "build:server": "tsc",
     "test:server": "jest --verbose",
     "run:server": "node dist/src/server.js",
@@ -49,7 +50,7 @@
   "devDependencies": {
     "@babel/cli": "^7.14.3",
     "@babel/preset-env": "^7.14.4",
-    "@types/jest": "^26.0.23",
+    "@types/jest": "^27.0.1",
     "@types/mongo-sanitize": "^1.0.1",
     "jest": "^27.0.4",
     "mocha": "^8.4.0",
