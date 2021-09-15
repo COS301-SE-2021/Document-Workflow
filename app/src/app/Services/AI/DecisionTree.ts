@@ -290,3 +290,81 @@ export class EmploymentStrategy extends Strategy{
 
 
 }
+
+export class ExpenseStrategy extends Strategy{
+
+    static features = Object.freeze(['Length', 'ConsecutiveUnderscores', 'NumberSemicolons', 'SignKeyword','SignatureKeyword',
+    'DateKeyword','NameKeyword', "ByKeyword" ]);
+    
+    predict(text){
+
+        let features = this.extractFeatures(text);
+
+        if(features["ConsecutiveUnderscores"]){
+            return true;
+        }
+
+        if(features["SignatureKeyword"] || features["SignKeyword"]){
+            if(features["NumberSemicolons"] > 0){
+                return true;
+            }
+
+            if(features["Length"] <= 5){
+                return true;
+            }
+        }
+
+        if(features["NameKeyword"] ){
+            if(features["Length"] <= 5){
+                return true;
+            }
+
+            if(features["NumberSemicolons"] >0){
+                return true;
+            }
+        }
+
+
+        if(features["DateKeyword"]){
+            if(features["Length"] <= 5){
+                return true;
+            }
+
+            if(features["NumberSemicolons"] >0 && features["Length"] <=8){
+                return true;
+            }
+        }
+
+        if(features["ByKeyword"]){
+            if(features["NumberSemicolons"] > 0 && features["Length"] <=5){
+                return true;
+            }
+        }
+
+        if(features["Total"] || features["Amount"]){
+            return true;
+        }
+
+        return false
+    }
+
+    extractFeatures(content){
+        const length = content.split(' ').length;
+        content = content.toLowerCase().replace(":", " : "); //required otherwise semicolons aren't correctly picked up
+        let features = {
+            "Length": length,
+            "ConsecutiveUnderscores": this.hasConsecutiveUnderscores(content),
+            "NumberSemicolons": content.replace(/[^:]/gi, '').length,
+            "SignatureKeyword": (/signature/g.test(content)) || (/signatures/g.test(content)),
+            "SignKeyword": (/sign/g.test(content)) || (/signed/g.test(content)),
+            "DateKeyword": (/date/g.test(content)) || (/dated/g.test(content)),
+            "NameKeyword": (/name/g.test(content) || (/initial/g.test(content)) || (/title/g.test(content))),
+            "Amount": (/amount/g.test(content)),
+            "Total": (/total/g.test(content)) || (/totals/g.test(content)),
+            "ByKeyword": (/by/g.test(content))
+        };
+
+        return features;
+    }
+
+}

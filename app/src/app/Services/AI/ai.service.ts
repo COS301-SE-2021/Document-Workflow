@@ -4,7 +4,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {config} from '../configuration';
 //import * as DecisionTree from 'decision-tree';
 import {DocumentClassifier} from './BagOfWordsClassifier';
-import { DecisionTree, ConsultantStrategy, CovidStrategy, EmploymentStrategy} from './DecisionTree';
+import { DecisionTree, ConsultantStrategy, CovidStrategy, EmploymentStrategy
+        , ExpenseStrategy} from './DecisionTree';
 
 const DOCUMENT_TYPES = Object.freeze({EXPENSE:'Expense Report',
         CONSULTING:'Consulting Contract',
@@ -75,6 +76,7 @@ export class AIService {
     this.decisionTreesStrategies[DOCUMENT_TYPES.CONSULTING] = new ConsultantStrategy();
     this.decisionTreesStrategies[DOCUMENT_TYPES.COVID] = new CovidStrategy();
     this.decisionTreesStrategies[DOCUMENT_TYPES.EMPLOYMENT] = new EmploymentStrategy();
+    this.decisionTreesStrategies[DOCUMENT_TYPES.EXPENSE] = new ExpenseStrategy();
   }
 
   categorizeDocument(extractedText: string){
