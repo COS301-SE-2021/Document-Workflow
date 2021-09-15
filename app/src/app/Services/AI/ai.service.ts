@@ -5,7 +5,8 @@ import {config} from '../configuration';
 //import * as DecisionTree from 'decision-tree';
 import {DocumentClassifier} from './BagOfWordsClassifier';
 import { DecisionTree, ConsultantStrategy, CovidStrategy, EmploymentStrategy
-        , ExpenseStrategy} from './DecisionTree';
+        , ExpenseStrategy, InvoiceStrategy, LeaseStrategy, LoanStrategy,
+        NDAStrategy} from './DecisionTree';
 
 const DOCUMENT_TYPES = Object.freeze({EXPENSE:'Expense Report',
         CONSULTING:'Consulting Contract',
@@ -77,6 +78,10 @@ export class AIService {
     this.decisionTreesStrategies[DOCUMENT_TYPES.COVID] = new CovidStrategy();
     this.decisionTreesStrategies[DOCUMENT_TYPES.EMPLOYMENT] = new EmploymentStrategy();
     this.decisionTreesStrategies[DOCUMENT_TYPES.EXPENSE] = new ExpenseStrategy();
+    this.decisionTreesStrategies[DOCUMENT_TYPES.INVOICE] = new InvoiceStrategy();
+    this.decisionTreesStrategies[DOCUMENT_TYPES.LEASE] = new LeaseStrategy();
+    this.decisionTreesStrategies[DOCUMENT_TYPES.LOAN] = new LoanStrategy();
+    this.decisionTreesStrategies[DOCUMENT_TYPES.NDA] = new NDAStrategy();
   }
 
   categorizeDocument(extractedText: string){
