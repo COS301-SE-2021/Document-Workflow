@@ -46,8 +46,7 @@ export class UserProfilePage implements OnInit {
     this.ready = false;
     await this.userService.getUserDetails(async (response) => {
       if (response) {
-        await (this.user = response.data);
-        console.log(this.user);
+        console.log(response.data);
         const formOptions: AbstractControlOptions = {
           validators: match('password', 'confirmPassword'),
         };

@@ -19,9 +19,9 @@ export default class AIRepository {
         }
     }
 
-    async getAIById(id){
+    async getAIById(id): Promise<IAI>{
         try{
-            return await AI.findById(id);
+            return await AI.findById(id).lean();
         }
         catch (e){
             throw new ServerError(e);
