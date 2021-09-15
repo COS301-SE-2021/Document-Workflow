@@ -79,6 +79,9 @@
                     <ion-fab-button (click)="viewHistory(document._id)" *ngIf="document.ownerEmail === userEmail">
                       <ion-icon name="skull-outline" style="font-size: 22px;color:white"></ion-icon>
                     </ion-fab-button>
+                    <ion-fab-button (click)="verifier(document._id)" >
+                      <ion-icon name="thumbs-up-outline" style="font-size: 22px;color:white"></ion-icon>
+                    </ion-fab-button>
                   </ion-fab-list>
                 </ion-fab>
               </ion-row>

@@ -467,12 +467,10 @@ export class DocumentAddPage implements OnInit {
   }
 
   async addFriend(){
-    console.log('here')
     await this.selectFriend.open();
   }
 
   async friendChosen(form: FormControl){
-    console.log('here');
     form.setValue(this.selectFriend.value);
   }
 }

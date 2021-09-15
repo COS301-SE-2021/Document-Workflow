@@ -76,7 +76,7 @@ const routes: Routes = [
         loadChildren: () => import('./../workflow-history/workflow-history.module').then( m => m.WorkflowHistoryPageModule)
       },
       {
-        path: 'document-verify',
+        path: 'documentVerify',
         loadChildren: () => import('./../document-verify/document-verify.module').then( m => m.DocumentVerifyPageModule)
       },
       {

@@ -35,13 +35,11 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   @ViewChild('viewer') viewerRef: ElementRef;
   @Input('userEmail') userEmail: string;
   constructor(
-    private navpar: NavParams,
     private route: ActivatedRoute,
     private docApi: DocumentAPIService,
     private workflowService: WorkFlowService,
     private router: Router,
     private userApiService: UserAPIService,
-    private pop: PopoverController,
   ) {}
 
   async ngOnInit() {
