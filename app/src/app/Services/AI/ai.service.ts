@@ -4,7 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {config} from '../configuration';
 //import * as DecisionTree from 'decision-tree';
 import {DocumentClassifier} from './BagOfWordsClassifier';
-import { DecisionTree, Strategy, ConsultantStrategy } from './DecisionTree';
+import { DecisionTree, ConsultantStrategy, CovidStrategy} from './DecisionTree';
 
 const DOCUMENT_TYPES = Object.freeze({EXPENSE:'Expense Report',
         CONSULTING:'Consulting Contract',
@@ -72,7 +72,8 @@ export class AIService {
 
   loadDecisionTrees(){
     this.decisionTreesStrategies = {};
-    this.decisionTreesStrategies[DOCUMENT_TYPES.CONSULTING] = new ConsultantStrategy;
+    this.decisionTreesStrategies[DOCUMENT_TYPES.CONSULTING] = new ConsultantStrategy();
+    this.decisionTreesStrategies[DOCUMENT_TYPES.COVID] = new CovidStrategy();
   }
 
   categorizeDocument(extractedText: string){
@@ -87,7 +88,6 @@ export class AIService {
       const lines = text.toLowerCase().split('\n');
       let actionAreas = [];
       for(const line of lines){
-        const features = this.extractFeatures(line, documentType);
         actionAreas.push([line, this.decisionTree.predict(line)]);
       }
       console.log(actionAreas);

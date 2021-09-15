@@ -21,6 +21,22 @@ export class DecisionTree{
 
 export class Strategy{
     public predict?(text) : boolean;
+
+    hasConsecutiveUnderscores(content){
+        const onlyUnderscores = content.replace(/[^_/./…]/gi, ' ');
+        const consecutives = onlyUnderscores.match(/([_/./…])\1*/g);
+        
+        if(consecutives === null){
+            return false;
+        }
+        for(let i=0;  i<consecutives.length; ++i){
+            if(consecutives[i].length >= 2){
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
 
 export class ConsultantStrategy extends Strategy{
@@ -108,19 +124,73 @@ export class ConsultantStrategy extends Strategy{
         return features;
     }
 
-    hasConsecutiveUnderscores(content){
-        const onlyUnderscores = content.replace(/[^_/./…]/gi, ' ');
-        const consecutives = onlyUnderscores.match(/([_/./…])\1*/g);
-        
-        if(consecutives === null){
-            return false;
+}
+
+export class CovidStrategy extends Strategy{
+
+    static features = Object.freeze(['Length','ConsecutiveUnderscores','NumberSemicolons','SignKeyword','SignatureKeyword','DateKeyword','NameKeyword',"Temperature", "Symptoms", 'YesOrNo', 'IsQuestion']);
+    
+    predict(text){
+
+        let features = this.extractFeatures(text);
+
+        if(features["ConsecutiveUnderscores"]){
+            return true;
         }
-        for(let i=0;  i<consecutives.length; ++i){
-            if(consecutives[i].length >= 2){
+
+        if(features["Symptoms"]){
+            return true;
+        }
+
+        if(features["SignKeyword"] ||features["SignatureKeyword"] || features["NameKeyword"] || features["DateKeyword"]){
+            if(features["Length"] <= 5){
+                return true;
+            }
+
+            if(features["NumberSemicolons"] > 0){
                 return true;
             }
         }
 
+        if(features["YesOrNo"]){
+            if(features["IsQuestion"]){
+                return true;
+            }
+        }
+
+        if(features["Temperature"] && features["Length"] <= 5){
+            return true;
+        }
+
+
         return false;
+    }
+
+    extractFeatures(content){
+        const length = content.split(' ').length;
+        content = content.toLowerCase().replace(":", " : "); //required otherwise semicolons aren't correctly picked up
+        let features = {
+            "Length": length,
+            'ConsecutiveUnderscores': this.hasConsecutiveUnderscores(content),
+            'NumberSemicolons': content.replace(/[^:]/gi, '').length,
+            "SignatureKeyword": (/signature/g.test(content)),
+            "SignKeyword": (/sign/g.test(content)) || (/signed/g.test(content)),
+            "DateKeyword": (/date/g.test(content)),
+            "NameKeyword": (/name/g.test(content) || (/initial/g.test(content)) || (/title/g.test(content))),
+            "Temperature": (/temperature/g.test(content)),
+            "Symptoms": this.containsSymptomsKeywords(content),
+            'YesOrNo': (/no/g.test(content)) || (/yes/g.test(content)),
+            'IsQuestion': (/\?/g.test(content))  
+        };
+
+        return features;
+    }
+
+
+    containsSymptomsKeywords(content){
+        const bool = ( (/temperature/g.test(content)) || (/congestion/g.test(content)) || (/nausea/g.test(content)) 
+                    || (/headache/g.test(content)) || (/aches/g.test(content)) || (/cough/g.test(content)) ||(/fever/g.test(content))
+                    || (/fatigue/g.test(content)) || (/breathing/g.test(content)) );
+        return bool;
     }
 }
