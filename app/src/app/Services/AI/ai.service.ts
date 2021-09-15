@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import * as natural from 'natural';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {config} from '../configuration';
-import * as DecisionTree from 'decision-tree';
+//import * as DecisionTree from 'decision-tree';
 import {DocumentClassifier} from './BagOfWordsClassifier';
+import { DecisionTree, Strategy, ConsultantStrategy } from './DecisionTree';
 
 const DOCUMENT_TYPES = Object.freeze({EXPENSE:'Expense Report',
         CONSULTING:'Consulting Contract',
@@ -22,16 +23,18 @@ export class AIService {
 
   classifier;
   decisionTree;
-  decisionTreesData;
+  decisionTreesStrategies;
 
   constructor( private http: HttpClient) {
     this.http.get(config.url +'/ai/getClassifier').subscribe((response)=>{
      this.loadClassifier(response);
     });
-
+    /*
     this.http.get(config.url +'/ai/getDecisionTrees').subscribe((response)=>{
         this.loadDecisionTrees(response);
     });
+    */
+   this.loadDecisionTrees();
   }
 
   loadClassifier(response){
@@ -60,11 +63,16 @@ export class AIService {
     this.classifier.classifier.totalExamples = classifierData.classifier.totalExamples;
     console.log('Document classifier successfully loaded');
   } */
-
+  /*
   loadDecisionTrees(response){
     console.log(response);
     this.decisionTreesData = response.data;
     console.log(response.data);
+  }*/
+
+  loadDecisionTrees(){
+    this.decisionTreesStrategies = {};
+    this.decisionTreesStrategies[DOCUMENT_TYPES.CONSULTING] = new ConsultantStrategy;
   }
 
   categorizeDocument(extractedText: string){
@@ -74,7 +82,7 @@ export class AIService {
   }
 
   identifyActionAreas(text, documentType){
-    this.decisionTree = new DecisionTree(JSON.parse(this.decisionTreesData[documentType]));
+    this.decisionTree = new DecisionTree(this.decisionTreesStrategies[documentType], documentType);
     console.log("Extracting features for documnt of type: ", documentType)
       const lines = text.toLowerCase().split('\n');
       let actionAreas = [];
