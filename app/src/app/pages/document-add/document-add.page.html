@@ -103,11 +103,22 @@
                     <ion-title>Add Users:</ion-title>
                     <ion-row *ngFor="let user of phase.controls['users'].controls; let j = index" style="border: 3
                     px solid #002060; margin-bottom:5px; border-radius: 15px;">
-                      <ion-col sizeXs='10'>
+                      <ion-col sizeXs='9'>
                         <ion-item>
                           <ion-label position="floating">User email</ion-label>
-                          <ion-input type="email" [formControl]="user.controls.user"  [(ngModel)]="contacts"></ion-input>
+                          <ion-input type="email" [formControl]="user.controls.user"></ion-input>
                         </ion-item>
+
+                        <ion-select #selectFriend (ionChange)='friendChosen(user.controls.user)' style="display: none;">
+                          <ion-select-option *ngFor="let contact of contacts" [value]="contact">
+                            {{contact}}
+                          </ion-select-option>
+                        </ion-select>
+                      </ion-col>
+                      <ion-col sizeXs='1'>
+                        <ion-icon name="accessibility-outline" size="large"
+                          (click)="addFriend()">
+                        </ion-icon>
                       </ion-col>
                       <ion-col sizeXs='2'>
                         <ion-icon name="close-circle-outline" size="large"

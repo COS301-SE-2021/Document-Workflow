@@ -5,6 +5,7 @@ import {
   OnInit,
   Sanitizer,
   ViewChild,
+  ViewChildren,
 } from '@angular/core';
 import {
   FormArray,
@@ -21,6 +22,7 @@ import { Router } from '@angular/router';
 import {
   ActionSheetController,
   IonReorderGroup,
+  IonSelect,
   ModalController,
   Platform,
 } from '@ionic/angular';
@@ -39,6 +41,7 @@ import WebViewer, {Core} from '@pdftron/webviewer';
   styleUrls: ['./document-add.page.scss'],
 })
 export class DocumentAddPage implements OnInit {
+  @ViewChild('selectFriend') selectFriend: IonSelect;
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
   workflowForm: FormGroup;
@@ -67,6 +70,7 @@ export class DocumentAddPage implements OnInit {
   template: boolean = false;
 
   showPhase: boolean[] = [];
+  filter: string;
   contacts: string[] =[];
 
   controller: boolean;
@@ -149,6 +153,7 @@ export class DocumentAddPage implements OnInit {
     });
     this.showPhase.push(true);
     await this.getUser();
+    await this.getContacts();
   }
 
   async getUser() {
@@ -459,5 +464,15 @@ export class DocumentAddPage implements OnInit {
         }
       }
     });
+  }
+
+  async addFriend(){
+    console.log('here')
+    await this.selectFriend.open();
+  }
+
+  async friendChosen(form: FormControl){
+    console.log('here');
+    form.setValue(this.selectFriend.value);
   }
 }

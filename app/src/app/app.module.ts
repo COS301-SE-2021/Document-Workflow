@@ -21,16 +21,13 @@ import { HttpClientModule } from '@angular/common/http';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 
 //Components
-import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { AddSignatureComponent } from './components/add-signature/add-signature.component';
 import { UserNotificationsComponent } from './components/user-notifications/user-notifications.component';
 import { DocumentActionAreaComponent } from './components/document-action-area/document-action-area.component';
 import { Logger } from './Services/Logger';
-import { Ng2SearchPipeModule } from 'ng2-search-filter';
 @NgModule({
   declarations: [
     AppComponent,
-    ResetPasswordComponent,
     AddSignatureComponent,
     UserNotificationsComponent,
     DocumentActionAreaComponent,
@@ -46,7 +43,6 @@ import { Ng2SearchPipeModule } from 'ng2-search-filter';
     IonicStorageModule.forRoot(),
     HttpClientModule,
     PdfViewerModule,
-    Ng2SearchPipeModule
   ],
   providers: [
     {
