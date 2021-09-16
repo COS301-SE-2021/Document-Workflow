@@ -18,5 +18,13 @@
 </ion-header>
 
 <ion-content>
+  <ion-item>
+    <ion-button hidden="true">
+      <input FormControlName="fileUploader" type="file" #fileInput (change)="uploadFile($event)" hidden="false"
+        accept="application/pdf" required>
+    </ion-button>
+    <ion-button (click)="selectImageSource()" id="uploadFile" expand="block" color="primary" fill="outline">Add
+      Your document</ion-button>
+  </ion-item>
 
 </ion-content>

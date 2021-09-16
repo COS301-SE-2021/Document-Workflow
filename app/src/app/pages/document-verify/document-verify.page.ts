@@ -1,7 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Platform } from '@ionic/angular';
-import { DocumentAPIService } from 'src/app/Services/Document/document-api.service';
+import { ActionSheetController, Platform } from '@ionic/angular';
 import { UserAPIService } from 'src/app/Services/User/user-api.service';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 import * as Cookies from 'js-cookie';
@@ -12,15 +11,17 @@ import * as Cookies from 'js-cookie';
 })
 export class DocumentVerifyPage implements OnInit {
   @Input('workflowID') docName: string;
+  @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
 
   sizeMe: boolean;
+  file: File;
   constructor(
     private route: ActivatedRoute,
-    private docApi: DocumentAPIService,
     private workflowService: WorkFlowService,
     private router: Router,
     private userApiService: UserAPIService,
-    private plat: Platform
+    private plat: Platform,
+    private actionSheetController: ActionSheetController,
   ) {}
 
   async ngOnInit() {
@@ -47,5 +48,41 @@ export class DocumentVerifyPage implements OnInit {
         }
       );
     }
+  }
+
+  async selectImageSource() {
+    const buttons = [
+      {
+        text: 'Choose a file',
+        icon: 'attach',
+        handler: () => {
+          this.fileInput.nativeElement.click();
+        },
+      },
+    ];
+
+    if (this.plat.is('desktop')) {
+      this.fileInput.nativeElement.click();
+    } else {
+      const actionSheet = await this.actionSheetController.create({
+        header: 'Select PDF',
+        buttons,
+      });
+
+      await actionSheet.present();
+    }
+  }
+
+  async uploadFile(event: EventTarget) {
+    const eventObj: MSInputMethodContext = event as MSInputMethodContext;
+    const target: HTMLInputElement = eventObj.target as HTMLInputElement;
+    this.file = target.files[0];
+    this.verifyDocument();
+ 
+  }
+
+  verifyDocument(){
+    const blob = new Blob([this.file], { type: 'application/pdf;base64' });
+    console.log(blob);
   }
 }

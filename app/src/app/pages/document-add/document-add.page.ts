@@ -474,6 +474,7 @@ export class DocumentAddPage implements OnInit {
   }
 
   async highlightActionAreas(instance, actionAreas){
+      
       console.log();
       console.log('---------------------------');
       for(const area of actionAreas){
