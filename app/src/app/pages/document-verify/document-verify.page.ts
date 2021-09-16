@@ -4,6 +4,8 @@ import { ActionSheetController, Platform } from '@ionic/angular';
 import { UserAPIService } from 'src/app/Services/User/user-api.service';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 import * as Cookies from 'js-cookie';
+import WebViewer, { Core } from '@pdftron/webviewer';
+import { PDFDocument } from 'pdf-lib';
 @Component({
   selector: 'app-document-verify',
   templateUrl: './document-verify.page.html',
@@ -12,6 +14,7 @@ import * as Cookies from 'js-cookie';
 export class DocumentVerifyPage implements OnInit {
   @Input('workflowID') docName: string;
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
+  @ViewChild('viewer') viewerRef: ElementRef;
 
   sizeMe: boolean;
   file: File;
@@ -84,5 +87,44 @@ export class DocumentVerifyPage implements OnInit {
   verifyDocument(){
     const blob = new Blob([this.file], { type: 'application/pdf;base64' });
     console.log(blob);
+    this.displayWebViewer(blob);
+  }
+
+  async extractHash(doc: Core.PDFNet.PDFDoc){
+    const doc1 = await doc.getSDFDoc();
+    doc1.initSecurityHandler();
+    doc1.lock();
+    const trailer = await doc1.getTrailer(); // Get the trailer
+
+    const metadata = await doc.getDocInfo();
+    return metadata.getKeywords();
+  }
+
+  displayWebViewer(blob: Blob){
+
+    WebViewer({
+      path: './../../../assets/lib',
+      fullAPI:true
+    }, this.viewerRef.nativeElement).then(async instance =>{
+
+      instance.Core.PDFNet.initialize();
+
+      instance.UI.loadDocument(blob, {filename: 'Preview Document'});
+      instance.UI.disableElements(['ribbons']);
+      instance.UI.setToolbarGroup('toolbarGroup-View',false);
+    
+      instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
+        const PDFNet = instance.Core.PDFNet;
+        const doc = await PDFNet.PDFDoc.createFromBuffer(await this.file.arrayBuffer());
+        const hash= await this.extractHash(doc);
+        console.log(hash);
+        this.verifyHash(hash);
+        
+      });
+    });
+  }
+
+  verifyHash(hash){
+
   }
 }
