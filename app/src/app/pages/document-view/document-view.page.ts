@@ -81,7 +81,8 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
         WebViewer({
           path: './../../../assets/lib',
           annotationUser: this.userEmail,
-          fullAPI: true
+          fullAPI: true,
+          isReadOnly: true
         }, this.viewerRef.nativeElement).then(async instance =>{
           this.instance = instance; 
           await instance.Core.PDFNet.initialize(); //To use pdftron in the non-demo mode supply a licence key here
@@ -137,6 +138,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
             instance.UI.loadDocument(blob2, {filename: this.docName});
             instance.UI.disableElements(['ribbons']);
             instance.UI.setToolbarGroup('toolbarGroup-View',false);
+            if(this.workflowStatus !== 'Completed'){ 
             instance.UI.setHeaderItems(header =>{
               header.push({
                 type: 'actionButton',
@@ -146,7 +148,9 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
                 }
               });
          });
+        }
 
+         if(this.workflowStatus !== 'Completed'){ 
           instance.UI.setHeaderItems(header =>{
             header.push({
               type: 'actionButton',
@@ -157,6 +161,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
               }
             });
           });
+        }
 
             instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
               //For now, to work around not having full api functions with the free version of PDFTron

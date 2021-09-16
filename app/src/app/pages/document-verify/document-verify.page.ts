@@ -113,7 +113,8 @@ export class DocumentVerifyPage implements OnInit {
 
     WebViewer({
       path: './../../../assets/lib',
-      fullAPI:true
+      fullAPI:true,
+      isReadOnly: true
     }, this.viewerRef.nativeElement).then(async instance =>{
 
       instance.Core.PDFNet.initialize();
