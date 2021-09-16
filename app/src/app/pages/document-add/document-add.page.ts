@@ -356,38 +356,9 @@ export class DocumentAddPage implements OnInit {
         }
         //console.log("Text successfully extracted");
         const docType = this.aiService.categorizeDocument(extractedText);
-        //this.aiService.identifyActionAreas(extractedText, docType);
-        const searchText = 'the';
-        const mode = instance.Core.Search.Mode.PAGE_STOP | instance.Core.Search.Mode.HIGHLIGHT;
-        const searchOptions = {
-          fullSearch: true,
-          onResult: result => {
-            if (result.resultCode === instance.Core.Search.ResultCode.FOUND) {
-              console.log(result);
-              const textQuad = result.quads[0].getPoints(); // getPoints will return Quad objects
-              
-              const highlight = new instance.Core.Annotations.TextHighlightAnnotation();
-              highlight.PageNumber = result.pageNumber;
-              highlight.X = 405;
-              highlight.Y = 165;
-              highlight.Width = 275;
-              highlight.Height = 25;
-              highlight.StrokeColor = new instance.Core.Annotations.Color(255, 255, 0);
-              // you might get the quads from text selection, a server calculation, etc
-              highlight.Quads = [textQuad];
-
-              instance.Core.annotationManager.addAnnotation(highlight);
-              instance.Core.annotationManager.drawAnnotations({pageNumber: highlight.PageNumber});
-              }
-          }
-        };
-        console.log("Searching rhtough document");
-        instance.Core.documentViewer.textSearchInit(searchText, mode, searchOptions);
+        const actionAreas = this.aiService.identifyActionAreas(extractedText, docType);
+        await this.highlightActionAreas(instance, actionAreas);
       });
-
-        
-        
-        
     });
   }
 
@@ -501,6 +472,41 @@ export class DocumentAddPage implements OnInit {
       }
     });
   }
+
+  async highlightActionAreas(instance, actionAreas){
+    for(const area of actionAreas){
+
+      if(area[1] != true){
+        continue;
+      }
+      const searchText = area[0];
+        const mode = instance.Core.Search.Mode.PAGE_STOP | instance.Core.Search.Mode.HIGHLIGHT;
+        const searchOptions = {
+          fullSearch: true,
+          onResult: result => {
+            if (result.resultCode === instance.Core.Search.ResultCode.FOUND) {
+              console.log(result);
+              const textQuad = result.quads[0].getPoints(); // getPoints will return Quad objects
+              
+              const highlight = new instance.Core.Annotations.TextHighlightAnnotation();
+              highlight.PageNumber = result.pageNum;
+              highlight.X = 405;
+              highlight.Y = 165;
+              highlight.Width = 275;
+              highlight.Height = 25;
+              highlight.StrokeColor = new instance.Core.Annotations.Color(255, 255, 0);
+              // you might get the quads from text selection, a server calculation, etc
+              highlight.Quads = [textQuad];
+
+              instance.Core.annotationManager.addAnnotation(highlight);
+              instance.Core.annotationManager.drawAnnotations({pageNumber: highlight.PageNumber});
+              }
+          }
+        };
+        console.log("Searching rhtough document");
+        instance.Core.documentViewer.textSearchInit(searchText, mode, searchOptions);
+      }
+    }
 
   async addFriend(){
     await this.selectFriend.open();

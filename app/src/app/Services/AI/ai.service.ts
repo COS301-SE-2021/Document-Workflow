@@ -99,7 +99,7 @@ export class AIService {
       for(const line of lines){
         actionAreas.push([line, this.decisionTree.predict(line)]);
       }
-      console.log(actionAreas);
+     return actionAreas;
   }
 
   extractFeatures(text, documentType){
@@ -133,11 +133,11 @@ export class AIService {
       let features = {
         "Length": content.length,
         "ConsecutiveUnderscores": this.hasConsecutiveUnderscores(content),
-        "NumberSemicolons": content.replace(/[^:]/gi, '').length,
+        "NumberSemicolons": content.replace(/[^:;]/gi, '').length,
         "SignatureKeyword": (/signature/g.test(content)) || (/signatures/g.test(content)),
         "SignKeyword": (/sign/g.test(content)) || (/signed/g.test(content)),
         "DateKeyword": (/date/g.test(content)) || (/dated/g.test(content)),
-        "NameKeyword": (/name/g.test(content) || (/initial/g.test(content)) || (/title/g.test(content))),
+        "NameKeyword": (/name/g.test(content) || (/initial/g.test(content)) || (/title/g.test(content))) || (/names/g.test(content)),
         "Amount": (/amount/g.test(content)),
         "Total": (/total/g.test(content)) || (/totals/g.test(content))
       };
