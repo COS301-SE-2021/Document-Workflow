@@ -402,6 +402,7 @@ export default class WorkflowService{
             const phase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
             data.annotations = phase.annotations;
             data.hash =  workflow.currentHash;
+            logger.info("Current workflow has hash value: " + workflow.currentHash);
             return {status: 'success', data: data, message:''};
         }
         catch(err){

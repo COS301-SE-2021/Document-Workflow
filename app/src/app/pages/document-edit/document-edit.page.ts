@@ -26,6 +26,8 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   documentViewer: any;
   PDFNet: any;
   documentMetadata: any;
+  hash: string;
+  originalKeywords: string;
   //This array is used to determine what annotations are and are not a part of action areas.
   //It is here in case the stakeholders of this project decide they want more action areas as part of the application
   annotationSubjects = ['Note' ]; //, 'Rectangle', 'Squiggly', 'Underline', 'Highlight', 'Strikeout'];
@@ -65,6 +67,8 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
         this.documentMetadata = response.data.metadata;
         this.docName = this.documentMetadata.name;
         this.srcFileBase64 = response.data.filedata.Body.data;
+        this.hash = response.data.hash;
+        console.log("Hash retrieved from server: ", this.hash);
         const arr = new Uint8Array(response.data.filedata.Body.data);
         const blob = new Blob([arr], {type: 'application/pdf'});
 
@@ -76,19 +80,52 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
           annotationUser: this.userEmail,
           fullAPI: true
         }, this.viewerRef.nativeElement).then(async instance =>{
+          await instance.Core.PDFNet.initialize(); //To use pdftron in the non-demo mode supply a licence key here
 
           this.annotationManager = instance.Core.annotationManager;
           this.PDFNet = instance.Core.PDFNet;
           this.documentViewer = instance.Core.documentViewer;
-          /*
-          const pdfDoc = this.PDFNet.PDFDoc.createFromBuffer(arr.buffer);
-          const doc =  await pdfDoc.getSDFDoc();
-          const trailer = await doc.getTrailer(); // Get the trailer
-          const info = await trailer.putDict('Info');
-          await info.putString('Producer', 'PDFTron PDFNet');
-          */
+          const docorig = await instance.Core.PDFNet.PDFDoc.createFromBuffer(arr);
+          const doc = await docorig.getSDFDoc();
+          doc.initSecurityHandler();
+          doc.lock();
+          console.log('Modifying into dictionary, adding custom properties, embedding a stream...');
 
-          instance.UI.loadDocument(blob, {filename: this.docName});
+          const trailer = await doc.getTrailer(); // Get the trailer
+          
+          let itr = await trailer.find('Info');
+          let info;
+          if (await itr.hasNext()) {
+            info = await itr.value();
+            // Modify 'Producer' entry.
+            info.putString('Producer', 'PDFTron PDFNet');
+
+            // read title entry if it is present
+            itr = await info.find('Keywords');
+            if (await itr.hasNext()) {
+              console.log('Keywords already present');
+              const itrval = await itr.value();
+              const oldstr = await itrval.getAsPDFText();
+              this.originalKeywords = oldstr;
+              info.putText('Keywords', oldstr + ' - ' + this.hash);
+            } else {
+              console.log('No previous keywords present');
+              info.putString('Keywords', this.hash);
+            }
+          } else {
+            console.log('Info dict missing, adding it now');
+            // Info dict is missing.
+            info = await trailer.putDict('Info');
+            info.putString('Producer', 'PDFTron PDFNet');
+            info.putString('Title', 'My document');
+            info.putString('Keywords', this.hash);
+          }
+          const customDict = await info.putDict('My Direct Dict');
+          customDict.putNumber('My Number', 100); 
+          const docbuf = await doc.saveMemory(0, '%PDF-1.4'); 
+          let blob2 = new Blob([new Uint8Array(docbuf)], {type: 'application/pdf'});
+
+          instance.UI.loadDocument(blob2, {filename: this.docName});
           instance.UI.disableElements(['toolbarGroup-Annotate']);
           instance.UI.setToolbarGroup('toolbarGroup-Insert', false);
           instance.UI.setHeaderItems(header =>{

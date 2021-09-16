@@ -86,7 +86,7 @@ export class UserAPIService {
   }
 
   public login(loginData: LoginData, callback) {
-    console.log('Logging in a user');
+    console.log('Logging in a user, ' + config.url);
     const formData = new FormData();
     formData.append('email', loginData.email);
     formData.append('password', loginData.password);
