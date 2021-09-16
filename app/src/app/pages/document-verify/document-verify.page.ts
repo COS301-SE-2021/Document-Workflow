@@ -18,6 +18,7 @@ export class DocumentVerifyPage implements OnInit {
 
   sizeMe: boolean;
   file: File;
+  workflowId: string;
   constructor(
     private route: ActivatedRoute,
     private workflowService: WorkFlowService,
@@ -51,6 +52,9 @@ export class DocumentVerifyPage implements OnInit {
         }
       );
     }
+    await this.route.params.subscribe((data) => {
+      this.workflowId = data['workflowId'];
+    });
   }
 
   async selectImageSource() {
@@ -119,12 +123,17 @@ export class DocumentVerifyPage implements OnInit {
         const hash= await this.extractHash(doc);
         console.log(hash);
         this.verifyHash(hash);
-        
       });
     });
   }
 
   verifyHash(hash){
-
+    if(hash.length == 0){
+      alert("This document has no associated stored hash, make a nice popup for this message");
+      return;
+    }
+    this.workflowService.verifyDocument(hash, this.workflowId, (response) =>{
+      console.log(response);
+    });
   }
 }

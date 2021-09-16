@@ -486,4 +486,30 @@ export class WorkFlowService {
         }
       );
   }
+
+  async verifyDocument(hash: string, workflowId: string, callback){
+    const formData = new FormData();
+    formData.append('workflowId', workflowId);
+    formData.append('hash', hash);
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+
+    this.http
+      .post(config.url + '/workflows/verifyDocument', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          if (data) {
+            callback(data);
+          } else
+            callback({ status: 'error', message: 'Cannot connect to Server' });
+        },
+        (error) => {
+          alert('An unexpected error occurred');
+        }
+      );
+  }
 }
