@@ -28,6 +28,7 @@ export class AIService {
   decisionTreesStrategies;
 
   constructor( private http: HttpClient) {
+    this.loadDecisionTrees();
     this.http.get(config.url +'/ai/getClassifier').subscribe((response)=>{
      this.loadClassifier(response);
     });
@@ -36,7 +37,7 @@ export class AIService {
         this.loadDecisionTrees(response);
     });
     */
-   this.loadDecisionTrees();
+   
   }
 
   loadClassifier(response){
@@ -83,6 +84,7 @@ export class AIService {
     this.decisionTreesStrategies[DOCUMENT_TYPES.LOAN] = new LoanStrategy();
     this.decisionTreesStrategies[DOCUMENT_TYPES.NDA] = new NDAStrategy();
     this.decisionTreesStrategies[DOCUMENT_TYPES.TIMESHEET] = new TimesheetStrategy();
+    console.log(this.decisionTreesStrategies);
   }
 
   categorizeDocument(extractedText: string){
@@ -92,6 +94,7 @@ export class AIService {
   }
 
   identifyActionAreas(text, documentType){
+    console.log("Instantiating tree of type: ", documentType);
     this.decisionTree = new DecisionTree(this.decisionTreesStrategies[documentType], documentType);
     console.log("Extracting features for documnt of type: ", documentType)
       const lines = text.toLowerCase().split('\n');

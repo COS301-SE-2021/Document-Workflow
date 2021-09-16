@@ -474,36 +474,50 @@ export class DocumentAddPage implements OnInit {
   }
 
   async highlightActionAreas(instance, actionAreas){
-    for(const area of actionAreas){
-
-      if(area[1] != true){
-        continue;
+      console.log();
+      console.log('---------------------------');
+      for(const area of actionAreas){
+        if(area[1]){
+         console.log(area[0]);
+        }
       }
-      const searchText = area[0];
-        const mode = instance.Core.Search.Mode.PAGE_STOP | instance.Core.Search.Mode.HIGHLIGHT;
-        const searchOptions = {
-          fullSearch: true,
-          onResult: result => {
-            if (result.resultCode === instance.Core.Search.ResultCode.FOUND) {
-              console.log(result);
-              const textQuad = result.quads[0].getPoints(); // getPoints will return Quad objects
-              
-              const highlight = new instance.Core.Annotations.TextHighlightAnnotation();
-              highlight.PageNumber = result.pageNum;
-              highlight.X = 405;
-              highlight.Y = 165;
-              highlight.Width = 275;
-              highlight.Height = 25;
-              highlight.StrokeColor = new instance.Core.Annotations.Color(255, 255, 0);
-              // you might get the quads from text selection, a server calculation, etc
-              highlight.Quads = [textQuad];
+      console.log();
+      console.log('---------------------------');
+  
+      const mode = instance.Core.Search.Mode.PAGE_STOP | instance.Core.Search.Mode.HIGHLIGHT;
+      const searchOptions = {
+        fullSearch: true,
+        onResult: result => {
+          if (result.resultCode === instance.Core.Search.ResultCode.FOUND) {
+            const textQuad = result.quads[0].getPoints(); // getPoints will return Quad objects
+            console.log(result.pageNum);
+            const highlight = new instance.Core.Annotations.TextHighlightAnnotation();
+            highlight.PageNumber = result.pageNum;
+            highlight.X = 405;
+            highlight.Y = 165;
+            highlight.Width = 275;
+            highlight.Height = 25;
+            highlight.StrokeColor = new instance.Core.Annotations.Color(255, 255, 0);
+            // you might get the quads from text selection, a server calculation, etc
+            highlight.Quads = [textQuad];
 
-              instance.Core.annotationManager.addAnnotation(highlight);
-              instance.Core.annotationManager.drawAnnotations({pageNumber: highlight.PageNumber});
-              }
-          }
-        };
-        console.log("Searching rhtough document");
+            instance.Core.annotationManager.addAnnotation(highlight);
+            instance.Core.annotationManager.drawAnnotations({pageNumber: highlight.PageNumber});
+            }
+            else{
+              console.log("COULD NOT FIND TEXT: ");
+              console.log(result);
+            }
+        }
+      };
+      console.log("Searching Through document");
+      for(const area of actionAreas){
+
+        if(area[1] != true){
+          continue;
+        }
+        const searchText = area[0];
+        console.log(searchText);
         instance.Core.documentViewer.textSearchInit(searchText, mode, searchOptions);
       }
     }

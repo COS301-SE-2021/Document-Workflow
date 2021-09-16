@@ -22,7 +22,7 @@ export class DecisionTree{
 export class Strategy{
     public predict?(text) : boolean;
 
-    hasConsecutiveUnderscores(content){
+    hasConsecutiveUnderscores(content){ //TODO: alter this so that it wont pick up urls
         const onlyUnderscores = content.replace(/[^_/./…]/gi, ' ');
         const consecutives = onlyUnderscores.match(/([_/./…])\1*/g);
         

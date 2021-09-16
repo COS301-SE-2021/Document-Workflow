@@ -7,7 +7,7 @@
 "Covid Screening":{"covid-19":165,"symptoms":81,"health":76, "fever":10, "symptomatic":10, "aches":10, "nausea":10, "vomiting":10,
                     "fatigue":10, "temperature":10},
 
-"Invoice Statement":{"invoice":224,"customer":84,"itinerary":95},
+"Invoice":{"invoice":224,"customer":84,"itinerary":95},
 
 "Lease Agreement":{"lease":1076,"apartment":99,"resident":152,"landlord":1452,"owner":208,"property":418,"term":325,"this":1313,"is":993,"contract":65,"leased":275,"tenancy":68,"landlord’s":187,"tenant's":86,"tenant":2152,"tenant’s":256,"lessee":340,"lessor":323,"landlord's":72},
 
