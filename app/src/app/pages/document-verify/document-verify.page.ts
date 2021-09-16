@@ -101,7 +101,12 @@ export class DocumentVerifyPage implements OnInit {
     const trailer = await doc1.getTrailer(); // Get the trailer
 
     const metadata = await doc.getDocInfo();
-    return metadata.getKeywords();
+    const keywords = await metadata.getKeywords();
+    if(keywords.length > 5){
+      return keywords.slice(7);
+    }
+    console.log("FINALIZE HOW THE HASH IS STORED!!!!!");
+    return '';
   }
 
   displayWebViewer(blob: Blob){
