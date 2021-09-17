@@ -17,9 +17,6 @@ import { ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
 // import {SignaturePadModule} from 'angular2-signaturepad';
 import { HttpClientModule } from '@angular/common/http';
 
-//pdf viewer
-import { PdfViewerModule } from 'ng2-pdf-viewer';
-
 //Components
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { AddSignatureComponent } from './components/add-signature/add-signature.component';
@@ -44,7 +41,6 @@ import { Logger } from './Services/Logger';
     FormsModule,
     IonicStorageModule.forRoot(),
     HttpClientModule,
-    PdfViewerModule,
   ],
   providers: [
     {
