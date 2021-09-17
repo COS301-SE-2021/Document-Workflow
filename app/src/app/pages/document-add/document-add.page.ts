@@ -332,6 +332,30 @@ export class DocumentAddPage implements OnInit {
       instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
         const PDFNet = instance.Core.PDFNet;
         const doc = await PDFNet.PDFDoc.createFromBuffer(await this.file.arrayBuffer());
+        /* Diffeerent text search approach */
+        const txtSearch = await PDFNet.TextSearch.create();
+        let mode = PDFNet.TextSearch.Mode.e_whole_word + PDFNet.TextSearch.Mode.e_page_stop + PDFNet.TextSearch.Mode.e_highlight;
+        let pattern = 'Consultant';
+
+        txtSearch.begin(doc, pattern, mode);
+        let result = await txtSearch.run();
+        console.log(result);
+        console.log(PDFNet.TextSearch.ResultCode.e_found);
+        if (result.code === PDFNet.TextSearch.ResultCode.e_found) {
+          console.log(result);
+          const textQuad = result.quads[0].getPoints(); // getPoints will return Quad objects
+          const highlight = new instance.Core.Annotations.TextHighlightAnnotation();
+          //console.log(result.pageNum);
+          highlight.PageNumber = result.pageNum;
+          highlight.StrokeColor = new instance.Core.Annotations.Color(255, 255, 0);
+          highlight.Quads = [textQuad];
+
+          await instance.Core.annotationManager.addAnnotation(highlight);
+          await instance.Core.annotationManager.drawAnnotations({pageNumber: highlight.PageNumber});
+        }
+        /*  */
+        console.log("SHOULD SEE RESULTS BEFORE THIS!!!!");
+
 
         let extractedText = "";
         /*Testing if we can retrive hash stored in a document*/
@@ -357,7 +381,8 @@ export class DocumentAddPage implements OnInit {
         //console.log("Text successfully extracted");
         const docType = this.aiService.categorizeDocument(extractedText);
         const actionAreas = this.aiService.identifyActionAreas(extractedText, docType);
-        await this.highlightActionAreas(instance, actionAreas);
+        //await this.highlightActionAreas(instance, actionAreas);
+        doc.unlock();
       });
     });
   }
@@ -477,10 +502,32 @@ export class DocumentAddPage implements OnInit {
     console.log(actionAreas);
 
     console.log("Searching Through document");
-    const searchText = "_";
-    console.log(await this.searchTextPromise(searchText, instance));
-    console.log(await this.searchTextPromise('the', instance));
-    console.log(await this.searchTextPromise('For', instance));
+
+      const mode = instance.Core.Search.Mode.REGEX | instance.Core.Search.Mode.HIGHLIGHT | instance.Core.Search.Mode.PAGE_STOP;
+      const searchOptions = {
+        fullSearch: true,
+        onResult: result => {
+          if (result.resultCode === instance.Core.Search.ResultCode.FOUND) {
+
+            const textQuad = result.quads[0].getPoints(); // getPoints will return Quad objects
+            const highlight = new instance.Core.Annotations.TextHighlightAnnotation();
+            //console.log(result.pageNum);
+            highlight.PageNumber = result.pageNum;
+            highlight.StrokeColor = new instance.Core.Annotations.Color(255, 255, 0);
+            // you might get the quads from text selection, a server calculation, etc
+            highlight.Quads = [textQuad];
+
+            instance.Core.annotationManager.addAnnotation(highlight);
+            instance.Core.annotationManager.drawAnnotations({pageNumber: highlight.PageNumber});
+
+          } else {
+            console.log("Not found");
+          }
+        }
+      };
+      const searchText ='the';
+      await instance.Core.documentViewer.textSearchInit(searchText, mode, searchOptions);
+      console.log("Finished searching through document");
 
     //instance.Core.documentViewer.textSearchInit("date", mode, searchOptions);
     /*
@@ -555,10 +602,10 @@ export class DocumentAddPage implements OnInit {
 
               instance.Core.annotationManager.addAnnotation(highlight);
               instance.Core.annotationManager.drawAnnotations({pageNumber: highlight.PageNumber});
-                return reject(false);
+              resolve(true);
             }
             else{
-              resolve(true);
+              return reject(false);
             }
           }
         };
