@@ -327,8 +327,8 @@ export class DocumentAddPage implements OnInit {
         searchResult: new instance.Core.Annotations.Color(0, 0, 255, 0.5),
         activeSearchResult: 'rgba(0, 255, 0, 0.5)'
       });
-    
-    
+
+
       instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
         const PDFNet = instance.Core.PDFNet;
         const doc = await PDFNet.PDFDoc.createFromBuffer(await this.file.arrayBuffer());
@@ -474,7 +474,16 @@ export class DocumentAddPage implements OnInit {
   }
 
   async highlightActionAreas(instance, actionAreas){
-      
+    console.log(actionAreas);
+
+    console.log("Searching Through document");
+    const searchText = "_";
+    console.log(await this.searchTextPromise(searchText, instance));
+    console.log(await this.searchTextPromise('the', instance));
+    console.log(await this.searchTextPromise('For', instance));
+
+    //instance.Core.documentViewer.textSearchInit("date", mode, searchOptions);
+    /*
       console.log();
       console.log('---------------------------');
       for(const area of actionAreas){
@@ -484,7 +493,7 @@ export class DocumentAddPage implements OnInit {
       }
       console.log();
       console.log('---------------------------');
-  
+
       const mode = instance.Core.Search.Mode.PAGE_STOP | instance.Core.Search.Mode.HIGHLIGHT;
       const searchOptions = {
         fullSearch: true,
@@ -521,7 +530,41 @@ export class DocumentAddPage implements OnInit {
         console.log(searchText);
         instance.Core.documentViewer.textSearchInit(searchText, mode, searchOptions);
       }
+      */
+
     }
+
+    searchTextPromise(searchText, instance): Promise<boolean>{
+      return new Promise((resolve, reject) =>{
+        const mode = instance.Core.Search.Mode.PAGE_STOP | instance.Core.Search.Mode.HIGHLIGHT;
+        const searchOptions = {
+          fullSearch: true,
+          onResult: result => {
+            if (result.resultCode === instance.Core.Search.ResultCode.FOUND) {
+              const textQuad = result.quads[0].getPoints(); // getPoints will return Quad objects
+              console.log(result.pageNum);
+              const highlight = new instance.Core.Annotations.TextHighlightAnnotation();
+              highlight.PageNumber = result.pageNum;
+              highlight.X = 405;
+              highlight.Y = 165;
+              highlight.Width = 275;
+              highlight.Height = 25;
+              highlight.StrokeColor = new instance.Core.Annotations.Color(255, 255, 0);
+              // you might get the quads from text selection, a server calculation, etc
+              highlight.Quads = [textQuad];
+
+              instance.Core.annotationManager.addAnnotation(highlight);
+              instance.Core.annotationManager.drawAnnotations({pageNumber: highlight.PageNumber});
+                return reject(false);
+            }
+            else{
+              resolve(true);
+            }
+          }
+        };
+        instance.Core.documentViewer.textSearchInit(searchText, mode, searchOptions);
+      });
+  }
 
   async addFriend(){
     await this.selectFriend.open();
