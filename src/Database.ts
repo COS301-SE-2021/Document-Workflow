@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import { singleton } from "tsyringe";
 import dotenv from "dotenv";
 dotenv.config();
-import { createBlackList } from "jwt-blacklist";
 import { Jwt } from "jsonwebtoken";
 
 
@@ -23,10 +22,7 @@ export default class Database{
             Database.db.once('open', () => {
                  console.log("Connection opened");
              });
-            this.blacklist = await createBlackList({
-                daySize: 10000 | parseInt(process.env.DAY_SIZE),
-                errorRate: 0.001 | parseFloat(process.env.ERROR_RATE)
-            })
+
         } catch (err) {
             console.error(err);
         }
@@ -40,8 +36,8 @@ export default class Database{
     }
 
     static async checkBlacklist(token: Jwt): Promise<Boolean>{
-        await this.get();
-        return await this.blacklist.has(token);
+
+        return false;
     }
 
     static async get(): Promise<void> {

@@ -231,7 +231,7 @@ export default class UserService {
   async logoutUser(token: Jwt): Promise<Boolean> {
     console.log("Logging out a user");
     try {
-      return await Database.addToBlacklist(token);
+      return true;
     } catch (err) {
       console.error(err);
       throw new RequestError("Could not log out user");
