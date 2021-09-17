@@ -35,6 +35,7 @@ import { AIService } from 'src/app/Services/AI/ai.service';
 // import { VerifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
 import WebViewer, {Core} from '@pdftron/webviewer';
 
+
 @Component({
   selector: 'app-document-add',
   templateUrl: './document-add.page.html',
@@ -343,17 +344,36 @@ export class DocumentAddPage implements OnInit {
         console.log(PDFNet.TextSearch.ResultCode.e_found);
         if (result.code === PDFNet.TextSearch.ResultCode.e_found) {
           console.log(result);
-          const textQuad = result.quads[0].getPoints(); // getPoints will return Quad objects
+          let hlts = result.highlights;
+          await hlts.begin(doc);
+          await hlts.hasNext();
+
+          const quadArr = await hlts.getCurrentQuads();
+          const hltQuad = quadArr[0];
+
+          const textQuad = new instance.Core.Math.Quad(hltQuad.p1x,hltQuad.p1y, hltQuad.p2x,hltQuad.p2y, hltQuad.p3x,hltQuad.p3y, hltQuad.p4x, hltQuad.p4y);
+          console.log(textQuad);
+          /*
+            {
+              x1: hltQuad.p1x,
+              x2: hltQuad.p2x,
+              x3: hltQuad.p3x,
+              x4: hltQuad.p4x,
+              y1: hltQuad.p1y,
+              y2: hltQuad.p2y,
+              y3: hltQuad.p3y,
+              y4: hltQuad.p4y
+          }*/
           const highlight = new instance.Core.Annotations.TextHighlightAnnotation();
           //console.log(result.pageNum);
-          highlight.PageNumber = result.pageNum;
+          highlight.PageNumber = result.page_num;
           highlight.StrokeColor = new instance.Core.Annotations.Color(255, 255, 0);
           highlight.Quads = [textQuad];
 
           await instance.Core.annotationManager.addAnnotation(highlight);
-          await instance.Core.annotationManager.drawAnnotations({pageNumber: highlight.PageNumber});
+          await instance.Core.annotationManager.drawAnnotations({pageNumber: result.page_num});
         }
-        /*  */
+         /* */
         console.log("SHOULD SEE RESULTS BEFORE THIS!!!!");
 
 
@@ -516,6 +536,7 @@ export class DocumentAddPage implements OnInit {
             highlight.StrokeColor = new instance.Core.Annotations.Color(255, 255, 0);
             // you might get the quads from text selection, a server calculation, etc
             highlight.Quads = [textQuad];
+            console.log(highlight.Quads);
 
             instance.Core.annotationManager.addAnnotation(highlight);
             instance.Core.annotationManager.drawAnnotations({pageNumber: highlight.PageNumber});
@@ -599,6 +620,7 @@ export class DocumentAddPage implements OnInit {
               highlight.StrokeColor = new instance.Core.Annotations.Color(255, 255, 0);
               // you might get the quads from text selection, a server calculation, etc
               highlight.Quads = [textQuad];
+              console.log(highlight.Quads);
 
               instance.Core.annotationManager.addAnnotation(highlight);
               instance.Core.annotationManager.drawAnnotations({pageNumber: highlight.PageNumber});
