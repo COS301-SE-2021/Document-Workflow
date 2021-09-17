@@ -227,16 +227,17 @@ export default class UserController{
     }
 
 
-    /*private async verifyEmailExistence(req) {
+    private async verifyEmailExistence(req) {
         if(!req.body.email)
             throw new RequestError("Cannot verify existence of null email");
         try{
-            return await this.userService.verifyEmailExistence(req.body.email, req.user._id);
+            console.log(req.body.email);
+            return await this.userService.verifyEmailExistence(req.body.email);
         }
         catch(err){
             throw err;
         }
-    }*/
+    }
 
     /**
      * This function is used to fetch the ids of the workflow templates owned by a user.
@@ -494,15 +495,15 @@ export default class UserController{
             }
         });
 
-        /*this.router.post("/verifyEmailExistence", this.authenticationService.Authenticate, async (req, res) => {
+        this.router.post("/verifyEmailExistence", this.authenticationService.Authenticate, async (req, res) => {
             try {
-                return await this.verifyEmailExistence(req);
+                const data = await this.verifyEmailExistence(req);
+                res.status(200).json({status: "success", data: {data}, message: "Successfully found the"});
             } catch(err){
                 res.status(200).json({status:"error", data: {}, message: ""});
                 try{await handleErrors(err,res);}catch{}
-                await handleErrors(err,res);
             }
-        });*/
+        });
 
         this.router.post("/getWorkflowTemplatesIds", this.authenticationService.Authenticate, async(req, res) =>{
             try {

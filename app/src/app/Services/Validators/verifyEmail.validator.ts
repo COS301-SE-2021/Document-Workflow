@@ -24,10 +24,10 @@ import { UserAPIService } from '../User/user-api.service';
 export class VerifyEmail {
   constructor(private userService: UserAPIService) {}
 
-  verifyEmail(control: FormControl) {
-    return new Promise((resolve) => {
-      this.userService.verifyEmail(control.value).subscribe((response) => {
-        if (response) {
+  async verifyEmail(control: FormControl) {
+    return new Promise(async (resolve) => {
+      await this.userService.verifyEmail(control.value, (response) => {
+        if (response ==false) {
           return resolve({ verifyEmail: true });
         } else {
           return resolve(null);

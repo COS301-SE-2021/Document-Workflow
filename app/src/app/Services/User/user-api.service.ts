@@ -164,9 +164,9 @@ export class UserAPIService {
   }
   // return true if email is valid else return false.
   //Can be used with register as it must return false
-  verifyEmail(email: string): Observable<boolean> {
-    console.log(email);
+  verifyEmail(email: string, callback) {
     const formData = new FormData();
+    formData.append('email', email)
     //const token = localStorage.getItem('token');
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
@@ -178,12 +178,11 @@ export class UserAPIService {
       })
       .subscribe(
         (data) => {
-          //TODO: change url
-          if (data) {
-            console.log(data);
-            return true;
+          console.log(data['data'].data)
+          if (data['data'].data === true) {
+            callback( true);
           } else {
-            return false;
+            callback( false );
           }
         },
         async (error) => {
@@ -191,11 +190,12 @@ export class UserAPIService {
             'Error',
             'The Document Workflow server could not be reached at this time'
           );
-          return false;
+          callback(false);
         }
       );
-    return of(false);
+      console.log('here')
   }
+
 
   async getUserDetails(callback) {
 

@@ -34,6 +34,7 @@ import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 import { AIService } from 'src/app/Services/AI/ai.service';
 // import { VerifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
 import WebViewer, {Core} from '@pdftron/webviewer';
+import { VerifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
 
 
 @Component({
@@ -128,7 +129,7 @@ export class DocumentAddPage implements OnInit {
     this.addName = false;
     this.controller = false;
 
-    // const verifierEmail = new VerifyEmail(this.userApiService);
+    const verifierEmail = new VerifyEmail(this.userApiService);
 
     this.workflowForm = this.fb.group({
       workflowName: ['', [Validators.required]],
@@ -144,7 +145,7 @@ export class DocumentAddPage implements OnInit {
                 Validators.email,
                 Validators.required,
                 Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")
-              ], ),
+              ],[verifierEmail.verifyEmail.bind(verifierEmail)] ),
               permission: new FormControl('', [Validators.required]),
               accepted: new FormControl('false', [Validators.required]),
             }),
@@ -223,9 +224,10 @@ export class DocumentAddPage implements OnInit {
     control.setValue(str);
   }
 
-//     const verifierEmail = new VerifyEmail(this.userApiService);
-  // [verifierEmail.verifyEmail.bind(verifierEmail)]
+
   createPhase(): FormGroup {
+    const verifierEmail = new VerifyEmail(this.userApiService);
+
     // const verifierEmail = new VerifyEmail(this.userApiService);
     return this.fb.group({
       description: new FormControl('', Validators.required),
@@ -236,7 +238,7 @@ export class DocumentAddPage implements OnInit {
             Validators.email,
             Validators.required,
             , Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")
-          ], ),
+          ],  [verifierEmail.verifyEmail.bind(verifierEmail)]),
           permission: new FormControl('', [Validators.required]),
           accepted: new FormControl('false', [Validators.required]),
         } ),

@@ -10,6 +10,7 @@ import { isStrongPassword, isEmail } from "validator";
 import { logger } from "../LoggingConfig";
 import Database from "../Database";
 import { ObjectId } from "mongoose";
+import { Nimble } from "aws-sdk";
 
 @injectable()
 export default class UserService {
@@ -318,9 +319,17 @@ export default class UserService {
     }
   }
 
-  /*async verifyEmailExistence(email, requestingUserId) {
-        return Promise.resolve(undefined);
-    }*/
+  async verifyEmailExistence(email) {
+    const contact: UserDoc = await this.userRepository.findUser({
+      email: email,
+    });
+    console.log(contact);
+    if(contact != null){
+      return true;
+    }else{
+      return false;
+    }
+  }
 
   private static removeFromArray(array: Array<any>, value): Boolean {
     const indexOfRemovedValue = array.indexOf(value);

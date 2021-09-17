@@ -79,6 +79,9 @@
       </ion-card>
 
       <ion-reorder *ngFor="let phase of workflowForm.controls.phases['controls']; let i = index">
+       <ion-fab>
+         <ion-fab-button (click)="debug('')"></ion-fab-button>
+       </ion-fab>
         <ion-card style="width: 98%">
           <ion-grid style="width: 100%;">
             <ion-row>
