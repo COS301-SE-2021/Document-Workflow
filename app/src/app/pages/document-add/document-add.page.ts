@@ -333,6 +333,7 @@ export class DocumentAddPage implements OnInit {
       instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
         const PDFNet = instance.Core.PDFNet;
         const doc = await PDFNet.PDFDoc.createFromBuffer(await this.file.arrayBuffer());
+
         /* Diffeerent text search approach */
         const txtSearch = await PDFNet.TextSearch.create();
         let mode = PDFNet.TextSearch.Mode.e_whole_word + PDFNet.TextSearch.Mode.e_page_stop + PDFNet.TextSearch.Mode.e_highlight;
@@ -350,8 +351,10 @@ export class DocumentAddPage implements OnInit {
 
           const quadArr = await hlts.getCurrentQuads();
           const hltQuad = quadArr[0];
+          const page = await doc.getPage(result.page_num);
+          const ph = await page.getPageHeight();
 
-          const textQuad = new instance.Core.Math.Quad(hltQuad.p1x,hltQuad.p1y, hltQuad.p2x,hltQuad.p2y, hltQuad.p3x,hltQuad.p3y, hltQuad.p4x, hltQuad.p4y);
+          const textQuad = new instance.Core.Math.Quad(hltQuad.p1x,ph - hltQuad.p1y, hltQuad.p2x,ph - hltQuad.p2y, hltQuad.p3x,ph - hltQuad.p3y, hltQuad.p4x,ph -  hltQuad.p4y);
           console.log(textQuad);
           /*
             {
