@@ -178,7 +178,6 @@ export class UserAPIService {
       })
       .subscribe(
         (data) => {
-          console.log(data['data'].data)
           if (data['data'].data === true) {
             callback( true);
           } else {

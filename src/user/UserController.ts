@@ -498,7 +498,7 @@ export default class UserController{
         this.router.post("/verifyEmailExistence", this.authenticationService.Authenticate, async (req, res) => {
             try {
                 const data = await this.verifyEmailExistence(req);
-                res.status(200).json({status: "success", data: {data}, message: "Successfully found the"});
+                res.status(200).json({status: "success", data: {data}, message: "Success, searched for user"});
             } catch(err){
                 res.status(200).json({status:"error", data: {}, message: ""});
                 try{await handleErrors(err,res);}catch{}

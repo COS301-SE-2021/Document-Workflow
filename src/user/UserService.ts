@@ -323,7 +323,6 @@ export default class UserService {
     const contact: UserDoc = await this.userRepository.findUser({
       email: email,
     });
-    console.log(contact);
     if(contact != null){
       return true;
     }else{
