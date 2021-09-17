@@ -334,54 +334,8 @@ export class DocumentAddPage implements OnInit {
         const PDFNet = instance.Core.PDFNet;
         const doc = await PDFNet.PDFDoc.createFromBuffer(await this.file.arrayBuffer());
 
-        /* Diffeerent text search approach */
-        const txtSearch = await PDFNet.TextSearch.create();
-        let mode = PDFNet.TextSearch.Mode.e_whole_word + PDFNet.TextSearch.Mode.e_page_stop + PDFNet.TextSearch.Mode.e_highlight;
-        let pattern = 'Consultant';
-
-        txtSearch.begin(doc, pattern, mode);
-        let result = await txtSearch.run();
-        console.log(result);
-        console.log(PDFNet.TextSearch.ResultCode.e_found);
-        if (result.code === PDFNet.TextSearch.ResultCode.e_found) {
-          console.log(result);
-          let hlts = result.highlights;
-          await hlts.begin(doc);
-          await hlts.hasNext();
-
-          const quadArr = await hlts.getCurrentQuads();
-          const hltQuad = quadArr[0];
-          const page = await doc.getPage(result.page_num);
-          const ph = await page.getPageHeight();
-
-          const textQuad = new instance.Core.Math.Quad(hltQuad.p1x,ph - hltQuad.p1y, hltQuad.p2x,ph - hltQuad.p2y, hltQuad.p3x,ph - hltQuad.p3y, hltQuad.p4x,ph -  hltQuad.p4y);
-          console.log(textQuad);
-          /*
-            {
-              x1: hltQuad.p1x,
-              x2: hltQuad.p2x,
-              x3: hltQuad.p3x,
-              x4: hltQuad.p4x,
-              y1: hltQuad.p1y,
-              y2: hltQuad.p2y,
-              y3: hltQuad.p3y,
-              y4: hltQuad.p4y
-          }*/
-          const highlight = new instance.Core.Annotations.TextHighlightAnnotation();
-          //console.log(result.pageNum);
-          highlight.PageNumber = result.page_num;
-          highlight.StrokeColor = new instance.Core.Annotations.Color(255, 255, 0);
-          highlight.Quads = [textQuad];
-
-          await instance.Core.annotationManager.addAnnotation(highlight);
-          await instance.Core.annotationManager.drawAnnotations({pageNumber: result.page_num});
-        }
-         /* */
-        console.log("SHOULD SEE RESULTS BEFORE THIS!!!!");
-
-
         let extractedText = "";
-        /*Testing if we can retrive hash stored in a document*/
+        /*Testing if we can retrieve hash stored in a document*/
         const doc1 = await doc.getSDFDoc();
         doc1.initSecurityHandler();
         doc1.lock();
@@ -404,6 +358,54 @@ export class DocumentAddPage implements OnInit {
         //console.log("Text successfully extracted");
         const docType = this.aiService.categorizeDocument(extractedText);
         const actionAreas = this.aiService.identifyActionAreas(extractedText, docType);
+
+        for(const actionArea of actionAreas) {
+          if(!actionArea[1]){
+            continue;
+          }
+          let pattern = actionArea[0];
+          /* Diffeerent text search approach */
+          const txtSearch = await PDFNet.TextSearch.create();
+          let mode = PDFNet.TextSearch.Mode.e_whole_word + PDFNet.TextSearch.Mode.e_page_stop + PDFNet.TextSearch.Mode.e_highlight;
+
+
+          txtSearch.begin(doc, pattern, mode);
+
+          while (true) {
+            let result = await txtSearch.run();
+            console.log(result);
+            if (result.code === PDFNet.TextSearch.ResultCode.e_found) {
+              console.log(result);
+              let hlts = result.highlights;
+              await hlts.begin(doc);
+
+              const quadArr = await hlts.getCurrentQuads();
+              const hltQuad = quadArr[0];
+              const page = await doc.getPage(await hlts.getCurrentPageNumber());
+              const ph = await page.getPageHeight();
+
+              const textQuad = new instance.Core.Math.Quad(hltQuad.p1x, ph - hltQuad.p1y, hltQuad.p2x, ph - hltQuad.p2y, hltQuad.p3x, ph - hltQuad.p3y, hltQuad.p4x, ph - hltQuad.p4y);
+              console.log(textQuad);
+
+              const highlight = new instance.Core.Annotations.TextHighlightAnnotation();
+              //console.log(result.pageNum);
+              highlight.PageNumber = result.page_num;
+              highlight.StrokeColor = new instance.Core.Annotations.Color(255, 255, 0);
+              highlight.Quads = [textQuad];
+
+              await instance.Core.annotationManager.addAnnotation(highlight);
+              await instance.Core.annotationManager.drawAnnotations({pageNumber: result.page_num});
+            } else if (result.code === PDFNet.TextSearch.ResultCode.e_page) {
+              // you can update your UI here, if needed
+              console.log('page end');
+            } else if (result.code === PDFNet.TextSearch.ResultCode.e_done) {
+              break;
+            }
+          }
+          }
+
+         /* */
+
         //await this.highlightActionAreas(instance, actionAreas);
         doc.unlock();
       });
