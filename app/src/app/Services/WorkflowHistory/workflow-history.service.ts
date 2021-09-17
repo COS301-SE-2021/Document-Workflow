@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LoadingController } from '@ionic/angular';
-import * as Cookies from 'js-cookie';
+import Cookies from 'js-cookie';
 import {config} from 'src/app/Services/configuration'
 @Injectable({
   providedIn: 'root',

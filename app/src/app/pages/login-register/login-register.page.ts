@@ -24,7 +24,7 @@ import {
 } from './../../Services/User/user-api.service';
 
 import { ActionSheetController, Platform } from '@ionic/angular';
-import * as Cookies from 'js-cookie';
+import Cookies from 'js-cookie';
 
 import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
 

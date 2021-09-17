@@ -27,7 +27,7 @@ import {
 import { ItemReorderEventDetail } from '@ionic/core';
 import { DocumentActionAreaComponent } from 'src/app/components/document-action-area/document-action-area.component';
 import { User, UserAPIService } from 'src/app/Services/User/user-api.service';
-import * as Cookies from 'js-cookie';
+import Cookies from 'js-cookie';
 import {
   phaseFormat,
   phaseUserFormat,

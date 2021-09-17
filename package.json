@@ -17,7 +17,6 @@
   "author": "Team Jar-gon",
   "license": "ISC",
   "dependencies": {
-    "@angular/cli": "^12.0.2",
     "@types/jsonwebtoken": "^8.5.5",
     "@types/node": "^16.7.1",
     "aws-sdk": "^2.927.0",

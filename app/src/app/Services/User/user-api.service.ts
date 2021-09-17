@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
-import * as Cookies from 'js-cookie';
+import Cookies from 'js-cookie';
 import { LoadingController, PopoverController } from '@ionic/angular';
 import { config } from 'src/app/Services/configuration';
 import { Logger } from '../Logger';

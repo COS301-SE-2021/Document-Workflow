@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { IonicModule, Platform } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
 import { Browser } from '@capacitor/browser';
-import * as Cookies from 'js-cookie';
+import Cookies from 'js-cookie';
 
 import { ActivatedRoute, Router } from '@angular/router';
 

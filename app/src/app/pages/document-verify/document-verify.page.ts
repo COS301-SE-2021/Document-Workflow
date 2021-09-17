@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ActionSheetController, Platform } from '@ionic/angular';
 import { UserAPIService } from 'src/app/Services/User/user-api.service';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
-import * as Cookies from 'js-cookie';
+import Cookies from 'js-cookie';
 import WebViewer, { Core } from '@pdftron/webviewer';
 import { PDFDocument } from 'pdf-lib';
 @Component({
@@ -85,7 +85,7 @@ export class DocumentVerifyPage implements OnInit {
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
     this.file = target.files[0];
     this.verifyDocument();
- 
+
   }
 
   verifyDocument(){
@@ -122,7 +122,7 @@ export class DocumentVerifyPage implements OnInit {
       instance.UI.loadDocument(blob, {filename: 'Preview Document'});
       instance.UI.disableElements(['ribbons']);
       instance.UI.setToolbarGroup('toolbarGroup-View',false);
-    
+
       instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
         const PDFNet = instance.Core.PDFNet;
         const doc = await PDFNet.PDFDoc.createFromBuffer(await this.file.arrayBuffer());

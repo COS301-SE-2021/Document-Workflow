@@ -4,14 +4,14 @@ import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 
 //interface and services
-import { User, UserAPIService } from './../../Services/User/user-api.service';
+import { User, UserAPIService } from '../../Services/User/user-api.service';
 import {
   phaseFormat,
   workflowFormat,
   WorkFlowService,
 } from '../../Services/Workflow/work-flow.service';
 import { ItemReorderEventDetail } from '@ionic/core';
-import * as Cookies from 'js-cookie';
+import Cookies from 'js-cookie';
 import { FormBuilder, FormGroup } from '@angular/forms';
 @Component({
   selector: 'app-workflow',

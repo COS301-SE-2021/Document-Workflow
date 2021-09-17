@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Form, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
-import * as Cookies from 'js-cookie';
+import Cookies from 'js-cookie';
 import { UserAPIService } from 'src/app/Services/User/user-api.service';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention

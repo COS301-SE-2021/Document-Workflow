@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { LoadingController, PopoverController } from '@ionic/angular';
 import { UserNotificationsComponent } from '../../components/user-notifications/user-notifications.component';
-import * as Cookies from 'js-cookie';
+import Cookies from 'js-cookie';
 import { config } from 'src/app/Services/configuration';
 import { phaseFormat } from '../Workflow/work-flow.service';
 import { phaseUser } from '../Document/document-api.service';
@@ -40,7 +40,7 @@ export interface templatePhaseUser{
   providedIn: 'root',
 })
 export class WorkflowTemplateService {
-  
+
   constructor(
     private http: HttpClient,
     public loadingCtrl: LoadingController,

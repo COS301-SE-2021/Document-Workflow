@@ -29,7 +29,7 @@ import {
 import { ItemReorderEventDetail } from '@ionic/core';
 import { DocumentActionAreaComponent } from 'src/app/components/document-action-area/document-action-area.component';
 import { User, UserAPIService } from 'src/app/Services/User/user-api.service';
-import * as Cookies from 'js-cookie';
+import Cookies from 'js-cookie';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 import { AIService } from 'src/app/Services/AI/ai.service';
 // import { VerifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
@@ -327,8 +327,8 @@ export class DocumentAddPage implements OnInit {
         searchResult: new instance.Core.Annotations.Color(0, 0, 255, 0.5),
         activeSearchResult: 'rgba(0, 255, 0, 0.5)'
       });
-    
-    
+
+
       instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
         const PDFNet = instance.Core.PDFNet;
         const doc = await PDFNet.PDFDoc.createFromBuffer(await this.file.arrayBuffer());
@@ -474,7 +474,7 @@ export class DocumentAddPage implements OnInit {
   }
 
   async highlightActionAreas(instance, actionAreas){
-      
+
       console.log();
       console.log('---------------------------');
       for(const area of actionAreas){
@@ -484,7 +484,7 @@ export class DocumentAddPage implements OnInit {
       }
       console.log();
       console.log('---------------------------');
-  
+
       const mode = instance.Core.Search.Mode.PAGE_STOP | instance.Core.Search.Mode.HIGHLIGHT;
       const searchOptions = {
         fullSearch: true,
