@@ -160,7 +160,7 @@
               </ion-card-title>
             </ion-card-header>
             <ion-card-content>
-              <form [formGroup]="addContactForm" (ngSubmit)="submit()">
+              <form [formGroup]="addContactForm" (ngSubmit)="sendFriendRequest()">
                 <ion-item style="border-radius: 10px;">
                   <ion-label style="color: grey" position='floating'>Add contact by email</ion-label>
                   <ion-input formControlName='contact' type='email'></ion-input>
@@ -180,7 +180,7 @@
             </ion-item> -->
                   <ion-item lines="none">
                     <ion-label position="stacked">Email address:</ion-label>
-                    {{contact.email}}
+                    {{contact}}
                   </ion-item>
 
                   <ion-button (click)="deleteContact(contact)">Delete contact</ion-button>
@@ -207,7 +207,7 @@
                 <ion-col sizeXs='12' sizeSm='6' sizeMd='4' *ngFor="let pending of pendingContacts;">
                   <ion-card>
                     <ion-item lines="none">
-                      {{pending.email}}
+                      {{pending}}
                     </ion-item>
                     <ion-button (click)="acceptContactRequest(pending)">Accept</ion-button>
                     <ion-button (click)="rejectContactRequest(pending)">Reject</ion-button>
@@ -229,7 +229,7 @@
                 <ion-col sizeXs='12' sizeSm='6' sizeMd='4' *ngFor="let pending of blockedContacts;">
                   <ion-card>
                     <ion-item lines="none">
-                      {{pending.email}}
+                      {{pending}}
                     </ion-item>
                     <ion-button (click)="unBlockUser(pending)">unblock user</ion-button>
                   </ion-card>

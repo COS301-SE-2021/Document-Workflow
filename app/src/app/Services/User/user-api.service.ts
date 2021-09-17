@@ -198,6 +198,7 @@ export class UserAPIService {
   }
 
   async getUserDetails(callback) {
+
     const formData = new FormData();
     //const token = localStorage.getItem('token');
     const token = Cookies.get('token');
@@ -212,11 +213,15 @@ export class UserAPIService {
         (data) => {
           //TODO: change url
           if (data) {
+
             callback(data);
-          } else
+          } else {
+
             callback({ status: 'error', message: 'Cannot connect to Server' });
+          }
         },
         async (error) => {
+
           await this.displayPopOver(
             'Error user-api-services - getUserDetails',
             error
@@ -260,14 +265,13 @@ export class UserAPIService {
       })
       .subscribe(
         (data) => {
-          console.log(data);
           callback(data);
-      },
+        },
         async (error) => {
           await this.displayPopOver('Logout error', error.error);
-      }
-    );
-}
+        }
+      );
+  }
 
   getContactRequests(callback) {
     const formData = new FormData();
@@ -282,14 +286,15 @@ export class UserAPIService {
       .subscribe(
         (data) => {
           callback(data);
-      },
+        },
         async (error) => {
           await this.displayPopOver('Logout error', error.error);
-      }
-    );
-}
+        }
+      );
+  }
 
   acceptContactRequest(contactid, callback) {
+    this.displayLoading();
     const formData = new FormData();
     formData.append('contactemail', contactid);
     const token = Cookies.get('token');
@@ -302,15 +307,18 @@ export class UserAPIService {
       })
       .subscribe(
         (data) => {
+          this.dismissLoading();
           callback(data);
-      },
+        },
         async (error) => {
+          this.dismissLoading();
           await this.displayPopOver('Logout error', error.error);
-      }
-    );
-}
+        }
+      );
+  }
 
   unblockUser(contactID, callback) {
+    this.displayLoading();
     const formData = new FormData();
     formData.append('contactemail', contactID);
     const token = Cookies.get('token');
@@ -323,15 +331,18 @@ export class UserAPIService {
       })
       .subscribe(
         (data) => {
-            callback(data);
+          this.dismissLoading();
+          callback(data);
         },
         async (error) => {
+          this.dismissLoading();
           await this.displayPopOver('Logout error', error.error);
         }
       );
   }
 
   blockUser(contactID, callback) {
+    this.displayLoading();
     const formData = new FormData();
     formData.append('contactemail', contactID);
     const token = Cookies.get('token');
@@ -344,16 +355,18 @@ export class UserAPIService {
       })
       .subscribe(
         (data) => {
+          this.dismissLoading();
           callback(data);
         },
         async (error) => {
+          this.dismissLoading();
           await this.displayPopOver('Logout error', error.error);
         }
       );
   }
 
   // getBlockedContacts
-  getBlockedContacts( callback){
+  getBlockedContacts(callback) {
     const formData = new FormData();
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
@@ -366,6 +379,7 @@ export class UserAPIService {
       .subscribe(
         (data) => {
           callback(data);
+
         },
         async (error) => {
           await this.displayPopOver('Logout error', error.error);
@@ -374,6 +388,7 @@ export class UserAPIService {
   }
 
   deleteContact(contactID, callback) {
+    this.displayLoading();
     const formData = new FormData();
     formData.append('contactemail', contactID);
     const token = Cookies.get('token');
@@ -386,15 +401,18 @@ export class UserAPIService {
       })
       .subscribe(
         (data) => {
+          this.dismissLoading();
           callback(data);
         },
         async (error) => {
+          this.dismissLoading();
           await this.displayPopOver('Logout error', error.error);
         }
       );
   }
 
   rejectContactRequest(pendingID, callback) {
+    this.displayLoading();
     const formData = new FormData();
     formData.append('contactemail', pendingID);
     const token = Cookies.get('token');
@@ -407,16 +425,18 @@ export class UserAPIService {
       })
       .subscribe(
         (data) => {
+          this.dismissLoading();
           callback(data);
         },
         async (error) => {
+          this.dismissLoading();
           await this.displayPopOver('Logout error', error.error);
         }
       );
   }
 
   sendContactRequest(pendingID, callback) {
-    console.log(pendingID);
+    this.displayLoading();
     const formData = new FormData();
     formData.append('contactemail', pendingID);
     const token = Cookies.get('token');
@@ -430,8 +450,10 @@ export class UserAPIService {
       .subscribe(
         (data) => {
           callback(data);
+          this.dismissLoading();
         },
         async (error) => {
+          this.dismissLoading();
           await this.displayPopOver('Send Contact request error', error.error);
         }
       );

@@ -57,11 +57,12 @@ export class WorkflowTemplatePage implements OnInit {
   }
 
   async getTemplateData(){
-    console.log("Fetching template ids");
+    this.workflowService.displayLoading();
     this.userService.getTemplateIDs(async (response)=>{
       for(let id of response.data.templateIds){
         await this.getWorkflowTemplateData(id);
       }
+      this.workflowService.dismissLoading();
     })
   }
 

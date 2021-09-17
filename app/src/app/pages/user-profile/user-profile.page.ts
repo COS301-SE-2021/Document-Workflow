@@ -30,6 +30,10 @@ export class UserProfilePage implements OnInit {
   ready: boolean;
   sizeMe: boolean;
 
+  ready1: boolean;
+  ready2: boolean;
+  ready3: boolean;
+
   contacts: contact[] = [];
   pendingContacts: contact[] = [];
   blockedContacts: contact[] = [];
@@ -42,8 +46,13 @@ export class UserProfilePage implements OnInit {
   ) {}
 
   async ngOnInit() {
+    this.ready1 = false;
+    this.ready2 = false;
+    this.ready3 = false;
+    this.userApiService.dismissLoading();
     await this.getUser();
     await this.getContactInformation();
+
     if (this.plat.width() > 572) {
       this.sizeMe = false;
     } else {
@@ -53,32 +62,6 @@ export class UserProfilePage implements OnInit {
     this.addContactForm = this.fb.group({
       contact: ['', [Validators.required, Validators.email]],
     });
-    // todo remove this below
-
-    // let email1:contact;
-    // let email2:contact;
-    // let email3:contact;
-    // let email4:contact;
-
-    // email1={email:"brenton.stroberg@yahoo.co.za"};
-    // email2={email:"timothy@yahoo.co.za"};
-    // email3={email:"bev@yahoo.co.za"};
-    // email4={email:"delaray@yahoo.co.za"};
-
-    // this.pendingContacts.push(email1);
-    // this.pendingContacts.push(email2);
-    // this.pendingContacts.push(email3);
-    // this.pendingContacts.push(email4);
-
-    // this.contacts.push(email1);
-    // this.contacts.push(email2);
-    // this.contacts.push(email3);
-    // this.contacts.push(email4);
-
-    // this.blockedContacts.push(email1);
-    // this.blockedContacts.push(email2);
-    // this.blockedContacts.push(email3);
-    // this.blockedContacts.push(email4);
   }
 
   async getUser() {
@@ -122,29 +105,37 @@ export class UserProfilePage implements OnInit {
   }
 
   async getContactInformation() {
+    this.userApiService.displayLoading();
     await this.userApiService.getContacts((response) => {
-      console.log(response);
-      if (response.status === 'success') {
-        this.contacts = response.data.contacts;
-      } else {
-        this.userApiService.displayPopOver('Error', 'Failed to get users');
+      if (response) {
+        if (response.status === 'success') {
+          this.contacts = response.data.contacts;
+        } else {
+          this.userApiService.displayPopOver('Error', 'Failed to get users');
+        }
+        this.ready1 = true;
+        this.dismissLoader();
       }
     });
     await this.userApiService.getContactRequests((response) => {
       console.log(response);
-      if (response.status === 'success') {
-        this.pendingContacts = response.data.requests;
-        console.log(this.pendingContacts);
-      } else {
-        this.userApiService.displayPopOver(
-          'Error',
-          'Failed to get pending users'
-        );
+      if (response) {
+        if (response.status === 'success') {
+          this.pendingContacts = response.data.requests;
+          console.log(this.pendingContacts);
+        } else {
+          this.userApiService.displayPopOver(
+            'Error',
+            'Failed to get pending users'
+          );
+        }
+        this.ready2 = true;
+        this.dismissLoader();
       }
-      this.ready = true;
     });
     await this.userApiService.getBlockedContacts((response) => {
       console.log(response);
+      if(response){
       if (response.status === 'success') {
         this.blockedContacts = response.data.contacts;
         console.log(this.blockedContacts);
@@ -154,7 +145,17 @@ export class UserProfilePage implements OnInit {
           'Failed to get blocked users'
         );
       }
+      this.ready3 = true;
+      this.dismissLoader();
+    }
     });
+  }
+
+  dismissLoader(){
+    if(this.ready1 && this.ready2 && this.ready3){
+      this.userApiService.dismissLoading();
+      this.ready = true;
+    }
   }
 
   async deleteContact(contact) {

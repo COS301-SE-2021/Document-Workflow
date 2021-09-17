@@ -7,13 +7,13 @@ import { config } from 'src/app/Services/configuration';
 import { phaseFormat } from '../Workflow/work-flow.service';
 import { phaseUser } from '../Document/document-api.service';
 
-export interface templateDescription{
+export interface templateDescription {
   templateID: string;
   templateName: string;
   templateDescription: string;
 }
 
-export interface Template{
+export interface Template {
   documentName: string;
   templateOwnerEmail: string;
   templateOwnerId: string;
@@ -23,24 +23,22 @@ export interface Template{
   phases: templatePhase[];
 }
 
-export interface templatePhase{
+export interface templatePhase {
   status: string;
   annotations: string;
   users: templatePhaseUser;
 }
 
-export interface templatePhaseUser{
+export interface templatePhaseUser {
   user: string;
   permissions: string;
   accepted: boolean;
 }
 
-
 @Injectable({
   providedIn: 'root',
 })
 export class WorkflowTemplateService {
-  
   constructor(
     private http: HttpClient,
     public loadingCtrl: LoadingController,
@@ -64,7 +62,7 @@ export class WorkflowTemplateService {
     });
   }
 
-  async deleteWorkflowTemplateService(workflowTemplateId, callback){
+  async deleteWorkflowTemplateService(workflowTemplateId, callback) {
     const formData = new FormData();
     formData.append('templateId', workflowTemplateId);
 
@@ -73,8 +71,7 @@ export class WorkflowTemplateService {
       Authorization: 'Bearer ' + token,
     });
 
-    let url =
-      config.url + '/workflowTemplates/delete';
+    let url = config.url + '/workflowTemplates/delete';
     this.http.post(url, formData, { headers: httpHeaders }).subscribe(
       async (data) => {
         if (data) {
@@ -96,7 +93,6 @@ export class WorkflowTemplateService {
         }
       }
     );
-
   }
 
   displayLoading() {
@@ -117,8 +113,6 @@ export class WorkflowTemplateService {
   }
 
   async getWorkflowTemplateNameAndDescription(workflowTemplateId, callback) {
-    console.log(workflowTemplateId);
-    // this.displayLoading();
     const formData = new FormData();
     formData.append('workflowTemplateId', workflowTemplateId);
 
@@ -134,12 +128,10 @@ export class WorkflowTemplateService {
         if (data) {
           callback(data);
         } else {
-          this.dismissLoading();
           callback({ status: 'error', message: 'Cannot connect to Server' });
         }
       },
       async (error) => {
-        this.dismissLoading();
         if (error.statusText === 'Unknown Error') {
           await this.displayPopOver(
             'Login Error',
@@ -161,43 +153,45 @@ export class WorkflowTemplateService {
       Authorization: 'Bearer ' + token,
     });
     let url = config.url + '/workflowTemplates/getWorkflowTemplateData';
-    this.http.post(url, formData, {headers: httpHeaders}).subscribe(
-        async (data) => {
+    this.http.post(url, formData, { headers: httpHeaders }).subscribe(
+      async (data) => {
+        if (data) {
+          data['template']['phases'] = this.formatPhases(
+            data['template']['phases']
+          );
+          data['fileData'] = data['fileData'];
           this.dismissLoading();
-          if (data) {
-            data['template']['phases'] = this.formatPhases(data['template']['phases']);
-            data['fileData'] = data['fileData'];
-            callback(data);
-          } else {
-            callback({ status: 'error', message: 'Cannot connect to Server' });
-          }
-        },
-        async (error) => {
+          callback(data);
+        } else {
           this.dismissLoading();
-          if (error.statusText === 'Unknown Error') {
-            await this.displayPopOver(
-              'Login Error',
-              'Could not connect to the Document Workflow Server at this time. Please try again later.'
-            );
-          } else {
-            await this.displayPopOver('Error Template Workflow', error.error);
-          }
+          callback({ status: 'error', message: 'Cannot connect to Server' });
         }
-      );
+      },
+      async (error) => {
+        this.dismissLoading();
+        if (error.statusText === 'Unknown Error') {
+          await this.displayPopOver(
+            'Login Error',
+            'Could not connect to the Document Workflow Server at this time. Please try again later.'
+          );
+        } else {
+          await this.displayPopOver('Error Template Workflow', error.error);
+        }
+      }
+    );
   }
 
-  formatPhases(arr: string[]): phaseFormat[]{
-    console.log(arr)
-    let phases: phaseFormat[] =[];
-    for(let phase of arr){
+  formatPhases(arr: string[]): phaseFormat[] {
+    console.log(arr);
+    let phases: phaseFormat[] = [];
+    for (let phase of arr) {
       let tmp = JSON.parse(phase);
-      let tempUser: phaseUser[]=[];
-      tempUser=JSON.parse(tmp[0]['users']);
+      let tempUser: phaseUser[] = [];
+      tempUser = JSON.parse(tmp[0]['users']);
       console.log(tempUser);
       tmp[0]['users'] = tempUser;
       phases.push(tmp);
     }
     return phases;
   }
-
 }
