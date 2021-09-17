@@ -54,15 +54,6 @@ export class UserProfilePage implements OnInit {
       contact: ['', [Validators.required, Validators.email]],
     });
     // todo remove this below
-    this.userForm = this.fb.group({
-      firstName: [, [Validators.required]],
-      lastName: [, [Validators.required]],
-      initials: [, [Validators.required]],
-      email: [, [Validators.required]],
-      password: ['', [Validators.nullValidator]],
-      confirmPassword: ['', [Validators.nullValidator]],
-    });
-
 
     // let email1:contact;
     // let email2:contact;
@@ -150,6 +141,7 @@ export class UserProfilePage implements OnInit {
           'Failed to get pending users'
         );
       }
+      this.ready = true;
     });
     await this.userApiService.getBlockedContacts((response) => {
       console.log(response);

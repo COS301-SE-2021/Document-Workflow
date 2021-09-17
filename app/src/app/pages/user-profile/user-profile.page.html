@@ -83,7 +83,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content *ngIf="ready">
   <ion-slides [options]="{slidesPerView: '1'}">
     <ion-slide style="width: 100%;">
       <ion-card style="width: 100%;">
