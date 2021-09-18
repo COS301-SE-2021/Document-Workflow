@@ -200,11 +200,6 @@ export default class WorkflowService{
             if(workflow.ownerEmail !== userEmail)
                 return {status:"failed", data: {}, message: "Insufficient rights to delete"};
 
-            await this.documentService.deleteDocument(workflowId, workflow.documentId);
-            console.log("Document and metadata deleted");
-            await this.removeOwnedWorkFlowId(workflow.ownerEmail, workflowId);
-            //TODO: workflow only gets deleted up until this point. More testing is needed.
-
             for(let i=0; i<workflow.phases.length; ++i){
                 const phase = await this.phaseService.getPhaseById(workflow.phases[i]);
 
@@ -217,8 +212,15 @@ export default class WorkflowService{
                 console.log("Deleting phase from workflow, phaseId: ", phase._id);
                 await this.phaseService.deletePhaseById(phase._id);
             }
-
+            await this.removeOwnedWorkFlowId(workflow.ownerEmail, workflowId);
             console.log("Workflow ID removed from all participants");
+
+            await this.documentService.deleteDocument(workflowId, workflow.documentId);
+            console.log("Document and metadata deleted");
+
+            await this.workflowHistoryService.deleteWorkflowHistory(workflow.historyId);
+            console.log("Workflow history deleted");
+
             await this.workflowRepository.deleteWorkflow(workflowId);
             return {status: "success", data:{}, message:""};
         }
