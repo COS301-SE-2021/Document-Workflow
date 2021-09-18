@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { injectable } from "tsyringe";
 import sanitize from "../security/Sanitize";
-import { RequestError, ServerError } from "../error/Error";
+import {RequestError, ServerError} from "../error/Error";
 import { handleErrors } from "../error/ErrorHandler";
 import Authenticator from "../security/Authenticate";
-import sanitizeRequest from "../security/Sanitize";
-import { AIService } from "./AIService";
+import sanitizeRequest from "./../security/Sanitize";
+import {AIService} from "./AIService";
 
 @injectable()
 export default class AIController{
@@ -19,6 +19,9 @@ export default class AIController{
         return this.aiService.retrieveClassifierData();
     }
 
+    private async getDecisionTrees(req) {
+        return this.aiService.getDecisionTreesData();
+    }
 
     routes() {
         this.router.get("/getClassifier", async(req,res)=>{
@@ -29,8 +32,14 @@ export default class AIController{
             }
         });
 
+        this.router.get("/getDecisionTrees", async(req,res)=>{
+            try {
+                res.status(200).json(await this.getDecisionTrees(req));
+            } catch(err){
+                await handleErrors(err,res);
+            }
+        });
+
         return this.router;
     }
-
-
 }
