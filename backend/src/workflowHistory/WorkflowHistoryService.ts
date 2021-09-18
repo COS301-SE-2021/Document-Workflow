@@ -80,4 +80,8 @@ export default class WorkflowHistoryService {
         return await this.workflowHistoryRepository.getWorkflowHistory(historyId);
     }
 
+    async deleteWorkflowHistory(historyId){
+        return await this.workflowHistoryRepository.deleteWorkflowHistory(historyId);
+    }
+
 }

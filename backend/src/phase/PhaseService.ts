@@ -5,7 +5,7 @@ import { Types } from "mongoose";
 type ObjectId = Types.ObjectId;
 
 @injectable()
-export class PhaseService{
+export default class PhaseService{
     constructor(private phaseRepository: PhaseRepository) {
     }
 
@@ -33,9 +33,9 @@ export class PhaseService{
         }
     }
 
-    async updatePhaseAnnotations(phase: IPhase): Promise<void>{
+    async updatePhaseAnnotations(phase: IPhase): Promise<boolean>{
         try{
-            await this.phaseRepository.updatePhaseAnnotations(phase);
+            return await this.phaseRepository.updatePhaseAnnotations(phase);
         }catch(err){
             throw err;
         }
