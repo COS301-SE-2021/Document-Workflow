@@ -369,7 +369,6 @@ export class WorkflowTemplatePage implements OnInit {
   }
 
   deleteTemplate(id: string){
-    console.log(this.templateService);
     this.templateService.deleteWorkflowTemplate(id, async (response)=>{
       await this.templateService.displayPopOver('Success', 'The workflow template was successfully deleted');
       this.router.navigate(['/home/workflowTemplate']);

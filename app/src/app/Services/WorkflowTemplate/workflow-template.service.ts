@@ -75,10 +75,10 @@ export class WorkflowTemplateService {
     let url = config.url + '/workflowTemplates/delete';
     this.http.post(url, formData, { headers: httpHeaders }).subscribe(
       async (data) => {
+        this.dismissLoading();
         if (data) {
           callback(data);
         } else {
-          this.dismissLoading();
           callback({ status: 'error', message: 'Cannot connect to Server' });
         }
       },

@@ -98,10 +98,16 @@ export default class WorkflowTemplateService{
             console.log(usr.workflowTemplates);
             await this.userService.updateUserTemplates(usr);
         }
-
-        console.log('Deleting workflow template doc from cloud');
-        await this.documentService.deleteTemplateDocumentFromCloud(templateId);
-        await this.workflowTemplateRepository.deleteWorkflowTemplate(templateId);
+        try {
+            console.log('Deleting workflow template doc from cloud');
+            await this.documentService.deleteTemplateDocumentFromCloud(templateId);
+            console.log('Deleting the workflow template');
+            await this.workflowTemplateRepository.deleteWorkflowTemplate(templateId);
+        }
+        catch(err){
+            console.log(err);
+            throw err;
+        }
 
         return {status: "success", data:{}, message:""};
     }
