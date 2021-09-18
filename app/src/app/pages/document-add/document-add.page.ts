@@ -33,9 +33,8 @@ import * as Cookies from 'js-cookie';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 import { AIService } from 'src/app/Services/AI/ai.service';
 // import { VerifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
-import WebViewer, {Core} from '@pdftron/webviewer';
+import WebViewer, { Core } from '@pdftron/webviewer';
 import { VerifyEmail } from '../../Services/Validators/verifyEmail.validator';
-
 
 @Component({
   selector: 'app-document-add',
@@ -73,7 +72,8 @@ export class DocumentAddPage implements OnInit {
 
   showPhase: boolean[] = [];
   filter: string;
-  contacts: string[] =[];
+  contacts: string[] = [];
+  numberOfUsers: number = 1;
 
   controller: boolean;
   @ViewChild('viewer') viewerRef: ElementRef;
@@ -88,8 +88,6 @@ export class DocumentAddPage implements OnInit {
     private sanitizer: DomSanitizer,
     private workflowService: WorkFlowService
   ) {}
-
-  //  [verifierEmail.verifyEmail.bind(verifierEmail)]
 
   async ngOnInit() {
     if (Cookies.get('token') === undefined) {
@@ -141,11 +139,17 @@ export class DocumentAddPage implements OnInit {
           description: new FormControl('', Validators.required),
           users: this.fb.array([
             this.fb.group({
-              user: new FormControl('', [
-                Validators.email,
-                Validators.required,
-                Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")
-              ],[verifierEmail.verifyEmail.bind(verifierEmail)] ),
+              user: new FormControl(
+                '',
+                [
+                  Validators.email,
+                  Validators.required,
+                  Validators.pattern(
+                    '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'
+                  ),
+                ],
+                [verifierEmail.verifyEmail.bind(verifierEmail)]
+              ),
               permission: new FormControl('', [Validators.required]),
               accepted: new FormControl('false', [Validators.required]),
             }),
@@ -196,9 +200,13 @@ export class DocumentAddPage implements OnInit {
   }
 
   createNewUser(): FormGroup {
-
+    this.numberOfUsers = this.numberOfUsers + 1;
     return this.fb.group({
-      user: new FormControl('', [Validators.email, Validators.required, Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")]),
+      user: new FormControl('', [
+        Validators.email,
+        Validators.required,
+        Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
+      ]),
       permission: new FormControl('', [Validators.required]),
       accepted: new FormControl('false', [Validators.required]),
     });
@@ -207,10 +215,12 @@ export class DocumentAddPage implements OnInit {
   removeUser(control: FormArray, i: number, j: number) {
     if (control.length > 1) {
       control.removeAt(j);
+      this.numberOfUsers = this.numberOfUsers - 1;
     } else {
       // eslint-disable-next-line @typescript-eslint/dot-notation
       if (this.workflowForm.controls.phases['controls'].length > 1) {
         this.removePhase(i);
+        this.numberOfUsers = this.numberOfUsers - 1;
       } else {
         this.userApiService.displayPopOver(
           'Error',
@@ -224,24 +234,28 @@ export class DocumentAddPage implements OnInit {
     control.setValue(str);
   }
 
-
   createPhase(): FormGroup {
     const verifierEmail = new VerifyEmail(this.userApiService);
-
+    this.numberOfUsers = this.numberOfUsers + 1;
     // const verifierEmail = new VerifyEmail(this.userApiService);
     return this.fb.group({
       description: new FormControl('', Validators.required),
       annotations: new FormControl('', [Validators.required]),
       users: this.fb.array([
         this.fb.group({
-          user: new FormControl('', [
-            Validators.email,
-            Validators.required,
-            , Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")
-          ],  [verifierEmail.verifyEmail.bind(verifierEmail)]),
+          user: new FormControl(
+            '',
+            [
+              Validators.email,
+              Validators.required,
+              ,
+              Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
+            ],
+            [verifierEmail.verifyEmail.bind(verifierEmail)]
+          ),
           permission: new FormControl('', [Validators.required]),
           accepted: new FormControl('false', [Validators.required]),
-        } ),
+        }),
       ]),
     });
   }
@@ -256,7 +270,7 @@ export class DocumentAddPage implements OnInit {
     const phase = this.workflowForm.get('phases') as FormArray;
     if (phase.length > 1) {
       phase.removeAt(i);
-      this.showPhase.splice(i,1);
+      this.showPhase.splice(i, 1);
     } else {
       this.userApiService.displayPopOver(
         'Error',
@@ -312,38 +326,46 @@ export class DocumentAddPage implements OnInit {
     addDocButton.parentNode.removeChild(addDocButton);
   }
 
-  displayWebViewer(blob: Blob){
-
-    WebViewer({
-      path: './../../../assets/lib',
-      fullAPI:true
-    }, this.viewerRef.nativeElement).then(async instance =>{
-
+  displayWebViewer(blob: Blob) {
+    WebViewer(
+      {
+        path: './../../../assets/lib',
+        fullAPI: true,
+      },
+      this.viewerRef.nativeElement
+    ).then(async (instance) => {
       instance.Core.PDFNet.initialize();
 
-      instance.UI.loadDocument(blob, {filename: 'Preview Document'});
+      instance.UI.loadDocument(blob, { filename: 'Preview Document' });
       instance.UI.disableElements(['ribbons']);
-      instance.UI.setToolbarGroup('toolbarGroup-View',false);
+      instance.UI.setToolbarGroup('toolbarGroup-View', false);
 
       instance.Core.documentViewer.setSearchHighlightColors({
         // setSearchHighlightColors accepts both Annotations.Color objects or 'rgba' strings
         searchResult: new instance.Core.Annotations.Color(0, 0, 255, 0.5),
-        activeSearchResult: 'rgba(0, 255, 0, 0.5)'
+        activeSearchResult: 'rgba(0, 255, 0, 0.5)',
       });
 
+      instance.Core.documentViewer.addEventListener(
+        'documentLoaded',
+        async () => {
+          const PDFNet = instance.Core.PDFNet;
+          const doc = await PDFNet.PDFDoc.createFromBuffer(
+            await this.file.arrayBuffer()
+          );
 
-      instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
-        const PDFNet = instance.Core.PDFNet;
-        const doc = await PDFNet.PDFDoc.createFromBuffer(await this.file.arrayBuffer());
+          const extractedText = await this.extractDocumentText(doc, PDFNet);
 
-        const extractedText = await this.extractDocumentText(doc, PDFNet);
-
-        const docType = this.aiService.categorizeDocument(extractedText);
-        console.log('DOCUMENT OF TYPE: ', docType);
-        const actionAreas = this.aiService.identifyActionAreas(extractedText, docType);
-        await this.highlightActionAreas(instance, PDFNet, doc, actionAreas);
-        doc.unlock();
-      });
+          const docType = this.aiService.categorizeDocument(extractedText);
+          console.log('DOCUMENT OF TYPE: ', docType);
+          const actionAreas = this.aiService.identifyActionAreas(
+            extractedText,
+            docType
+          );
+          await this.highlightActionAreas(instance, PDFNet, doc, actionAreas);
+          doc.unlock();
+        }
+      );
     });
   }
 
@@ -398,10 +420,13 @@ export class DocumentAddPage implements OnInit {
     );
     console.log(this.workflowForm);
     let template = null;
-    if(this.workflowForm.controls.templateName !== undefined){
-      template = {templateName: this.workflowForm.controls.templateName.value, templateDescription: this.workflowForm.controls.templateDescription.value};
+    if (this.workflowForm.controls.templateName !== undefined) {
+      template = {
+        templateName: this.workflowForm.controls.templateName.value,
+        templateDescription:
+          this.workflowForm.controls.templateDescription.value,
+      };
     }
-
 
     const phases = this.workflowForm.controls.phases.value;
     const name = this.workflowForm.controls.workflowName.value;
@@ -414,10 +439,16 @@ export class DocumentAddPage implements OnInit {
       template,
       (response) => {
         if (response.status === 'success') {
-          this.userApiService.displayPopOver('Success', 'You have successfully created a workflow');
+          this.userApiService.displayPopOver(
+            'Success',
+            'You have successfully created a workflow'
+          );
           this.router.navigate(['/home']);
         } else {
-          this.userApiService.displayPopOver('Error', 'Something has gone wrong, please try again');
+          this.userApiService.displayPopOver(
+            'Error',
+            'Something has gone wrong, please try again'
+          );
         }
       }
     );
@@ -427,28 +458,34 @@ export class DocumentAddPage implements OnInit {
     console.log(this.workflowForm);
   }
 
-  toggleVisibility(i: number){
+  toggleVisibility(i: number) {
     this.showPhase[i] = !this.showPhase[i];
   }
 
-  addTemplate(){
+  addTemplate() {
     this.template = !this.template;
-    if(this.template === false){
+    if (this.template === false) {
       this.removeTemplate();
-    }else{
-      this.workflowForm.addControl('templateName', new FormControl('', Validators.required));
-      this.workflowForm.addControl('templateDescription', new FormControl('', Validators.required));
+    } else {
+      this.workflowForm.addControl(
+        'templateName',
+        new FormControl('', Validators.required)
+      );
+      this.workflowForm.addControl(
+        'templateDescription',
+        new FormControl('', Validators.required)
+      );
     }
   }
 
-  removeTemplate(){
+  removeTemplate() {
     this.workflowForm.removeControl('templateName');
     this.workflowForm.removeControl('templateDescription');
   }
 
-   async getContacts(){
-    await this.userApiService.getContacts((response)=>{
-      if(response){
+  async getContacts() {
+    await this.userApiService.getContacts((response) => {
+      if (response) {
         if (response.status === 'success') {
           this.contacts = response.data.contacts;
         } else {
@@ -459,7 +496,7 @@ export class DocumentAddPage implements OnInit {
   }
 
   async extractDocumentText(doc, PDFNet) {
-    let extractedText = "";
+    let extractedText = '';
     /*Testing if we can retrieve hash stored in a document*/
     const doc1 = await doc.getSDFDoc();
     doc1.initSecurityHandler();
@@ -467,7 +504,6 @@ export class DocumentAddPage implements OnInit {
 
     /*    */
     const txt = await PDFNet.TextExtractor.create();
-    ;
     const pageCount = await doc.getPageCount();
     for (let i = 1; i <= pageCount; ++i) {
       const page = await doc.getPage(i);
@@ -478,15 +514,18 @@ export class DocumentAddPage implements OnInit {
     return extractedText;
   }
 
-  async highlightActionAreas(instance, PDFNet, doc, actionAreas){
-    for(const actionArea of actionAreas) {
-      if(!actionArea[1]){
+  async highlightActionAreas(instance, PDFNet, doc, actionAreas) {
+    for (const actionArea of actionAreas) {
+      if (!actionArea[1]) {
         continue;
       }
       let pattern = actionArea[0];
       /* Diffeerent text search approach */
       const txtSearch = await PDFNet.TextSearch.create();
-      let mode = PDFNet.TextSearch.Mode.e_whole_word + PDFNet.TextSearch.Mode.e_page_stop + PDFNet.TextSearch.Mode.e_highlight;
+      let mode =
+        PDFNet.TextSearch.Mode.e_whole_word +
+        PDFNet.TextSearch.Mode.e_page_stop +
+        PDFNet.TextSearch.Mode.e_highlight;
 
       txtSearch.begin(doc, pattern, mode);
 
@@ -501,16 +540,32 @@ export class DocumentAddPage implements OnInit {
           const page = await doc.getPage(await hlts.getCurrentPageNumber());
           const ph = await page.getPageHeight();
 
-          const textQuad = new instance.Core.Math.Quad(hltQuad.p1x, ph - hltQuad.p1y, hltQuad.p2x, ph - hltQuad.p2y, hltQuad.p3x, ph - hltQuad.p3y, hltQuad.p4x, ph - hltQuad.p4y);
+          const textQuad = new instance.Core.Math.Quad(
+            hltQuad.p1x,
+            ph - hltQuad.p1y,
+            hltQuad.p2x,
+            ph - hltQuad.p2y,
+            hltQuad.p3x,
+            ph - hltQuad.p3y,
+            hltQuad.p4x,
+            ph - hltQuad.p4y
+          );
 
-          const highlight = new instance.Core.Annotations.TextHighlightAnnotation();
+          const highlight =
+            new instance.Core.Annotations.TextHighlightAnnotation();
           //console.log(result.pageNum);
           highlight.PageNumber = result.page_num;
-          highlight.StrokeColor = new instance.Core.Annotations.Color(255, 255, 0);
+          highlight.StrokeColor = new instance.Core.Annotations.Color(
+            255,
+            255,
+            0
+          );
           highlight.Quads = [textQuad];
 
           await instance.Core.annotationManager.addAnnotation(highlight);
-          await instance.Core.annotationManager.drawAnnotations({pageNumber: result.page_num});
+          await instance.Core.annotationManager.drawAnnotations({
+            pageNumber: result.page_num,
+          });
         } else if (result.code === PDFNet.TextSearch.ResultCode.e_page) {
           // you can update your UI here, if needed
         } else if (result.code === PDFNet.TextSearch.ResultCode.e_done) {
@@ -518,28 +573,22 @@ export class DocumentAddPage implements OnInit {
         }
       }
     }
-    }
+  }
 
-    figureOut(i :number, j){
-      let total =0;
-      i++;
-      j++;
-      console.log(i +" "+ j)
-      let b:number =0;
-      for( b <= i; b++;){
-        console.log(this.workflowForm.controls.phases['controls'][i].controls.users);
-      }
-    }
+  async addFriend(i: number, j: number) {
+    console.log(this.numberOfUsers);
+    this.selectContact['_results'][this.numberOfUsers-1].open();
+  }
 
-    async addFriend(i: number, j: number) {
-      // console.log(j)
-      this.figureOut(i,j);
-      this.selectContact['_results'][j].open();
-    }
-
-    async friendChosen(form: FormControl, i: number, j: number) {
-      // console.log(form);
-      console.log(this.workflowForm.controls.phases['controls'][i].controls.users.controls[j].controls.user );
-      this.workflowForm.controls.phases['controls'][i].controls.users.controls[j].controls.user.setValue(this.selectContact['_results'][j].value);
-    }
+  async friendChosen(form: FormControl, i: number, j: number) {
+    // console.log(form);
+    console.log(
+      this.workflowForm.controls.phases['controls'][i].controls.users.controls[
+        j
+      ].controls.user
+    );
+    this.workflowForm.controls.phases['controls'][i].controls.users.controls[
+      j
+    ].controls.user.setValue(this.selectContact['_results'][this.numberOfUsers-1].value);
+  }
 }
