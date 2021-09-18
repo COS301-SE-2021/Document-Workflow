@@ -67,7 +67,7 @@ export default class WorkflowHistoryService {
         // @ts-ignore
         workflowHistory.entries.push(JSON.stringify(entry));
 
-        await this.workflowHistoryRepository.saveWorkflowHistory(workflowHistory);
+        await this.workflowHistoryRepository.updateWorkflowHistory(workflowHistory);
         return entry.hash;
     }
 

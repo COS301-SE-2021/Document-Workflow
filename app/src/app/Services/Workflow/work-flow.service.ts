@@ -138,7 +138,7 @@ export class WorkFlowService {
   }
 
   public async getWorkFlowData(workflowId, callback) {
-    await this.dismissLoading();
+    await this.displayLoading();
     const formData = new FormData();
     formData.append('id', workflowId);
 
@@ -296,6 +296,7 @@ export class WorkFlowService {
   }
 
   async getUserWorkflowsData(callback) {
+    await this.displayLoading();
     const formData = new FormData();
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
@@ -306,21 +307,17 @@ export class WorkFlowService {
       .post(config.url + '/workflows/getUserWorkflowsData', formData, {
         headers: httpHeaders,
       })
-      .subscribe(
-        (data) => {
+      .subscribe( async (data) => {
+          await this.dismissLoading();
           if (data) {
             console.log(data['data'].ownedWorkflows)
-            data['data'].ownedWorkflows = this.formatWorkflows(
-              data['data'].ownedWorkflows
-            );
-            data['data'].workflows = this.formatWorkflows(
-              data['data'].workflows
-            );
+            data['data'].ownedWorkflows = this.formatWorkflows(data['data'].ownedWorkflows);
+            data['data'].workflows = this.formatWorkflows(data['data'].workflows);
             callback(data);
           } else
             callback({ status: 'error', message: 'Cannot connect to Server' });
-        },
-        (error) => {
+        }, async (error) => {
+          await this.dismissLoading();
           console.log(error);
           alert('An unexpected error occurred');
         }
