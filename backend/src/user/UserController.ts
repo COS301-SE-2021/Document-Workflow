@@ -143,6 +143,36 @@ export default class UserController{
         }
     }
 
+    private async getBlockedContacts(req): Promise<String[]>{
+        if(!req.user.email) throw new RequestError("Missing User details for this request");
+        try{
+            return await this.userService.getBlockedContacts(req.user.email);
+        }
+        catch(err){
+            throw new ServerError(err.toString());
+        }
+    }
+
+    private async getContactsRoute(req): Promise<String[]> {
+        if(!req.user.email) throw new RequestError("Missing User details for this request");
+        try{
+            return await this.userService.getContacts(req.user.email);
+        }
+        catch(err){
+            throw new ServerError(err.toString());
+        }
+    }
+
+    private async getContactRequestsRoute(req): Promise<String[]> {
+        if(!req.user.email) throw new RequestError("Missing User details for this request");
+        try{
+            return await this.userService.getContactRequests(req.user.email);
+        }
+        catch(err){
+            throw new ServerError(err.toString());
+        }
+    }
+
     /*private async logoutUserRoute(req): Promise<Boolean> {
         try{
             const { headers } = req;
@@ -174,16 +204,44 @@ export default class UserController{
         }
     }
 
-    /*private async verifyEmailExistence(req) {
+    private async generatePasswordResetRequest(req){
+        if(!req.body.email){
+            throw new RequestError("Must list the email address of the user");
+        }
+        return await this.userService.generatePasswordReset(req.body.email);
+    }
+
+    private async resetPassword(req){
+        if(!req.body.email){
+            throw new RequestError("You must list the email address of the user");
+        }
+
+        if(!req.body.password || !req.body.confirmPassword){
+            throw new RequestError("You must include the new password as well ass the password confirmationfield");
+        }
+
+        if(req.body.password != req.body.confirmPassword){
+            throw new RequestError("The input password and confirmation password do not match");
+        }
+
+        if(!req.body.token){
+            throw new RequestError("You must include the password reset token with this request");
+        }
+
+        return await this.userService.resetPassword(req.body.email, req.body.password, req.body.token);
+    }
+
+    private async verifyEmailExistence(req) {
         if(!req.body.email)
             throw new RequestError("Cannot verify existence of null email");
         try{
-            return await this.userService.verifyEmailExistence(req.body.email, req.user._id);
+            console.log(req.body.email);
+            return await this.userService.verifyEmailExistence(req.body.email);
         }
         catch(err){
             throw err;
         }
-    }*/
+    }
 
     /**
      * This function is used to fetch the ids of the workflow templates owned by a user.
@@ -199,17 +257,6 @@ export default class UserController{
     }
 
     routes() {
-
-        this.router.get("/getContacts", this.auth, async (req, res) => {
-            try{
-                const contacts = await this.getUserContactsRoute(req);
-                if(contacts) res.status(200).json({status: "success", data:{"contacts": contacts }, message: "Contact request added"})
-                else res.status(400).send();
-            }catch(err){
-                try{await handleErrors(err,res);}catch{}
-            }
-        })
-
         this.router.get("", this.authenticationService.Authenticate, async (req, res) => {
             try {
                 const users = await this.getUsersRoute();
@@ -229,7 +276,7 @@ export default class UserController{
             }
         });
 
-        this.router.delete("/rejectContactRequest", this.auth, async (req, res) => {
+        this.router.post("/rejectContactRequest", this.auth, async (req, res) => {
             try{
                 const contactId = await this.rejectContactRequestRoute(req);
                 res.status(200).json({status: "success", data:{"RequestingUserId": contactId }, message: "Contact request rejected"});
@@ -238,7 +285,7 @@ export default class UserController{
             }
         });
 
-        this.router.delete("/deleteContact", this.auth, async (req, res) => {
+        this.router.post("/deleteContact", this.auth, async (req, res) => {
             try{
                 const contactId = await this.deleteContactRoute(req);
                 res.status(200).json({status: "success", data:{"DeletedUserId": contactId }, message: "Contact removed"});
@@ -270,6 +317,58 @@ export default class UserController{
                 const contactId = await this.acceptContactRequestRoute(req);
                 res.status(200).json({status: "success", data:{"ObjectId": contactId }, message: "Contact request accepted"});
             } catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        });
+
+        this.router.post("/getContactRequests", this.authenticationService.Authenticate , async (req, res) => {
+            try {
+                const userContactRequests = await this.getContactRequestsRoute(req);
+                if(userContactRequests) {
+                    if(userContactRequests.length === 0){
+                        res.status(200).json({status: "success", data:{}, message: "This user does not have any contact requests"});
+                    }else{
+                        res.status(200).json({status: "success", data:{"requests": userContactRequests }, message: "Contact Requests successfully retrieved"});
+                    }
+                }
+                else res.status(404).send("Could not find User");
+            } catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        });
+
+        this.router.post("/getContacts", this.authenticationService.Authenticate , async (req, res) => {
+            try {
+                const userContacts = await this.getContactsRoute(req);
+                // if(userContacts) res.status(200).json({status: "success", data:{"contacts": userContacts }, message: "Contacts successfully retrieved"});
+                if(userContacts) {
+                    if(userContacts.length === 0){
+                        res.status(200).json({status: "success", data:{}, message: "This user does not have contacts yet"});
+                    }else{
+                        res.status(200).json({status: "success", data:{"contacts": userContacts }, message: "Contacts successfully retrieved"});
+                    }
+                }
+                else res.status(404).send("Could not find User");
+            } catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        });
+
+        this.router.post("/getBlockedContacts", this.authenticationService.Authenticate, async(req, res)=>{
+            try{
+                const userBlockedContacts = await this.getBlockedContacts(req);
+                // if(userBlockedContacts) res.status(200).json({status: "success", data:{"contacts": userBlockedContacts }, message: "Contacts successfully retrieved"});
+                console.log(userBlockedContacts)
+                if(userBlockedContacts) {
+                    if(userBlockedContacts.length === 0){
+                        res.status(200).json({status: "success", data:{}, message: "This user does not have contacts yet"});
+                    }else{
+                        res.status(200).json({status: "success", data:{"contacts": userBlockedContacts }, message: "Contacts successfully retrieved"});
+                    }
+                }
+                else res.status(404).send("Could not find User");
+            }
+            catch(err){
                 try{await handleErrors(err,res);}catch{}
             }
         });
@@ -383,15 +482,34 @@ export default class UserController{
             }
         });
 
-        /*this.router.post("/verifyEmailExistence", this.authenticationService.Authenticate, async (req, res) => {
+        this.router.post("/generatePasswordResetRequest", async(req, res)=>{
+        
+            try{
+                res.status(200).json(await this.generatePasswordResetRequest(req));
+            } catch(err){
+                await handleErrors(err,res);
+            }
+        });
+
+        this.router.post("/resetPassword", async(req,res) =>{
+            try{
+                res.status(200).json(await this.resetPassword(req));
+            }
+            catch(err){
+                await handleErrors(err,res);
+            }
+        });
+
+
+        this.router.post("/verifyEmailExistence", this.authenticationService.Authenticate, async (req, res) => {
             try {
-                return await this.verifyEmailExistence(req);
+                const data = await this.verifyEmailExistence(req);
+                res.status(200).json({status: "success", data: {data}, message: "Success, searched for user"});
             } catch(err){
                 res.status(200).json({status:"error", data: {}, message: ""});
                 try{await handleErrors(err,res);}catch{}
-                await handleErrors(err,res);
             }
-        });*/
+        });
 
         this.router.post("/getWorkflowTemplatesIds", this.authenticationService.Authenticate, async(req, res) =>{
             try {

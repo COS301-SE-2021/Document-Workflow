@@ -303,9 +303,16 @@ export default class UserService {
 
     }
 
-    /*async verifyEmailExistence(email, requestingUserId) {
-        return Promise.resolve(undefined);
-    }*/
+    async verifyEmailExistence(email) {
+        const contact: IUser = await this.userRepository.findUser({
+          email: email,
+        });
+        if(contact != null){
+          return true;
+        }else{
+          return false;
+        }
+      }
 
     private static removeFromArray(array: Array<any>, value): Boolean{
         const indexOfRemovedValue = array.indexOf(value);
@@ -324,98 +331,105 @@ export default class UserService {
         return true;
     }
 
-    async blockUser(contactEmail: string, user): Promise<ObjectId>{
+    async blockUser(contactEmail: string, user): Promise<ObjectId> {
         //check if email of contact exists:
-        const contact: IUser = await this.userRepository.findUser({email: contactEmail});
-        if(contact){
-            const currentUser: IUser = await this.userRepository.findUser({_id: user._id});
-            //check if they're already a contact
-            if(currentUser.blockedList.indexOf(contactEmail) != -1){
-                throw new RequestError("This contact is already blocked by this user");
-            }
-            currentUser.blockedList.push(contactEmail);
-            UserService.removeFromArray(
-                currentUser.contacts,
-                contactEmail
+        const contact: IUser = await this.userRepository.findUser({
+          email: contactEmail,
+        });
+        if (contact) {
+          const currentUser: IUser = await this.userRepository.findUser({
+            _id: user._id,
+          });
+          //check if they're already a contact
+          if (currentUser.blockedList.indexOf(contactEmail) != -1) {
+            throw new RequestError("This contact is already blocked by this user");
+          }
+          currentUser.blockedList.push(contactEmail);
+          const removed = UserService.removeFromArray(
+            currentUser.contacts,
+            contactEmail
+          );
+          await this.userRepository.updateUser(currentUser);
+          return contact._id;
+        } else {
+          throw new RequestError("Contact does not exist");
+        }
+      }
+
+      async unblockUser(contactEmail: string, user): Promise<ObjectId> {
+        //check if email of contact exists:
+        const contact: IUser = await this.userRepository.findUser({
+          email: contactEmail,
+        });
+        if (contact) {
+          const currentUser: IUser = await this.userRepository.findUser({
+            _id: user._id,
+          });
+          const indexOfRemovedEmail = currentUser.blockedList.indexOf(contactEmail);
+          if (indexOfRemovedEmail != -1) {
+            currentUser.blockedList.splice(indexOfRemovedEmail, 1);
+            const added = UserService.addToArrayIfNotPresent(
+              currentUser.contacts,
+              contactEmail
             );
-            await this.userRepository.updateUser(currentUser);
-            return contact._id;
-        }else{
-            throw new RequestError("Contact does not exist");
-        }
-    }
-
-    async unblockUser(contactEmail: string, user): Promise<ObjectId>{
-        //check if email of contact exists:
-        const contact: IUser = await this.userRepository.findUser({email: contactEmail});
-        if(contact){
-            const currentUser: IUser = await this.userRepository.findUser({_id: user._id});
-            const indexOfRemovedEmail = currentUser.blockedList.indexOf(contactEmail);
-            if(indexOfRemovedEmail != -1){
-                currentUser.blockedList.splice(indexOfRemovedEmail, 1);
-                const added = UserService.addToArrayIfNotPresent(
-                    currentUser.contacts,
-                    contactEmail
-                );
-                if (added) {
-                    await this.userRepository.updateUser(currentUser);
-                } else {
-                    throw new RequestError("Failed to add user back");
-                }
-                await this.userRepository.updateUser(currentUser);
-            }else{
-                throw new RequestError("This person is not blocked");
+            if (added) {
+              await this.userRepository.updateUser(currentUser);
+            } else {
+              throw new RequestError("Failed to add user back");
             }
-            return contact._id;
-        }else{
-            throw new RequestError("Contact does not exist");
+          } else {
+            throw new RequestError("This person is not blocked");
+          }
+          return contact._id;
+        } else {
+          throw new RequestError("Contact does not exist");
         }
-    }
+      }
 
-    async acceptContactRequest(contactEmail: string, user): Promise<ObjectId> {
+      async acceptContactRequest(contactEmail: string, user): Promise<ObjectId> {
         console.log(contactEmail);
         console.log(user);
         //get User
         const usr: IUser = await this.userRepository.findUser({
-            email: user.email,
+          email: user.email,
         });
         //check if contact exists:
         const contact: IUser = await this.userRepository.findUser({
-            email: contactEmail,
+          email: contactEmail,
         });
-
+    
         if (!contact) throw new RequestError("contact doesn't exist");
         //find contact in requests array:
         const removed = UserService.removeFromArray(
-            usr.contactRequests,
-            contactEmail
+          usr.contactRequests,
+          contactEmail
         );
         const removed1 = UserService.removeFromArray(
-            contact.contactRequests,
-            user.email
+          contact.contactRequests,
+          user.email
         );
         if (removed) {
-            //add to contacts array:
-            const added = UserService.addToArrayIfNotPresent(
-                usr.contacts,
-                contactEmail
-            );
-            const addedToContact = UserService.addToArrayIfNotPresent(
-                contact.contacts,
-                user.email
-            );
-            console.log(added + " " + addedToContact);
-            if (added && addedToContact) {
-                await this.userRepository.updateUser(usr);
-                await this.userRepository.updateUser(contact);
-                return usr._id;
-            } else {
-                throw new ServerError("Couldn't accept contact request");
-            }
-        } else {
+          //add to contacts array:
+          const added = UserService.addToArrayIfNotPresent(
+            usr.contacts,
+            contactEmail
+          );
+          const addedToContact = UserService.addToArrayIfNotPresent(
+            contact.contacts,
+            user.email
+          );
+          console.log(added + " " + addedToContact);
+          if (added && addedToContact) {
+            await this.userRepository.updateUser(usr);
+            await this.userRepository.updateUser(contact);
+            return usr._id;
+          } else {
             throw new ServerError("Couldn't accept contact request");
+          }
+        } else {
+          throw new ServerError("Couldn't accept contact request");
         }
-    }
+      }
 
     async sendContactRequest(recipientEmail, user): Promise<ObjectId> {
         //check if email of contact exists:
@@ -497,21 +511,29 @@ export default class UserService {
 
     async addContact(contactEmail: string, user): Promise<ObjectId> {
         //check if email of contact exists:
-        if(user.privilegeLevel != privilegeLevel.ADMIN){ throw new AuthenticationError("Unauthorized")}
-        const contact: IUser = await this.userRepository.findUser({email: contactEmail});
-        if(contact){
-            const currentUser: IUser = await this.userRepository.findUser({_id: user._id});
-            //check if they're already a contact
-            if(currentUser.contacts.indexOf(contactEmail) != -1){
-                throw new RequestError("This contact is already a contact of this user");
-            }
-            currentUser.contacts.push(contactEmail);
-            await this.userRepository.updateUser(currentUser);
-            return contact._id;
-        }else{
-            throw new RequestError("Contact does not exist");
+        if (user.privilegeLevel != privilegeLevel.ADMIN) {
+          throw new AuthenticationError("Unauthorized");
         }
-    }
+        const contact: IUser = await this.userRepository.findUser({
+          email: contactEmail,
+        });
+        if (contact) {
+          const currentUser: IUser = await this.userRepository.findUser({
+            _id: user._id,
+          });
+          //check if they're already a contact
+          if (currentUser.contacts.indexOf(contactEmail) != -1) {
+            throw new RequestError(
+              "This contact is already a contact of this user"
+            );
+          }
+          currentUser.contacts.push(contactEmail);
+          await this.userRepository.updateUser(currentUser);
+          return contact._id;
+        } else {
+          throw new RequestError("Contact does not exist");
+        }
+      }
 
     async getContacts(email: string) {
         const user: IUser = await this.userRepository.findUser({ email: email });
