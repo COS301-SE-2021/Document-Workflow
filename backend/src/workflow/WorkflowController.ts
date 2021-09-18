@@ -245,13 +245,13 @@ export default class WorkflowController {
         }
     }
 
-    private async verifyDocumentRoute(req) {
+    private async verifyDocument(req) {
 
-        if(!req.body.workflowId || ! req.files.document){
+        if(!req.body.workflowId || ! req.body.hash){
             throw new RequestError("A workflowId and input document is required to verify a document");
         }
 
-        return await this.workflowService.verifyDocument(req.body.workflowId, req.files.document, req.user);
+        return await this.workflowService.verifyDocument(req.body.workflowId, req.body.hash, req.user);
     }
 
     //----------------------------------------------------------------------------------
@@ -361,7 +361,7 @@ export default class WorkflowController {
 
         this.router.post("/verifyDocument", this.auth, async(req,res)=>{
             try{
-                res.status(200).json(await this.verifyDocumentRoute(req));
+                res.status(200).json(await this.verifyDocument(req));
             }
             catch(err){
                 try{await handleErrors(err,res);}catch{}
