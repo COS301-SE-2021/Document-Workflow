@@ -107,7 +107,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
               const itrval = await itr.value();
               const oldstr = await itrval.getAsPDFText();
               this.originalKeywords = oldstr;
-              info.putText('Keywords', oldstr + ' - ' + this.hash);
+              info.putText('Keywords', this.hash);
             } else {
               console.log('No previous keywords present');
               info.putString('Keywords', this.hash);
@@ -139,7 +139,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
 
           });
           instance.Core.documentViewer.addEventListener('documentLoaded', ()=>{
-            this.annotationsString = response.data.annotationsString;
+            this.annotationsString = response.data.annotations;
             instance.Core.annotationManager.importAnnotations(response.data.annotations);
           });
 
@@ -229,29 +229,32 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   async acceptDocument(){
     await this.userApiService.displayPopOverWithButtons('signPhase','Do you accept the phase as completed?', async (response) =>{
 
-      this.removeActionAreasFromAnnotations();
+      const noteAnnots = this.removeActionAreasFromAnnotations();
       const xfdfString = await this.annotationManager.exportAnnotations();
+      await this.removeAllAnnotations();
+
+      this.annotationManager.addAnnotation(noteAnnots);
+      //await this.annotationManager.drawAnnotationsFromList(await this.annotationManager.getAnnotationsList());
+      const commentedActionAreas = await this.annotationManager.exportAnnotations()
       const options = {xfdfString: xfdfString, flatten: true};
       const data = await this.documentViewer.getDocument().getFileData(options);
 
       const arr = new Uint8Array(data);
       const blob = new Blob([arr], { type: 'application/pdf' });
       const file = new File([blob], this.documentMetadata.name);
-      console.log(response.data.confirm);
-      console.log(this.documentMetadata.name);
-      console.log(file.name);
+
       this.workflowService.displayLoading();
-      await this.workflowService.updatePhase(this.workflowId, response.data.confirm, file, (response2) => {
+      await this.workflowService.updatePhase(this.workflowId, response.data.confirm, file, commentedActionAreas, (response2) => {
         console.log(response2);
 
         this.workflowService.dismissLoading();
 
         if(response2.status === "success"){
           this.userApiService.displayPopOver("Success", "The document has been edited");
-          this.router.navigate(['home']);
+          //this.router.navigate(['home']);
         }
       });
-      await this.annotationManager.importAnnotations(this.annotationsString);
+
     });
    }
 
@@ -266,6 +269,17 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
       });
     });
     this.annotationManager.deleteAnnotations(toDelete);
+    return toDelete;
+   }
+
+   removeAllAnnotations(){
+    const toDelete = [];
+     this.annotationManager.getAnnotationsList().forEach(annot =>{
+       this.annotationSubjects.forEach(a =>{
+           toDelete.push(annot);
+       });
+     });
+     this.annotationManager.deleteAnnotations(toDelete);
    }
 
   async updateDocumentAnnotations(annotationsString){
@@ -274,9 +288,4 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     });
   }
 
-private
-downloadFile()
-{
-
-}
 }

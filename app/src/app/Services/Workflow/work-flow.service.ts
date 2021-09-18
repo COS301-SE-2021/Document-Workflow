@@ -125,7 +125,6 @@ export class WorkFlowService {
       })
       .subscribe(
         (data) => {
-          //TODO: change url
           if (data) {
             callback(data);
           } else
@@ -166,11 +165,12 @@ export class WorkFlowService {
       );
   }
 
-  async updatePhase(workflowId, accept, document, callback) {
+  async updatePhase(workflowId, accept, document, commentedActionAreas, callback) {
     const formData = new FormData();
     formData.append('workflowId', workflowId);
     formData.append('accept', accept);
     formData.append('document', document);
+
 
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
@@ -223,6 +223,9 @@ export class WorkFlowService {
       },
         async (error)=>{
           await this.dismissLoading();
+          if(error.status == 401){
+
+          }
 
           if(error.error == 'Unknown') {
             await this.displayPopOver("Error", "The Docment Workflow servers could not be reached at this time");

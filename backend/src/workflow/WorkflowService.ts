@@ -354,7 +354,7 @@ export default class WorkflowService{
 
             //Save everything
             await this.phaseService.updatePhase(currentPhaseObject);
-            await this.workflowRepository.saveWorkflow(workflow);
+            await this.workflowRepository.updateWorkflow(workflow);
 
             return {status:"success", data:{}, message:""};
         }
