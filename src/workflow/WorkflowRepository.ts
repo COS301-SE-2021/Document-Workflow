@@ -28,7 +28,8 @@ export default class WorkflowRepository{
                 description: workflow.description,
                 phases: workflow.phases,
                 currentPhase: workflow.currentPhase,
-                status: workflow.status
+                status: workflow.status,
+                hash: workflow.hash
             });
             return true;
         }
