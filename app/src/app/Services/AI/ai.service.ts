@@ -6,9 +6,9 @@ import {config} from '../configuration';
 import {DocumentClassifier} from './BagOfWordsClassifier';
 import { DecisionTree, ConsultantStrategy, CovidStrategy, EmploymentStrategy
   , ExpenseStrategy, InvoiceStrategy, LeaseStrategy, LoanStrategy,
-  NDAStrategy, TimesheetStrategy} from './DecisionTree';
+  NDAStrategy, TimesheetStrategy, GenericStrategy} from './DecisionTree';
 
-const DOCUMENT_TYPES = Object.freeze({EXPENSE:'Expense Report',
+export const DOCUMENT_TYPES = Object.freeze({EXPENSE:'Expense Report',
   CONSULTING:'Consulting Contract',
   EMPLOYMENT:'Employment Contract',
   LEASE: 'Lease Agreement',
@@ -16,7 +16,8 @@ const DOCUMENT_TYPES = Object.freeze({EXPENSE:'Expense Report',
   NDA: 'Non-disclosure Agreement',
   COVID: 'Covid Screening',
   TIMESHEET: 'Timesheet',
-  INVOICE: 'Invoice' });
+  INVOICE: 'Invoice',
+  GENERIC: 'Generic'});
 
 @Injectable({
   providedIn: 'root'
@@ -84,6 +85,7 @@ export class AIService {
     this.decisionTreesStrategies[DOCUMENT_TYPES.LOAN] = new LoanStrategy();
     this.decisionTreesStrategies[DOCUMENT_TYPES.NDA] = new NDAStrategy();
     this.decisionTreesStrategies[DOCUMENT_TYPES.TIMESHEET] = new TimesheetStrategy();
+    this.decisionTreesStrategies[DOCUMENT_TYPES.GENERIC] = new GenericStrategy();
     console.log(this.decisionTreesStrategies);
   }
 

@@ -17,7 +17,6 @@ import {
   AbstractControlOptions,
 } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
-import { IonicSafeString } from '@ionic/core';
 import { Router } from '@angular/router';
 import {
   ActionSheetController,
@@ -31,7 +30,7 @@ import { DocumentActionAreaComponent } from 'src/app/components/document-action-
 import { User, UserAPIService } from 'src/app/Services/User/user-api.service';
 import * as Cookies from 'js-cookie';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
-import { AIService } from 'src/app/Services/AI/ai.service';
+import {AIService, DOCUMENT_TYPES} from 'src/app/Services/AI/ai.service';
 // import { VerifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
 import WebViewer, { Core } from '@pdftron/webviewer';
 import { VerifyEmail } from '../../Services/Validators/verifyEmail.validator';
@@ -326,7 +325,8 @@ export class DocumentAddPage implements OnInit {
     addDocButton.parentNode.removeChild(addDocButton);
   }
 
-  displayWebViewer(blob: Blob) {
+  async displayWebViewer(blob: Blob) {
+    await this.workflowService.displayLoading();
     WebViewer(
       {
         path: './../../../assets/lib',
@@ -336,7 +336,7 @@ export class DocumentAddPage implements OnInit {
     ).then(async (instance) => {
       instance.Core.PDFNet.initialize();
 
-      instance.UI.loadDocument(blob, { filename: 'Preview Document' });
+      instance.UI.loadDocument(blob, {filename: 'Preview Document'});
       instance.UI.disableElements(['ribbons']);
       instance.UI.setToolbarGroup('toolbarGroup-View', false);
 
@@ -356,14 +356,23 @@ export class DocumentAddPage implements OnInit {
 
           const extractedText = await this.extractDocumentText(doc, PDFNet);
 
-          const docType = this.aiService.categorizeDocument(extractedText);
+          let docType = this.aiService.categorizeDocument(extractedText);
           console.log('DOCUMENT OF TYPE: ', docType);
-          const actionAreas = this.aiService.identifyActionAreas(
-            extractedText,
-            docType
-          );
-          await this.highlightActionAreas(instance, PDFNet, doc, actionAreas);
-          doc.unlock();
+          await this.workflowService.dismissLoading();
+          await this.userApiService.displayPopOverWithButtons('Document Type','Document identified to be of type ' + docType +'. Is ' +
+          'this correct?', async (response) =>{
+            if(response.data.confirm !== true){
+              docType = DOCUMENT_TYPES.GENERIC;
+            }
+            const actionAreas = this.aiService.identifyActionAreas(
+              extractedText,
+              docType
+            );
+            await this.highlightActionAreas(instance, PDFNet, doc, actionAreas);
+            doc.unlock();
+
+          });
+
         }
       );
     });

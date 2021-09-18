@@ -5,7 +5,7 @@
  * Strategy Design Pattern.
  */
 export class DecisionTree{
-    
+
     strategy: Strategy;
     documentType: string;
 
@@ -25,7 +25,7 @@ export class Strategy{
     hasConsecutiveUnderscores(content){ //TODO: alter this so that it wont pick up urls
         const onlyUnderscores = content.replace(/[^_/./…]/gi, ' ');
         const consecutives = onlyUnderscores.match(/([_/./…])\1*/g);
-        
+
         if(consecutives === null){
             return false;
         }
@@ -42,7 +42,7 @@ export class Strategy{
 export class ConsultantStrategy extends Strategy{
     static features = Object.freeze(['Length', 'ConsecutiveUnderscores', 'NumberSemicolons', 'SignKeyword','SignatureKeyword', 'ContractNoKeyword','ProjectNoKeyword',
                 'DateKeyword','NameKeyword', 'WitnessKeyword', 'ByKeyword']);
-    
+
     predict(text){
 
         let features = this.extractFeatures(text);
@@ -129,7 +129,7 @@ export class ConsultantStrategy extends Strategy{
 export class CovidStrategy extends Strategy{
 
     static features = Object.freeze(['Length','ConsecutiveUnderscores','NumberSemicolons','SignKeyword','SignatureKeyword','DateKeyword','NameKeyword',"Temperature", "Symptoms", 'YesOrNo', 'IsQuestion']);
-    
+
     predict(text){
 
         let features = this.extractFeatures(text);
@@ -180,7 +180,7 @@ export class CovidStrategy extends Strategy{
             "Temperature": (/temperature/g.test(content)),
             "Symptoms": this.containsSymptomsKeywords(content),
             'YesOrNo': (/no/g.test(content)) || (/yes/g.test(content)),
-            'IsQuestion': (/\?/g.test(content))  
+            'IsQuestion': (/\?/g.test(content))
         };
 
         return features;
@@ -188,7 +188,7 @@ export class CovidStrategy extends Strategy{
 
 
     containsSymptomsKeywords(content){
-        const bool = ( (/temperature/g.test(content)) || (/congestion/g.test(content)) || (/nausea/g.test(content)) 
+        const bool = ( (/temperature/g.test(content)) || (/congestion/g.test(content)) || (/nausea/g.test(content))
                     || (/headache/g.test(content)) || (/aches/g.test(content)) || (/cough/g.test(content)) ||(/fever/g.test(content))
                     || (/fatigue/g.test(content)) || (/breathing/g.test(content)) );
         return bool;
@@ -200,7 +200,7 @@ export class EmploymentStrategy extends Strategy{
 
     static features = Object.freeze(['Length', 'ConsecutiveUnderscores', 'NumberSemicolons', 'SignKeyword','SignatureKeyword', "Employee", "Employer",
     'DateKeyword','NameKeyword', 'WitnessKeyword', 'ByKeyword', 'Address']);
-    
+
     predict(text){
 
         let features = this.extractFeatures(text);
@@ -208,7 +208,7 @@ export class EmploymentStrategy extends Strategy{
         if(features["ConsecutiveUnderscores"]){
             return true;
         }
-        
+
         if(features["SignatureKeyword"] || features["SignKeyword"]){
             if(features["NumberSemicolons"] > 0){
                 return true;
@@ -295,7 +295,7 @@ export class ExpenseStrategy extends Strategy{
 
     static features = Object.freeze(['Length', 'ConsecutiveUnderscores', 'NumberSemicolons', 'SignKeyword','SignatureKeyword',
     'DateKeyword','NameKeyword', "ByKeyword" ]);
-    
+
     predict(text){
 
         let features = this.extractFeatures(text);
@@ -373,7 +373,7 @@ export class InvoiceStrategy extends Strategy{
 
     static features = Object.freeze(['Length', 'ConsecutiveUnderscores', 'NumberSemicolons', 'SignKeyword','SignatureKeyword',
     'DateKeyword','NameKeyword', 'Description']);
-    
+
     predict(text){
 
         let features = this.extractFeatures(text);
@@ -451,7 +451,7 @@ export class LeaseStrategy extends Strategy{
 
     static features = Object.freeze(['Length', 'ConsecutiveUnderscores', 'NumberSemicolons', 'SignKeyword','SignatureKeyword', 'ContractNoKeyword','ProjectNoKeyword',
                 'DateKeyword','NameKeyword', 'WitnessKeyword', 'ByKeyword']);
-    
+
     predict(text){
 
         let features = this.extractFeatures(text);
@@ -530,7 +530,7 @@ export class LoanStrategy extends Strategy{
 
     static features = Object.freeze(['Length', 'ConsecutiveUnderscores', 'NumberSemicolons', 'SignKeyword','SignatureKeyword', 'Borrower','Amount',
     'DateKeyword','NameKeyword', 'WitnessKeyword', 'ByKeyword']);
-    
+
     predict(text){
 
         let features = this.extractFeatures(text);
@@ -613,7 +613,7 @@ export class NDAStrategy extends Strategy{
 
     static features = Object.freeze(['Length', 'ConsecutiveUnderscores', 'NumberSemicolons', 'SignKeyword','SignatureKeyword',
             'DateKeyword','NameKeyword', 'WitnessKeyword', 'ByKeyword']);
-    
+
     predict(text){
 
         let features = this.extractFeatures(text);
@@ -688,7 +688,7 @@ export class TimesheetStrategy extends Strategy{
 
     static features = Object.freeze(['Length', 'ConsecutiveUnderscores', 'NumberSemicolons', 'SignKeyword','SignatureKeyword',
         'DateKeyword','NameKeyword', "Hours", "Total" ]);
-    
+
     predict(text){
 
         let features = this.extractFeatures(text);
@@ -760,3 +760,76 @@ export class TimesheetStrategy extends Strategy{
     }
 
 }
+
+export class GenericStrategy extends Strategy {
+
+  static features = Object.freeze(['Length', 'ConsecutiveUnderscores', 'NumberSemicolons', 'SignKeyword', 'SignatureKeyword',
+    'DateKeyword', 'NameKeyword', 'ByKeyword']);
+
+  predict(text) {
+
+    let features = this.extractFeatures(text);
+
+    if (features["ConsecutiveUnderscores"]) {
+      return true;
+    }
+
+    if (features["SignatureKeyword"] || features["SignKeyword"]) {
+      if (features["NumberSemicolons"] > 0) {
+        return true;
+      }
+
+      if (features["Length"] <= 5) {
+        return true;
+      }
+    }
+
+    if (features["NameKeyword"]) {
+      if (features["Length"] <= 5) {
+        return true;
+      }
+
+      if (features["NumberSemicolons"] > 0) {
+        return true;
+      }
+    }
+
+    if (features["DateKeyword"]) {
+      if (features["Length"] <= 5) {
+        return true;
+      }
+
+      if (features["NumberSemicolons"] > 0 && features["Length"] <= 8) {
+        return true;
+      }
+    }
+
+    if (features["ByKeyword"]) {
+      if (features["NumberSemicolons"] > 0 && features["Length"] <= 5) {
+        return true;
+      }
+    }
+
+
+    return false
+  }
+
+  extractFeatures(content) {
+    const length = content.split(' ').length;
+    content = content.toLowerCase().replace(":", " : "); //required otherwise semicolons aren't correctly picked up
+    let features = {
+      "Length": length,
+      "ConsecutiveUnderscores": this.hasConsecutiveUnderscores(content),
+      "NumberSemicolons": content.replace(/[^:]/gi, '').length,
+      "SignatureKeyword": (/signature/g.test(content)) || (/signatures/g.test(content)),
+      "SignKeyword": (/sign/g.test(content)) || (/signed/g.test(content)),
+      "DateKeyword": (/date/g.test(content)) || (/dated/g.test(content)),
+      "NameKeyword": (/name/g.test(content) || (/initial/g.test(content)) || (/title/g.test(content))),
+      "ByKeyword": (/by/g.test(content)),
+    };
+
+    return features;
+  }
+}
+
+
