@@ -72,7 +72,6 @@ export class DocumentAddPage implements OnInit {
   showPhase: boolean[] = [];
   filter: string;
   contacts: string[] = [];
-  numberOfUsers: number = 1;
 
   controller: boolean;
   @ViewChild('viewer') viewerRef: ElementRef;
@@ -199,13 +198,13 @@ export class DocumentAddPage implements OnInit {
   }
 
   createNewUser(): FormGroup {
-    this.numberOfUsers = this.numberOfUsers + 1;
+    const verifierEmail = new VerifyEmail(this.userApiService);
     return this.fb.group({
       user: new FormControl('', [
         Validators.email,
         Validators.required,
         Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
-      ]),
+      ],  [verifierEmail.verifyEmail.bind(verifierEmail)]),
       permission: new FormControl('', [Validators.required]),
       accepted: new FormControl('false', [Validators.required]),
     });
@@ -214,12 +213,10 @@ export class DocumentAddPage implements OnInit {
   removeUser(control: FormArray, i: number, j: number) {
     if (control.length > 1) {
       control.removeAt(j);
-      this.numberOfUsers = this.numberOfUsers - 1;
     } else {
       // eslint-disable-next-line @typescript-eslint/dot-notation
       if (this.workflowForm.controls.phases['controls'].length > 1) {
         this.removePhase(i);
-        this.numberOfUsers = this.numberOfUsers - 1;
       } else {
         this.userApiService.displayPopOver(
           'Error',
@@ -235,8 +232,6 @@ export class DocumentAddPage implements OnInit {
 
   createPhase(): FormGroup {
     const verifierEmail = new VerifyEmail(this.userApiService);
-    this.numberOfUsers = this.numberOfUsers + 1;
-    // const verifierEmail = new VerifyEmail(this.userApiService);
     return this.fb.group({
       description: new FormControl('', Validators.required),
       annotations: new FormControl('', [Validators.required]),

@@ -181,17 +181,15 @@ export class WorkflowTemplateService {
     );
   }
 
-  formatPhases(arr: string[]): phaseFormat[] {
-    console.log(arr);
+  formatPhases(arr: string): phaseFormat[] {
     let phases: phaseFormat[] = [];
-    for (let phase of arr) {
-      let tmp = JSON.parse(phase);
+    for (let phase of JSON.parse(arr)) {
       let tempUser: phaseUser[] = [];
-      tempUser = JSON.parse(tmp[0]['users']);
-      console.log(tempUser);
-      tmp[0]['users'] = tempUser;
-      phases.push(tmp);
+      tempUser = JSON.parse(phase['users']);
+      phase.users = tempUser;
+      phases.push(phase);
     }
     return phases;
   }
 }
+

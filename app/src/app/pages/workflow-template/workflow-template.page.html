@@ -85,7 +85,7 @@
         <ion-grid>
           <ion-row>
             <ion-col offset="3">
-              <ion-text>Workflow creation</ion-text>
+              <ion-card-title>Workflow creation</ion-card-title>
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -96,9 +96,11 @@
       </ion-card-header>
       <ion-grid>
         <div *ngFor="let phase of templateForm.controls.phases['controls']; let i = index">
+          <ion-fab>
+            <ion-fab-button (click)="debug(templateForm.controls)"></ion-fab-button>
+          </ion-fab>
           <ion-row
             style="margin: 5px; padding:5px; border-width: 4px; border-style: solid; border-radius: 15px; border-color:#002060">
-
             <ion-col sizeXs="12">
               <ion-row>
                 <ion-col sizeXs='10'>
