@@ -215,7 +215,6 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
       const annotationsString = await this.annotationManager.exportAnnotations();
       console.log("Updating the annotations of this document");
       console.log(annotationsString);
-      this.workflowService.displayLoading();
       await this.workflowService.updateCurrentPhaseAnnotations(this.workflowId, annotationsString, async (response)=>{
         console.log(response);
 
@@ -225,9 +224,9 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
           const blob = new Blob([arr], {type: 'application/pdf'});
           const file = new File([blob], this.documentMetadata.name);
 
-          await this.workflowService.updatePhase(this.workflowId, res.data.confirm, file, (response2) => {
+          await this.workflowService.updatePhase(this.workflowId, res.data.confirm, file, async (response2) => {
             console.log(response2);
-            this.workflowService.dismissLoading();
+            await this.workflowService.dismissLoading();
             this.userApiService.displayPopOver("Success", "Your response has been saved");
             this.router.navigate(['home']);
             });

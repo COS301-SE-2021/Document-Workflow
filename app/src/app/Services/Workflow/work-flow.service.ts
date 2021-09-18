@@ -292,9 +292,7 @@ export class WorkFlowService {
       },
         async (error)=>{
         await this.dismissLoading();
-          if(error.error == 'Unknown'){
-
-          }
+        await this.displayPopOver('An error occurred', error.error);
         });
   }
 
@@ -321,8 +319,7 @@ export class WorkFlowService {
             callback({ status: 'error', message: 'Cannot connect to Server' });
         }, async (error) => {
           await this.dismissLoading();
-          console.log(error);
-          alert('An unexpected error occurred');
+          await this.displayPopOver('An Error Occurred', error.error);
         }
       );
   }

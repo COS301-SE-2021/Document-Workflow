@@ -83,7 +83,7 @@ export default class WorkflowTemplateService{
 
     async deleteWorkflowTemplate(user: IUser, templateId) {
         const usr: IUser = await this.userService.getUserById(user._id);
-        if(!user.workflowTemplates.includes(templateId)){
+        if(!usr.workflowTemplates.includes(templateId)){
             throw new RequestError("This template does not belong to you");
         }
         await this.documentService.deleteTemplateDocumentFromCloud(templateId);
