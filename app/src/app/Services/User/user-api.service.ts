@@ -512,6 +512,34 @@ export class UserAPIService {
       );
   }
 
+  // updateProfile
+  editUserProfile(userData: any, callback){
+    // this.displayLoading();
+    console.log(userData);
+    const formData = new FormData();
+    formData.append('name', userData.firstName);
+    formData.append('surname', userData.LastName);
+    formData.append('initials', userData.initials);
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/updateProfile', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          callback(data);
+          this.dismissLoading();
+        },
+        async (error) => {
+          this.dismissLoading();
+          await this.displayPopOver('Send Contact request error', error.error);
+        }
+      );
+  }
+
   private async couldNotConnectToServer() {
     await this.displayPopOver(
       'Error',

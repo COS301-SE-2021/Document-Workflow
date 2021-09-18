@@ -115,12 +115,13 @@ export class UserProfilePage implements OnInit {
     });
   }
 
-  submit() {
+  async submit() {
     const use = this.userForm.value;
-    if (use.password === '') {
-      //if the user hasnt changed the password
-    }
-    console.log(this.user);
+    await this.userApiService.editUserProfile(use, (response)=>{
+      if(response){
+        console.log(response);
+      }
+    });
   }
 
   async getContactInformation() {

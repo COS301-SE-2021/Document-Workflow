@@ -55,12 +55,12 @@
               <ion-col sizeXs="12" sizeSm='6'>
                 <ion-item>
                   <ion-label position="floating">Email:</ion-label>
-                  <ion-input inputmode="text" formControlName="email"></ion-input>
+                  <ion-input [disabled]='true' inputmode="text" formControlName="email"></ion-input>
                 </ion-item>
               </ion-col>
             </ion-row>
 
-            <ion-row>
+            <!-- <ion-row>
               <ion-col sizeXs="12" sizeSm='6'>
                 <ion-item>
                   <ion-label position="floating">Password</ion-label>
@@ -73,7 +73,7 @@
                   <ion-input type="password" formControlName="confirmPassword"></ion-input>
                 </ion-item>
               </ion-col>
-            </ion-row>
+            </ion-row> -->
 
             <ion-button hide="true" expand="block" color="primary" fill="outline" [disabled]="!userForm.valid"
               type="submit">Save your edits
