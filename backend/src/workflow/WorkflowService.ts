@@ -4,8 +4,8 @@ import WorkFlowRepository from './WorkflowRepository';
 import DocumentService from "../document/DocumentService";
 import UserService from "../user/UserService";
 import { PhaseStatus } from "../phase/Phase";
-import { PhaseService } from "../phase/PhaseService";
-import { AuthorizationError, RequestError, ServerError } from "../error/Error";
+import PhaseService from "../phase/PhaseService";
+import { AuthorizationError, DatabaseError, RequestError, ServerError } from "../error/Error";
 import WorkflowTemplateService from "../workflowTemplate/WorkflowTemplateService";
 import WorkflowHistoryService from "../workflowHistory/WorkflowHistoryService";
 import { ENTRY_TYPE } from "../workflowHistory/WorkflowHistory";
@@ -452,7 +452,7 @@ export default class WorkflowService{
         console.log(annotations);
         try{
             const workflow = await this.workflowRepository.getWorkflow(workflowId);
-            let phase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
+            let phase: IPhase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
             let phaseUsers = JSON.parse(phase.users);
             let userFound = false;
             for(let i=0; i<phaseUsers.length; ++i){
@@ -470,9 +470,10 @@ export default class WorkflowService{
             console.log('THe phase currently looks ike this: ');
             console.log(phase);
 
-            await this.phaseService.updatePhaseAnnotations(phase);
-            console.log("Finished updating phase annotations");
-            return {status:'success', data:{}, message:''};
+            if(await this.phaseService.updatePhaseAnnotations(phase)){
+                console.log("Finished updating phase annotations");
+                return {status:'success', data:{}, message:''};
+            }
         }
         catch(err){
             console.log(err);
@@ -688,7 +689,7 @@ export default class WorkflowService{
     async verifyDocument(workflowId, hash, user) {
         const workflow = await this.workflowRepository.getWorkflow(workflowId);
 
-        if(!this.isUserMemberOfWorkflow(workflow, user.email)){
+        if(!await this.isUserMemberOfWorkflow(workflow, user.email)){
             throw new AuthorizationError("You are not a member of this workflow");
         }
 
