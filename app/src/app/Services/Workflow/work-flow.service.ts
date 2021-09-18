@@ -416,6 +416,7 @@ export class WorkFlowService {
   displayLoading(){
     const loading = this.loadingCtrl.create({
       message: 'Please wait...',
+      duration: 10000
     }).then((response)=>{
       response.present();
     });
