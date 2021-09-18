@@ -110,6 +110,7 @@ export class WorkFlowService {
   }
 
   public async deleteWorkFlow(workflowId, callback) {
+    await this.displayLoading();
     const formData = new FormData();
     formData.append('workflowId', workflowId);
 
@@ -122,15 +123,16 @@ export class WorkFlowService {
       .post(config.url + '/workflows/delete', formData, {
         headers: httpHeaders,
       })
-      .subscribe(
-        (data) => {
+      .subscribe(async (data) => {
+          await this.dismissLoading();
           if (data) {
             callback(data);
           } else
             callback({ status: 'error', message: 'Cannot connect to Server' });
         },
-        (error) => {
-          alert('An unexpected error occurred');
+        async (error) => {
+          await this.dismissLoading();
+          await this.displayPopOver('An Error Occurred', error.error);
         }
       );
   }

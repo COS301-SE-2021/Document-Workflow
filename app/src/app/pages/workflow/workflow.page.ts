@@ -124,7 +124,6 @@ export class WorkflowPage implements OnInit {
     });
   }
 
-  //TODO: clean up this function, the logic behind it isn't entirely clear
   sortPermission() {
     let i: number = 0;
     for (const document of this.documents) {
@@ -153,17 +152,7 @@ export class WorkflowPage implements OnInit {
     }
   }
 
-  //todo move this to the spec.ts of workflow
-  async testRetrieveWorkflow() {
-    console.log('Testing the retrieve workflow function');
-    const id = '61163482d68c450938c29a30';
-    await this.workFlowService.getWorkFlowData(id, (response) => {
-      console.log(response);
-    });
-    await this.workFlowService.getUserWorkflowsData((response) => {
-      console.log(response);
-    });
-  }
+
 
   async deleteWorkFlow(id: string) {
     await this.userApiService.displayPopOverWithButtons(
@@ -172,11 +161,13 @@ export class WorkflowPage implements OnInit {
       (response) => {
         console.log(response);
         if (response.data.confirm === true) {
-          this.workFlowService.displayLoading();
-          this.workFlowService.deleteWorkFlow(id, (response2) => {
+          this.workFlowService.deleteWorkFlow(id, async (response2) => {
+            if(response2.status === 'success'){
+              await this.workFlowService.displayPopOver('Success', 'The workflow was successfully deleted');
+              this.documents = [];
+              await this.retrieveWorkflows();
+            }
 
-            console.log(response2);
-            this.workFlowService.dismissLoading();
           });
         }
       }
@@ -321,13 +312,6 @@ export class WorkflowPage implements OnInit {
 
   showPhase(phase: phaseFormat) {
     phase.showPhase = !phase.showPhase;
-  }
-
-  async getWorkflow() {
-    const id = '611661feb394bb1d4cc91f3e';
-    await this.workFlowService.retrieveDocument(id, (response) => {
-      console.log(response);
-    });
   }
 
   debug(num: number) {
