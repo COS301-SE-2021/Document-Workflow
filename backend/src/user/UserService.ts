@@ -576,9 +576,14 @@ export default class UserService {
         }
         usr.antiCSRFToken = crypto.randomBytes(64).toString("hex");
         usr.csrfTokenTime = Date.now();
-        await this.userRepository.saveUser(usr);
+        await this.userRepository.updateUser(usr);
         const res = await this.sendResetRequestEmail(userEmail, usr.antiCSRFToken);
-        logger.info(res); //TODO: check this for errors thrown
+        console.log(res);
+        console.log(res.errno);
+        if(res.errno !== undefined) {
+            throw new ServerError('Could not handle the password reset request at this time');
+        }
+
         return { status: "success", data: {}, message: "" };
     }
 

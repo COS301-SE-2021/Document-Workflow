@@ -62,7 +62,7 @@ export class LoginRegisterPage implements OnInit {
     private modal: ModalController,
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.loginAndRegister = true;
     this.resetPassword = false;
     this.loginRegisterScreen = true;
@@ -74,7 +74,7 @@ export class LoginRegisterPage implements OnInit {
         [Validators.required, Validators.email],
       ],
       loginPassword: [
-        '' ,
+        '',
         [Validators.required, Validators.minLength(8)],
       ],
     });
@@ -115,7 +115,7 @@ export class LoginRegisterPage implements OnInit {
 
 
     this.resetFormPhase2 = this.formBuilder.group({
-      confirmationString: ['',[Validators.required]],
+      confirmationString: ['', [Validators.required]],
       password: [
         '',
         [
@@ -130,7 +130,7 @@ export class LoginRegisterPage implements OnInit {
       ],
     }, formOptions);
 
-    if(this.plat.is('android') && this.plat.is('capacitor')){
+    if (this.plat.is('android') && this.plat.is('capacitor')) {
       console.log('jere');
       NativeBiometric.isAvailable().then((result: AvailableResult) => {
         const isAvailable = result.isAvailable;
@@ -143,6 +143,8 @@ export class LoginRegisterPage implements OnInit {
     } else {
       this.sizeMe = true;
     }
+
+    await this.userAPIService.dismissLoading();
   }
 
   async login(): Promise<void> {
@@ -334,15 +336,15 @@ export class LoginRegisterPage implements OnInit {
   }
 
   // send a email to user with token
-  resetPassword1(){
+  async resetPassword1() {
     this.userEmailForReset = this.resetFormPhase1.value.email;
-    this.userAPIService.sendResetPasswordEmail(this.resetFormPhase1.value.email, (response)=>{
+    this.userAPIService.sendResetPasswordEmail(this.resetFormPhase1.value.email, async (response) => {
       console.log(response);
-      if(response){
-        if(response.status === 'success'){
+      if (response) {
+        if (response.status === 'success') {
           this.userAPIService.displayPopOver('Success', 'Email has been sent');
           this.phase1 = false;
-        }else{
+        } else {
           this.userAPIService.displayPopOver('Error', 'Failed to send email');
         }
       }

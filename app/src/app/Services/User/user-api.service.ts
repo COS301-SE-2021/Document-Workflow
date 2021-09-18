@@ -485,7 +485,8 @@ export class UserAPIService {
     );
   }
 
-  sendResetPasswordEmail(email, callback) {
+  async sendResetPasswordEmail(email, callback) {
+    await this.displayLoading();
     console.log(email);
     const formData = new FormData();
     formData.append('email', email);
@@ -493,15 +494,16 @@ export class UserAPIService {
       .post(config.url + '/users/generatePasswordResetRequest', formData)
       .subscribe(
         (data) => {
+          this.dismissLoading();
           //this.dismissLoading();
           if (data) {
             callback(data);
           } else
-            callback({ status: 'error', message: 'Cannot connect to Server' });
+            callback({status: 'error', message: 'Cannot connect to Server'});
         },
         (error) => {
           console.log(error);
-          //this.dismissLoading();
+          this.dismissLoading();
           this.displayPopOver('Error', error.error);
         }
       );
