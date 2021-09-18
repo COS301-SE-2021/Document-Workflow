@@ -20,7 +20,7 @@ export async function handleErrors(err: Error, res){
     }
 
     if(err instanceof RequestError){
-        await res.status(400).json("Invalid Request" + err.message);
+        await res.status(400).json(err.message);
         if(testMode) console.error(err.message);
     }
     if(err instanceof PhaseError){
@@ -28,11 +28,11 @@ export async function handleErrors(err: Error, res){
         if(testMode) console.error(err.message);
     }
     if(err instanceof AuthenticationError){
-        await res.status(401).json("Authentication Error" + err.message);
+        await res.status(401).json( err.message);
         if(testMode) console.error(err.message);
     }
     if(err instanceof AuthorizationError){
-        await res.status(401).send("Unauthorized " + err.message);
+        await res.status(401).send(err.message);
         if(testMode) console.error(err.message);
     }
     if(err instanceof CloudError){
@@ -48,7 +48,7 @@ export async function handleErrors(err: Error, res){
         if(testMode) console.error(err.message);
     }
     if(err instanceof DatabaseError){
-        await res.status(401).send("Database error " + err.message);
+        await res.status(401).send(err.message);
         if(testMode) console.error(err.message);
     }
     console.error(err);

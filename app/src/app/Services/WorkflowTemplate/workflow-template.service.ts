@@ -62,7 +62,8 @@ export class WorkflowTemplateService {
     });
   }
 
-  async deleteWorkflowTemplateService(workflowTemplateId, callback) {
+  async deleteWorkflowTemplate(workflowTemplateId, callback) {
+    await this.displayLoading();
     const formData = new FormData();
     formData.append('templateId', workflowTemplateId);
 
@@ -89,7 +90,7 @@ export class WorkflowTemplateService {
             'Could not connect to the Document Workflow Server at this time. Please try again later.'
           );
         } else {
-          await this.displayPopOver('Error creating new Workflow', error.error);
+          await this.displayPopOver('Error deleting Workflow Template', error.error);
         }
       }
     );

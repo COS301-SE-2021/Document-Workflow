@@ -46,6 +46,10 @@ export default class UserService {
         await this.userRepository.updateUser(user);
     }
 
+    async updateUserTemplates(user: IUser){
+        await this.userRepository.updateUser(user);
+    }
+
     async getUser(request): Promise<IUser> {
         if(request === undefined){
             throw new RequestError("Search criteria required");

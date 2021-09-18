@@ -78,6 +78,10 @@ export default class WorkflowTemplateService{
      */
     async getWorkflowTemplateNameAndDescription(templateId){
         const template = await this.workflowTemplateRepository.findWorkflowTemplate(templateId);
+        if(!template){
+            throw new RequestError('The requested template could not be found');
+        }
+
         return {templateName: template.templateName, templateDescription: template.templateDescription};
     }
 
@@ -86,6 +90,16 @@ export default class WorkflowTemplateService{
         if(!usr.workflowTemplates.includes(templateId)){
             throw new RequestError("This template does not belong to you");
         }
+
+        const index = usr.workflowTemplates.indexOf(templateId);
+        if(index !== -1) {
+            console.log(usr.workflowTemplates);
+            usr.workflowTemplates.splice(index, 1);
+            console.log(usr.workflowTemplates);
+            await this.userService.updateUserTemplates(usr);
+        }
+
+        console.log('Deleting workflow template doc from cloud');
         await this.documentService.deleteTemplateDocumentFromCloud(templateId);
         await this.workflowTemplateRepository.deleteWorkflowTemplate(templateId);
 

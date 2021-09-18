@@ -1,11 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  Input,
-  OnInit,
-  ViewChild,
-  ViewChildren,
-} from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild, ViewChildren } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -18,7 +11,6 @@ import { IonSelect, ModalController, Platform } from '@ionic/angular';
 import WebViewer from '@pdftron/webviewer';
 import { DocumentActionAreaComponent } from 'src/app/components/document-action-area/document-action-area.component';
 import { AIService } from 'src/app/Services/AI/ai.service';
-import { phaseUser } from 'src/app/Services/Document/document-api.service';
 import { Logger } from 'src/app/Services/Logger';
 import { UserAPIService } from 'src/app/Services/User/user-api.service';
 import { VerifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
@@ -65,7 +57,6 @@ export class WorkflowTemplatePage implements OnInit {
     private router: Router,
     private logger: Logger,
     private modal: ModalController,
-    private aiService: AIService
   ) {}
 
   async ngOnInit() {
@@ -377,5 +368,11 @@ export class WorkflowTemplatePage implements OnInit {
     console.log(this.templateForm);
   }
 
-  deleteTemplate(id: string) {}
+  deleteTemplate(id: string){
+    console.log(this.templateService);
+    this.templateService.deleteWorkflowTemplate(id, async (response)=>{
+      await this.templateService.displayPopOver('Success', 'The workflow template was successfully deleted');
+      this.router.navigate(['/home/workflowTemplate']);
+    });
+  }
 }

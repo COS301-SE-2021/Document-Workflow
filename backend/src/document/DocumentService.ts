@@ -28,9 +28,9 @@ export default class DocumentService {
         return await this.documentRepository.getDocumentFromS3('templateFiles/' + workflowTemplateId + '/' +filename);
     }
 
-    //this is dangerous
+
     async deleteTemplateDocumentFromCloud(workflowTemplateId){
-        await this.deleteTemplateDocumentFromCloud("templateFiles/" + workflowTemplateId);
+        await this.documentRepository.deleteDocumentFromS3("templateFiles/" + workflowTemplateId);
     }
 
     async saveDocument(file: File, fileData: Buffer, id: ObjectId): Promise<ObjectId>{

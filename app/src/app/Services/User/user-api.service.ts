@@ -218,10 +218,16 @@ export class UserAPIService {
         },
         async (error) => {
           console.log(error);
-          await this.displayPopOver(
-            'Error user-api-services - getUserDetails',
-            error
-          );
+          if(error.error == 'Unknown'){
+            await this.displayPopOver('Error', 'The Document Workflow Server could not be reached, please try again later');
+          }
+          else{
+            await this.displayPopOver(
+              'An Error Occurred',
+              error
+            );
+          }
+
         }
       );
   }
