@@ -152,7 +152,7 @@ export class LoginRegisterPage implements OnInit {
       email: this.loginForm.value.loginEmail,
       password: this.loginForm.value.loginPassword,
     };
-    this.userAPIService.login(loginData, (response) => {
+    await this.userAPIService.login(loginData, (response) => {
       if (response.status === 'success') {
         //localStorage.setItem('token', response.data.token);
         Cookies.set('token', response.data.token, { expires: 1 });

@@ -85,14 +85,16 @@ export class UserAPIService {
     );
   }
 
-  public login(loginData: LoginData, callback) {
+  public async login(loginData: LoginData, callback) {
     console.log('Logging in a user, ' + config.url);
+    await this.displayLoading();
     const formData = new FormData();
     formData.append('email', loginData.email);
     formData.append('password', loginData.password);
     try {
       this.http.post(config.url + '/users/login', formData).subscribe(
         async (data) => {
+          await this.dismissLoading();
           if (data) {
             callback(data);
           } else await this.couldNotConnectToServer();
@@ -105,6 +107,7 @@ export class UserAPIService {
               'Could not connect to the Document Workflow Server at this time. Please try again later.'
             );
           } else {
+            await this.dismissLoading();
             await this.displayPopOver('Login Error', error.error);
           }
         }
