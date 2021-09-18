@@ -198,7 +198,6 @@ export default class UserService {
         });
     }
 
-
     async loginUser(email, password): Promise<string> {
         const user = await this.userRepository.findUser({ email: email });
         if(!user){
@@ -288,8 +287,21 @@ export default class UserService {
         return result;
     }
 
-    //too generic, dangerous for elevating user privilege
-    async updateUser(req): Promise<IUser> {
+    async updateProfile(details, user): Promise<boolean> {
+        const res: IUser = await this.userRepository.findUser({email: user.email});
+        if(res){
+            res.name = details.name;
+            res.surname = details.surname;
+            res.initials = details.initials;
+            return await this.userRepository.updateUser(res);
+        }
+        else{
+            throw new RequestError("Could not find user to update their profile");
+        }
+    }
+
+    //only for use from other services, never directly from a route
+    async updateUser(req): Promise<boolean> {
         if(!req.body || !req.params.id){
             throw new RequestError("Missing Parameters");
         }
@@ -352,10 +364,14 @@ export default class UserService {
             currentUser.contacts,
             contactEmail
           );
-          await this.userRepository.updateUser(currentUser);
-          return contact._id;
-        } else {
-          throw new RequestError("Contact does not exist");
+          UserService.removeFromArray(
+                currentUser.contacts,
+                contactEmail
+            );
+            await this.userRepository.updateUser(currentUser);
+            return contact._id;
+        }else{
+            throw new RequestError("Contact does not exist");
         }
       }
 
@@ -400,7 +416,7 @@ export default class UserService {
         const contact: IUser = await this.userRepository.findUser({
           email: contactEmail,
         });
-    
+
         if (!contact) throw new RequestError("contact doesn't exist");
         //find contact in requests array:
         const removed = UserService.removeFromArray(
