@@ -73,7 +73,6 @@ export class WorkflowHistoryPage implements OnInit {
       if (response.status === 'success') {
         for (let entry of response.data.history.entries) {
           let tmp: History = JSON.parse(entry);
-          let date: Date = tmp.date;
           tmp.type = this.textConverter(tmp.type);
           tmp.currentPhase += 1;
           this.histories.push(tmp);
