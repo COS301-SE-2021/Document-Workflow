@@ -32,7 +32,7 @@ export class UserAPIService {
     const loading = this.loadingCtrl
       .create({
         message: 'Please wait...',
-        duration:8000
+        duration: 8000,
       })
       .then((response) => {
         response.present();
@@ -170,7 +170,7 @@ export class UserAPIService {
   //Can be used with register as it must return false
   verifyEmail(email: string, callback) {
     const formData = new FormData();
-    formData.append('email', email)
+    formData.append('email', email);
     //const token = localStorage.getItem('token');
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
@@ -183,9 +183,9 @@ export class UserAPIService {
       .subscribe(
         (data) => {
           if (data['data'].data === true) {
-            callback( true);
+            callback(true);
           } else {
-            callback( false );
+            callback(false);
           }
         },
         async (error) => {
@@ -196,12 +196,9 @@ export class UserAPIService {
           callback(false);
         }
       );
-      console.log('here')
   }
 
-
   async getUserDetails(callback) {
-
     const formData = new FormData();
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
@@ -213,7 +210,6 @@ export class UserAPIService {
       })
       .subscribe(
         (data) => {
-
           if (data) {
             callback(data);
           } else {
@@ -382,7 +378,6 @@ export class UserAPIService {
       .subscribe(
         (data) => {
           callback(data);
-
         },
         async (error) => {
           await this.displayPopOver('Logout error', error.error);
@@ -501,7 +496,7 @@ export class UserAPIService {
           if (data) {
             callback(data);
           } else
-            callback({status: 'error', message: 'Cannot connect to Server'});
+            callback({ status: 'error', message: 'Cannot connect to Server' });
         },
         (error) => {
           console.log(error);

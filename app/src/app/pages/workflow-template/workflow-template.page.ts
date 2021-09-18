@@ -143,9 +143,10 @@ export class WorkflowTemplatePage implements OnInit {
   }
 
   fillPhases(phases: any) {
+    console.log(phases);
     for (let phase of phases) {
       this.templateForm.controls.phases['controls'].push(
-        this.fillPhase(phase[0])
+        this.fillPhase(phase)
       );
     }
   }
@@ -198,7 +199,12 @@ export class WorkflowTemplatePage implements OnInit {
   createNewUser(): FormGroup {
     const verifierEmail = new VerifyEmail(this.userService);
     return this.fb.group({
-      user: new FormControl('', [Validators.email, Validators.required]),
+      user: new FormControl('',  [
+        Validators.email,
+        Validators.required,
+        Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
+      ],
+      [verifierEmail.verifyEmail.bind(verifierEmail)]),
       permission: new FormControl('', [Validators.required]),
       accepted: new FormControl('false', [Validators.required]),
     });
@@ -364,5 +370,9 @@ export class WorkflowTemplatePage implements OnInit {
         }
       }
     });
+  }
+
+  debug(b){
+    console.log(b)
   }
 }
