@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild, ViewChildren } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -7,7 +7,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ModalController, Platform } from '@ionic/angular';
+import { IonSelect, ModalController, Platform } from '@ionic/angular';
 import WebViewer from '@pdftron/webviewer';
 import { DocumentActionAreaComponent } from 'src/app/components/document-action-area/document-action-area.component';
 import { AIService } from 'src/app/Services/AI/ai.service';
@@ -31,6 +31,7 @@ import {
   styleUrls: ['./workflow-template.page.scss'],
 })
 export class WorkflowTemplatePage implements OnInit {
+  @ViewChildren('selectContact') selectContact: IonSelect;
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
   @ViewChild('viewer') viewerRef: ElementRef;
   sizeMe: boolean;
@@ -44,6 +45,8 @@ export class WorkflowTemplatePage implements OnInit {
   file: File;
   blob: Blob;
   srcFile: any;
+
+  contacts: string[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -113,6 +116,7 @@ export class WorkflowTemplatePage implements OnInit {
       const arr = new Uint8Array(this.originalFile.Body.data);
       this.blob = new Blob([arr], { type: 'application/pdf;base64' });
       this.file = new File([this.blob], template.documentName);
+      await this.getContacts();
     });
   }
 
@@ -328,5 +332,37 @@ export class WorkflowTemplatePage implements OnInit {
         }
       }
     );
+  }
+
+  async addFriend(i: number, j: number) {
+    let b:string = i + ' ' + j;
+    for(let comp of this.selectContact['_results']){
+      if(b === comp['name']){
+        comp.open();
+      }
+    }
+  }
+
+  async friendChosen(form: FormControl, i: number, j: number) {
+    let b:string = i + ' ' + j;
+    for(let comp of this.selectContact['_results']){
+      if(b === comp['name']){
+        console.log(comp.value);
+        form.setValue(comp.value);
+      }
+    }
+  }
+
+  async getContacts() {
+    await this.userService.getContacts((response) => {
+      if (response) {
+        if (response.status === 'success') {
+          this.contacts = response.data.contacts;
+          this.contacts.push(this.ownerEmail)
+        } else {
+          this.userService.displayPopOver('Error', 'Failed to get users');
+        }
+      }
+    });
   }
 }

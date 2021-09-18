@@ -497,6 +497,7 @@ export class DocumentAddPage implements OnInit {
       if (response) {
         if (response.status === 'success') {
           this.contacts = response.data.contacts;
+          this.contacts.push(this.ownerEmail)
         } else {
           this.userApiService.displayPopOver('Error', 'Failed to get users');
         }
@@ -585,19 +586,21 @@ export class DocumentAddPage implements OnInit {
   }
 
   async addFriend(i: number, j: number) {
-    console.log(this.numberOfUsers);
-    this.selectContact['_results'][this.numberOfUsers-1].open();
+    let b:string = i + ' ' + j;
+    for(let comp of this.selectContact['_results']){
+      if(b === comp['name']){
+        comp.open();
+      }
+    }
   }
 
   async friendChosen(form: FormControl, i: number, j: number) {
-    // console.log(form);
-    console.log(
-      this.workflowForm.controls.phases['controls'][i].controls.users.controls[
-        j
-      ].controls.user
-    );
-    this.workflowForm.controls.phases['controls'][i].controls.users.controls[
-      j
-    ].controls.user.setValue(this.selectContact['_results'][this.numberOfUsers-1].value);
+    let b:string = i + ' ' + j;
+    for(let comp of this.selectContact['_results']){
+      if(b === comp['name']){
+        console.log(comp.value);
+        form.setValue(comp.value);
+      }
+    }
   }
 }
