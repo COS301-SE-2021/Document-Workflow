@@ -1,5 +1,11 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController, Platform } from '@ionic/angular';
 import WebViewer from '@pdftron/webviewer';
@@ -8,10 +14,16 @@ import { AIService } from 'src/app/Services/AI/ai.service';
 import { phaseUser } from 'src/app/Services/Document/document-api.service';
 import { Logger } from 'src/app/Services/Logger';
 import { UserAPIService } from 'src/app/Services/User/user-api.service';
-import { phaseFormat, WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
-import { WorkflowTemplateService, templateDescription, templatePhaseUser } from 'src/app/Services/WorkflowTemplate/workflow-template.service';
-
-
+import { VerifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
+import {
+  phaseFormat,
+  WorkFlowService,
+} from 'src/app/Services/Workflow/work-flow.service';
+import {
+  WorkflowTemplateService,
+  templateDescription,
+  templatePhaseUser,
+} from 'src/app/Services/WorkflowTemplate/workflow-template.service';
 
 @Component({
   selector: 'app-workflow-template',
@@ -25,11 +37,11 @@ export class WorkflowTemplatePage implements OnInit {
   templateForm: FormGroup;
   readyForPhase2: boolean = false;
   phase2: boolean = true;
-  tempDesc: templateDescription[]=[];
-  phaseViewers: boolean[]=[];
-  originalFile: any ;
-  ownerEmail:string;
-  file:File;
+  tempDesc: templateDescription[] = [];
+  phaseViewers: boolean[] = [];
+  originalFile: any;
+  ownerEmail: string;
+  file: File;
   blob: Blob;
   srcFile: any;
 
@@ -43,50 +55,56 @@ export class WorkflowTemplatePage implements OnInit {
     private router: Router,
     private logger: Logger,
     private modal: ModalController,
-    private aiService: AIService,
-  ) { }
+    private aiService: AIService
+  ) {}
 
   async ngOnInit() {
-    if(this.plat.width() > 572){
+    if (this.plat.width() > 572) {
       this.sizeMe = false;
-    }else{
+    } else {
       this.sizeMe = true;
     }
 
     await this.getTemplateData();
   }
 
-  async getTemplateData(){
+  async getTemplateData() {
     this.workflowService.displayLoading();
-    this.userService.getTemplateIDs(async (response)=>{
-      for(let id of response.data.templateIds){
+    this.userService.getTemplateIDs(async (response) => {
+      for (let id of response.data.templateIds) {
         await this.getWorkflowTemplateData(id);
       }
       this.workflowService.dismissLoading();
-    })
+    });
   }
 
-  async getWorkflowTemplateData(id: string){
-    this.templateService.getWorkflowTemplateNameAndDescription(id, (response)=>{
-      let tmp: templateDescription;
-      tmp={
-        templateID: id,
-        templateName: response.templateName,
-        templateDescription: response.templateDescription
+  async getWorkflowTemplateData(id: string) {
+    this.templateService.getWorkflowTemplateNameAndDescription(
+      id,
+      (response) => {
+        let tmp: templateDescription;
+        tmp = {
+          templateID: id,
+          templateName: response.templateName,
+          templateDescription: response.templateDescription,
+        };
+        this.tempDesc.push(tmp);
       }
-      this.tempDesc.push(tmp);
-    })
+    );
   }
 
-  async useThisTemplate(id:string){
-    await this.templateService.getWorkflowTemplateData(id, async (response)=>{
+  async useThisTemplate(id: string) {
+    await this.templateService.getWorkflowTemplateData(id, async (response) => {
       let template = response.template;
       this.ownerEmail = template.templateOwnerEmail;
       this.originalFile = response.fileData;
       console.log(template);
       this.templateForm = this.fb.group({
-        workflowName: [template.workflowName,[Validators.required]],
-        workflowDescription: [template.workflowDescription, [Validators.required]],
+        workflowName: [template.workflowName, [Validators.required]],
+        workflowDescription: [
+          template.workflowDescription,
+          [Validators.required],
+        ],
         phases: this.fb.array([]),
       });
       this.fillPhases(template.phases);
@@ -96,65 +114,76 @@ export class WorkflowTemplatePage implements OnInit {
       this.blob = new Blob([arr], { type: 'application/pdf;base64' });
       this.file = new File([this.blob], template.documentName);
     });
-
   }
 
-  displayWebViewer(){
+  displayWebViewer() {
     console.log(this.viewerRef);
-    WebViewer({
-      path: './../../../assets/lib',
-      fullAPI:true
-    }, this.viewerRef.nativeElement).then(async instance =>{
-
+    WebViewer(
+      {
+        path: './../../../assets/lib',
+        fullAPI: true,
+      },
+      this.viewerRef.nativeElement
+    ).then(async (instance) => {
       instance.Core.PDFNet.initialize();
 
-      instance.UI.loadDocument(this.blob, {filename: 'Preview Document'});
+      instance.UI.loadDocument(this.blob, { filename: 'Preview Document' });
       instance.UI.disableElements(['ribbons']);
-      instance.UI.setToolbarGroup('toolbarGroup-View',false);
+      instance.UI.setToolbarGroup('toolbarGroup-View', false);
 
-      instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
-      });
-
+      instance.Core.documentViewer.addEventListener(
+        'documentLoaded',
+        async () => {}
+      );
     });
   }
 
-  fillPhases(phases: any){
-      for(let phase of phases){
-        this.templateForm.controls.phases['controls'].push(this.fillPhase(phase[0]))
-      }
+  fillPhases(phases: any) {
+    for (let phase of phases) {
+      this.templateForm.controls.phases['controls'].push(
+        this.fillPhase(phase[0])
+      );
+    }
   }
 
-  viewPhase(i: number){
+  viewPhase(i: number) {
     this.phaseViewers[i] = !this.phaseViewers[i];
   }
 
-  fillPhase(phase: phaseFormat){
+  fillPhase(phase: phaseFormat) {
     this.phaseViewers.push(false);
-    let temp  = this.fb.group({
-      annotations:[phase.annotations,[Validators.required]],
-      description:[phase.description,[Validators.required]],
+    let temp = this.fb.group({
+      annotations: [phase.annotations, [Validators.required]],
+      description: [phase.description, [Validators.required]],
       status: [phase.status, [Validators.required]],
-      users: this.fb.array([])
+      users: this.fb.array([]),
     });
 
-    for(let user of phase.users){
+    for (let user of phase.users) {
       temp.controls.users['controls'].push(this.fillUsers(user));
     }
 
     return temp;
   }
 
-  fillUsers(user: any){
-    console.log('here')
+  fillUsers(user: any) {
+    const verifierEmail = new VerifyEmail(this.userService);
     return this.fb.group({
-      user:[user.user, [Validators.required, Validators.email]],
-      permission:[user.permission,[Validators.required]],
-      accepted:[user.accepted,[Validators.required]]
-    })
+      user: [
+        user.user,
+        [
+          Validators.email,
+          Validators.required,
+          Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
+        ],
+        [verifierEmail.verifyEmail.bind(verifierEmail)],
+      ],
+      permission: [user.permission, [Validators.required]],
+      accepted: [user.accepted, [Validators.required]],
+    });
   }
 
-  async nextPhase(){
-
+  async nextPhase() {
     this.phase2 = !this.phase2;
   }
 
@@ -163,10 +192,11 @@ export class WorkflowTemplatePage implements OnInit {
   }
 
   createNewUser(): FormGroup {
+    const verifierEmail = new VerifyEmail(this.userService);
     return this.fb.group({
       user: new FormControl('', [Validators.email, Validators.required]),
       permission: new FormControl('', [Validators.required]),
-      accepted: new FormControl("false", [Validators.required]),
+      accepted: new FormControl('false', [Validators.required]),
     });
   }
 
@@ -190,15 +220,24 @@ export class WorkflowTemplatePage implements OnInit {
   }
 
   createPhase(i: number): FormGroup {
+    const verifierEmail = new VerifyEmail(this.userService);
     return this.fb.group({
       description: new FormControl('', Validators.required),
       annotations: new FormControl('', [Validators.required]),
       status: new FormControl('Pending', [Validators.required]),
       users: this.fb.array([
         this.fb.group({
-          user: new FormControl('', [Validators.email, Validators.required]),
+          user: new FormControl(
+            '',
+            [
+              Validators.email,
+              Validators.required,
+              Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
+            ],
+            [verifierEmail.verifyEmail.bind(verifierEmail)]
+          ),
           permission: new FormControl('', [Validators.required]),
-          accepted: new FormControl("false", [Validators.required]),
+          accepted: new FormControl('false', [Validators.required]),
         }),
       ]),
     });
@@ -221,7 +260,7 @@ export class WorkflowTemplatePage implements OnInit {
   }
 
   async includeActionArea(i: number, form: FormControl) {
-    console.log(this.ownerEmail)
+    console.log(this.ownerEmail);
     const a = await this.modal.create({
       component: DocumentActionAreaComponent,
       componentProps: {
@@ -248,8 +287,6 @@ export class WorkflowTemplatePage implements OnInit {
     await this.createWorkflow();
   }
 
-
-
   async createWorkflow() {
     console.log('Extracting form data ------------------------------');
     console.log('Name: ', this.templateForm.controls.workflowName.value);
@@ -259,10 +296,13 @@ export class WorkflowTemplatePage implements OnInit {
     );
     console.log(this.templateForm);
     let template = null;
-    if(this.templateForm.controls.templateName !== undefined){
-      template = {templateName: this.templateForm.controls.templateName.value, templateDescription: this.templateForm.controls.templateDescription.value};
+    if (this.templateForm.controls.templateName !== undefined) {
+      template = {
+        templateName: this.templateForm.controls.templateName.value,
+        templateDescription:
+          this.templateForm.controls.templateDescription.value,
+      };
     }
-
 
     const phases = this.templateForm.controls.phases.value;
     const name = this.templateForm.controls.workflowName.value;
@@ -275,10 +315,16 @@ export class WorkflowTemplatePage implements OnInit {
       template,
       (response) => {
         if (response.status === 'success') {
-          this.userService.displayPopOver('Success', 'You have successfully created a workflow');
+          this.userService.displayPopOver(
+            'Success',
+            'You have successfully created a workflow'
+          );
           this.router.navigate(['/home']);
         } else {
-          this.userService.displayPopOver('Error', 'Something has gone wrong, please try again');
+          this.userService.displayPopOver(
+            'Error',
+            'Something has gone wrong, please try again'
+          );
         }
       }
     );

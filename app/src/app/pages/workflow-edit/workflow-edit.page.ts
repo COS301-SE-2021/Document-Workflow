@@ -36,6 +36,7 @@ import {
 } from 'src/app/Services/Workflow/work-flow.service';
 
 import { formattedError } from '@angular/compiler';
+import { VerifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
 
 @Component({
   selector: 'app-workflow-edit',
@@ -151,9 +152,9 @@ export class WorkflowEditPage implements OnInit {
           let tempUser: phaseUserFormat[] = [];
           for (let user of JSON.parse(phase.users)) {
             let tmpUser: phaseUserFormat;
-            let tmpB: string = "true";
-            if (user['accepted'] === "false") {
-              tmpB = "false";
+            let tmpB: string = 'true';
+            if (user['accepted'] === 'false') {
+              tmpB = 'false';
             }
             tmpUser = {
               user: user['user'],
@@ -232,10 +233,7 @@ export class WorkflowEditPage implements OnInit {
 
   fillUser(user: phaseUserFormat): FormGroup {
     return this.fb.group({
-      user: new FormControl(user.user, [
-        Validators.email,
-        Validators.required,
-      ]),
+      user: new FormControl(user.user, [Validators.email, Validators.required]),
       permission: new FormControl(user.permission, [Validators.required]),
       accepted: new FormControl(user.accepted, [Validators.required]),
     });
@@ -278,10 +276,15 @@ export class WorkflowEditPage implements OnInit {
   }
 
   createNewUser(): FormGroup {
+    const verifierEmail = new VerifyEmail(this.userApiService);
     return this.fb.group({
-      user: new FormControl('', [Validators.email, Validators.required]),
+      user: new FormControl('', [
+        Validators.email,
+        Validators.required,
+        Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
+      ], [verifierEmail.verifyEmail.bind(verifierEmail)] ),
       permission: new FormControl('', [Validators.required]),
-      accepted: new FormControl("false", [Validators.required]),
+      accepted: new FormControl('false', [Validators.required]),
     });
   }
 
@@ -305,6 +308,7 @@ export class WorkflowEditPage implements OnInit {
   }
 
   createPhase(i: number): FormGroup {
+    const verifierEmail = new VerifyEmail(this.userApiService);
     return this.fb.group({
       description: new FormControl('', Validators.required),
       annotations: new FormControl('', [Validators.required]),
@@ -314,14 +318,17 @@ export class WorkflowEditPage implements OnInit {
       _id: new FormControl(''),
       users: this.fb.array([
         this.fb.group({
-          user: new FormControl('', [Validators.email, Validators.required]),
+          user: new FormControl('', [
+            Validators.email,
+            Validators.required,
+            Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
+          ], [verifierEmail.verifyEmail.bind(verifierEmail)] ),
           permission: new FormControl('', [Validators.required]),
-          accepted: new FormControl("false", [Validators.required]),
+          accepted: new FormControl('false', [Validators.required]),
         }),
       ]),
     });
   }
-
 
   addPhase() {
     let phase = this.workflowForm.get('phases') as FormArray;
@@ -467,13 +474,13 @@ export class WorkflowEditPage implements OnInit {
           };
           tmpUsr.push(tempUser);
         }
-        tmpPhase={
+        tmpPhase = {
           status: phase.controls.phaseStatus.value,
           annotations: phase.controls.annotations.value,
           description: phase.controls.description.value,
           users: tmpUsr,
-          _id: phase.controls._id.value
-        }
+          _id: phase.controls._id.value,
+        };
         phases.push(tmpPhase);
       }
       i++;
@@ -489,11 +496,14 @@ export class WorkflowEditPage implements OnInit {
       (response) => {
         this.workflowServices.dismissLoading();
         console.log(response);
-        if(response.status === "success"){
-          this.userApiService.displayPopOver('Success','Workflow edited')
+        if (response.status === 'success') {
+          this.userApiService.displayPopOver('Success', 'Workflow edited');
           this.router.navigate(['/home']);
-        }else{
-          this.userApiService.displayPopOver('an error occured','Please try again later');
+        } else {
+          this.userApiService.displayPopOver(
+            'an error occured',
+            'Please try again later'
+          );
         }
       }
     );
@@ -522,6 +532,4 @@ export class WorkflowEditPage implements OnInit {
 
     this.ready = false;
   }
-
-
 }

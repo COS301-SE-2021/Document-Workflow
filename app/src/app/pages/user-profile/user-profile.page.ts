@@ -12,6 +12,7 @@ import { match } from '../../Services/Validators/match.validator';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Platform } from '@ionic/angular';
+import { VerifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
 
 export interface contact {
   email: string;
@@ -65,6 +66,7 @@ export class UserProfilePage implements OnInit {
   }
 
   async getUser() {
+    const verifierEmail = new VerifyEmail(this.userApiService);
     this.ready = false;
     await this.userApiService.getUserDetails(async (response) => {
       if (response) {
@@ -79,7 +81,13 @@ export class UserProfilePage implements OnInit {
             firstName: [response.data.name, [Validators.required]],
             lastName: [response.data.surname, [Validators.required]],
             initials: [response.data.initials, [Validators.required]],
-            email: [response.data.email, [Validators.required]],
+            email: [
+              response.data.email,
+              [ Validators.email,
+                Validators.required,
+                Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")],
+              [verifierEmail.verifyEmail.bind(verifierEmail)],
+            ],
             password: ['', [Validators.nullValidator]],
             confirmPassword: ['', [Validators.nullValidator]],
           },
@@ -135,24 +143,24 @@ export class UserProfilePage implements OnInit {
     });
     await this.userApiService.getBlockedContacts((response) => {
       console.log(response);
-      if(response){
-      if (response.status === 'success') {
-        this.blockedContacts = response.data.contacts;
-        console.log(this.blockedContacts);
-      } else {
-        this.userApiService.displayPopOver(
-          'Error',
-          'Failed to get blocked users'
-        );
+      if (response) {
+        if (response.status === 'success') {
+          this.blockedContacts = response.data.contacts;
+          console.log(this.blockedContacts);
+        } else {
+          this.userApiService.displayPopOver(
+            'Error',
+            'Failed to get blocked users'
+          );
+        }
+        this.ready3 = true;
+        this.dismissLoader();
       }
-      this.ready3 = true;
-      this.dismissLoader();
-    }
     });
   }
 
-  dismissLoader(){
-    if(this.ready1 && this.ready2 && this.ready3){
+  dismissLoader() {
+    if (this.ready1 && this.ready2 && this.ready3) {
       this.userApiService.dismissLoading();
       this.ready = true;
     }
