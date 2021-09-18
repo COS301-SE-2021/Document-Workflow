@@ -1,13 +1,12 @@
 import { Router } from "express";
 import { injectable } from "tsyringe";
 import UserService from "./UserService";
-import sanitize from "../security/Sanitize";
-import { RequestError, ServerError } from "../error/Error";
+import { AuthorizationError, RequestError, ServerError } from "../error/Error";
 import { handleErrors } from "../error/ErrorHandler";
 import Authenticator from "../security/Authenticate";
 import sanitizeRequest from "../security/Sanitize";
 import { Types } from "mongoose";
-import { IUser } from "./IUser";
+import { IUser, privilegeLevel } from "./IUser";
 type ObjectId = Types.ObjectId;
 
 @injectable()
@@ -173,7 +172,7 @@ export default class UserController{
         }
     }
 
-    /*private async logoutUserRoute(req): Promise<Boolean> {
+    private async logoutUserRoute(req): Promise<Boolean> {
         try{
             const { headers } = req;
             if(headers.authorization){
@@ -185,7 +184,7 @@ export default class UserController{
         catch(err){
             throw new ServerError(err.toString());
         }
-    }*/
+    }
 
     private async deleteUserRoute(request): Promise<IUser> {
         try{
@@ -195,14 +194,15 @@ export default class UserController{
         }
     }
 
-    private async updateUserRoute(request): Promise<IUser> {
-        try{
-            return await this.userService.updateUser(request);
-        }
-        catch(err){
-            throw new ServerError(err.toString());
-        }
-    }
+    // //deprecated
+    // private async updateUserRoute(request): Promise<IUser> {
+    //     try{
+    //         return await this.userService.updateUser(request);
+    //     }
+    //     catch(err){
+    //         throw new ServerError(err.toString());
+    //     }
+    // }
 
     private async generatePasswordResetRequest(req){
         if(!req.body.email){
@@ -256,7 +256,33 @@ export default class UserController{
         return await this.userService.getWorkflowTemplatesIds(req.user);
     }
 
+    private async updateProfileRoute(req): Promise<boolean> {
+        if(!req.body.name || !req.body.initials || !req.body.surname){
+            throw new RequestError("Missing properties needed to update profile");
+        }
+        try{
+            return await this.userService.updateProfile({
+                name: req.body.name,
+                surname: req.body.surname,
+                initials: req.body.initials
+            }, req.user);
+        }catch(err){
+            throw new ServerError(err.toString());
+        }
+    }
+
     routes() {
+
+        this.router.get("/getContacts", this.auth, async (req, res) => {
+            try{
+                const contacts = await this.getUserContactsRoute(req);
+                if(contacts) res.status(200).json({status: "success", data:{"contacts": contacts }, message: "Contact request added"})
+                else res.status(400).send();
+            }catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        });
+
         this.router.get("", this.authenticationService.Authenticate, async (req, res) => {
             try {
                 const users = await this.getUsersRoute();
@@ -267,10 +293,15 @@ export default class UserController{
             }
         });
 
-        this.router.post("/sendContactRequest", this.auth, async (req, res) => {
-            try{
-                const contactId = await this.sendContactRequestRoute(req);
-                res.status(200).json({status: "success", data:{"ObjectId": contactId }, message: "Contact request added"});
+        this.router.get("/test", async (req, res) => {
+            res.status(200).json("Server is running");
+        });
+
+        this.router.get("/findByEmail/:email", async (req, res) => {
+            try {
+                const user = await this.getUserByEmailRoute(req);
+                if(user) res.status(200).json(user);
+                else res.status(404).send("Could not find User");
             } catch(err){
                 try{await handleErrors(err,res);}catch{}
             }
@@ -285,6 +316,14 @@ export default class UserController{
             }
         });
 
+        this.router.get("/verify", sanitizeRequest, async(req,res) =>{
+            try {
+                res.status(200).send(await this.verifyUserRoute(req));
+            } catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        });
+
         this.router.post("/deleteContact", this.auth, async (req, res) => {
             try{
                 const contactId = await this.deleteContactRoute(req);
@@ -294,13 +333,25 @@ export default class UserController{
             }
         });
 
-        this.router.post("/blockUser", this.auth, async (req, res) => {
-            try{
-                const contactId = await this.addBlockedContactRoute(req);
-                res.status(200).json({status: "success", data:{"BlockedUserId": contactId }, message: "Contact blocked"});
+        /*===========================================================================================================*/
+
+        this.router.post("/login" , async (req,res) => {
+            try {
+                const token = await this.loginUserRoute(req);
+                if(token) res.status(200).json({status: "success", data:{"token": token}, message: ""});
+                else res.status(400).send("Could not log in user");
             } catch(err){
                 try{await handleErrors(err,res);}catch{}
             }
+        });
+
+        this.router.post("/authenticate", this.authenticationService.Authenticate, async (req,res) =>{
+            try{
+                res.status(200).json({status:"success", data:{}, message:""});
+            } catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+
         });
 
         this.router.post("/unblockUser", this.auth, async (req, res) => {
@@ -308,6 +359,16 @@ export default class UserController{
                 const contactId = await this.removeBlockedContactRoute(req);
                 res.status(200).json({status: "success", data:{"UnblockedUserId": contactId }, message: "Contact removed from blocked list"});
             } catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        });
+
+        this.router.post("/logout", this.auth, async (req,res) => {
+            try{
+                if(await this.logoutUserRoute(req)) res.status(200).json({status: "success", data: {}, message: "Successfully logged out"});
+                else res.status(400).send("User could not be logged out");
+            }
+            catch(err){
                 try{await handleErrors(err,res);}catch{}
             }
         });
@@ -354,25 +415,6 @@ export default class UserController{
             }
         });
 
-        this.router.post("/getBlockedContacts", this.authenticationService.Authenticate, async(req, res)=>{
-            try{
-                const userBlockedContacts = await this.getBlockedContacts(req);
-                // if(userBlockedContacts) res.status(200).json({status: "success", data:{"contacts": userBlockedContacts }, message: "Contacts successfully retrieved"});
-                console.log(userBlockedContacts)
-                if(userBlockedContacts) {
-                    if(userBlockedContacts.length === 0){
-                        res.status(200).json({status: "success", data:{}, message: "This user does not have contacts yet"});
-                    }else{
-                        res.status(200).json({status: "success", data:{"contacts": userBlockedContacts }, message: "Contacts successfully retrieved"});
-                    }
-                }
-                else res.status(404).send("Could not find User");
-            }
-            catch(err){
-                try{await handleErrors(err,res);}catch{}
-            }
-        });
-
         this.router.post("", async(req, res) =>{
             try{
                 res.status(200).send(await this.registerUserRoute(req));
@@ -385,6 +427,16 @@ export default class UserController{
         this.router.get("/verify", sanitizeRequest, async(req,res) =>{
             try {
                 res.status(200).send(await this.verifyUserRoute(req));
+            } catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        });
+
+        this.router.post("/register", async (req,res) => {
+            try {
+                const user = await this.registerUserRoute(req);
+                if(user) res.status(201).json(user);
+                else res.status(400).send("Could not register User");
             } catch(err){
                 try{await handleErrors(err,res);}catch{}
             }
@@ -419,31 +471,38 @@ export default class UserController{
             }
         });
 
-        this.router.post("/login" , async (req,res) => {
-            try {
-                const token = await this.loginUserRoute(req);
-                if(token) res.status(200).json({status: "success", data:{"token": token}, message: ""});
-                else res.status(400).send("Could not log in user");
+        this.router.post("/sendContactRequest", this.auth, async (req, res) => {
+            try{
+                const contactId = await this.sendContactRequestRoute(req);
+                res.status(200).json({status: "success", data:{"ObjectId": contactId }, message: "Contact request added"});
             } catch(err){
                 try{await handleErrors(err,res);}catch{}
             }
         });
-
-        /*this.router.delete("/logout", this.auth, async (req,res) => {
-            try{
-                if(await this.logoutUserRoute(req)) res.status(200).json({status: "success", data: {}, message: "Successfully logged out"});
-                else res.status(400).send("User could not be logged out");
-            }
-            catch(err){
-                try{await handleErrors(err,res);}catch{}
-            }
-        });*/
 
         this.router.post("/register", async (req,res) => {
             try {
                 const user = await this.registerUserRoute(req);
                 if(user) res.status(201).json(user);
                 else res.status(400).send("Could not register User");
+            } catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        });
+
+        this.router.post("/acceptContactRequest", this.auth, async (req, res) => {
+            try{
+                const contactId = await this.acceptContactRequestRoute(req);
+                res.status(200).json({status: "success", data:{"ObjectId": contactId }, message: "Contact request accepted"});
+            } catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        });
+
+        this.router.post("/rejectContactRequest", this.auth, async (req, res) => {
+            try{
+                const contactId = await this.rejectContactRequestRoute(req);
+                res.status(200).json({status: "success", data:{"RequestingUserId": contactId }, message: "Contact request rejected"});
             } catch(err){
                 try{await handleErrors(err,res);}catch{}
             }
@@ -459,11 +518,20 @@ export default class UserController{
 
         });
 
-        this.router.put("/create/:id", sanitize, this.authenticationService.Authenticate , async (req, res) => {
+        /*this.router.put("/create/:id", sanitize, this.authenticationService.Authenticate , async (req, res) => {
             try {
                 const user = await this.updateUserRoute(req);
                 if(user) res.status(200).json(user);
                 else res.status(400).send("Could not update User");
+            } catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        });*/
+
+        this.router.post("/blockUser", this.auth, async (req, res) => {
+            try{
+                const contactId = await this.addBlockedContactRoute(req);
+                res.status(200).json({status: "success", data:{"BlockedUserId": contactId }, message: "Contact blocked"});
             } catch(err){
                 try{await handleErrors(err,res);}catch{}
             }
@@ -482,8 +550,54 @@ export default class UserController{
             }
         });
 
+        this.router.post("/unblockUser", this.auth, async (req, res) => {
+            try{
+                const contactId = await this.removeBlockedContactRoute(req);
+                res.status(200).json({status: "success", data:{"UnblockedUserId": contactId }, message: "Contact removed from blocked list"});
+            } catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        });
+
+        this.router.post("/getBlockedContacts", this.authenticationService.Authenticate, async(req, res)=>{
+            try{
+                const userBlockedContacts = await this.getBlockedContacts(req);
+                // if(userBlockedContacts) res.status(200).json({status: "success", data:{"contacts": userBlockedContacts }, message: "Contacts successfully retrieved"});
+                console.log(userBlockedContacts)
+                if(userBlockedContacts) {
+                    if(userBlockedContacts.length === 0){
+                        res.status(200).json({status: "success", data:{}, message: "This user does not have contacts yet"});
+                    }else{
+                        res.status(200).json({status: "success", data:{"contacts": userBlockedContacts }, message: "Contacts successfully retrieved"});
+                    }
+                }
+                else res.status(404).send("Could not find User");
+            }
+            catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        });
+
         this.router.post("/generatePasswordResetRequest", async(req, res)=>{
-        
+
+            try{
+                res.status(200).json(await this.generatePasswordResetRequest(req));
+            } catch(err){
+                await handleErrors(err,res);
+            }
+        });
+
+        this.router.post("/resetPassword", async(req,res) =>{
+            try{
+                res.status(200).json(await this.resetPassword(req));
+            }
+            catch(err){
+                await handleErrors(err,res);
+            }
+        });
+
+        this.router.post("/generatePasswordResetRequest", async(req, res)=>{
+
             try{
                 res.status(200).json(await this.generatePasswordResetRequest(req));
             } catch(err){
@@ -519,9 +633,36 @@ export default class UserController{
             }
         });
 
-        this.router.get("/test", async (req, res) => {
-            res.status(200).json("Server is running");
-        })
+        /*===========================================================================================================*/
+
+        this.router.post("/updateProfile", this.authenticationService.Authenticate , async (req, res) => {
+            try {
+                const user: boolean = await this.updateProfileRoute(req);
+                if(user) res.status(200).json({status: "success", data:{}, message: "User profile successfully updated"});
+                else res.status(400).send("Could not update User");
+            } catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        });
+
+        /*===========================================================================================================*/
+
+        this.router.delete("", this.authenticationService.Authenticate, async (req, res) => {
+            if (!req.params.id) {
+                throw new RequestError("Missing Parameter");
+            }
+            if(req.user.privilege != privilegeLevel.ADMIN){
+                throw new AuthorizationError("This route requires administrator privileges");
+            }
+            try {
+                const user = await this.deleteUserRoute(req);
+                if(user) res.status(203).json(user);
+                else res.status(404).send("User does not exist");
+            } catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        });
+
 
         return this.router;
     }
