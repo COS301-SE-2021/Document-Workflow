@@ -110,14 +110,14 @@
                   <ion-icon name="eye-off-outline" (click)='viewPhase(i)' *ngIf="phaseViewers[i]"
                             style="font-size: 30px;text-align:center"></ion-icon>
                 </ion-col>
-                <ion-col sizeXs='8'>
+                <ion-col sizeXs='12'>
                   <ion-item lines='none'
                             style="--border-color: #002060; --border-style:solid; --border-width:2px; --border-radius:15px">
                     <ion-label position="stacked">Description</ion-label>
                     <ion-textarea [formControl]="phase.controls.description"></ion-textarea>
                   </ion-item>
                 </ion-col>
-                <ion-col sizeXs='4'>
+                <ion-col sizeXs='12'>
                   <ion-button style="width: 100%;" (click)="removePhase(i, phase)">Delete Phase</ion-button>
                 </ion-col>
               </ion-row>

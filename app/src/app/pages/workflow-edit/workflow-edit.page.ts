@@ -137,6 +137,7 @@ export class WorkflowEditPage implements OnInit {
   }
   //todo add workflowId
   async getWorkflowData() {
+    this.userApiService.displayLoading();
     await this.workflowServices.retrieveWorkflow(
       this.workflowId,
       async (response) => {
@@ -190,6 +191,7 @@ export class WorkflowEditPage implements OnInit {
         };
         await this.setDocumentData();
         this.ready = true;
+        this.userApiService.dismissLoading();
       }
     );
   }

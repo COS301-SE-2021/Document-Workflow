@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import * as Cookies from 'js-cookie';
 import { UserAPIService } from 'src/app/Services/User/user-api.service';
+import { VerifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface contact{
@@ -32,6 +33,7 @@ export class ContactsPage implements OnInit {
   ) {}
 
   async ngOnInit() {
+    const verifierEmail = new VerifyEmail(this.userApiService);
     if (this.plat.width() > 572) {
       this.sizeMe = false;
     } else {
@@ -54,9 +56,15 @@ export class ContactsPage implements OnInit {
     }
 
     this.addContactForm = this.fb.group({
-      contact: ['', [Validators.required, Validators.email]],
+      contact: ['',       [
+        Validators.email,
+        Validators.required,
+        Validators.pattern(
+          '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'
+        ),
+      ],
+      [verifierEmail.verifyEmail.bind(verifierEmail)]],
     });
-
     await this.getContactInformation();
 
   }
