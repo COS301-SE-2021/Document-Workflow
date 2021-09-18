@@ -230,6 +230,9 @@ export class UserAPIService {
   }
 
   logout(callback) {
+    Cookies.remove('token');
+    callback();
+    /*
     const formData = new FormData();
     //const token = localStorage.getItem('token');
     const token = Cookies.get('token');
@@ -249,7 +252,7 @@ export class UserAPIService {
         async (error) => {
           await this.displayPopOver('Logout error', error.error);
         }
-      );
+      ); */
   }
 
   getContacts(callback) {
