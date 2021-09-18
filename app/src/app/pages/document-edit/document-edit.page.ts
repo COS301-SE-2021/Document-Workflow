@@ -229,13 +229,14 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   async acceptDocument(){
     await this.userApiService.displayPopOverWithButtons('signPhase','Do you accept the phase as completed?', async (response) =>{
 
-      const noteAnnots = this.removeActionAreasFromAnnotations();
+      const nonNoteAnnots = this.removeNonActionAreasFromAnnotations();
+      const commentedActionAreas = await this.annotationManager.exportAnnotations();
+      this.annotationManager.addAnnotation(nonNoteAnnots);
+      await this.removeActionAreasFromAnnotations();
       const xfdfString = await this.annotationManager.exportAnnotations();
       await this.removeAllAnnotations();
 
-      this.annotationManager.addAnnotation(noteAnnots);
       //await this.annotationManager.drawAnnotationsFromList(await this.annotationManager.getAnnotationsList());
-      const commentedActionAreas = await this.annotationManager.exportAnnotations();
       await this.workflowService.updateCurrentPhaseAnnotations(this.workflowId, commentedActionAreas, async (response1)=>{
         console.log(response1);
 
@@ -252,7 +253,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
 
             if(response2.status === "success"){
               this.userApiService.displayPopOver("Success", "The document has been edited");
-              //this.router.navigate(['home']);
+              this.router.navigate(['home']);
             }
           });
         }
@@ -275,6 +276,20 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     this.annotationManager.deleteAnnotations(toDelete);
     return toDelete;
    }
+
+  removeNonActionAreasFromAnnotations(){
+    console.log("Removing action areas from document before saving");
+    const toDelete = [];
+    this.annotationManager.getAnnotationsList().forEach(annot =>{
+      this.annotationSubjects.forEach(a =>{
+        if(a !== annot.Subject) {
+          toDelete.push(annot);
+        }
+      });
+    });
+    this.annotationManager.deleteAnnotations(toDelete);
+    return toDelete;
+  }
 
    removeAllAnnotations(){
     const toDelete = [];

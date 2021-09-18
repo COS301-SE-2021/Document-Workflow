@@ -166,6 +166,7 @@ export class WorkFlowService {
   }
 
   async updatePhase(workflowId, accept, document, callback) {
+    await this.displayLoading();
     const formData = new FormData();
     formData.append('workflowId', workflowId);
     formData.append('accept', accept);
@@ -180,14 +181,15 @@ export class WorkFlowService {
       .post(config.url + '/workflows/updatePhase', formData, {
         headers: httpHeaders,
       })
-      .subscribe(
-        (data) => {
+      .subscribe(async (data) => {
+          await this.dismissLoading();
           if (data) {
             callback(data);
           } else
             callback({ status: 'error', message: 'Cannot connect to Server' });
         },
         async (error) => {
+          await this.dismissLoading();
             await this.displayPopOver("An error occurred", error.error);
         }
       );
