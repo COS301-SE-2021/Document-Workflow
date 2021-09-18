@@ -1,0 +1,18 @@
+{"Expense Report":{"travel":207,"expense":331,"report":200,"employee":59,"reimbursement":92,"meals":58,"expenses":231,"mileage":62,"trip":58,"free":51,"000":69,"rental":131,"golf":58,"personal":61,"event":67,"budget":86,"advance":59},
+
+  "Consulting Contract":{"consultants":237,"consultant":2694,"services":1391,"consultant’s":317,"independent":73,"contractor":234,"insurance":364,"subcontractor":72,"subcontractors":63},
+
+  "Employment Contract":{"employment":502,"employee":680,"salary":79,"employer":530,"overtime":54,"remuneration":63,"employee’s":90,"employees":63,"compensation":52,"superintendent":79},
+
+  "Covid Screening":{"covid-19":165,"symptoms":81,"health":76, "fever":10, "symptomatic":10, "aches":10, "nausea":10, "vomiting":10,
+    "fatigue":10, "temperature":10},
+
+  "Invoice":{"invoice":224,"customer":84,"itinerary":95},
+
+  "Lease Agreement":{"lease":1076,"apartment":99,"resident":152,"landlord":1452,"owner":208,"property":418,"term":325,"this":1313,"is":993,"contract":65,"leased":275,"tenancy":68,"landlord’s":187,"tenant's":86,"tenant":2152,"tenant’s":256,"lessee":340,"lessor":323,"landlord's":72},
+
+  "Loan Agreement":{"loan":3540,"payments":247,"lender":3876,"borrower":5536,"repayment":315,"instalment":87,"lender’s":217,"loans":318,"borrowed":53,"repay":86,"borrowing":149,"borrower's":76,"indebtedness":111,"borrower;":50,"borrower’s":293,"lender;":52,"co-borrower":113,"lending":95,"instalments":62,"overdraft":59},
+
+  "Non-disclosure Agreement":{"non-disclosure":78,"confidential":676,"disclosed":108,"disclosure":165,"disclose":93,"confidentiality":96,"disclosing":355},
+
+  "Timesheet":{"timesheet":68,"monday":54,"tuesday":10,"wednesday":10,"thursday":10,"friday":10,"saturday":10,"sunday":10}}
