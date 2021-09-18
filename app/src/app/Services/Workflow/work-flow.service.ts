@@ -37,7 +37,6 @@ export interface phaseUserFormat {
   providedIn: 'root',
 })
 export class WorkFlowService {
-  // static url = 'http://localhost:3000/api'; //TODO: change this url
   constructor(
     private http: HttpClient,
     public loadingCtrl: LoadingController,
@@ -125,7 +124,6 @@ export class WorkFlowService {
       })
       .subscribe(
         (data) => {
-          //TODO: change url
           if (data) {
             callback(data);
           } else
@@ -167,6 +165,7 @@ export class WorkFlowService {
   }
 
   async updatePhase(workflowId, accept, document, callback) {
+    await this.displayLoading();
     const formData = new FormData();
     formData.append('workflowId', workflowId);
     formData.append('accept', accept);
@@ -181,20 +180,16 @@ export class WorkFlowService {
       .post(config.url + '/workflows/updatePhase', formData, {
         headers: httpHeaders,
       })
-      .subscribe(
-        (data) => {
+      .subscribe(async (data) => {
+          await this.dismissLoading();
           if (data) {
             callback(data);
           } else
             callback({ status: 'error', message: 'Cannot connect to Server' });
         },
         async (error) => {
-          if(error.error == 'Unknown'){
-
-          }
-          else{
+          await this.dismissLoading();
             await this.displayPopOver("An error occurred", error.error);
-          }
         }
       );
   }
@@ -223,6 +218,9 @@ export class WorkFlowService {
       },
         async (error)=>{
           await this.dismissLoading();
+          if(error.status == 401){
+
+          }
 
           if(error.error == 'Unknown') {
             await this.displayPopOver("Error", "The Docment Workflow servers could not be reached at this time");
@@ -265,6 +263,7 @@ export class WorkFlowService {
   }
 
   async updateCurrentPhaseAnnotations(workflowId, annotations, callback) {
+    await this.displayLoading();
     const formData = new FormData();
     formData.append('workflowId', workflowId);
     formData.append('annotations', annotations);
@@ -281,14 +280,16 @@ export class WorkFlowService {
           headers: httpHeaders,
         }
       )
-      .subscribe((data) => {
+      .subscribe(async (data) => {
+        await this.dismissLoading();
         if (data != null) {
           callback(data);
         } else {
           callback({ status: 'error', message: 'Cannot connect to Server' });
         }
       },
-        (error)=>{
+        async (error)=>{
+        await this.dismissLoading();
           if(error.error == 'Unknown'){
 
           }

@@ -44,7 +44,7 @@ export async function handleErrors(err: Error, res){
         if(testMode) console.error(err.message);
     }
     if(err instanceof jwt.TokenExpiredError){
-        await res.status(401).send("Session has expired " + err.message);
+        await res.status(401).send("Session has expired, please login again");
         if(testMode) console.error(err.message);
     }
     if(err instanceof DatabaseError){

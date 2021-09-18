@@ -354,7 +354,7 @@ export default class WorkflowService{
 
             //Save everything
             await this.phaseService.updatePhase(currentPhaseObject);
-            await this.workflowRepository.saveWorkflow(workflow);
+            await this.workflowRepository.updateWorkflow(workflow);
 
             return {status:"success", data:{}, message:""};
         }
@@ -445,19 +445,31 @@ export default class WorkflowService{
      * @param workflowId
      * @param annotations
      */
-    async updatePhaseAnnotations(userEmail, workflowId, annotations) {
+    async updatePhaseAnnotations(userEmail, workflowId, annotations: string) {
         console.log("Updating the annotations of a phase");
+        console.log(annotations);
         try{
             const workflow = await this.workflowRepository.getWorkflow(workflowId);
-            if(!await this.isUserMemberOfWorkflow(workflow, userEmail)){
-                console.log("Requesting user is NOT a member of this workflow");
-                return {status:"error", data:{}, message:"You are not a member of this workflow"};
-            }
             let phase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
+            let phaseUsers = JSON.parse(phase.users);
+            let userFound = false;
+            for(let i=0; i<phaseUsers.length; ++i){
+                if(phaseUsers[i].user === userEmail){
+                    userFound = true;
+                }
+            }
+            if(!userFound){
+                throw new AuthorizationError("You are not a member of this phase");
+            }
+            if(phase.annotations == annotations){
+                console.log("Different annotations did not come through----------------------------");
+            }
             phase.annotations = annotations;
+            console.log('THe phase currently looks ike this: ');
+            console.log(phase);
 
-            await this.phaseService.updatePhase(phase);
-
+            await this.phaseService.updatePhaseAnnotations(phase);
+            console.log("Finished updating phase annotations");
             return {status:'success', data:{}, message:''};
         }
         catch(err){

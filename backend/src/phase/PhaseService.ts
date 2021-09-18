@@ -33,6 +33,14 @@ export class PhaseService{
         }
     }
 
+    async updatePhaseAnnotations(phase: IPhase): Promise<void>{
+        try{
+            await this.phaseRepository.updatePhaseAnnotations(phase);
+        }catch(err){
+            throw err;
+        }
+    }
+
     async deletePhaseById(id: ObjectId): Promise<ObjectId>{
         try{
             return await this.phaseRepository.deletePhaseById(id);

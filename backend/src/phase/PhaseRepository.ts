@@ -3,6 +3,8 @@ import { Types } from "mongoose";
 import { DatabaseError } from "../error/Error";
 import { IPhase } from "./IPhase";
 import {User} from "../user/User";
+import {IWorkflow} from "../workflow/IWorkflow";
+import {Workflow} from "../workflow/Workflow";
 type ObjectId = Types.ObjectId;
 
 export class PhaseRepository{
@@ -26,15 +28,25 @@ export class PhaseRepository{
         }
     }
 
-    async updatePhase(phase: IPhase): Promise<any>{
+    async updatePhaseAnnotations(phase: IPhase): Promise<any>{
+        console.log("Phase repository, updating phase annotations");
+        console.log(phase);
         try{
-            return await Phase.updateOne({phase: phase._id},
-                {
-                    users: phase.users,
-                    annotations: phase.annotations,
-                    description: phase.description,
-                    status: phase.status
-                });
+            const result = await Phase.updateOne({_id: phase._id},
+                {$set:{annotations: phase.annotations}});
+            console.log(result);
+        }
+        catch(err){
+            throw new DatabaseError("Could not update Phase " + err.message);
+        }
+    }
+
+    async updatePhase(phase: IPhase): Promise<any>{
+        console.log("Phase repository, updating phase");
+        console.log(phase);
+        try{
+            const response: IWorkflow = await Phase.updateOne({_id: phase._id}, phase).lean();
+            return !!response;
         }
         catch(err){
             throw new DatabaseError("Could not update Phase " + err.message);
