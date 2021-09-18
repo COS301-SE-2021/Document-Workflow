@@ -39,9 +39,10 @@ export default class UserRepository extends Repository<IUser>{
      * @throws Error when the user object is not found.
      * @param user
      */
-    async updateUser(user: IUser): Promise<IUser>{
+    async updateUser(user: IUser): Promise<boolean>{
         try{
-            return await User.updateOne({email: user.email}, user).lean();
+            const res = await User.updateOne({email: user.email}, user).lean();
+            return !!res;
         }
         catch(err){
             throw new DatabaseError("Could not update User " + err.message);
