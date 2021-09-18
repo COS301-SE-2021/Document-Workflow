@@ -43,7 +43,7 @@ export class WorkflowPage implements OnInit {
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.
-    console.log("destroy")
+    console.log("hfijbnrfijbfrijbwfijb")
   }
 
   ionViewDidEnter(){
@@ -249,6 +249,7 @@ export class WorkflowPage implements OnInit {
         userEmail: this.user.email,
       },
     ]);
+
   }
 
   fixOrder(event: CustomEvent<ItemReorderEventDetail>) {
@@ -291,6 +292,7 @@ export class WorkflowPage implements OnInit {
   }
 
   showOnlyWorkflowOwned() {
+    console.log('here');
     for (const document of this.documents) {
       if (document.ownerEmail === this.userEmail) {
         document.showWorkflow = true;
@@ -331,14 +333,18 @@ export class WorkflowPage implements OnInit {
   }
 
   async getWorkflow() {
-    const id = '61191eb89da4034090bb3d4f';
+    const id = '611661feb394bb1d4cc91f3e';
     await this.workFlowService.retrieveDocument(id, (response) => {
       console.log(response);
     });
   }
 
   debug(num: number) {
-    this.getWorkflow();
+    if (num === 1) {
+      this.workFlowService.displayLoading();
+    } else {
+      this.workFlowService.dismissLoading();
+    }
   }
 
   showAll() {

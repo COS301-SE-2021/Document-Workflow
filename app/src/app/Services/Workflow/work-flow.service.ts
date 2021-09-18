@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as Cookies from 'js-cookie';
 import {LoadingController, PopoverController} from '@ionic/angular';
 import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
-import {config} from 'src/app/Services/configuration'
+import {config} from 'src/app/Services/configuration';
 export interface workflowFormat {
   showWorkflow?: boolean;
   currentPercent: number;
@@ -96,7 +96,7 @@ export class WorkFlowService {
           if (data) {
             callback(data);
           } else
-            {callback({ status: 'error', message: 'Cannot connect to Server' });}
+          {callback({ status: 'error', message: 'Cannot connect to Server' });}
         },
         async (error) => {
           this.dismissLoading();

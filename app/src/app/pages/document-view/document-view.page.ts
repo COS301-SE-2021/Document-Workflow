@@ -84,7 +84,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
           fullAPI: true,
           isReadOnly: true
         }, this.viewerRef.nativeElement).then(async instance =>{
-          this.instance = instance; 
+          this.instance = instance;
           await instance.Core.PDFNet.initialize(); //To use pdftron in the non-demo mode supply a licence key here
             /*Test to add metadata to document */
             const docorig = await instance.Core.PDFNet.PDFDoc.createFromBuffer(arr);
@@ -92,16 +92,16 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
             doc.initSecurityHandler();
             doc.lock();
             console.log('Modifying into dictionary, adding custom properties, embedding a stream...');
-  
+
             const trailer = await doc.getTrailer(); // Get the trailer
-            
+
             let itr = await trailer.find('Info');
             let info;
             if (await itr.hasNext()) {
               info = await itr.value();
               // Modify 'Producer' entry.
               info.putString('Producer', 'PDFTron PDFNet');
-  
+
               // read title entry if it is present
               itr = await info.find('Keywords');
               if (await itr.hasNext()) {
@@ -123,8 +123,8 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
               info.putString('Keywords', this.hash);
             }
             const customDict = await info.putDict('My Direct Dict');
-            customDict.putNumber('My Number', 100); 
-            const docbuf = await doc.saveMemory(0, '%PDF-1.4'); 
+            customDict.putNumber('My Number', 100);
+            const docbuf = await doc.saveMemory(0, '%PDF-1.4');
             let blob2 = new Blob([new Uint8Array(docbuf)], {type: 'application/pdf'});
             /*   */
 
@@ -138,7 +138,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
             instance.UI.loadDocument(blob2, {filename: this.docName});
             instance.UI.disableElements(['ribbons']);
             instance.UI.setToolbarGroup('toolbarGroup-View',false);
-            if(this.workflowStatus !== 'Completed'){ 
+            if(this.workflowStatus !== 'Completed'){
             instance.UI.setHeaderItems(header =>{
               header.push({
                 type: 'actionButton',
@@ -150,7 +150,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
          });
         }
 
-         if(this.workflowStatus !== 'Completed'){ 
+         if(this.workflowStatus !== 'Completed'){
           instance.UI.setHeaderItems(header =>{
             header.push({
               type: 'actionButton',
@@ -214,8 +214,8 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   async acceptDocument(){
     await this.userApiService.displayPopOverWithButtons('Accept Phase','Do you accept this phase as complete?', async (response) =>{
       await this.updateDocumentAnnotations(await this.annotationManager.exportAnnotations());
-      
-      
+
+
       const data = await this.documentViewer.getDocument().getFileData({});
       const arr = new Uint8Array(data);
       const blob = new Blob([arr], { type: 'application/pdf' });

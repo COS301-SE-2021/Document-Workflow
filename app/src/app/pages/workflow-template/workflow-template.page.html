@@ -22,7 +22,7 @@
     <ion-card-content>
       <ion-grid>
         <ion-row *ngFor="let template of tempDesc"
-          style="border: 5px solid #002060; border-radius: 25px; padding: 10px; margin: 10px">
+                 style="border: 5px solid #002060; border-radius: 25px; padding: 10px; margin: 10px">
           <ion-col sizeXs='12'>
             <ion-item lines="none">
               <ion-label position="stacked">
@@ -106,13 +106,13 @@
                 </ion-col>
                 <ion-col sizeXs='2'>
                   <ion-icon name="eye-outline" (click)='viewPhase(i)' *ngIf="!phaseViewers[i]"
-                    style="font-size: 30px;text-align: center;"></ion-icon>
+                            style="font-size: 30px;text-align: center;"></ion-icon>
                   <ion-icon name="eye-off-outline" (click)='viewPhase(i)' *ngIf="phaseViewers[i]"
-                    style="font-size: 30px;text-align:center"></ion-icon>
+                            style="font-size: 30px;text-align:center"></ion-icon>
                 </ion-col>
                 <ion-col sizeXs='8'>
                   <ion-item lines='none'
-                    style="--border-color: #002060; --border-style:solid; --border-width:2px; --border-radius:15px">
+                            style="--border-color: #002060; --border-style:solid; --border-width:2px; --border-radius:15px">
                     <ion-label position="stacked">Description</ion-label>
                     <ion-textarea [formControl]="phase.controls.description"></ion-textarea>
                   </ion-item>
@@ -140,7 +140,7 @@
                   <ion-item>
                     <ion-label>Permission:</ion-label>
                     <ion-select placeholder="{{user.controls.permission.value}}"
-                      [formControl]="user.controls.permission">
+                                [formControl]="user.controls.permission">
                       <!-- (click)="setPhase(phase.controls.phaseNumber.value)" -->
                       <ion-select-option value="sign">Signer
                       </ion-select-option>

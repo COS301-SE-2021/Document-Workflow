@@ -92,7 +92,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
           console.log('Modifying into dictionary, adding custom properties, embedding a stream...');
 
           const trailer = await doc.getTrailer(); // Get the trailer
-          
+
           let itr = await trailer.find('Info');
           let info;
           if (await itr.hasNext()) {
@@ -121,8 +121,8 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
             info.putString('Keywords', this.hash);
           }
           const customDict = await info.putDict('My Direct Dict');
-          customDict.putNumber('My Number', 100); 
-          const docbuf = await doc.saveMemory(0, '%PDF-1.4'); 
+          customDict.putNumber('My Number', 100);
+          const docbuf = await doc.saveMemory(0, '%PDF-1.4');
           let blob2 = new Blob([new Uint8Array(docbuf)], {type: 'application/pdf'});
 
           instance.UI.loadDocument(blob2, {filename: this.docName});

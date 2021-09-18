@@ -1,22 +1,22 @@
 import { Injectable } from '@angular/core';
-import * as natural from 'natural';
+//import * as natural from 'natural';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {config} from '../configuration';
 //import * as DecisionTree from 'decision-tree';
 import {DocumentClassifier} from './BagOfWordsClassifier';
 import { DecisionTree, ConsultantStrategy, CovidStrategy, EmploymentStrategy
-        , ExpenseStrategy, InvoiceStrategy, LeaseStrategy, LoanStrategy,
-        NDAStrategy, TimesheetStrategy} from './DecisionTree';
+  , ExpenseStrategy, InvoiceStrategy, LeaseStrategy, LoanStrategy,
+  NDAStrategy, TimesheetStrategy} from './DecisionTree';
 
 const DOCUMENT_TYPES = Object.freeze({EXPENSE:'Expense Report',
-        CONSULTING:'Consulting Contract',
-        EMPLOYMENT:'Employment Contract',
-        LEASE: 'Lease Agreement',
-        LOAN: 'Loan Agreement',
-        NDA: 'Non-disclosure Agreement',
-        COVID: 'Covid Screening',
-        TIMESHEET: 'Timesheet',
-        INVOICE: 'Invoice' });
+  CONSULTING:'Consulting Contract',
+  EMPLOYMENT:'Employment Contract',
+  LEASE: 'Lease Agreement',
+  LOAN: 'Loan Agreement',
+  NDA: 'Non-disclosure Agreement',
+  COVID: 'Covid Screening',
+  TIMESHEET: 'Timesheet',
+  INVOICE: 'Invoice' });
 
 @Injectable({
   providedIn: 'root'
@@ -30,14 +30,14 @@ export class AIService {
   constructor( private http: HttpClient) {
     this.loadDecisionTrees();
     this.http.get(config.url +'/ai/getClassifier').subscribe((response)=>{
-     this.loadClassifier(response);
+      this.loadClassifier(response);
     });
     /*
     this.http.get(config.url +'/ai/getDecisionTrees').subscribe((response)=>{
         this.loadDecisionTrees(response);
     });
     */
-   
+
   }
 
   loadClassifier(response){
@@ -54,7 +54,7 @@ export class AIService {
    * harder than it looks.
    * @param response
    *
-  loadClassifier(response){
+   loadClassifier(response){
     this.classifier = new natural.BayesClassifier();
     const classifierData = JSON.parse(response.data.classifierData);
     this.classifier.docs = classifierData.docs;
@@ -97,55 +97,55 @@ export class AIService {
     console.log("Instantiating tree of type: ", documentType);
     this.decisionTree = new DecisionTree(this.decisionTreesStrategies[documentType], documentType);
     console.log("Extracting features for documnt of type: ", documentType)
-      const lines = text.toLowerCase().split('\n');
-      let actionAreas = [];
-      for(const line of lines){
-        actionAreas.push([line, this.decisionTree.predict(line)]);
-      }
-     return actionAreas;
+    const lines = text.toLowerCase().split('\n');
+    let actionAreas = [];
+    for(const line of lines){
+      actionAreas.push([line, this.decisionTree.predict(line)]);
+    }
+    return actionAreas;
   }
 
   extractFeatures(text, documentType){
     let features = {};
-      switch(documentType){
-        case DOCUMENT_TYPES.EXPENSE: features = this.extractExpenseFeatures(text);
+    switch(documentType){
+      case DOCUMENT_TYPES.EXPENSE: features = this.extractExpenseFeatures(text);
         break;
-        case DOCUMENT_TYPES.CONSULTING: features = this.extractConsultingFeatures(text);
+      case DOCUMENT_TYPES.CONSULTING: features = this.extractConsultingFeatures(text);
         break;
-        case DOCUMENT_TYPES.LOAN: features = this.extractLoanFeatures(text);
+      case DOCUMENT_TYPES.LOAN: features = this.extractLoanFeatures(text);
         break;
-        case DOCUMENT_TYPES.LEASE: features = this.extractLeaseFeatures(text);
+      case DOCUMENT_TYPES.LEASE: features = this.extractLeaseFeatures(text);
         break;
-        case DOCUMENT_TYPES.TIMESHEET: features = this.extractTimesheetFeatures(text);
+      case DOCUMENT_TYPES.TIMESHEET: features = this.extractTimesheetFeatures(text);
         break;
-        case DOCUMENT_TYPES.COVID: features = this.extractCovidFeatures(text);
+      case DOCUMENT_TYPES.COVID: features = this.extractCovidFeatures(text);
         break;
-        case DOCUMENT_TYPES.INVOICE:  features = this.extractInvoiceFeatures(text);
+      case DOCUMENT_TYPES.INVOICE:  features = this.extractInvoiceFeatures(text);
         break;
-        case DOCUMENT_TYPES.NDA: features = this.extractNDAFeatures(text);
+      case DOCUMENT_TYPES.NDA: features = this.extractNDAFeatures(text);
         break;
-        case DOCUMENT_TYPES.EMPLOYMENT: features = this.extractEmploymentFeatures(text);
+      case DOCUMENT_TYPES.EMPLOYMENT: features = this.extractEmploymentFeatures(text);
         break;
-      }
+    }
 
-      return features;
+    return features;
   }
 
   extractExpenseFeatures(content){
-      content = content.toLowerCase();
-      let features = {
-        "Length": content.length,
-        "ConsecutiveUnderscores": this.hasConsecutiveUnderscores(content),
-        "NumberSemicolons": content.replace(/[^:;]/gi, '').length,
-        "SignatureKeyword": (/signature/g.test(content)) || (/signatures/g.test(content)),
-        "SignKeyword": (/sign/g.test(content)) || (/signed/g.test(content)),
-        "DateKeyword": (/date/g.test(content)) || (/dated/g.test(content)),
-        "NameKeyword": (/name/g.test(content) || (/initial/g.test(content)) || (/title/g.test(content))) || (/names/g.test(content)),
-        "Amount": (/amount/g.test(content)),
-        "Total": (/total/g.test(content)) || (/totals/g.test(content))
-      };
+    content = content.toLowerCase();
+    let features = {
+      "Length": content.length,
+      "ConsecutiveUnderscores": this.hasConsecutiveUnderscores(content),
+      "NumberSemicolons": content.replace(/[^:;]/gi, '').length,
+      "SignatureKeyword": (/signature/g.test(content)) || (/signatures/g.test(content)),
+      "SignKeyword": (/sign/g.test(content)) || (/signed/g.test(content)),
+      "DateKeyword": (/date/g.test(content)) || (/dated/g.test(content)),
+      "NameKeyword": (/name/g.test(content) || (/initial/g.test(content)) || (/title/g.test(content))) || (/names/g.test(content)),
+      "Amount": (/amount/g.test(content)),
+      "Total": (/total/g.test(content)) || (/totals/g.test(content))
+    };
 
-      return features;
+    return features;
   }
 
   extractConsultingFeatures(content){

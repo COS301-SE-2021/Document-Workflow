@@ -17,7 +17,6 @@ import { ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
 // import {SignaturePadModule} from 'angular2-signaturepad';
 import { HttpClientModule } from '@angular/common/http';
 
-
 //Components
 import { AddSignatureComponent } from './components/add-signature/add-signature.component';
 import { UserNotificationsComponent } from './components/user-notifications/user-notifications.component';

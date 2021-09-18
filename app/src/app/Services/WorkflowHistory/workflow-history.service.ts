@@ -40,14 +40,13 @@ export class WorkflowHistoryService {
     this.http.post(url, formData,{ headers: httpHeaders}).subscribe(
       (response)=>{
         if(response){
-        callback(response);
-      }else{
-        callback({status:'error',message:'Cannot connect to server'});
-      }
+          callback(response);
+        }else{
+          callback({status:'error',message:'Cannot connect to server'});
+        }
       },(error)=>{
         console.error(error);
       }
     )
   }
 }
-

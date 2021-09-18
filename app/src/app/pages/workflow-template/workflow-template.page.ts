@@ -300,7 +300,7 @@ export class WorkflowTemplatePage implements OnInit {
       template = {
         templateName: this.templateForm.controls.templateName.value,
         templateDescription:
-          this.templateForm.controls.templateDescription.value,
+        this.templateForm.controls.templateDescription.value,
       };
     }
 
