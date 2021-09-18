@@ -9,16 +9,14 @@ export default class Database{
     private static db = null;
 
     private static async connect(): Promise<void> {
-
+        Database.db = mongoose.connection;
+        Database.db.on('error', console.error.bind(console, 'connection error:'));
+        Database.db.once('open', () => {
+            console.log("Connection opened");
+        });
         try{
             await mongoose.connect(process.env.MONGO_PROD_URI);
-            Database.db = mongoose.connection;
-            Database.db.on('error', console.error.bind(console, 'connection error:'));
-            Database.db.once('open', () => {
-                console.log("Connection opened");
-            });
             await Blacklist.createBlacklist();
-
         } catch (err) {
             console.error(err);
         }
