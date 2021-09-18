@@ -374,4 +374,8 @@ export class WorkflowTemplatePage implements OnInit {
   debug(b){
     console.log(b)
   }
+
+  deleteTemplate(id: string){
+
+  }
 }
