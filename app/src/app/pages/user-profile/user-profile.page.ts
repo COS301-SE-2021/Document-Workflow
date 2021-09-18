@@ -47,6 +47,10 @@ export class UserProfilePage implements OnInit {
   ) {}
 
   async ngOnInit() {
+    this.ready1 = false;
+    this.ready2 = false;
+    this.ready3 = false;
+    this.userApiService.dismissLoading();
     if (Cookies.get('token') === undefined) {
       await this.router.navigate(['/login']);
       return;
@@ -62,11 +66,6 @@ export class UserProfilePage implements OnInit {
         }
       );
     }
-
-    this.ready1 = false;
-    this.ready2 = false;
-    this.ready3 = false;
-    this.userApiService.dismissLoading();
     await this.getUser();
     await this.getContactInformation();
 

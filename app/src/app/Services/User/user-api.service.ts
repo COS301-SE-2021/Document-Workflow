@@ -391,6 +391,7 @@ export class UserAPIService {
 
   deleteContact(contactID, callback) {
     this.displayLoading();
+    console.log(contactID);
     const formData = new FormData();
     formData.append('contactemail', contactID);
     const token = Cookies.get('token');

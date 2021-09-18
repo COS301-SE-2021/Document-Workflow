@@ -484,19 +484,20 @@ export default class UserService {
         const contact: IUser = await this.userRepository.findUser({
             email: contactEmail,
         });
+
         if (contact) {
             const currentUser: IUser = await this.userRepository.findUser({
                 _id: user._id,
             });
-
             const removed = UserService.removeFromArray(
-                currentUser.contacts,
-                user.email
+                currentUser.contacts, contactEmail
             );
             const removed1 = UserService.removeFromArray(
-                contact.contactRequests,
-                contactEmail
+                contact.contacts,
+                currentUser.email
             );
+
+            console.log(removed);
             if(removed && removed1){
                 await this.userRepository.updateUser(currentUser);
                 await this.userRepository.updateUser(contact);
