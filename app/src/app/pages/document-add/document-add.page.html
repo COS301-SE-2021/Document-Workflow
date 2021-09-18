@@ -112,7 +112,7 @@
                           <ion-input type="email" [formControl]="user.controls.user"></ion-input>
                         </ion-item>
 
-                        <ion-select #selectContact (ionChange)='friendChosen(user.controls.user, i , j)' style="display: none;">
+                        <ion-select #selectContact [name]="i+' '+j" (ionChange)='friendChosen(user.controls.user, i , j)' style="display: none;">
                           <ion-select-option *ngFor="let contact of contacts" [value]="contact">
                             {{contact}}
                           </ion-select-option>

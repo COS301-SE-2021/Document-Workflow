@@ -7,6 +7,7 @@ import {
   OnInit,
   Sanitizer,
   ViewChild,
+  ViewChildren,
 } from '@angular/core';
 import {
   FormArray,
@@ -21,6 +22,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import {
   ActionSheetController,
   IonReorderGroup,
+  IonSelect,
   ModalController,
   Platform,
 } from '@ionic/angular';
@@ -44,6 +46,7 @@ import { VerifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
   styleUrls: ['./workflow-edit.page.scss'],
 })
 export class WorkflowEditPage implements OnInit {
+  @ViewChildren('selectContact') selectContact: IonSelect;
   @Input('workflowID') workflowId: string;
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
@@ -79,6 +82,8 @@ export class WorkflowEditPage implements OnInit {
 
   document: workflowFormat;
   originalFile: File;
+
+  contacts: string[] = [];
 
   constructor(
     private plat: Platform,
@@ -134,7 +139,9 @@ export class WorkflowEditPage implements OnInit {
         console.log(response);
       }
     );
+
   }
+
   //todo add workflowId
   async getWorkflowData() {
     this.userApiService.displayLoading();
@@ -246,6 +253,7 @@ export class WorkflowEditPage implements OnInit {
       if (response) {
         this.user = response.data;
         this.ownerEmail = this.user.email;
+        await this.getContacts();
       } else {
         this.userApiService.displayPopOver('Error', 'Cannot find user');
       }
@@ -517,10 +525,6 @@ export class WorkflowEditPage implements OnInit {
     this.phaseViewers[i] = !this.phaseViewers[i];
   }
 
-  printForm() {
-    console.log(this.workflowForm);
-  }
-
   assignVariable() {
     this.next = false;
     this.rotated = 0;
@@ -535,5 +539,37 @@ export class WorkflowEditPage implements OnInit {
     this.controller = false;
 
     this.ready = false;
+  }
+
+  async addFriend(i: number, j: number) {
+    let b:string = i + ' ' + j;
+    for(let comp of this.selectContact['_results']){
+      if(b === comp['name']){
+        comp.open();
+      }
+    }
+  }
+
+  async friendChosen(form: FormControl, i: number, j: number) {
+    let b:string = i + ' ' + j;
+    for(let comp of this.selectContact['_results']){
+      if(b === comp['name']){
+        console.log(comp.value);
+        form.setValue(comp.value);
+      }
+    }
+  }
+
+  async getContacts() {
+    await this.userApiService.getContacts((response) => {
+      if (response) {
+        if (response.status === 'success') {
+          this.contacts = response.data.contacts;
+          this.contacts.push(this.ownerEmail)
+        } else {
+          this.userApiService.displayPopOver('Error', 'Failed to get users');
+        }
+      }
+    });
   }
 }
