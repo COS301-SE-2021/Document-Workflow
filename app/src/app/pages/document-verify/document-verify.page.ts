@@ -139,7 +139,12 @@ export class DocumentVerifyPage implements OnInit {
       return;
     }
     this.workflowService.verifyDocument(hash, this.workflowId, (response) =>{
-      console.log(response);
+      if(response.status === 'success'){
+        //extract history data and display
+      }
+      else{
+        //this document does not belong to this workflow.
+      }
     });
   }
 }

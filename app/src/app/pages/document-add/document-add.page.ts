@@ -341,8 +341,6 @@ export class DocumentAddPage implements OnInit {
         const docType = this.aiService.categorizeDocument(extractedText);
         console.log('DOCUMENT OF TYPE: ', docType);
         const actionAreas = this.aiService.identifyActionAreas(extractedText, docType);
-
-
         await this.highlightActionAreas(instance, PDFNet, doc, actionAreas);
         doc.unlock();
       });
@@ -489,7 +487,6 @@ export class DocumentAddPage implements OnInit {
       /* Diffeerent text search approach */
       const txtSearch = await PDFNet.TextSearch.create();
       let mode = PDFNet.TextSearch.Mode.e_whole_word + PDFNet.TextSearch.Mode.e_page_stop + PDFNet.TextSearch.Mode.e_highlight;
-
 
       txtSearch.begin(doc, pattern, mode);
 
