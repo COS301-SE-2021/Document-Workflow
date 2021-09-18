@@ -303,7 +303,7 @@ export default class UserController{
             }
         });
 
-        this.router.delete("/unblockUser", this.auth, async (req, res) => {
+        this.router.post("/unblockUser", this.auth, async (req, res) => {
             try{
                 const contactId = await this.removeBlockedContactRoute(req);
                 res.status(200).json({status: "success", data:{"UnblockedUserId": contactId }, message: "Contact removed from blocked list"});
