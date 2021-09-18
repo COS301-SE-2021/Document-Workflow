@@ -86,7 +86,6 @@ export class UserAPIService {
   }
 
   public async login(loginData: LoginData, callback) {
-    console.log('Logging in a user, ' + config.url);
     await this.displayLoading();
     const formData = new FormData();
     formData.append('email', loginData.email);

@@ -136,8 +136,9 @@ export class WorkFlowService {
         }
       );
   }
-  //TODO: promise-ify this code otherwise it will get really complicated in the frontend.
+
   public async getWorkFlowData(workflowId, callback) {
+    await this.dismissLoading();
     const formData = new FormData();
     formData.append('id', workflowId);
 
@@ -150,16 +151,17 @@ export class WorkFlowService {
       .post(config.url + '/workflows/getDetails', formData, {
         headers: httpHeaders,
       })
-      .subscribe(
-        (data) => {
-          //TODO: change url
+      .subscribe( async (data) => {
+          await this.dismissLoading();
           if (data) {
             callback(data);
           } else
             callback({ status: 'error', message: 'Cannot connect to Server' });
         },
-        (error) => {
-          alert('An unexpected error occurred');
+        async (error) => {
+          await this.dismissLoading();
+          await this.displayPopOver('Error', 'Workflow data could not be retrieved at this time, ' +
+            'please try again later');
         }
       );
   }

@@ -43,7 +43,6 @@ export class WorkflowPage implements OnInit {
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.
-    console.log("hfijbnrfijbfrijbwfijb")
   }
 
   ionViewDidEnter(){
@@ -58,7 +57,7 @@ export class WorkflowPage implements OnInit {
     this.sortForm = this.fb.group({
       sortBy: [''],
     });
-    this.workFlowService.displayLoading();
+
     this.reOrder = true;
 
     if (this.plat.width() > 572) {
@@ -69,7 +68,6 @@ export class WorkflowPage implements OnInit {
 
     if (Cookies.get('token') === undefined) {
       await this.router.navigate(['/login']);
-      this.workFlowService.dismissLoading();
       return;
     } else {
       this.userApiService.checkIfAuthorized().subscribe(
@@ -79,7 +77,6 @@ export class WorkflowPage implements OnInit {
         async (error) => {
           console.log(error);
           await this.router.navigate(['/login']);
-          this.workFlowService.dismissLoading();
           return;
         }
       );
