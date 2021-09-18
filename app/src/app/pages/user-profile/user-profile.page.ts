@@ -13,7 +13,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Platform } from '@ionic/angular';
 import { VerifyEmail } from '../../Services/Validators/verifyEmail.validator';
-
+import * as Cookies from 'js-cookie';
 export interface contact {
   email: string;
 }
@@ -47,6 +47,22 @@ export class UserProfilePage implements OnInit {
   ) {}
 
   async ngOnInit() {
+    if (Cookies.get('token') === undefined) {
+      await this.router.navigate(['/login']);
+      return;
+    } else {
+      this.userApiService.checkIfAuthorized().subscribe(
+        (response) => {
+          console.log('Successfully authorized user');
+        },
+        async (error) => {
+          console.log(error);
+          await this.router.navigate(['/login']);
+          return;
+        }
+      );
+    }
+
     this.ready1 = false;
     this.ready2 = false;
     this.ready3 = false;
