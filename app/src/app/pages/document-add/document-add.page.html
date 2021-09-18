@@ -54,30 +54,10 @@
           <div id="webViewer" #viewer class="webviewer"></div>
         </div>
       </ion-card-content>
-      <ion-button (click)="changeOver()" id="changeOver">Next</ion-button>
+      <ion-button (click)="changeOver()" id="changeOver" >Next</ion-button>
     </ion-card>
     <!-- second card -->
     <ion-reorder-group *ngIf="next" [disabled]="reOrder" (ionItemReorder)="fixOrder($event)" style="width:95%">
-      <ion-card *ngIf='template'>
-        <ion-grid>
-          <ion-row>
-            <ion-col sizeXs='12' sizeSm='6'>
-              <ion-item>
-                <ion-label position='floating'>Template Name </ion-label>
-                <ion-input formControlName="templateName" inputmode="text"></ion-input>
-              </ion-item>
-
-            </ion-col>
-            <ion-col sizeXs='12' sizeSm='6'>
-              <ion-item>
-                <ion-label position='floating'>Template Description </ion-label>
-                <ion-input formControlName="templateDescription" inputmode="text"></ion-input>
-              </ion-item>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-card>
-
       <ion-reorder *ngFor="let phase of workflowForm.controls.phases['controls']; let i = index">
         <ion-card style="width: 98%">
           <ion-grid style="width: 100%;">
@@ -162,6 +142,32 @@
         </ion-card>
       </ion-reorder>
       <ion-row>
+        <ion-col sizeXs='12'>
+          <ion-card *ngIf='template'>
+            <ion-card-header>
+              <ion-card-title>
+                Template
+              </ion-card-title>
+            </ion-card-header>
+            <ion-grid>
+              <ion-row>
+                <ion-col sizeXs='12' sizeSm='6'>
+                  <ion-item>
+                    <ion-label position='floating'>Template Name </ion-label>
+                    <ion-input formControlName="templateName" inputmode="text"></ion-input>
+                  </ion-item>
+
+                </ion-col>
+                <ion-col sizeXs='12' sizeSm='6'>
+                  <ion-item>
+                    <ion-label position='floating'>Template Description </ion-label>
+                    <ion-input formControlName="templateDescription" inputmode="text"></ion-input>
+                  </ion-item>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-card>
+        </ion-col>
         <ion-col sizeXs='12' sizeSm='12'>
           <ion-button style="width:100%" expand="block" color="primary" fill="outline" (click)="addPhase()">Add
             Phase
@@ -180,8 +186,6 @@
             type="submit">
             Add workflow</ion-button>
         </ion-col>
-
-
       </ion-row>
     </ion-reorder-group>
   </form>
