@@ -130,20 +130,6 @@ export default class UserService {
             logger.info(req.body.email + " " + tempValidateCode);
             await this.sendVerificationEmail(req.body.email, tempValidateCode);//,
             return user;
-            try {
-                const usr: IUser = req.body;
-                usr.signature = req.files.signature.data;
-                usr.validateCode = crypto.randomBytes(64).toString('hex');
-                usr.password = await this.getHashedPassword(usr.password);
-                const user: IUser = await this.userRepository.saveUser(usr);
-                if (user) {
-                    await this.sendVerificationEmail(usr.email, usr.validateCode)//,
-                    return user;
-                }
-            } catch (err) {
-                console.error(err);
-                throw new RequestError("Could not register user");
-            }
         }
     }
 
@@ -375,7 +361,7 @@ export default class UserService {
         }
       }
 
-      async unblockUser(contactEmail: string, user): Promise<ObjectId> {
+    async unblockUser(contactEmail: string, user): Promise<ObjectId> {
         //check if email of contact exists:
         const contact: IUser = await this.userRepository.findUser({
           email: contactEmail,
@@ -405,7 +391,7 @@ export default class UserService {
         }
       }
 
-      async acceptContactRequest(contactEmail: string, user): Promise<ObjectId> {
+    async acceptContactRequest(contactEmail: string, user): Promise<ObjectId> {
         console.log(contactEmail);
         console.log(user);
         //get User
