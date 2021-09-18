@@ -88,14 +88,6 @@ export class LoginRegisterPage implements OnInit {
         Lname: ['', [Validators.required]],
         initials: ['', [Validators.required]],
         email: ['', [Validators.required, Validators.email]],
-        phone_number: [
-          '',
-          [
-            Validators.required,
-            Validators.minLength(10),
-            Validators.maxLength(10),
-          ],
-        ],
         password: ['', [Validators.required, Validators.minLength(9)]],
         confirmPassword: ['', [Validators.required, Validators.minLength(9)]],
       },

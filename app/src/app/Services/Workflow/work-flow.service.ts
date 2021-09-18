@@ -37,7 +37,6 @@ export interface phaseUserFormat {
   providedIn: 'root',
 })
 export class WorkFlowService {
-  // static url = 'http://localhost:3000/api'; //TODO: change this url
   constructor(
     private http: HttpClient,
     public loadingCtrl: LoadingController,

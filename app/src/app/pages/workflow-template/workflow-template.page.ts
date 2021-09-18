@@ -143,7 +143,6 @@ export class WorkflowTemplatePage implements OnInit {
   }
 
   fillPhases(phases: any) {
-    console.log(phases);
     for (let phase of phases) {
       this.templateForm.controls.phases['controls'].push(
         this.fillPhase(phase)

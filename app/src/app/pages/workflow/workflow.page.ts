@@ -281,7 +281,6 @@ export class WorkflowPage implements OnInit {
   }
 
   showOnlyWorkflowOwned() {
-    console.log('here');
     for (const document of this.documents) {
       if (document.ownerEmail === this.userEmail) {
         document.showWorkflow = true;
@@ -293,16 +292,19 @@ export class WorkflowPage implements OnInit {
 
   sortByNeededActions() {
     for (let document of this.documents) {
+      document.showWorkflow =false;
       for (let user of document.phases[document.currentPhase].users) {
+
         if (user.user === this.userEmail) {
+
           if (user.accepted === 'true') {
+
             document.showWorkflow = false;
           } else {
             document.showWorkflow = true;
           }
-        } else {
-          document.showWorkflow = false;
         }
+        console.log(document.showWorkflow);
       }
     }
   }
