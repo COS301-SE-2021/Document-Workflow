@@ -14,7 +14,7 @@ import { UserProfilePage } from './user-profile.page';
     FormsModule,
     IonicModule,
     UserProfilePageRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   declarations: [UserProfilePage]
 })

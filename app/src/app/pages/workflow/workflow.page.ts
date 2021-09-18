@@ -356,4 +356,14 @@ export class WorkflowPage implements OnInit {
       },
     ]);
   }
+
+  verifier(workflowId:string){
+    this.leave = true;
+    this.router.navigate([
+      '/home/documentVerify',
+      {
+        workflowId: workflowId,
+      }
+    ])
+  }
 }

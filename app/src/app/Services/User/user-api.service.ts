@@ -5,7 +5,7 @@ import * as Cookies from 'js-cookie';
 import { LoadingController, PopoverController } from '@ionic/angular';
 import { config } from 'src/app/Services/configuration';
 import { Logger } from '../Logger';
-
+import { Observable, of } from 'rxjs';
 export interface User {
   Fname: string;
   Lname: string;
@@ -13,18 +13,14 @@ export interface User {
   email: string;
   password: string;
 }
-
 export interface LoginData {
   email: string;
   password: string;
 }
-
 @Injectable({
   providedIn: 'root',
 })
 export class UserAPIService {
-  static url = 'http://localhost:3000/api';
-
   constructor(
     private http: HttpClient,
     private pop: PopoverController,
@@ -51,7 +47,6 @@ export class UserAPIService {
 
   public checkIfAuthorized() {
     //callback){
-
     const formData = new FormData();
     //const token = localStorage.getItem('token');
     const token = Cookies.get('token');
@@ -91,7 +86,7 @@ export class UserAPIService {
   }
 
   public login(loginData: LoginData, callback) {
-    console.log('Logging in a user');
+    console.log('Logging in a user, ' + config.url);
     const formData = new FormData();
     formData.append('email', loginData.email);
     formData.append('password', loginData.password);
@@ -127,9 +122,10 @@ export class UserAPIService {
         Authorization: 'Bearer ' + token,
       });
       this.http
-      .post(config.url + '/users/getWorkflowTemplatesIds', formData, {
+        .post(config.url + '/users/getWorkflowTemplatesIds', formData, {
           headers: httpHeaders,
-        }).subscribe(async (response) => {
+        })
+        .subscribe(async (response) => {
           callback(response);
         });
     } catch (error) {
@@ -147,14 +143,11 @@ export class UserAPIService {
         displayButton: false,
       },
     });
-
     await poper.present();
-
     (await poper).onDidDismiss().then(async (data) => {
       return await data;
     });
   }
-
   async displayPopOverWithButtons(title: string, message: string, callback) {
     const poper = await this.pop.create({
       component: UserNotificationsComponent,
@@ -164,56 +157,53 @@ export class UserAPIService {
         displayButton: true,
       },
     });
-
     await poper.present();
-
     (await poper).onDidDismiss().then(async (data) => {
       callback(data);
     });
   }
-
   // return true if email is valid else return false.
   //Can be used with register as it must return false
-  async verifyEmail(email: string): Promise<boolean> {
-    console.log(email);
-    // const formData = new FormData();
-    // //const token = localStorage.getItem('token');
-    // const token = Cookies.get('token');
-    // const httpHeaders: HttpHeaders = new HttpHeaders({
-    //   Authorization: 'Bearer ' + token,
-    // });
-
-    // this.http
-    //   .post(config.url + '/users/verifyEmailExistence', formData, {
-    //     headers: httpHeaders,
-    //   })
-    //   .subscribe(
-    //     (data) => {
-    //       //TODO: change url
-
-    //       if (data) {
-    //         console.log(data);
-    //       }
-    //     },
-    //     async (error) => {
-    //       await this.displayPopOver(
-    //         'Error',
-    //         'The Document Workflow server could not be reached at this time'
-    //       );
-    //     }
-    //   );
-
-    return true;
+  verifyEmail(email: string, callback) {
+    const formData = new FormData();
+    formData.append('email', email)
+    //const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/verifyEmailExistence', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          if (data['data'].data === true) {
+            callback( true);
+          } else {
+            callback( false );
+          }
+        },
+        async (error) => {
+          await this.displayPopOver(
+            'Error',
+            'The Document Workflow server could not be reached at this time'
+          );
+          callback(false);
+        }
+      );
+      console.log('here')
   }
 
+
   async getUserDetails(callback) {
+
     const formData = new FormData();
     //const token = localStorage.getItem('token');
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: 'Bearer ' + token,
     });
-
     this.http
       .post(config.url + '/users/getDetails', formData, {
         headers: httpHeaders,
@@ -221,13 +211,16 @@ export class UserAPIService {
       .subscribe(
         (data) => {
           //TODO: change url
-
           if (data) {
+
             callback(data);
-          } else
+          } else {
+
             callback({ status: 'error', message: 'Cannot connect to Server' });
+          }
         },
         async (error) => {
+
           await this.displayPopOver(
             'Error user-api-services - getUserDetails',
             error
@@ -236,9 +229,279 @@ export class UserAPIService {
       );
   }
 
-  logout() {
-    //TODO: call the backend logout function
-    Cookies.remove('token');
+  logout(callback) {
+    const formData = new FormData();
+    //const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/logout', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          console.log(data);
+          Cookies.remove('token');
+          callback();
+        },
+        async (error) => {
+          await this.displayPopOver('Logout error', error.error);
+        }
+      );
+  }
+
+  getContacts(callback) {
+    const formData = new FormData();
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/getContacts', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          callback(data);
+        },
+        async (error) => {
+          await this.displayPopOver('Logout error', error.error);
+        }
+      );
+  }
+
+  getContactRequests(callback) {
+    const formData = new FormData();
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/getContactRequests', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          callback(data);
+        },
+        async (error) => {
+          await this.displayPopOver('Logout error', error.error);
+        }
+      );
+  }
+
+  acceptContactRequest(contactid, callback) {
+    this.displayLoading();
+    const formData = new FormData();
+    formData.append('contactemail', contactid);
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/acceptContactRequest', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          this.dismissLoading();
+          callback(data);
+        },
+        async (error) => {
+          this.dismissLoading();
+          await this.displayPopOver('Logout error', error.error);
+        }
+      );
+  }
+
+  unblockUser(contactID, callback) {
+    this.displayLoading();
+    const formData = new FormData();
+    formData.append('contactemail', contactID);
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/unblockUser', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          this.dismissLoading();
+          callback(data);
+        },
+        async (error) => {
+          this.dismissLoading();
+          await this.displayPopOver('Logout error', error.error);
+        }
+      );
+  }
+
+  blockUser(contactID, callback) {
+    this.displayLoading();
+    const formData = new FormData();
+    formData.append('contactemail', contactID);
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/blockUser', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          this.dismissLoading();
+          callback(data);
+        },
+        async (error) => {
+          this.dismissLoading();
+          await this.displayPopOver('Logout error', error.error);
+        }
+      );
+  }
+
+  // getBlockedContacts
+  getBlockedContacts(callback) {
+    const formData = new FormData();
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/getBlockedContacts', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          callback(data);
+
+        },
+        async (error) => {
+          await this.displayPopOver('Logout error', error.error);
+        }
+      );
+  }
+
+  deleteContact(contactID, callback) {
+    this.displayLoading();
+    const formData = new FormData();
+    formData.append('contactemail', contactID);
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/deleteContact', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          this.dismissLoading();
+          callback(data);
+        },
+        async (error) => {
+          this.dismissLoading();
+          await this.displayPopOver('Logout error', error.error);
+        }
+      );
+  }
+
+  rejectContactRequest(pendingID, callback) {
+    this.displayLoading();
+    const formData = new FormData();
+    formData.append('contactemail', pendingID);
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/rejectContactRequest', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          this.dismissLoading();
+          callback(data);
+        },
+        async (error) => {
+          this.dismissLoading();
+          await this.displayPopOver('Logout error', error.error);
+        }
+      );
+  }
+
+  sendContactRequest(pendingID, callback) {
+    this.displayLoading();
+    const formData = new FormData();
+    formData.append('contactemail', pendingID);
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+    this.http
+      .post(config.url + '/users/sendContactRequest', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          callback(data);
+          this.dismissLoading();
+        },
+        async (error) => {
+          this.dismissLoading();
+          await this.displayPopOver('Send Contact request error', error.error);
+        }
+      );
+  }
+
+  resetPassword(data, email, callback) {
+    console.log(data);
+    console.log(email);
+    const formData = new FormData();
+    formData.append('token', data.confirmationString);
+    formData.append('confirmPassword', data.confirmPassword);
+    formData.append('password', data.password);
+    formData.append('email', email);
+    this.http.post(config.url + '/users/resetPassword', formData).subscribe(
+      (data) => {
+        //this.dismissLoading();
+        if (data) {
+          callback(data);
+        } else
+          callback({ status: 'error', message: 'Cannot connect to Server' });
+      },
+      (error) => {
+        console.log(error);
+        //this.dismissLoading();
+        this.displayPopOver('Error', error.error);
+      }
+    );
+  }
+
+  sendResetPasswordEmail(email, callback) {
+    console.log(email);
+    const formData = new FormData();
+    formData.append('email', email);
+    this.http
+      .post(config.url + '/users/generatePasswordResetRequest', formData)
+      .subscribe(
+        (data) => {
+          //this.dismissLoading();
+          if (data) {
+            callback(data);
+          } else
+            callback({ status: 'error', message: 'Cannot connect to Server' });
+        },
+        (error) => {
+          console.log(error);
+          //this.dismissLoading();
+          this.displayPopOver('Error', error.error);
+        }
+      );
   }
 
   private async couldNotConnectToServer() {
