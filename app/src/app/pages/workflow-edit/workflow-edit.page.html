@@ -57,7 +57,7 @@
                     </ion-item>
                   </ion-col>
                   <ion-col sizeXs='12'>
-                    <ion-button style="width: 100%;" (click)="removePhase(i, phase)">Delete Phase</ion-button>
+                    <ion-button style="width: 100%;" (click)="removePhase(i, phase)" *ngIf="!phaseViewers[i]">Delete Phase</ion-button>
                   </ion-col>
                 </ion-row>
               </ion-col>
@@ -109,6 +109,9 @@
                   <ion-col sizeXs='12' sizeSm='6'>
                     <ion-button style="width: 99%;" (click)="includeActionArea(i,phase.controls.annotations)">Change
                       Action Area</ion-button>
+                  </ion-col>
+                  <ion-col sizeXs='12'>
+                    <ion-button style="width: 100%;" (click)="removePhase(i, phase)" *ngIf="phaseViewers[i]">Delete Phase</ion-button>
                   </ion-col>
                 </ion-row>
               </ion-col>
