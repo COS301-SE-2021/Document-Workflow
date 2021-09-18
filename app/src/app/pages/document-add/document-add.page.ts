@@ -30,7 +30,7 @@ import { DocumentActionAreaComponent } from 'src/app/components/document-action-
 import { User, UserAPIService } from 'src/app/Services/User/user-api.service';
 import * as Cookies from 'js-cookie';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
-import {AIService, DOCUMENT_TYPES} from 'src/app/Services/AI/ai.service';
+import { AIService, DOCUMENT_TYPES } from 'src/app/Services/AI/ai.service';
 // import { VerifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
 import WebViewer, { Core } from '@pdftron/webviewer';
 import { VerifyEmail } from '../../Services/Validators/verifyEmail.validator';
@@ -157,7 +157,6 @@ export class DocumentAddPage implements OnInit {
     });
     this.showPhase.push(true);
     await this.getUser();
-    await this.getContacts();
   }
 
   async getUser() {
@@ -166,6 +165,7 @@ export class DocumentAddPage implements OnInit {
         this.user = response.data;
         this.ownerEmail = this.user.email;
         console.log(this.ownerEmail);
+        await this.getContacts();
       } else {
         this.userApiService.displayPopOver('Error', 'Cannot find user');
       }
@@ -190,7 +190,19 @@ export class DocumentAddPage implements OnInit {
   }
 
   changeOver() {
-    this.next = !this.next;
+    console.log(this.workflowForm.controls.workflowName.valid);
+    if (
+      this.workflowForm.controls.workflowName.valid &&
+      this.workflowForm.controls.workflowFile.valid &&
+      this.workflowForm.controls.workflowDescription.valid
+    ) {
+      this.next = !this.next;
+    } else {
+      this.userApiService.displayPopOver(
+        'Error',
+        'Please fill in all boxes before contin'
+      );
+    }
   }
 
   addUser(form: FormArray) {
@@ -200,11 +212,15 @@ export class DocumentAddPage implements OnInit {
   createNewUser(): FormGroup {
     const verifierEmail = new VerifyEmail(this.userApiService);
     return this.fb.group({
-      user: new FormControl('', [
-        Validators.email,
-        Validators.required,
-        Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
-      ],  [verifierEmail.verifyEmail.bind(verifierEmail)]),
+      user: new FormControl(
+        '',
+        [
+          Validators.email,
+          Validators.required,
+          Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
+        ],
+        [verifierEmail.verifyEmail.bind(verifierEmail)]
+      ),
       permission: new FormControl('', [Validators.required]),
       accepted: new FormControl('false', [Validators.required]),
     });
@@ -331,7 +347,7 @@ export class DocumentAddPage implements OnInit {
     ).then(async (instance) => {
       instance.Core.PDFNet.initialize();
 
-      instance.UI.loadDocument(blob, {filename: 'Preview Document'});
+      instance.UI.loadDocument(blob, { filename: 'Preview Document' });
       instance.UI.disableElements(['ribbons']);
       instance.UI.setToolbarGroup('toolbarGroup-View', false);
 
@@ -354,20 +370,29 @@ export class DocumentAddPage implements OnInit {
           let docType = this.aiService.categorizeDocument(extractedText);
           console.log('DOCUMENT OF TYPE: ', docType);
           await this.workflowService.dismissLoading();
-          await this.userApiService.displayPopOverWithButtons('Document Type','Document identified to be of type ' + docType +'. Is ' +
-          'this correct?', async (response) =>{
-            if(response.data.confirm !== true){
-              docType = DOCUMENT_TYPES.GENERIC;
+          await this.userApiService.displayPopOverWithButtons(
+            'Document Type',
+            'Document identified to be of type ' +
+              docType +
+              '. Is ' +
+              'this correct?',
+            async (response) => {
+              if (response.data.confirm !== true) {
+                docType = DOCUMENT_TYPES.GENERIC;
+              }
+              const actionAreas = this.aiService.identifyActionAreas(
+                extractedText,
+                docType
+              );
+              await this.highlightActionAreas(
+                instance,
+                PDFNet,
+                doc,
+                actionAreas
+              );
+              doc.unlock();
             }
-            const actionAreas = this.aiService.identifyActionAreas(
-              extractedText,
-              docType
-            );
-            await this.highlightActionAreas(instance, PDFNet, doc, actionAreas);
-            doc.unlock();
-
-          });
-
+          );
         }
       );
     });
@@ -492,7 +517,7 @@ export class DocumentAddPage implements OnInit {
       if (response) {
         if (response.status === 'success') {
           this.contacts = response.data.contacts;
-          this.contacts.push(this.ownerEmail)
+          this.contacts.push(this.ownerEmail);
         } else {
           this.userApiService.displayPopOver('Error', 'Failed to get users');
         }
@@ -581,18 +606,18 @@ export class DocumentAddPage implements OnInit {
   }
 
   async addFriend(i: number, j: number) {
-    let b:string = i + ' ' + j;
-    for(let comp of this.selectContact['_results']){
-      if(b === comp['name']){
+    let b: string = i + ' ' + j;
+    for (let comp of this.selectContact['_results']) {
+      if (b === comp['name']) {
         comp.open();
       }
     }
   }
 
   async friendChosen(form: FormControl, i: number, j: number) {
-    let b:string = i + ' ' + j;
-    for(let comp of this.selectContact['_results']){
-      if(b === comp['name']){
+    let b: string = i + ' ' + j;
+    for (let comp of this.selectContact['_results']) {
+      if (b === comp['name']) {
         console.log(comp.value);
         form.setValue(comp.value);
       }
