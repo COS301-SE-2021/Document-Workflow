@@ -165,12 +165,11 @@ export class WorkFlowService {
       );
   }
 
-  async updatePhase(workflowId, accept, document, commentedActionAreas, callback) {
+  async updatePhase(workflowId, accept, document, callback) {
     const formData = new FormData();
     formData.append('workflowId', workflowId);
     formData.append('accept', accept);
     formData.append('document', document);
-
 
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
@@ -189,12 +188,7 @@ export class WorkFlowService {
             callback({ status: 'error', message: 'Cannot connect to Server' });
         },
         async (error) => {
-          if(error.error == 'Unknown'){
-
-          }
-          else{
             await this.displayPopOver("An error occurred", error.error);
-          }
         }
       );
   }
@@ -268,6 +262,7 @@ export class WorkFlowService {
   }
 
   async updateCurrentPhaseAnnotations(workflowId, annotations, callback) {
+    await this.displayLoading();
     const formData = new FormData();
     formData.append('workflowId', workflowId);
     formData.append('annotations', annotations);
@@ -284,14 +279,16 @@ export class WorkFlowService {
           headers: httpHeaders,
         }
       )
-      .subscribe((data) => {
+      .subscribe(async (data) => {
+        await this.dismissLoading();
         if (data != null) {
           callback(data);
         } else {
           callback({ status: 'error', message: 'Cannot connect to Server' });
         }
       },
-        (error)=>{
+        async (error)=>{
+        await this.dismissLoading();
           if(error.error == 'Unknown'){
 
           }

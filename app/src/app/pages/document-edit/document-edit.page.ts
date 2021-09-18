@@ -235,25 +235,29 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
 
       this.annotationManager.addAnnotation(noteAnnots);
       //await this.annotationManager.drawAnnotationsFromList(await this.annotationManager.getAnnotationsList());
-      const commentedActionAreas = await this.annotationManager.exportAnnotations()
-      const options = {xfdfString: xfdfString, flatten: true};
-      const data = await this.documentViewer.getDocument().getFileData(options);
+      const commentedActionAreas = await this.annotationManager.exportAnnotations();
+      await this.workflowService.updateCurrentPhaseAnnotations(this.workflowId, commentedActionAreas, async (response1)=>{
+        console.log(response1);
 
-      const arr = new Uint8Array(data);
-      const blob = new Blob([arr], { type: 'application/pdf' });
-      const file = new File([blob], this.documentMetadata.name);
+        if(response1.status === "success"){
+          const options = {xfdfString: xfdfString, flatten: true};
+          const data = await this.documentViewer.getDocument().getFileData(options);
 
-      this.workflowService.displayLoading();
-      await this.workflowService.updatePhase(this.workflowId, response.data.confirm, file, commentedActionAreas, (response2) => {
-        console.log(response2);
+          const arr = new Uint8Array(data);
+          const blob = new Blob([arr], { type: 'application/pdf' });
+          const file = new File([blob], this.documentMetadata.name);
 
-        this.workflowService.dismissLoading();
+          await this.workflowService.updatePhase(this.workflowId, response.data.confirm, file,(response2) => {
+            console.log(response2);
 
-        if(response2.status === "success"){
-          this.userApiService.displayPopOver("Success", "The document has been edited");
-          //this.router.navigate(['home']);
+            if(response2.status === "success"){
+              this.userApiService.displayPopOver("Success", "The document has been edited");
+              //this.router.navigate(['home']);
+            }
+          });
         }
       });
+
 
     });
    }

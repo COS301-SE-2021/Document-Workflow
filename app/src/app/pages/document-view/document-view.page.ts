@@ -82,7 +82,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
           path: './../../../assets/lib',
           annotationUser: this.userEmail,
           fullAPI: true,
-          isReadOnly: true
+          isReadOnly: this.workflowStatus === 'Completed'
         }, this.viewerRef.nativeElement).then(async instance =>{
           this.instance = instance;
           await instance.Core.PDFNet.initialize(); //To use pdftron in the non-demo mode supply a licence key here
@@ -175,7 +175,6 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
 
         });
       }else {
-        //TODO: style this ErrorOccurredPopup
 
         await this.userApiService.displayPopOver('Oops','An unexpected error occurred. Please try again later');
         // const a = await this.modalCtrl.create({
@@ -212,19 +211,31 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   }
 
   async acceptDocument(){
-    await this.userApiService.displayPopOverWithButtons('Accept Phase','Do you accept this phase as complete?', async (response) =>{
-      await this.updateDocumentAnnotations(await this.annotationManager.exportAnnotations());
+    await this.userApiService.displayPopOverWithButtons('Accept Phase','Do you accept this phase as complete?', async (res) =>{
+      const annotationsString = await this.annotationManager.exportAnnotations();
+      console.log("Updating the annotations of this document");
+      console.log(annotationsString);
+      this.workflowService.displayLoading();
+      await this.workflowService.updateCurrentPhaseAnnotations(this.workflowId, annotationsString, async (response)=>{
+        console.log(response);
 
+        if(response.status === "success") {
+          const data = await this.documentViewer.getDocument().getFileData({});
+          const arr = new Uint8Array(data);
+          const blob = new Blob([arr], {type: 'application/pdf'});
+          const file = new File([blob], this.documentMetadata.name);
 
-      const data = await this.documentViewer.getDocument().getFileData({});
-      const arr = new Uint8Array(data);
-      const blob = new Blob([arr], { type: 'application/pdf' });
-      const file = new File([blob], this.documentMetadata.name);
-
-      await this.workflowService.updatePhase(this.workflowId, response.data.confirm, file, (response2) => {
-        console.log(response2);
+          await this.workflowService.updatePhase(this.workflowId, res.data.confirm, file, (response2) => {
+            console.log(response2);
+            this.workflowService.dismissLoading();
+            this.userApiService.displayPopOver("Success", "Your response has been saved");
+            this.router.navigate(['home']);
+            });
+          }
+        });
       });
-    });
+
+
    }
 
   toggleAnnotations(annotationManager){
@@ -282,17 +293,18 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   }
 
   async updateDocumentAnnotations(annotationsString){
-      console.log("Updating the annotations of this document");
-      this.workflowService.displayLoading();
-      await this.workflowService.updateCurrentPhaseAnnotations(this.workflowId, annotationsString, (response)=>{
-        console.log(response);
+    console.log("Updating the annotations of this document");
+    console.log(annotationsString);
+    this.workflowService.displayLoading();
+    await this.workflowService.updateCurrentPhaseAnnotations(this.workflowId, annotationsString, (response)=>{
+      console.log(response);
 
-        if(response.status === "success"){
-          this.userApiService.displayPopOver("Success", "Your response has been saved");
-          this.router.navigate(['home']);
-        }
+      if(response.status === "success"){
+        this.userApiService.displayPopOver("Success", "Your response has been saved");
+        this.router.navigate(['home']);
+      }
 
-        this.workflowService.dismissLoading();
-      });
+      this.workflowService.dismissLoading();
+    });
   }
 }
