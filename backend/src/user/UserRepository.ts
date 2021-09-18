@@ -30,7 +30,7 @@ export default class UserRepository extends Repository<IUser>{
         try {
             return await User.find(filter).lean();
         } catch (err) {
-          throw new DatabaseError("Could not find Users " + err.message);
+            throw new DatabaseError("Could not find Users " + err.message);
         }
     }
 
@@ -57,17 +57,17 @@ export default class UserRepository extends Repository<IUser>{
         try {
             return await User.findOne(filter).lean();
         } catch(err) {
-            throw new DatabaseError("Could not find User " + err.getMessage());
+            throw new DatabaseError("Could not find User " + err.message);
         }
     }
 
-    async findUserWithContacts(filter): Promise<any> {
+    /*async findUserWithContacts(filter): Promise<any> {
         try{
             return await User.findOne(filter).populate("contacts").lean();
         } catch(err) {
             throw new DatabaseError("Could not find User " + err.getMessage());
         }
-    }
+    }*/
 
     /**
      * @returns Promise<User> The deleted user

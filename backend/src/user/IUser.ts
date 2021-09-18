@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 type ObjectId = Types.ObjectId;
 
-export enum privilegeLevel { ADMIN, USER}
+export const privilegeLevel = Object.freeze({ADMIN: "Admin", USER: "User"});
 
 export interface IUser {
     _id?: ObjectId,
@@ -13,11 +13,13 @@ export interface IUser {
     signature: Types.Buffer,
     validated: boolean,
     validateCode: string,
-    contacts: ObjectId[],
+    contacts: string[],
+    antiCSRFToken: string,
+    csrfTokenTime: number,
     contactRequests: string[],
     blockedList: string[],
     privilegeLevel: string,
-    ownedWorkflows: ObjectId[],
-    workflows: ObjectId[],
-    workflowTemplates: ObjectId[]
+    ownedWorkflows: string[],
+    workflows: string[],
+    workflowTemplates: string[]
 }

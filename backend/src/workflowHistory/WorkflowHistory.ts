@@ -9,6 +9,10 @@ export class Entry{
     userEmail: string;
     currentPhase: Number;
     type: string;
+
+    loadFromJSONString(json){
+
+    }
 }
 export const workflowHistorySchema = new Schema<IWorkflowHistory>({
     entries: [{type: String}]

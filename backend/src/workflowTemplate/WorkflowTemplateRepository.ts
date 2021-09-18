@@ -5,7 +5,7 @@ import { IWorkflowTemplate } from "./IWorkflowTemplate";
 type ObjectId = Types.ObjectId;
 
 export default class WorkflowTemplateRepository{
-    
+
     async saveWorkflowTemplate(workflowTemplate: IWorkflowTemplate): Promise<ObjectId>{
         try{
             const newWorkflowTemplate = new WorkflowTemplate(workflowTemplate);

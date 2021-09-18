@@ -25,7 +25,7 @@ export class PhaseRepository{
         }
     }
 
-    async updatePhase(phase: IPhase): Promise<IPhase>{
+    async updatePhase(phase: IPhase): Promise<void>{
         try{
             return await Phase.findOneAndUpdate(phase).lean();
         }catch(err){

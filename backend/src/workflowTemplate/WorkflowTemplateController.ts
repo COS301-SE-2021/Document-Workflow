@@ -36,7 +36,7 @@ export default class WorkflowTemplateController {
         if(!req.body.templateId){
             throw new RequestError("WorkflowId not specified")
         }
-        
+
         return await this.workflowTemplateService.deleteWorkflowTemplate(req.user, req.body.templateId);
     }
 
@@ -75,6 +75,6 @@ export default class WorkflowTemplateController {
         return this.router;
     }
 
-    
+
 }
 

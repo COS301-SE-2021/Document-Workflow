@@ -32,124 +32,124 @@ describe("User sub-system integration tests:", () => {
     }
 
     beforeAll(async () => {
-      await Database.get();
+        await Database.get();
     });
 
-  beforeEach(() => {
-    userService = new UserService(new UserRepository());
-    userController = new UserController(userService, new Authenticator());
-  });
+    beforeEach(() => {
+        userService = new UserService(new UserRepository());
+        userController = new UserController(userService, new Authenticator());
+    });
 
-  afterAll(async () => {
-    await Database.disconnect();
-  });
+    afterAll(async () => {
+        await Database.disconnect();
+    });
 
-  describe("User Lifecycle:", () => {
+    describe("User Lifecycle:", () => {
 
-      it("Should create user1:", async () => {
+        it("Should create user1:", async () => {
 
-        //Create new user if it doesn't exist
-        //Check if user exists
-        //Delete User if it exists:
+            //Create new user if it doesn't exist
+            //Check if user exists
+            //Delete User if it exists:
 
-        const getResponse = await userService.getUserByEmail(testUserEmail);
+            const getResponse = await userService.getUserByEmail(testUserEmail);
 
-        if(getResponse){
-          const deleteRequest = {
-            params: {
-              id: getResponse._id
+            if(getResponse){
+                const deleteRequest = {
+                    params: {
+                        id: getResponse._id
+                    }
+                } as unknown as Request;
+
+                const deletedUser = await userService.deleteUser(deleteRequest);
+                expect(deletedUser.email).toBe("testymctestface@testmail.test");
             }
-          } as unknown as Request;
 
-          const deletedUser = await userService.deleteUser(deleteRequest);
-          expect(deletedUser.email).toBe("testymctestface@testmail.test");
-        }
+            //const currentDate = Date.now();
+            const mockPostRequest = {
+                body: {
+                    name: testUserName,
+                    surname: testUserSurname,
+                    initials: testUserInitials,
+                    email: testUserEmail,
+                    password: testUserPassword,
+                    confirmPassword: testUserPassword
+                },
+                files: {
+                    signature: testUserSignature
+                }
+            } as unknown as Request;
 
-        //const currentDate = Date.now();
-        const mockPostRequest = {
-          body: {
-              name: testUserName,
-              surname: testUserSurname,
-              initials: testUserInitials,
-              email: testUserEmail,
-              password: testUserPassword,
-              confirmPassword: testUserPassword
-          },
-          files: {
-            signature: testUserSignature
-          }
-        } as unknown as Request;
+            const createdUser = await userController.registerUserRoute(mockPostRequest);
+            expect(createdUser.name).toBe(testUserName);
+            expect(createdUser.surname).toBe(testUserSurname);
+            expect(createdUser.initials).toBe(testUserInitials);
+            expect(createdUser.email).toBe(testUserEmail);
+            testUserId = createdUser._id;
+            testUserValidationCode = createdUser.validateCode;
+        });
 
-        const createdUser = await userController.registerUserRoute(mockPostRequest);
-        expect(createdUser.name).toBe(testUserName);
-        expect(createdUser.surname).toBe(testUserSurname);
-        expect(createdUser.initials).toBe(testUserInitials);
-        expect(createdUser.email).toBe(testUserEmail);
-        testUserId = createdUser._id;
-        testUserValidationCode = createdUser.validateCode;
-      });
+        it("Should verify user1", async () => {
+            const verifyRequest = {
+                query: {
+                    email: testUserEmail,
+                    verificationCode: testUserValidationCode
+                },
+            } as unknown as Request;
 
-      it("Should verify user1", async () => {
-          const verifyRequest = {
-              query: {
-                  email: testUserEmail,
-                  verificationCode: testUserValidationCode
-              },
-          } as unknown as Request;
+            await userController.verifyUserRoute(verifyRequest);
+            //check that user has been updated:
+            const user = await userService.getUserByEmail(testUserEmail);
+            expect(user.validated).toBe(true);
+        });
 
-          await userController.verifyUserRoute(verifyRequest);
-          //check that user has been updated:
-          const user = await userService.getUserByEmail(testUserEmail);
-          expect(user.validated).toBe(true);
-      });
+        it("Should login user1", async () => {
+            const loginRequest = {
+                body: {
+                    email: testUserEmail,
+                    password: testUserPassword
+                },
+            } as unknown as Request;
+            testUserValidationToken = await userController.loginUserRoute(loginRequest);
+            expect(testUserValidationToken).toBeDefined();
+        });
 
-      it("Should login user1", async () => {
-          const loginRequest = {
-              body: {
-                  email: testUserEmail,
-                  password: testUserPassword
-              },
-          } as unknown as Request;
-          testUserValidationToken = await userController.loginUserRoute(loginRequest);
-          expect(testUserValidationToken).toBeDefined();
-      });
+        it("Should authenticate user1", async () => {
+            request(app)
+                .post('/api/users/authenticate')
+                .set('Authorization', 'Bearer ' + testUserValidationToken)
+                .expect('Content-Type', /json/)
+                .expect(200);
+        })
 
-      it("Should authenticate user1", async () => {
-          request(app)
-              .post('/api/users/authenticate')
-              .set('Authorization', 'Bearer ' + testUserValidationToken)
-              .expect('Content-Type', /json/)
-              .expect(200);
-      })
+        it("Should invalidate user1's access token", async () => {
+            request(app)
+                .delete('/api/users/logout')
+                .set('Authorization', 'Bearer ' + testUserValidationToken)
+                .expect('Content-Type', /json/)
+                .expect(200);
+        });
 
-      it("Should invalidate user1's access token", async () => {
-          request(app)
-              .delete('/api/users/logout')
-              .set('Authorization', 'Bearer ' + testUserValidationToken)
-              .expect('Content-Type', /json/)
-              .expect(200);
-      });
-
-      it("Should fail to authenticate with the previous token", async () => {
-          request(app)
-              .post('/api/users/authenticate')
-              .set('Authorization', 'Bearer ' + testUserValidationToken)
-              .expect('Content-Type', /json/)
-              .expect(401)
-      });
+        it("Should fail to authenticate with the previous token", async () => {
+            request(app)
+                .post('/api/users/authenticate')
+                .set('Authorization', 'Bearer ' + testUserValidationToken)
+                .expect('Content-Type', /json/)
+                .expect(401)
+        });
 
     });
 
-  describe("User Contacts Lifecycle:", () => {
+    describe("User Contacts Lifecycle:", () => {
 
-      /*it("Should create a user2")
+        /*it("Should create a user2")
 
-      it("Should verify user2")
+        it("Should verify user2")
 
-      it("Should login user1")
+        it("Should login user1")
 
-      it("Should send a contact request to user2")*/
+        it("Should send a contact request to user2")*/
 
 
-  });
+    });
 });

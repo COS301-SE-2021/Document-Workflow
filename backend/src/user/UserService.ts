@@ -1,15 +1,16 @@
 import { injectable } from "tsyringe";
 import UserRepository from "./UserRepository";
 import nodemailer from 'nodemailer';
-import jwt, { Jwt } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { AuthenticationError, RequestError, ServerError } from "../error/Error";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
-import { isStrongPassword, isEmail } from "validator";
+import { isEmail, isStrongPassword } from "validator";
 import { logger } from "../LoggingConfig";
 import { Types } from "mongoose";
 import { IUser, privilegeLevel } from "./IUser";
 import { Blacklist } from "../security/Blacklist";
+
 type ObjectId = Types.ObjectId;
 
 @injectable()
@@ -197,7 +198,7 @@ export default class UserService {
         });
     }
 
-    //returns jwt string for authentication
+
     async loginUser(email, password): Promise<string> {
         const user = await this.userRepository.findUser({ email: email });
         if(!user){ throw new RequestError("User does not exist.")}
@@ -214,9 +215,10 @@ export default class UserService {
         }
     }
 
-    async logoutUser(token: string): Promise<void> {
+    async logoutUser(token: string): Promise<boolean> {
         try {
             await Blacklist.addToBlacklist(token);
+            return await Blacklist.checkBlacklist(token);
         }
         catch(err){
             console.error(err);
@@ -224,6 +226,7 @@ export default class UserService {
         }
     }
 
+    //TODO: Users can only delete their own accounts
     async deleteUser(req): Promise<IUser> {
         if(!await this.userRepository.findUser(req.params.id)){
             throw new RequestError("User does not exist");
@@ -249,11 +252,17 @@ export default class UserService {
         return result;
     }
 
-    async getUserDetails(email: string): Promise<IUser> {
+    async getUserDetails(email: string): Promise<any> {
         try{
             const user: IUser = await this.userRepository.findUser({ email: email});
             if(user)
-                return user;
+                return {
+                    name: user.name,
+                    surname: user.surname,
+                    initials: user.initials,
+                    email: user.email,
+                    signature: user.signature.toString()
+                };
             else return null;
         }
         catch(err){
@@ -325,6 +334,10 @@ export default class UserService {
                 throw new RequestError("This contact is already blocked by this user");
             }
             currentUser.blockedList.push(contactEmail);
+            UserService.removeFromArray(
+                currentUser.contacts,
+                contactEmail
+            );
             await this.userRepository.updateUser(currentUser);
             return contact._id;
         }else{
@@ -340,6 +353,15 @@ export default class UserService {
             const indexOfRemovedEmail = currentUser.blockedList.indexOf(contactEmail);
             if(indexOfRemovedEmail != -1){
                 currentUser.blockedList.splice(indexOfRemovedEmail, 1);
+                const added = UserService.addToArrayIfNotPresent(
+                    currentUser.contacts,
+                    contactEmail
+                );
+                if (added) {
+                    await this.userRepository.updateUser(currentUser);
+                } else {
+                    throw new RequestError("Failed to add user back");
+                }
                 await this.userRepository.updateUser(currentUser);
             }else{
                 throw new RequestError("This person is not blocked");
@@ -350,79 +372,125 @@ export default class UserService {
         }
     }
 
-    async acceptContactRequest(contactEmail: string, user): Promise<ObjectId>{
+    async acceptContactRequest(contactEmail: string, user): Promise<ObjectId> {
+        console.log(contactEmail);
+        console.log(user);
         //get User
-        const usr: IUser = await this.userRepository.findUser({email: user.email});
+        const usr: IUser = await this.userRepository.findUser({
+            email: user.email,
+        });
         //check if contact exists:
-        const contact: IUser = await this.userRepository.findUser({email: contactEmail});
-        if(!contact) throw new RequestError("contact doesn't exist");
+        const contact: IUser = await this.userRepository.findUser({
+            email: contactEmail,
+        });
 
+        if (!contact) throw new RequestError("contact doesn't exist");
         //find contact in requests array:
-        const removed = UserService.removeFromArray(usr.contactRequests, contactEmail);
-        if(removed){
+        const removed = UserService.removeFromArray(
+            usr.contactRequests,
+            contactEmail
+        );
+        const removed1 = UserService.removeFromArray(
+            contact.contactRequests,
+            user.email
+        );
+        if (removed) {
             //add to contacts array:
-            const added = UserService.addToArrayIfNotPresent(usr.contacts, contact._id);
-            if(added){
+            const added = UserService.addToArrayIfNotPresent(
+                usr.contacts,
+                contactEmail
+            );
+            const addedToContact = UserService.addToArrayIfNotPresent(
+                contact.contacts,
+                user.email
+            );
+            console.log(added + " " + addedToContact);
+            if (added && addedToContact) {
                 await this.userRepository.updateUser(usr);
+                await this.userRepository.updateUser(contact);
                 return usr._id;
-            }else{
+            } else {
                 throw new ServerError("Couldn't accept contact request");
             }
-        }else{
+        } else {
             throw new ServerError("Couldn't accept contact request");
         }
     }
 
-    async sendContactRequest(recipientEmail, user): Promise<ObjectId>{
+    async sendContactRequest(recipientEmail, user): Promise<ObjectId> {
         //check if email of contact exists:
         //add MY email to Contact's contact requests
-        const recipient: IUser = await this.userRepository.findUser({email: recipientEmail});
-        if(recipient){
+        const recipient: IUser = await this.userRepository.findUser({
+            email: recipientEmail,
+        });
+        if (recipient) {
             const index = recipient.blockedList.indexOf(user.email);
-            if(index != -1){
+            if (index != -1) {
                 throw new RequestError("User is on recipient's blocked list");
             }
-            if(!(UserService.addToArrayIfNotPresent(recipient.contactRequests, user.email)))
+            if (
+                !UserService.addToArrayIfNotPresent(
+                    recipient.contactRequests,
+                    user.email
+                )
+            )
                 throw new RequestError("Contact request already exists");
             await this.userRepository.updateUser(recipient);
             return recipient._id;
-        }else{
+        } else {
             throw new RequestError("Recipient does not exist");
         }
     }
 
-    async rejectContactRequest(contactEmail: string, user): Promise<ObjectId>{
+    async rejectContactRequest(contactEmail: string, user): Promise<ObjectId> {
         //check if email of contact exists:
-        const contact: IUser = await this.userRepository.findUser({email: contactEmail});
-        if(contact){
-            const currentUser: IUser = await this.userRepository.findUser({_id: user._id});
-            const indexOfRemovedEmail = currentUser.contactRequests.indexOf(contactEmail);
-            if(indexOfRemovedEmail != -1){
+        const contact: IUser = await this.userRepository.findUser({
+            email: contactEmail,
+        });
+        if (contact) {
+            const currentUser: IUser = await this.userRepository.findUser({
+                _id: user._id,
+            });
+            const indexOfRemovedEmail =
+                currentUser.contactRequests.indexOf(contactEmail);
+            if (indexOfRemovedEmail != -1) {
                 currentUser.contactRequests.splice(indexOfRemovedEmail, 1);
                 await this.userRepository.updateUser(currentUser);
-            }else{
+            } else {
                 throw new RequestError("Contact request does not exist");
             }
             return contact._id;
-        }else{
+        } else {
             throw new RequestError("Contact does not exist");
         }
     }
 
-    async deleteContact(contactEmail: string, user): Promise<ObjectId>{
+    async deleteContact(contactEmail: string, user): Promise<ObjectId> {
         //check if email of contact exists:
-        const contact: IUser = await this.userRepository.findUser({email: contactEmail});
-        if(contact){
-            const currentUser: IUser = await this.userRepository.findUser({_id: user._id});
-            const indexOfRemovedEmail = currentUser.contacts.indexOf(contact._id);
-            if(indexOfRemovedEmail != -1){
-                currentUser.contacts.splice(indexOfRemovedEmail, 1);
+        const contact: IUser = await this.userRepository.findUser({
+            email: contactEmail,
+        });
+        if (contact) {
+            const currentUser: IUser = await this.userRepository.findUser({
+                _id: user._id,
+            });
+
+            const removed = UserService.removeFromArray(
+                currentUser.contacts,
+                user.email
+            );
+            const removed1 = UserService.removeFromArray(
+                contact.contactRequests,
+                contactEmail
+            );
+            if(removed && removed1){
                 await this.userRepository.updateUser(currentUser);
-            }else{
+                await this.userRepository.updateUser(contact);
+            } else {
                 throw new RequestError("This person is not a contact");
             }
             return contact._id;
-        }else{
+        } else {
             throw new RequestError("Contact does not exist");
         }
     }
@@ -434,10 +502,10 @@ export default class UserService {
         if(contact){
             const currentUser: IUser = await this.userRepository.findUser({_id: user._id});
             //check if they're already a contact
-            if(currentUser.contacts.indexOf(contact._id) != -1){
+            if(currentUser.contacts.indexOf(contactEmail) != -1){
                 throw new RequestError("This contact is already a contact of this user");
             }
-            currentUser.contacts.push(contact._id);
+            currentUser.contacts.push(contactEmail);
             await this.userRepository.updateUser(currentUser);
             return contact._id;
         }else{
@@ -445,17 +513,109 @@ export default class UserService {
         }
     }
 
-    async getContacts(user): Promise<any> {
-        try{
-            const thisUser = await this.userRepository.findUserWithContacts({_id: user._id});
-            return thisUser.contacts;
-        } catch(err){
-            throw err;
+    async getContacts(email: string) {
+        const user: IUser = await this.userRepository.findUser({ email: email });
+        if (user) {
+            return user.contacts;
+        } else {
+            throw new ServerError("User not found");
+        }
+    }
+
+    async getBlockedContacts(email: string) {
+        const user: IUser = await this.userRepository.findUser({ email: email });
+        if (user) {
+            return user.blockedList;
+        } else {
+            throw new ServerError("User not found");
+        }
+    }
+
+    async getContactRequests(email: string) {
+        const user: IUser = await this.userRepository.findUser({ email: email });
+        if (user) {
+            return user.contactRequests;
+        } else {
+            throw new ServerError("User not found");
         }
     }
 
     async getWorkflowTemplatesIds(user) {
         const usr = await this.getUserById(user._id);
         return {status:"success", data:{templateIds: usr.workflowTemplates}, message:""};
+    }
+
+    async generatePasswordReset(userEmail) {
+        const usr = await this.getUserByEmail(userEmail);
+        logger.info("Resetting email of userwith email address: " + userEmail);
+
+        if (usr === null) {
+            throw new RequestError("No user with that email address was found.");
+        }
+        usr.antiCSRFToken = crypto.randomBytes(64).toString("hex");
+        usr.csrfTokenTime = Date.now();
+        await this.userRepository.saveUser(usr);
+        const res = await this.sendResetRequestEmail(userEmail, usr.antiCSRFToken);
+        logger.info(res); //TODO: check this for errors thrown
+        return { status: "success", data: {}, message: "" };
+    }
+
+    async sendResetRequestEmail(emailAddress, antiCSRFCode) {
+        logger.info("Sending an email to the new email address");
+        let transporter = nodemailer.createTransport({
+            service: process.env.NODEMAILER_SERVICE,
+            host: process.env.NODEMAILER_SMTP,
+            port: process.env.NODEMAILER_PORT,
+            secure: true,
+            auth: {
+                user: process.env.EMAIL_ADDRESS,
+                pass: process.env.EMAIL_PASSWORD,
+            },
+            tls: { rejectUnauthorized: false },
+        });
+
+        let mailOptions = {
+            from: process.env.EMAIL_ADDRESS,
+            to: emailAddress,
+            subject: "DocumentWorkflow Password Reset Code",
+            html:
+                "<html lang='en'><p>Hello new DocumentWorkflow User, use this code to reset your password: " +
+                antiCSRFCode +
+                "</p></html>",
+        };
+
+        return transporter.sendMail(mailOptions);
+    }
+
+    async resetPassword(email, password, token) {
+        const usr = await this.getUserByEmail(email);
+        //This check is here to ensure that hackers cant use the default value of an antiSCRF token to
+        //reset a user's account
+        if (usr.antiCSRFToken === "") {
+            throw new RequestError(
+                "Something is wrong with the token, please generate a new request"
+            );
+        }
+
+        if (usr.antiCSRFToken !== token) {
+            throw new RequestError("The password reset token is incorrect");
+        }
+
+        if (
+            Date.now() - usr.csrfTokenTime >
+            parseInt(process.env.CSRF_TOKEN_TIMEOUT_MILLISECONDS)
+        ) {
+            throw new RequestError(
+                "The password reset token has expired, please create a new request"
+            );
+        }
+
+        if (!isStrongPassword(password)) {
+            throw new RequestError("The new password is not strong enough");
+        }
+
+        usr.password = await this.getHashedPassword(password);
+        await this.userRepository.saveUser(usr);
+        return { status: "success", data: {}, message: "" };
     }
 }
