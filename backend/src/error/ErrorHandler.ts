@@ -36,11 +36,11 @@ export async function handleErrors(err: Error, res){
         if(testMode) console.error(err.message);
     }
     if(err instanceof CloudError){
-        await res.status(401).send("Cloud Storage Error " + err.message);
+        await res.status(500).send(err.message);
         if(testMode) console.error(err.message);
     }
     if(err instanceof ServerError){
-        await res.status(500).send("Server Error " + err.message);
+        await res.status(500).send(err.message);
         if(testMode) console.error(err.message);
     }
     if(err instanceof jwt.TokenExpiredError){

@@ -314,8 +314,10 @@ export default class WorkflowService{
                 }
             }
             currentPhaseObject.users = JSON.stringify(phaseUsers);
-            if(!userFound)
-                return {status:"error", data:{}, message:'You are not a part of this phase'};
+            if(!userFound){
+                throw new AuthorizationError("You are not a member of this phase");
+            }
+
 
             if(permission === 'sign'){
                 await this.documentService.updateDocument(document, workflowId, workflow.currentPhase);

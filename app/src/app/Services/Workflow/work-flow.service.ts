@@ -188,14 +188,19 @@ export class WorkFlowService {
           } else
             callback({ status: 'error', message: 'Cannot connect to Server' });
         },
-        (error) => {
-          console.log(error);
-          alert('An unexpected error occurred');
+        async (error) => {
+          if(error.error == 'Unknown'){
+
+          }
+          else{
+            await this.displayPopOver("An error occurred", error.error);
+          }
         }
       );
   }
 
   async retrieveDocument(workflowId, callback) {
+    await this.displayLoading();
     const formData = new FormData();
     formData.append('workflowId', workflowId);
     const token = Cookies.get('token');
@@ -207,14 +212,25 @@ export class WorkFlowService {
       .post(config.url + '/workflows/retrieveDocument', formData, {
         headers: httpHeaders,
       })
-      .subscribe((data) => {
+      .subscribe(async(data) => {
         console.log(data);
+        await this.dismissLoading();
         if (data != null) {
           callback(data);
         } else {
           callback({ status: 'error', message: 'Cannot connect to Server' });
         }
-      });
+      },
+        async (error)=>{
+          await this.dismissLoading();
+
+          if(error.error == 'Unknown') {
+            await this.displayPopOver("Error", "The Docment Workflow servers could not be reached at this time");
+          }
+          else{
+            await this.displayPopOver("An Error Occurred", error.error);
+          }
+        });
   }
 
   async retrieveWorkflow(workflowId, callback) {
@@ -233,9 +249,19 @@ export class WorkFlowService {
         if (data != null) {
           callback(data);
         } else {
-          callback({ status: 'error', message: 'Cannot connect to Server' });
+          callback({status: 'error', message: 'Cannot connect to Server'});
         }
-      });
+        },
+        async (error)=>{
+          await this.dismissLoading();
+
+          if(error.error == 'Unknown') {
+            await this.displayPopOver("Error", "The Docment Workflow servers could not be reached at this time");
+          }
+          else{
+            await this.displayPopOver("An Error Occurred", error.error);
+          }
+        });
   }
 
   async updateCurrentPhaseAnnotations(workflowId, annotations, callback) {
@@ -261,7 +287,12 @@ export class WorkFlowService {
         } else {
           callback({ status: 'error', message: 'Cannot connect to Server' });
         }
-      });
+      },
+        (error)=>{
+          if(error.error == 'Unknown'){
+
+          }
+        });
   }
 
   async getUserWorkflowsData(callback) {

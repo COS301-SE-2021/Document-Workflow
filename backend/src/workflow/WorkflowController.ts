@@ -131,7 +131,7 @@ export default class WorkflowController {
             throw new RequestError("There was something wrong with the request");
         }
         try{
-            return await this.workflowService.updatePhase(req.user.email, req.body.workflowId, req.body.accept, req.files.document);
+            return await this.workflowService.updatePhase(req.user, req.body.workflowId, req.body.accept, req.files.document);
         } catch(err) {
             console.log(err)
             throw new ServerError(err.toString());

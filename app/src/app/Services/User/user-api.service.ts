@@ -203,7 +203,6 @@ export class UserAPIService {
   async getUserDetails(callback) {
 
     const formData = new FormData();
-    //const token = localStorage.getItem('token');
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
       Authorization: 'Bearer ' + token,
@@ -214,17 +213,15 @@ export class UserAPIService {
       })
       .subscribe(
         (data) => {
-          //TODO: change url
-          if (data) {
 
+          if (data) {
             callback(data);
           } else {
-
             callback({ status: 'error', message: 'Cannot connect to Server' });
           }
         },
         async (error) => {
-
+          console.log(error);
           await this.displayPopOver(
             'Error user-api-services - getUserDetails',
             error
