@@ -43,7 +43,6 @@ export class WorkflowPage implements OnInit {
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.
-    console.log("destroy")
   }
 
   ionViewDidEnter(){
@@ -58,7 +57,7 @@ export class WorkflowPage implements OnInit {
     this.sortForm = this.fb.group({
       sortBy: [''],
     });
-    this.workFlowService.displayLoading();
+
     this.reOrder = true;
 
     if (this.plat.width() > 572) {
@@ -69,7 +68,6 @@ export class WorkflowPage implements OnInit {
 
     if (Cookies.get('token') === undefined) {
       await this.router.navigate(['/login']);
-      this.workFlowService.dismissLoading();
       return;
     } else {
       this.userApiService.checkIfAuthorized().subscribe(
@@ -79,7 +77,6 @@ export class WorkflowPage implements OnInit {
         async (error) => {
           console.log(error);
           await this.router.navigate(['/login']);
-          this.workFlowService.dismissLoading();
           return;
         }
       );
@@ -249,6 +246,7 @@ export class WorkflowPage implements OnInit {
         userEmail: this.user.email,
       },
     ]);
+
   }
 
   fixOrder(event: CustomEvent<ItemReorderEventDetail>) {
@@ -291,6 +289,7 @@ export class WorkflowPage implements OnInit {
   }
 
   showOnlyWorkflowOwned() {
+    console.log('here');
     for (const document of this.documents) {
       if (document.ownerEmail === this.userEmail) {
         document.showWorkflow = true;
@@ -331,14 +330,18 @@ export class WorkflowPage implements OnInit {
   }
 
   async getWorkflow() {
-    const id = '61191eb89da4034090bb3d4f';
+    const id = '611661feb394bb1d4cc91f3e';
     await this.workFlowService.retrieveDocument(id, (response) => {
       console.log(response);
     });
   }
 
   debug(num: number) {
-    this.getWorkflow();
+    if (num === 1) {
+      this.workFlowService.displayLoading();
+    } else {
+      this.workFlowService.dismissLoading();
+    }
   }
 
   showAll() {
@@ -355,5 +358,15 @@ export class WorkflowPage implements OnInit {
         workflowId: workflowID,
       },
     ]);
+  }
+
+  verifier(workflowId:string){
+    this.leave = true;
+    this.router.navigate([
+      '/home/documentVerify',
+      {
+        workflowId: workflowId,
+      }
+    ])
   }
 }

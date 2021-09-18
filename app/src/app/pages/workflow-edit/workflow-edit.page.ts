@@ -7,6 +7,7 @@ import {
   OnInit,
   Sanitizer,
   ViewChild,
+  ViewChildren,
 } from '@angular/core';
 import {
   FormArray,
@@ -21,6 +22,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import {
   ActionSheetController,
   IonReorderGroup,
+  IonSelect,
   ModalController,
   Platform,
 } from '@ionic/angular';
@@ -36,6 +38,7 @@ import {
 } from 'src/app/Services/Workflow/work-flow.service';
 
 import { formattedError } from '@angular/compiler';
+import { VerifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
 
 @Component({
   selector: 'app-workflow-edit',
@@ -43,6 +46,7 @@ import { formattedError } from '@angular/compiler';
   styleUrls: ['./workflow-edit.page.scss'],
 })
 export class WorkflowEditPage implements OnInit {
+  @ViewChildren('selectContact') selectContact: IonSelect;
   @Input('workflowID') workflowId: string;
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
@@ -78,6 +82,8 @@ export class WorkflowEditPage implements OnInit {
 
   document: workflowFormat;
   originalFile: File;
+
+  contacts: string[] = [];
 
   constructor(
     private plat: Platform,
@@ -133,9 +139,12 @@ export class WorkflowEditPage implements OnInit {
         console.log(response);
       }
     );
+
   }
+
   //todo add workflowId
   async getWorkflowData() {
+    this.userApiService.displayLoading();
     await this.workflowServices.retrieveWorkflow(
       this.workflowId,
       async (response) => {
@@ -151,9 +160,9 @@ export class WorkflowEditPage implements OnInit {
           let tempUser: phaseUserFormat[] = [];
           for (let user of JSON.parse(phase.users)) {
             let tmpUser: phaseUserFormat;
-            let tmpB: string = "true";
-            if (user['accepted'] === "false") {
-              tmpB = "false";
+            let tmpB: string = 'true';
+            if (user['accepted'] === 'false') {
+              tmpB = 'false';
             }
             tmpUser = {
               user: user['user'],
@@ -189,6 +198,7 @@ export class WorkflowEditPage implements OnInit {
         };
         await this.setDocumentData();
         this.ready = true;
+        this.userApiService.dismissLoading();
       }
     );
   }
@@ -232,10 +242,7 @@ export class WorkflowEditPage implements OnInit {
 
   fillUser(user: phaseUserFormat): FormGroup {
     return this.fb.group({
-      user: new FormControl(user.user, [
-        Validators.email,
-        Validators.required,
-      ]),
+      user: new FormControl(user.user, [Validators.email, Validators.required]),
       permission: new FormControl(user.permission, [Validators.required]),
       accepted: new FormControl(user.accepted, [Validators.required]),
     });
@@ -246,6 +253,7 @@ export class WorkflowEditPage implements OnInit {
       if (response) {
         this.user = response.data;
         this.ownerEmail = this.user.email;
+        await this.getContacts();
       } else {
         this.userApiService.displayPopOver('Error', 'Cannot find user');
       }
@@ -278,10 +286,15 @@ export class WorkflowEditPage implements OnInit {
   }
 
   createNewUser(): FormGroup {
+    const verifierEmail = new VerifyEmail(this.userApiService);
     return this.fb.group({
-      user: new FormControl('', [Validators.email, Validators.required]),
+      user: new FormControl('', [
+        Validators.email,
+        Validators.required,
+        Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
+      ], [verifierEmail.verifyEmail.bind(verifierEmail)] ),
       permission: new FormControl('', [Validators.required]),
-      accepted: new FormControl("false", [Validators.required]),
+      accepted: new FormControl('false', [Validators.required]),
     });
   }
 
@@ -305,6 +318,7 @@ export class WorkflowEditPage implements OnInit {
   }
 
   createPhase(i: number): FormGroup {
+    const verifierEmail = new VerifyEmail(this.userApiService);
     return this.fb.group({
       description: new FormControl('', Validators.required),
       annotations: new FormControl('', [Validators.required]),
@@ -314,14 +328,17 @@ export class WorkflowEditPage implements OnInit {
       _id: new FormControl(''),
       users: this.fb.array([
         this.fb.group({
-          user: new FormControl('', [Validators.email, Validators.required]),
+          user: new FormControl('', [
+            Validators.email,
+            Validators.required,
+            Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
+          ], [verifierEmail.verifyEmail.bind(verifierEmail)] ),
           permission: new FormControl('', [Validators.required]),
-          accepted: new FormControl("false", [Validators.required]),
+          accepted: new FormControl('false', [Validators.required]),
         }),
       ]),
     });
   }
-
 
   addPhase() {
     let phase = this.workflowForm.get('phases') as FormArray;
@@ -467,17 +484,19 @@ export class WorkflowEditPage implements OnInit {
           };
           tmpUsr.push(tempUser);
         }
-        tmpPhase={
+        tmpPhase = {
           status: phase.controls.phaseStatus.value,
           annotations: phase.controls.annotations.value,
           description: phase.controls.description.value,
           users: tmpUsr,
-          _id: phase.controls._id.value
-        }
+          _id: phase.controls._id.value,
+        };
         phases.push(tmpPhase);
       }
       i++;
     }
+
+    console.log(phases)
     const name = this.workflowForm.controls.workflowName.value;
     const description = this.workflowForm.controls.workflowDescription.value;
 
@@ -489,11 +508,14 @@ export class WorkflowEditPage implements OnInit {
       (response) => {
         this.workflowServices.dismissLoading();
         console.log(response);
-        if(response.status === "success"){
-          this.userApiService.displayPopOver('Success','Workflow edited')
+        if (response.status === 'success') {
+          this.userApiService.displayPopOver('Success', 'Workflow edited');
           this.router.navigate(['/home']);
-        }else{
-          this.userApiService.displayPopOver('an error occured','Please try again later');
+        } else {
+          this.userApiService.displayPopOver(
+            'an error occured',
+            'Please try again later'
+          );
         }
       }
     );
@@ -501,10 +523,6 @@ export class WorkflowEditPage implements OnInit {
 
   viewPhase(i: number) {
     this.phaseViewers[i] = !this.phaseViewers[i];
-  }
-
-  printForm() {
-    console.log(this.workflowForm);
   }
 
   assignVariable() {
@@ -523,5 +541,35 @@ export class WorkflowEditPage implements OnInit {
     this.ready = false;
   }
 
+  async addFriend(i: number, j: number) {
+    let b:string = i + ' ' + j;
+    for(let comp of this.selectContact['_results']){
+      if(b === comp['name']){
+        comp.open();
+      }
+    }
+  }
 
+  async friendChosen(form: FormControl, i: number, j: number) {
+    let b:string = i + ' ' + j;
+    for(let comp of this.selectContact['_results']){
+      if(b === comp['name']){
+        console.log(comp.value);
+        form.setValue(comp.value);
+      }
+    }
+  }
+
+  async getContacts() {
+    await this.userApiService.getContacts((response) => {
+      if (response) {
+        if (response.status === 'success') {
+          this.contacts = response.data.contacts;
+          this.contacts.push(this.ownerEmail)
+        } else {
+          this.userApiService.displayPopOver('Error', 'Failed to get users');
+        }
+      }
+    });
+  }
 }

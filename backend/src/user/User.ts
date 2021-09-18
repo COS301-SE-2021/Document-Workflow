@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { isStrongPassword, isEmail } from "validator";
-import { IUser } from "./IUser";
+import { IUser, privilegeLevel } from "./IUser";
 
 /**
  * <p>
@@ -42,22 +42,23 @@ export const userSchema = new Schema<IUser>({
     validated: { type: Boolean, default: false },
     validateCode: { type: String, required: true },
     contacts: [{
-        type: Schema.Types.ObjectId,
-        ref:"User",
+        type: String,
         required: false,
         validate: {
             validator: function(value) {
-                return this._id != value;
+                return this.email != value;
             },
             message: "You can't be your own friend!"
         }
     }],
+    antiCSRFToken: { type: String, default: ''},
+    csrfTokenTime: { type: Number },
     contactRequests: [{ type: String, required: false, maxlength: [ parseInt(process.env.MAX_CONTACT_REQUESTS) || 50, "Request limit reached" ]}],
     blockedList: [{ type: String, required: false, maxlength: [ parseInt(process.env.MAX_BLOCKLIST) || 50, "Blocked list is at capacity" ]}],
-    privilegeLevel: { type: String, enum: ['ADMIN', 'USER'], required: false, immutable: true },
-    ownedWorkflows: [{type: Schema.Types.ObjectId, ref: "Workflow", required: false, maxlength: [ parseInt(process.env.MAX_OWNED_WORKFLOWS) || 50, "Workflow limit reached" ]}],
-    workflows: [{type: Schema.Types.ObjectId, ref: "Workflow", required: false, maxlength: [ parseInt(process.env.MAX_WORKFLOWS) || 500, "This user cannot be a part of further workflows" ]}],
-    workflowTemplates: [{type: Schema.Types.ObjectId, ref: "WorkflowTemplate", required: false, maxlength: [ parseInt(process.env.MAX_WORKFLOW_TEMPLATES) || 50, "Workflow template limit reached" ]}]
+    privilegeLevel: { type: String, required: false, immutable: true, default: privilegeLevel.USER },
+    ownedWorkflows: [{type: String, required: false, maxlength: [ parseInt(process.env.MAX_OWNED_WORKFLOWS) || 50, "Workflow limit reached" ]}],
+    workflows: [{type: String, required: false, maxlength: [ parseInt(process.env.MAX_WORKFLOWS) || 500, "This user cannot be a part of further workflows" ]}],
+    workflowTemplates: [{type: String, required: false, maxlength: [ parseInt(process.env.MAX_WORKFLOW_TEMPLATES) || 50, "Workflow template limit reached" ]}]
 });
 
 export const User = model<IUser>('User', userSchema);

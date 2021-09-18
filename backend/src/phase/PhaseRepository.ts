@@ -2,6 +2,7 @@ import { Phase } from "./Phase";
 import { Types } from "mongoose";
 import { DatabaseError } from "../error/Error";
 import { IPhase } from "./IPhase";
+import {User} from "../user/User";
 type ObjectId = Types.ObjectId;
 
 export class PhaseRepository{
@@ -25,11 +26,18 @@ export class PhaseRepository{
         }
     }
 
-    async updatePhase(phase: IPhase): Promise<IPhase>{
+    async updatePhase(phase: IPhase): Promise<any>{
         try{
-            return await Phase.findOneAndUpdate(phase).lean();
-        }catch(err){
-            throw new DatabaseError("Could not update phase " + err.message);
+            return await Phase.updateOne({phase: phase._id},
+                {
+                    users: phase.users,
+                    annotations: phase.annotations,
+                    description: phase.description,
+                    status: phase.status
+                });
+        }
+        catch(err){
+            throw new DatabaseError("Could not update Phase " + err.message);
         }
     }
 

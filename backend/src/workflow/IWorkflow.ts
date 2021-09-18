@@ -8,7 +8,7 @@ export interface IWorkflow {
     documentId?: Types.ObjectId,
     historyId?: Types.ObjectId,
     description: string,
-    phases?: Types.ObjectId[],
+    phases?: string[],
     currentPhase?: number,
     status?: string,
     currentHash?: string

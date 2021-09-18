@@ -19,8 +19,8 @@ describe("user unit tests", () => {
     userRepository = new UserRepository();
     userService = new UserService(userRepository);
     userController = new UserController(
-      userService,
-      new Authenticator()
+        userService,
+        new Authenticator()
     );
   });
 
@@ -36,7 +36,7 @@ describe("user unit tests", () => {
       signature: "signaturetext",
       validated: false,
       validateCode:
-        "db0ecc907a401a027adcd18113a359c1b3341a9a5cb9eedd4478d97942bef065c9cce0d255199cc8846697a65962404e9da27c3ac8e598dd568ec1db85e23c2e",
+          "db0ecc907a401a027adcd18113a359c1b3341a9a5cb9eedd4478d97942bef065c9cce0d255199cc8846697a65962404e9da27c3ac8e598dd568ec1db85e23c2e",
       tokens: "",
       tokenDate: currentDate,
       owned_workflows: [
@@ -52,15 +52,15 @@ describe("user unit tests", () => {
     });
 
     userService
-      .getUserByEmail("joey@hotmail.gov")
-      .then((user) => {
-        expect(user.name).toBe("Testy");
-        expect(user.surname).toBe("Testerson");
-        expect(user.initials).toBe("TT");
-        expect(user.email).toBe("testy@test.gov");
-        expect(user.validated).toBe(false);
-        expect(user.tokenDate).toBe(currentDate);
-      })
+        .getUserByEmail("joey@hotmail.gov")
+        .then((user) => {
+          expect(user.name).toBe("Testy");
+          expect(user.surname).toBe("Testerson");
+          expect(user.initials).toBe("TT");
+          expect(user.email).toBe("testy@test.gov");
+          expect(user.validated).toBe(false);
+          expect(user.tokenDate).toBe(currentDate);
+        })
   });
   it("Should gracefully handle faults in request object", async () => {
     const request = {
@@ -76,7 +76,7 @@ describe("user unit tests", () => {
   });
   it("Should encode user email and id as JWT", async () => {
     const hashedPassword: string =
-      userService.getHashedPassword("AgR3aTP4SsW0rd");
+        userService.getHashedPassword("AgR3aTP4SsW0rd");
 
     const response = {
       _id: new Types.ObjectId("0x012345678911"),
@@ -98,12 +98,12 @@ describe("user unit tests", () => {
   it("Should not login user with incorrect password", async () => {
     //fake req.body.email and req.body.password:
     const request = {
-        email: "unittest@test.com",
-        password: "AgR3aTP4SsW0rd"
+      email: "unittest@test.com",
+      password: "AgR3aTP4SsW0rd"
     }
 
     const hashedPassword: string = userService.getHashedPassword(
-      "AgR3aTP4SsW0rd212311"
+        "AgR3aTP4SsW0rd212311"
     );
 
     const response = {
@@ -116,7 +116,7 @@ describe("user unit tests", () => {
     sinon.stub(userRepository, "findUser").returns(response);
 
     await expect(userService.loginUser(request.email, request.password)).rejects.toThrow(
-      AuthenticationError
+        AuthenticationError
     );
   });
 

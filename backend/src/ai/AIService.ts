@@ -1,6 +1,6 @@
 import { injectable } from "tsyringe";
 import * as fs from 'fs';
-import {logger} from "../LoggingConfig";
+
 
 
 @injectable()
@@ -27,6 +27,7 @@ export class AIService{
         const data = {
             'Consulting Contract': consultantData,
             'Employment Contract': employmentData,
+            'Expense Report': expenseDate,
             'Lease Agreement': leaseData,
             'Loan Agreement': loanData,
             'Non-disclosure Agreement': NDAData,

@@ -1,5 +1,4 @@
 import { Schema, model } from 'mongoose';
-import { userSchema } from "../user/User";
 import { IWorkflowTemplate } from "./IWorkflowTemplate";
 
 /**

@@ -1,7 +1,7 @@
 import { PhaseRepository } from "./PhaseRepository";
 import { injectable } from "tsyringe";
-import { Types } from "mongoose";
 import { IPhase } from "./IPhase";
+import { Types } from "mongoose";
 type ObjectId = Types.ObjectId;
 
 @injectable()
@@ -25,9 +25,9 @@ export class PhaseService{
         }
     }
 
-    async updatePhase(phase: IPhase): Promise<IPhase>{
+    async updatePhase(phase: IPhase): Promise<void>{
         try{
-            return await this.phaseRepository.updatePhase(phase);
+            await this.phaseRepository.updatePhase(phase);
         }catch(err){
             throw err;
         }

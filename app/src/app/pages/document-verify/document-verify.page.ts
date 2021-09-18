@@ -85,7 +85,7 @@ export class DocumentVerifyPage implements OnInit {
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
     this.file = target.files[0];
     this.verifyDocument();
- 
+
   }
 
   verifyDocument(){
@@ -122,7 +122,7 @@ export class DocumentVerifyPage implements OnInit {
       instance.UI.loadDocument(blob, {filename: 'Preview Document'});
       instance.UI.disableElements(['ribbons']);
       instance.UI.setToolbarGroup('toolbarGroup-View',false);
-    
+
       instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
         const PDFNet = instance.Core.PDFNet;
         const doc = await PDFNet.PDFDoc.createFromBuffer(await this.file.arrayBuffer());
@@ -135,11 +135,16 @@ export class DocumentVerifyPage implements OnInit {
 
   verifyHash(hash){
     if(hash.length == 0){
-      alert("This document has no associated stored hash, make a nice popup for this message");
+      this.userApiService.displayPopOver('Error','This document has no associated stored hash');
       return;
     }
     this.workflowService.verifyDocument(hash, this.workflowId, (response) =>{
-      console.log(response);
+      if(response.status === 'success'){
+        //extract history data and display
+      }
+      else{
+        //this document does not belong to this workflow.
+      }
     });
   }
 }

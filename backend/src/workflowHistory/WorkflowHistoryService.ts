@@ -1,5 +1,4 @@
 import { injectable } from "tsyringe";
-import encryption from "../crypto/encryption";
 import WorkflowHistoryRepository from "./WorkflowHistoryRepository";
 import { Types } from "mongoose";
 import {Entry, ENTRY_TYPE, WorkflowHistory} from './WorkflowHistory';
@@ -12,7 +11,7 @@ export default class WorkflowHistoryService {
 
     constructor(
         private workflowHistoryRepository: WorkflowHistoryRepository,
-        private encrypt: encryption) {
+        ) {
     }
 
     /**
@@ -57,7 +56,7 @@ export default class WorkflowHistoryService {
         const entry = new Entry();
         entry.hash = await bcrypt.hash(previousEntry.userEmail + previousEntry.data + previousEntry.type + previousEntry.currentPhase, parseInt(process.env.SALT_ROUNDS)).then(function(hash){
             return hash;
-             })
+        })
             .catch(err => {
                 throw new Error(err);
             });
@@ -68,7 +67,7 @@ export default class WorkflowHistoryService {
         // @ts-ignore
         workflowHistory.entries.push(JSON.stringify(entry));
 
-        await this.workflowHistoryRepository.saveWorkflowHistory(workflowHistory);
+        await this.workflowHistoryRepository.updateWorkflowHistory(workflowHistory);
         return entry.hash;
     }
 

@@ -6,7 +6,6 @@ import UserService from "../user/UserService";
 import { PhaseStatus } from "../phase/Phase";
 import { PhaseService } from "../phase/PhaseService";
 import { AuthorizationError, RequestError, ServerError } from "../error/Error";
-import encryption from "../crypto/encryption";
 import WorkflowTemplateService from "../workflowTemplate/WorkflowTemplateService";
 import WorkflowHistoryService from "../workflowHistory/WorkflowHistoryService";
 import { ENTRY_TYPE } from "../workflowHistory/WorkflowHistory";
@@ -14,8 +13,7 @@ import { logger } from "../LoggingConfig";
 import { IWorkflow } from "./IWorkflow";
 import { IPhase } from "../phase/IPhase";
 import { IUser } from "../user/IUser";
-import Mongoose, { Types } from 'mongoose';
-
+import { Types } from 'mongoose';
 
 type ObjectId = Types.ObjectId;
 
@@ -28,8 +26,8 @@ export default class WorkflowService{
         private userService: UserService,
         private phaseService: PhaseService,
         private workflowTemplateService: WorkflowTemplateService,
-        private workflowHistoryService: WorkflowHistoryService,
-        private encrypt: encryption) {
+        private workflowHistoryService: WorkflowHistoryService
+        ) {
     }
 
     /**
@@ -78,11 +76,11 @@ export default class WorkflowService{
             //Step 5: update the workflows documentId, historyId, and hash
             //In order to use the save function to update a document, we require a document, not a documentProps
             //thus we fetch the workflow we have created in the database, update its parameters then we can update it effectively
-            const workflowForUpdate: IWorkflow = await this.workflowRepository.getWorkflow(workflowId);
+            const workflowForUpdate: IWorkflow = await this.workflowRepository.getWorkflow(String(workflowId));
             workflowForUpdate.documentId = documentId;
             workflowForUpdate.historyId = historyData.id;
             workflowForUpdate.currentHash = historyData.hash;
-            await this.workflowRepository.saveWorkflow(workflowForUpdate);
+            await this.workflowRepository.updateWorkflow(workflowForUpdate);
 
             //6) Add the new workflow Id to the workflow and ownedWorkflows fields of its participating users
             await this.addWorkFlowIdToUsersWorkflows(phases, workflowId, workflow.ownerEmail);
@@ -119,7 +117,6 @@ export default class WorkflowService{
             if (!await this.checkUsersExist(usrs))
                 return false;
         }
-
         return true;
     }
 
@@ -131,7 +128,6 @@ export default class WorkflowService{
             if(user === undefined || user === null)
                 return false;
         }
-
         return true;
     }
 
@@ -141,8 +137,8 @@ export default class WorkflowService{
             let users = JSON.parse(phases[i].users);
             for(let k=0; k<users.length; ++k){
                 let user = await this.userService.getUserByEmail(users[k].user);
-                if(user.email != ownerEmail && !user.workflows.includes(workflowId))
-                    user.workflows.push(workflowId);
+                if(user.email != ownerEmail && !user.workflows.includes(String(workflowId)))
+                    user.workflows.push(String(workflowId));
                 await this.userService.updateUserWorkflows(user);
             }
         }
@@ -152,7 +148,7 @@ export default class WorkflowService{
         console.log("Adding the workflow id to the workflows array of the owner " + ownerEmail);
         let user = await this.userService.getUserByEmail(ownerEmail);
         console.log(user.ownedWorkflows);
-        user.ownedWorkflows.push(workflowId);
+        user.ownedWorkflows.push(String(workflowId));
         console.log(user.ownedWorkflows);
         await this.userService.updateUserWorkflows(user);
     }
@@ -161,7 +157,7 @@ export default class WorkflowService{
 
     async getWorkFlowById(id: ObjectId) {
 
-        const workflow = await this.workflowRepository.getWorkflow(id);
+        const workflow = await this.workflowRepository.getWorkflow(String(id));
         if(workflow === undefined || workflow === null)
             return {status:"error", data: {}, message:"workflow " + id + " not found"}
 
@@ -197,7 +193,6 @@ export default class WorkflowService{
     async deleteWorkFlow(workflowId, userEmail) {
         console.log("Attempting to delete workflow with id, ",workflowId);
         try {
-
             const workflow = await this.workflowRepository.getWorkflow(workflowId);
             console.log(workflow);
             if(workflow === null)
@@ -212,7 +207,7 @@ export default class WorkflowService{
 
             for(let i=0; i<workflow.phases.length; ++i){
                 const phase = await this.phaseService.getPhaseById(workflow.phases[i]);
-                
+
                 const phaseUsers = JSON.parse(phase.users);
                 console.log("deleting workflow id from members of current phase");
                 console.log(phaseUsers);
@@ -250,7 +245,6 @@ export default class WorkflowService{
         user.workflows.splice(index, 1);
         await this.userService.updateUserWorkflows(user);
     }
-
 
     async getUsersWorkflowData(userId: ObjectId) {
 
@@ -320,8 +314,10 @@ export default class WorkflowService{
                 }
             }
             currentPhaseObject.users = JSON.stringify(phaseUsers);
-            if(!userFound)
-                return {status:"error", data:{}, message:'You are not a part of this phase'};
+            if(!userFound){
+                throw new AuthorizationError("You are not a member of this phase");
+            }
+
 
             if(permission === 'sign'){
                 await this.documentService.updateDocument(document, workflowId, workflow.currentPhase);
@@ -367,7 +363,8 @@ export default class WorkflowService{
             throw new ServerError(err);
         }
     }
-    //my cat walked across my keyboard while I was typing this out. If there are any bugs, she is too blame.
+
+    //my cat walked across my keyboard while I was typing this out. If there are any bugs, she is to blame.
     isPhaseComplete(phase){
         console.log("Checking if phase is completed");
         console.log(phase.users);
@@ -453,7 +450,7 @@ export default class WorkflowService{
         try{
             const workflow = await this.workflowRepository.getWorkflow(workflowId);
             if(!await this.isUserMemberOfWorkflow(workflow, userEmail)){
-                console.log("REquesting user is NOT a member of this workflow");
+                console.log("Requesting user is NOT a member of this workflow");
                 return {status:"error", data:{}, message:"You are not a member of this workflow"};
             }
             let phase = await this.phaseService.getPhaseById(workflow.phases[workflow.currentPhase]);
@@ -634,7 +631,7 @@ export default class WorkflowService{
             console.log('Updating the workflow values')
             await this.workflowRepository.updateWorkflow(workflow); //the update workflow function does not appear to work
             console.log('Workflow in database looks as follows: ');
-            console.log(await this.workflowRepository.getWorkflow(workflow._id));
+            console.log(await this.workflowRepository.getWorkflow(String(workflow._id)));
             //await this.workflowRepository.saveWorkflow(workflow); //But thankfully the saveWorkflow function fills the correct role
 
 
@@ -674,7 +671,25 @@ export default class WorkflowService{
         return {status:"success", data: {history: workflowHistory}, message:""};
     }
 
-    async verifyDocument(workflowId, document, user) {
-        return {status:"success", data:{}, message:""};
+    async verifyDocument(workflowId, hash, user) {
+        const workflow = await this.workflowRepository.getWorkflow(workflowId);
+
+        if(!this.isUserMemberOfWorkflow(workflow, user.email)){
+            throw new AuthorizationError("You are not a member of this workflow");
+        }
+
+        const workflowHistory = await this.workflowHistoryService.getWorkflowHistory(workflow.historyId);
+        console.log(hash);
+        console.log(workflowHistory);
+
+        for(let entry of workflowHistory.entries){
+            const e = JSON.parse(String(entry));
+            console.log(e);
+            if(e.hash == hash){
+                return {status:"success", data:{entry: entry}, message: ""};
+            }
+        }
+
+        return {status:"error", data:{}, message:"No corresponding history entry was found for this document"};
     }
 }

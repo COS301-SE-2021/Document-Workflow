@@ -12,6 +12,7 @@ const routes: Routes = [
     path: 'login',
     component: LoginRegisterPage
   }
+
 ];
 
 @NgModule({

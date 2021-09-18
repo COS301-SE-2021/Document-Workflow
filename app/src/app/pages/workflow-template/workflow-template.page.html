@@ -22,7 +22,7 @@
     <ion-card-content>
       <ion-grid>
         <ion-row *ngFor="let template of tempDesc"
-          style="border: 5px solid #002060; border-radius: 25px; padding: 10px; margin: 10px">
+                 style="border: 5px solid #002060; border-radius: 25px; padding: 10px; margin: 10px">
           <ion-col sizeXs='12'>
             <ion-item lines="none">
               <ion-label position="stacked">
@@ -85,7 +85,7 @@
         <ion-grid>
           <ion-row>
             <ion-col offset="3">
-              <ion-text>Workflow creation</ion-text>
+              <ion-card-title>Workflow creation</ion-card-title>
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -96,9 +96,11 @@
       </ion-card-header>
       <ion-grid>
         <div *ngFor="let phase of templateForm.controls.phases['controls']; let i = index">
+          <ion-fab>
+            <ion-fab-button (click)="debug(templateForm.controls)"></ion-fab-button>
+          </ion-fab>
           <ion-row
             style="margin: 5px; padding:5px; border-width: 4px; border-style: solid; border-radius: 15px; border-color:#002060">
-
             <ion-col sizeXs="12">
               <ion-row>
                 <ion-col sizeXs='10'>
@@ -106,18 +108,18 @@
                 </ion-col>
                 <ion-col sizeXs='2'>
                   <ion-icon name="eye-outline" (click)='viewPhase(i)' *ngIf="!phaseViewers[i]"
-                    style="font-size: 30px;text-align: center;"></ion-icon>
+                            style="font-size: 30px;text-align: center;"></ion-icon>
                   <ion-icon name="eye-off-outline" (click)='viewPhase(i)' *ngIf="phaseViewers[i]"
-                    style="font-size: 30px;text-align:center"></ion-icon>
+                            style="font-size: 30px;text-align:center"></ion-icon>
                 </ion-col>
-                <ion-col sizeXs='8'>
+                <ion-col sizeXs='12'>
                   <ion-item lines='none'
-                    style="--border-color: #002060; --border-style:solid; --border-width:2px; --border-radius:15px">
+                            style="--border-color: #002060; --border-style:solid; --border-width:2px; --border-radius:15px">
                     <ion-label position="stacked">Description</ion-label>
                     <ion-textarea [formControl]="phase.controls.description"></ion-textarea>
                   </ion-item>
                 </ion-col>
-                <ion-col sizeXs='4'>
+                <ion-col sizeXs='12'>
                   <ion-button style="width: 100%;" (click)="removePhase(i, phase)">Delete Phase</ion-button>
                 </ion-col>
               </ion-row>
@@ -125,12 +127,22 @@
             <ion-col sizeXs="12" *ngIf='phaseViewers[i]'>
               <ion-text style="font-size: 18px;">Users:</ion-text>
               <ion-row *ngFor="let user of  phase.controls['users'].controls; let j = index">
-                <ion-col sizeXs='10'>
+                <ion-col sizeXs='9'>
                   <ion-item>
                     <ion-label position="stacked">User email:</ion-label>
                     <!-- (click)="setPhase(phase.controls.phaseNumber.value)" -->
                     <ion-input type="email" [formControl]="user.controls.user"></ion-input>
                   </ion-item>
+                  <ion-select #selectContact [name]="i+' '+j" (ionChange)='friendChosen(user.controls.user, i , j)' style="display: none;">
+                    <ion-select-option *ngFor="let contact of contacts" [value]="contact">
+                      {{contact}}
+                    </ion-select-option>
+                  </ion-select>
+                </ion-col>
+                <ion-col sizeXs='1'>
+                  <ion-icon name="accessibility-outline" size="large"
+                    (click)="addFriend(i, j)">
+                  </ion-icon>
                 </ion-col>
                 <ion-col sizeXs='2'>
                   <ion-icon name="close-circle-outline" size="large" (click)="removeUser(phase.controls['users'],i, j)">
@@ -140,7 +152,7 @@
                   <ion-item>
                     <ion-label>Permission:</ion-label>
                     <ion-select placeholder="{{user.controls.permission.value}}"
-                      [formControl]="user.controls.permission">
+                                [formControl]="user.controls.permission">
                       <!-- (click)="setPhase(phase.controls.phaseNumber.value)" -->
                       <ion-select-option value="sign">Signer
                       </ion-select-option>

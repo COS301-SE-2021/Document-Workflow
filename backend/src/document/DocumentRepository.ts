@@ -6,13 +6,13 @@ import { IDocument } from "./IDocument";
 type ObjectId = Types.ObjectId;
 
 const s3 = new AWS.S3({
-    // region: process.env.AWS_REGION,
-    // secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    // accessKeyId: process.env.AWS_ACCESS_KEY_ID
+    region: process.env.AWS_REGION,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID
 
-    accessKeyId: process.env.BUCKETEER_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.BUCKETEER_AWS_SECRET_ACCESS_KEY,
-    region: process.env.BUCKETEER_AWS_REGION
+    // accessKeyId: process.env.BUCKETEER_AWS_ACCESS_KEY_ID,
+    // secretAccessKey: process.env.BUCKETEER_AWS_SECRET_ACCESS_KEY,
+    // region: process.env.BUCKETEER_AWS_REGION
 });
 
 export default class DocumentRepository {
@@ -56,9 +56,8 @@ export default class DocumentRepository {
         catch(err) {
             throw new DatabaseError("Could not save Document data");
         }
-
         const uploadParams = {
-            Bucket: process.env.BUCKETEER_BUCKET_NAME,
+            Bucket: process.env.AWS_BUCKET_NAME,
             Body: fileData,
             Key: 'workflows/' + doc.workflowId +"/phase0/"+ fileName
         }
@@ -70,14 +69,11 @@ export default class DocumentRepository {
                     throw new CloudError("The cloud server could not be reached at this time, please try again later.");
                 }
                 else console.log(data);
-
             });
-
         }
         catch(e){
             console.log(e);
         }
-
         return response._id;
     }
 
@@ -85,9 +81,9 @@ export default class DocumentRepository {
         console.log("Updating a document in S3, file looks as follows: ");
         console.log(file);
         const uploadParams = {
-            Bucket: process.env.BUCKETEER_BUCKET_NAME,
+            Bucket: process.env.AWS_BUCKET_NAME,
             Body: file.data,
-            Key: 'workflows/' + workflowId +"/phase"+phaseNumber +"/" + file.name
+            Key: 'workflows/' + workflowId + "/phase" +phaseNumber +"/" + file.name
         }
         try{
             console.log(uploadParams);
@@ -112,7 +108,7 @@ export default class DocumentRepository {
 
     async getDocumentFromS3(path):Promise<any>{
         try{
-            return await s3.getObject({Bucket: process.env.BUCKETEER_BUCKET_NAME, Key:path}).promise();
+            return await s3.getObject({Bucket: process.env.AWS_BUCKET_NAME, Key:path}).promise();
         }
         catch(err){
             throw new CloudError("The cloud server could not be reached at this time, please try again later.");
@@ -151,7 +147,7 @@ export default class DocumentRepository {
      */
     async updateDocumentS3WithBuffer(path, fileData){
         const uploadParams = {
-            Bucket: process.env.BUCKETEER_BUCKET_NAME,
+            Bucket: process.env.AWS_BUCKET_NAME,
             Body: fileData,
             Key: path
         }
@@ -170,7 +166,7 @@ export default class DocumentRepository {
     async deleteDocumentFromS3(folderName){
         try {
             const listParams = {
-                Bucket: process.env.BUCKETEER_BUCKET_NAMEE,
+                Bucket: process.env.AWS_BUCKET_NAME,
                 Prefix: folderName
             };
 
@@ -179,7 +175,7 @@ export default class DocumentRepository {
             if (listedObjects.Contents.length === 0) return;
 
             const deleteParams = {
-                Bucket: process.env.BUCKETEER_BUCKET_NAME,
+                Bucket: process.env.AWS_BUCKET_NAME,
                 Delete: { Objects: [] }
             };
 

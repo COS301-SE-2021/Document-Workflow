@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as Cookies from 'js-cookie';
 import {LoadingController, PopoverController} from '@ionic/angular';
 import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
-import {config} from 'src/app/Services/configuration'
+import {config} from 'src/app/Services/configuration';
 export interface workflowFormat {
   showWorkflow?: boolean;
   currentPercent: number;
@@ -96,7 +96,7 @@ export class WorkFlowService {
           if (data) {
             callback(data);
           } else
-            {callback({ status: 'error', message: 'Cannot connect to Server' });}
+          {callback({ status: 'error', message: 'Cannot connect to Server' });}
         },
         async (error) => {
           this.dismissLoading();
@@ -136,8 +136,9 @@ export class WorkFlowService {
         }
       );
   }
-  //TODO: promise-ify this code otherwise it will get really complicated in the frontend.
+
   public async getWorkFlowData(workflowId, callback) {
+    await this.displayLoading();
     const formData = new FormData();
     formData.append('id', workflowId);
 
@@ -150,16 +151,17 @@ export class WorkFlowService {
       .post(config.url + '/workflows/getDetails', formData, {
         headers: httpHeaders,
       })
-      .subscribe(
-        (data) => {
-          //TODO: change url
+      .subscribe( async (data) => {
+          await this.dismissLoading();
           if (data) {
             callback(data);
           } else
             callback({ status: 'error', message: 'Cannot connect to Server' });
         },
-        (error) => {
-          alert('An unexpected error occurred');
+        async (error) => {
+          await this.dismissLoading();
+          await this.displayPopOver('Error', 'Workflow data could not be retrieved at this time, ' +
+            'please try again later');
         }
       );
   }
@@ -186,14 +188,19 @@ export class WorkFlowService {
           } else
             callback({ status: 'error', message: 'Cannot connect to Server' });
         },
-        (error) => {
-          console.log(error);
-          alert('An unexpected error occurred');
+        async (error) => {
+          if(error.error == 'Unknown'){
+
+          }
+          else{
+            await this.displayPopOver("An error occurred", error.error);
+          }
         }
       );
   }
 
   async retrieveDocument(workflowId, callback) {
+    await this.displayLoading();
     const formData = new FormData();
     formData.append('workflowId', workflowId);
     const token = Cookies.get('token');
@@ -205,14 +212,25 @@ export class WorkFlowService {
       .post(config.url + '/workflows/retrieveDocument', formData, {
         headers: httpHeaders,
       })
-      .subscribe((data) => {
+      .subscribe(async(data) => {
         console.log(data);
+        await this.dismissLoading();
         if (data != null) {
           callback(data);
         } else {
           callback({ status: 'error', message: 'Cannot connect to Server' });
         }
-      });
+      },
+        async (error)=>{
+          await this.dismissLoading();
+
+          if(error.error == 'Unknown') {
+            await this.displayPopOver("Error", "The Docment Workflow servers could not be reached at this time");
+          }
+          else{
+            await this.displayPopOver("An Error Occurred", error.error);
+          }
+        });
   }
 
   async retrieveWorkflow(workflowId, callback) {
@@ -231,9 +249,19 @@ export class WorkFlowService {
         if (data != null) {
           callback(data);
         } else {
-          callback({ status: 'error', message: 'Cannot connect to Server' });
+          callback({status: 'error', message: 'Cannot connect to Server'});
         }
-      });
+        },
+        async (error)=>{
+          await this.dismissLoading();
+
+          if(error.error == 'Unknown') {
+            await this.displayPopOver("Error", "The Docment Workflow servers could not be reached at this time");
+          }
+          else{
+            await this.displayPopOver("An Error Occurred", error.error);
+          }
+        });
   }
 
   async updateCurrentPhaseAnnotations(workflowId, annotations, callback) {
@@ -259,10 +287,16 @@ export class WorkFlowService {
         } else {
           callback({ status: 'error', message: 'Cannot connect to Server' });
         }
-      });
+      },
+        (error)=>{
+          if(error.error == 'Unknown'){
+
+          }
+        });
   }
 
   async getUserWorkflowsData(callback) {
+    await this.displayLoading();
     const formData = new FormData();
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
@@ -273,21 +307,17 @@ export class WorkFlowService {
       .post(config.url + '/workflows/getUserWorkflowsData', formData, {
         headers: httpHeaders,
       })
-      .subscribe(
-        (data) => {
+      .subscribe( async (data) => {
+          await this.dismissLoading();
           if (data) {
             console.log(data['data'].ownedWorkflows)
-            data['data'].ownedWorkflows = this.formatWorkflows(
-              data['data'].ownedWorkflows
-            );
-            data['data'].workflows = this.formatWorkflows(
-              data['data'].workflows
-            );
+            data['data'].ownedWorkflows = this.formatWorkflows(data['data'].ownedWorkflows);
+            data['data'].workflows = this.formatWorkflows(data['data'].workflows);
             callback(data);
           } else
             callback({ status: 'error', message: 'Cannot connect to Server' });
-        },
-        (error) => {
+        }, async (error) => {
+          await this.dismissLoading();
           console.log(error);
           alert('An unexpected error occurred');
         }
@@ -416,6 +446,7 @@ export class WorkFlowService {
   displayLoading(){
     const loading = this.loadingCtrl.create({
       message: 'Please wait...',
+      duration: 15000
     }).then((response)=>{
       response.present();
     });
@@ -472,6 +503,32 @@ export class WorkFlowService {
 
     this.http
       .post(config.url + '/workflows/getOriginalDocument', formData, {
+        headers: httpHeaders,
+      })
+      .subscribe(
+        (data) => {
+          if (data) {
+            callback(data);
+          } else
+            callback({ status: 'error', message: 'Cannot connect to Server' });
+        },
+        (error) => {
+          alert('An unexpected error occurred');
+        }
+      );
+  }
+
+  async verifyDocument(hash: string, workflowId: string, callback){
+    const formData = new FormData();
+    formData.append('workflowId', workflowId);
+    formData.append('hash', hash);
+    const token = Cookies.get('token');
+    const httpHeaders: HttpHeaders = new HttpHeaders({
+      Authorization: 'Bearer ' + token,
+    });
+
+    this.http
+      .post(config.url + '/workflows/verifyDocument', formData, {
         headers: httpHeaders,
       })
       .subscribe(

@@ -10,16 +10,12 @@ import { AvailableResult, BiometryType } from 'capacitor-native-biometric';
 import { Credentials, NativeBiometric } from 'capacitor-native-biometric';
 //popover
 
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { match } from '../../Services/Validators/match.validator';
 
 //popover
-import { ModalController, PopoverController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 // import { RegisterLoginPopoverComponent } from './../../Popovers/register-login-popover/register-login-popover.component';
-
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-
-//import for the users API and interface
 
 import {
   UserAPIService,
@@ -29,12 +25,9 @@ import {
 
 import { ActionSheetController, Platform } from '@ionic/angular';
 import * as Cookies from 'js-cookie';
-//import for the loading controller
-import { LoadingController } from '@ionic/angular';
+
 import { AddSignatureComponent } from 'src/app/components/add-signature/add-signature.component';
-import { ResetPasswordComponent } from 'src/app/components/reset-password/reset-password.component';
-import { UserNotificationsComponent } from 'src/app/components/user-notifications/user-notifications.component';
-import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
+
 
 @Component({
   selector: 'app-login-register',
@@ -44,8 +37,19 @@ import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 export class LoginRegisterPage implements OnInit {
   loginForm: FormGroup;
   registerForm: FormGroup;
+  resetFormPhase1: FormGroup;
+  resetFormPhase2: FormGroup;
+
   file: File;
+
   registerButton: boolean; //for the toggle to change modes
+  biometricAvaliable: boolean;
+  resetPassword: boolean;
+  loginAndRegister: boolean;
+  phase1: boolean;
+  sizeMe:boolean;
+  loginRegisterScreen: boolean;
+  userEmailForReset: string;
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
@@ -55,17 +59,24 @@ export class LoginRegisterPage implements OnInit {
     private userAPIService: UserAPIService,
     private plat: Platform,
     private actionSheetController: ActionSheetController,
-    private loadCtrl: LoadingController,
     private modal: ModalController,
-    private workFlowService: WorkFlowService
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.loginAndRegister = true;
+    this.resetPassword = false;
+    this.loginRegisterScreen = true;
     this.loginForm = this.formBuilder.group({
       // loginEmail: ['', [Validators.required, Validators.email]],
       // loginPassword: ['', [Validators.required, Validators.minLength(8)]],
-      loginEmail: ['brenton.stroberg@yahoo.co.za', [Validators.required, Validators.email]],
-      loginPassword: ['Password#1', [Validators.required, Validators.minLength(8)]],
+      loginEmail: [
+        '',
+        [Validators.required, Validators.email],
+      ],
+      loginPassword: [
+        '',
+        [Validators.required, Validators.minLength(8)],
+      ],
     });
     const formOptions: AbstractControlOptions = {
       validators: match('password', 'confirmPassword'),
@@ -90,6 +101,50 @@ export class LoginRegisterPage implements OnInit {
       },
       formOptions
     );
+
+    this.resetFormPhase1 = this.formBuilder.group({
+      email: [
+        '',
+        [
+          Validators.required,
+          Validators.email,
+          Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
+        ],
+      ],
+    });
+
+
+    this.resetFormPhase2 = this.formBuilder.group({
+      confirmationString: ['', [Validators.required]],
+      password: [
+        '',
+        [
+          Validators.required,
+        ],
+      ],
+      confirmPassword: [
+        '',
+        [
+          Validators.required,
+        ],
+      ],
+    }, formOptions);
+
+    if (this.plat.is('android') && this.plat.is('capacitor')) {
+      console.log('jere');
+      NativeBiometric.isAvailable().then((result: AvailableResult) => {
+        const isAvailable = result.isAvailable;
+        this.biometricAvaliable = result.isAvailable;
+      });
+    }
+
+    if (this.plat.width() > 572) {
+      this.sizeMe = false;
+    } else {
+      this.sizeMe = true;
+    }
+
+    await this.userAPIService.dismissLoading();
   }
 
   async login(): Promise<void> {
@@ -97,11 +152,14 @@ export class LoginRegisterPage implements OnInit {
       email: this.loginForm.value.loginEmail,
       password: this.loginForm.value.loginPassword,
     };
-    console.log(loginData);
-    this.userAPIService.login(loginData, (response) => {
+    await this.userAPIService.login(loginData, (response) => {
       if (response.status === 'success') {
         //localStorage.setItem('token', response.data.token);
         Cookies.set('token', response.data.token, { expires: 1 });
+        if(this.plat.is('android')  && this.plat.is('capacitor')){
+          console.log("here")
+          this.setCredentials();
+        }
         // this.userAPIService.displayPopOver('Success', 'login was successful');
         this.router.navigate(['home']);
       } else {
@@ -147,29 +205,28 @@ export class LoginRegisterPage implements OnInit {
             password: userdata.password,
           };
 
-          this.userAPIService.register(user, userdata.confirmPassword, this.file, (response) => {
-            if (response.status === 'success') {
-              this.userAPIService.displayPopOver(
-                'Successfully created new user account',
-                'check your email for account verification'
-              );
+          this.userAPIService.register(
+            user,
+            userdata.confirmPassword,
+            this.file,
+            (response) => {
+              if (response.status === 'success') {
+                this.userAPIService.displayPopOver(
+                  'Successfully created new user account',
+                  'check your email for account verification'
+                );
 
-              this.router.navigate(['login']);
+                this.router.navigate(['login']);
+              }
             }
-          });
+          );
         }
       }
     );
   }
 
-  changeOver(): boolean {
-    if (this.registerButton) {
-      this.registerButton = false;
-      return false;
-    } else {
-      this.registerButton = true;
-      return true;
-    }
+  changeOver() {
+    this.loginRegisterScreen = !this.loginRegisterScreen;
   }
 
   async selectImageSource() {
@@ -225,12 +282,85 @@ export class LoginRegisterPage implements OnInit {
   }
 
   async displayResetPassword() {
-    const mod = this.modal.create({
-      component: ResetPasswordComponent,
+    this.loginAndRegister = false;
+    this.resetPassword = true;
+    this.phase1 = true;
+  }
+
+  loginUsingBiometric() {
+    NativeBiometric.getCredentials({
+      server: 'www.documentWorkflow.com',
+    }).then((credentials: Credentials) => {
+      NativeBiometric.verifyIdentity({}).then(() => {
+        const loginData: LoginData = {
+          email: credentials.username,
+          password: credentials.password
+        };
+        console.log(loginData);
+        this.userAPIService.login(loginData, (response) => {
+          if (response.status === 'success') {
+            //localStorage.setItem('token', response.data.token);
+            Cookies.set('token', response.data.token, { expires: 1 });
+            // this.userAPIService.displayPopOver('Success', 'login was successful');
+            this.router.navigate(['home']);
+          } else {
+            console.log(response);
+            this.userAPIService.displayPopOver(
+              'Failure in logging in',
+              'Email or password is incorrect'
+            );
+          }
+        });
+      },
+      (error)=>{
+        this.userAPIService.displayPopOver('Failure in logging in','Fingerprint incorrect')
+      });
     });
+  }
 
-    (await mod).present();
+  setCredentials(){
+    if(this.biometricAvaliable){
+      NativeBiometric.setCredentials({
+        username: this.loginForm.value.loginEmail,
+        password: this.loginForm.value.loginPassword,
+        server: 'www.documentWorkflow.com'
+      })
+    }
+  }
 
-    (await mod).onDidDismiss();
+  back(){
+    this.loginAndRegister=true;
+    this.loginRegisterScreen = true;
+    this.resetPassword =false;
+    this.phase1 = true;
+  }
+
+  // send a email to user with token
+  async resetPassword1() {
+    this.userEmailForReset = this.resetFormPhase1.value.email;
+    this.userAPIService.sendResetPasswordEmail(this.resetFormPhase1.value.email, async (response) => {
+      console.log(response);
+      if (response) {
+        if (response.status === 'success') {
+          this.userAPIService.displayPopOver('Success', 'Email has been sent');
+          this.phase1 = false;
+        } else {
+          this.userAPIService.displayPopOver('Error', 'Failed to send email');
+        }
+      }
+    });
+  }
+
+  //add token and confirm passwords
+  resetPassword2(){
+    console.log(this.resetFormPhase2.value);
+    this.userAPIService.resetPassword( this.resetFormPhase2.value, this.userEmailForReset, (response)=>{
+      if(response.status === 'success'){
+        this.userAPIService.displayPopOver('Success', 'Password has been changed');
+        this.back();
+      }else{
+        this.userAPIService.displayPopOver('Error', 'Failed to change Password');
+      }
+    });
   }
 }

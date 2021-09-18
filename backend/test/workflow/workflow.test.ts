@@ -12,7 +12,6 @@ import WorkflowTemplateService from "../../src/workflowTemplate/WorkflowTemplate
 // @ts-ignore
 import crypto from "crypto";
 import { PhaseError } from "../../src/error/Error";
-import encryption from "../../src/crypto/encryption";
 import WorkflowHistoryService from "../../src/workflowHistory/WorkflowHistoryService";
 import WorkflowTemplateRepository from "../../src/workflowTemplate/WorkflowTemplateRepository";
 import WorkflowHistoryRepository from "../../src/workflowHistory/WorkflowHistoryRepository";
@@ -46,8 +45,7 @@ describe("unit tests for workflow", () => {
         userService = new UserService(userRepository);
         documentService = new DocumentService(documentRepository);
         authenticationService = new Authenticator();
-        encrypt = new encryption();
-        workflowHistoryService = new WorkflowHistoryService(new WorkflowHistoryRepository(), encrypt)
+        workflowHistoryService = new WorkflowHistoryService(new WorkflowHistoryRepository())
         workflowTemplateService = new WorkflowTemplateService(new WorkflowTemplateRepository(), userService, documentService)
 
         workflowService = new WorkflowService(
@@ -56,8 +54,7 @@ describe("unit tests for workflow", () => {
             userService,
             phaseService,
             workflowTemplateService,
-            workflowHistoryService,
-            encrypt);
+            workflowHistoryService);
 
         workflowController = new WorkflowController(workflowService, authenticationService);
     })
@@ -79,8 +76,8 @@ describe("unit tests for workflow", () => {
                 phases: jsonPhases
             },
             user: {
-              email: "testemail@email.com",
-              _id: randomObjectId
+                email: "testemail@email.com",
+                _id: randomObjectId
             },
             files: {
                 document: {

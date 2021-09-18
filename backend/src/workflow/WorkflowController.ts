@@ -23,6 +23,7 @@ export default class WorkflowController {
 
     //Check for correct input, check that it exists, send object through to service
     async createWorkflowRoute(req): Promise<any> {
+        //console.log(req);
         /*  request object looks like:
             body: {
             name: "Workflow Name",
@@ -45,12 +46,13 @@ export default class WorkflowController {
 
         //Check the request for the proper variables
         if(!req.body.name || !req.body.description
-            || !req.files.document || !req.body.phases) { //owner ID will be added after the auth is used!!! dont check for it here
+            || !req.files.document || !req.body.phases) {
             throw new RequestError("There was something wrong with the request");
         }
 
         //Check each phase for proper variables
         const phases = JSON.parse(req.body.phases);
+        //console.log(req.body.phases);
         phases.forEach(phase => {
             if(!phase.annotations || !phase.description || !phase.users){
                 throw new RequestError("There was something wrong with the request");
@@ -74,6 +76,7 @@ export default class WorkflowController {
                 annotations: phase.annotations
             }));
         })
+        console.log("CONVERTED PHASES:\n" + convertedPhases);
 
         if(!req.body.template){
             req.body.template = null;
@@ -94,7 +97,7 @@ export default class WorkflowController {
 
     private async getUsersWorkflowDataRoute(req) {
         try{
-            return await this.workflowService.getUsersWorkflowData(req.user.id);
+            return await this.workflowService.getUsersWorkflowData(req.user._id);
         } catch(err) {
             console.log(err);
             throw new ServerError(err.toString());
@@ -128,7 +131,7 @@ export default class WorkflowController {
             throw new RequestError("There was something wrong with the request");
         }
         try{
-            return await this.workflowService.updatePhase(req.user.email, req.body.workflowId, req.body.accept, req.files.document);
+            return await this.workflowService.updatePhase(req.user, req.body.workflowId, req.body.accept, req.files.document);
         } catch(err) {
             console.log(err)
             throw new ServerError(err.toString());
@@ -242,40 +245,23 @@ export default class WorkflowController {
         }
     }
 
-    private async verifyDocumentRoute(req) {
+    private async verifyDocument(req) {
 
-        if(!req.body.workflowId || ! req.files.document){
+        if(!req.body.workflowId || ! req.body.hash){
             throw new RequestError("A workflowId and input document is required to verify a document");
         }
 
-        return await this.workflowService.verifyDocument(req.body.workflowId, req.files.document, req.user);
+        return await this.workflowService.verifyDocument(req.body.workflowId, req.body.hash, req.user);
     }
 
     //----------------------------------------------------------------------------------
 
     routes() {
-
-        //=============================================||| GET    |||===================================================
-
-
         //=============================================||| POST   |||===================================================
 
         this.router.post("",  this.authenticationService.Authenticate ,async (req, res) => {
             try {
                 res.status(200).json(await this.createWorkflowRoute(req));
-            } catch(err){
-                try{await handleErrors(err,res);}catch{}
-            }
-        });
-
-        //=============================================||| PUT    |||===================================================
-
-
-        //=============================================||| DELETE |||===================================================
-
-        this.router.delete("/delete",this.auth, async(req,res)=>{
-            try {
-                res.status(200).json(await this.deleteWorkflowRoute(req));
             } catch(err){
                 try{await handleErrors(err,res);}catch{}
             }
@@ -308,7 +294,7 @@ export default class WorkflowController {
         });
 
         this.router.post('/updatePhase', this.auth, async (req,res) =>{
-            console.log('getting wokflow data for a specific user');
+            console.log('getting workflow data for a specific user');
             try {
                 res.status(200).json(await this.updatePhaseRoute(req));
             } catch(err){
@@ -322,7 +308,7 @@ export default class WorkflowController {
             try {
                 res.status(200).json(await this.retrieveDocumentRoute(req));
             } catch(err){
-                res.status(400).json('halp')
+                res.status(400).json('help')
                 console.log(err);
                 try{await handleErrors(err,res);}catch{}
             }
@@ -375,9 +361,19 @@ export default class WorkflowController {
 
         this.router.post("/verifyDocument", this.auth, async(req,res)=>{
             try{
-                res.status(200).json(await this.verifyDocumentRoute(req));
+                res.status(200).json(await this.verifyDocument(req));
             }
             catch(err){
+                try{await handleErrors(err,res);}catch{}
+            }
+        });
+
+        //=============================================||| DELETE |||===================================================
+
+        this.router.post("/delete",this.auth, async(req,res)=>{
+            try {
+                res.status(200).json(await this.deleteWorkflowRoute(req));
+            } catch(err){
                 try{await handleErrors(err,res);}catch{}
             }
         });

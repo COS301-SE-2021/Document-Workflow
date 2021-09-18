@@ -16,7 +16,7 @@ export default class WorkflowRepository{
             else return null;
         }
         catch(err){
-            throw new DatabaseError("The Document Workflow database could not be reached at this time, please try again later.");
+            throw new DatabaseError("Something went wrong when trying to save the workflow Message: " + err.message);
         }
     }
 
@@ -44,7 +44,7 @@ export default class WorkflowRepository{
         }
     }
 
-    async getWorkflow(id: ObjectId): Promise<IWorkflow>{
+    async getWorkflow(id: string): Promise<IWorkflow>{
         try{
             const response: IWorkflow = await Workflow.findById(id).lean();
             if(response) return response;

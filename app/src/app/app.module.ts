@@ -18,7 +18,6 @@ import { ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 //Components
-import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { AddSignatureComponent } from './components/add-signature/add-signature.component';
 import { UserNotificationsComponent } from './components/user-notifications/user-notifications.component';
 import { DocumentActionAreaComponent } from './components/document-action-area/document-action-area.component';
@@ -26,7 +25,6 @@ import { Logger } from './Services/Logger';
 @NgModule({
   declarations: [
     AppComponent,
-    ResetPasswordComponent,
     AddSignatureComponent,
     UserNotificationsComponent,
     DocumentActionAreaComponent,

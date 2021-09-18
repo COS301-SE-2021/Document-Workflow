@@ -8,7 +8,7 @@ import { ModalController, NavParams, Platform } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DocumentAPIService } from 'src/app/Services/Document/document-api.service';
 import {WorkFlowService} from 'src/app/Services/Workflow/work-flow.service';
-import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import {PDFDocument} from 'pdf-lib';
 import WebViewer, {Core} from '@pdftron/webviewer';
 import { UserAPIService } from 'src/app/Services/User/user-api.service';
 
@@ -23,8 +23,11 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   pdfDoc: PDFDocument;
   showAnnotations = true;
   annotationManager: any;
+  instance : any;
   documentViewer: any;
   documentMetadata: any;
+  originalKeywords: string;
+  hash: string;
   annotationSubjects = ['Note', 'Rectangle', 'Squiggly', 'Underline', 'Highlight', 'Strikeout'];
 
   @Input('workflowStatus') workflowStatus:string;
@@ -43,6 +46,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   ) {}
 
   async ngOnInit() {
+    this.originalKeywords = '';
     await this.route.params.subscribe((data) => {
       this.workflowId = data['workflowId'];
       //this.docName = data['documentname'];
@@ -66,6 +70,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
         this.documentMetadata = response.data.metadata;
         this.docName = this.documentMetadata.name;
         this.srcFileBase64 = response.data.filedata.Body.data;
+        this.hash = response.data.hash;
         const arr = new Uint8Array(response.data.filedata.Body.data);
 
         const blob = new Blob([arr], {type: 'application/pdf'});
@@ -76,59 +81,64 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
         WebViewer({
           path: './../../../assets/lib',
           annotationUser: this.userEmail,
-          fullAPI: true
+          fullAPI: true,
+          isReadOnly: true
         }, this.viewerRef.nativeElement).then(async instance =>{
+          this.instance = instance;
+          await instance.Core.PDFNet.initialize(); //To use pdftron in the non-demo mode supply a licence key here
+            /*Test to add metadata to document */
+            const docorig = await instance.Core.PDFNet.PDFDoc.createFromBuffer(arr);
+            const doc = await docorig.getSDFDoc();
+            doc.initSecurityHandler();
+            doc.lock();
+            console.log('Modifying into dictionary, adding custom properties, embedding a stream...');
+
+            const trailer = await doc.getTrailer(); // Get the trailer
+
+            let itr = await trailer.find('Info');
+            let info;
+            if (await itr.hasNext()) {
+              info = await itr.value();
+              // Modify 'Producer' entry.
+              info.putString('Producer', 'PDFTron PDFNet');
+
+              // read title entry if it is present
+              itr = await info.find('Keywords');
+              if (await itr.hasNext()) {
+                console.log('Keywords already present');
+                const itrval = await itr.value();
+                const oldstr = await itrval.getAsPDFText();
+                this.originalKeywords = oldstr;
+                info.putText('Keywords', oldstr + ' - ' + this.hash);
+              } else {
+                console.log('No previous keywords present');
+                info.putString('Keywords', this.hash);
+              }
+            } else {
+              console.log('Info dict missing, adding it now');
+              // Info dict is missing.
+              info = await trailer.putDict('Info');
+              info.putString('Producer', 'PDFTron PDFNet');
+              info.putString('Title', 'My document');
+              info.putString('Keywords', this.hash);
+            }
+            const customDict = await info.putDict('My Direct Dict');
+            customDict.putNumber('My Number', 100);
+            const docbuf = await doc.saveMemory(0, '%PDF-1.4');
+            let blob2 = new Blob([new Uint8Array(docbuf)], {type: 'application/pdf'});
+            /*   */
 
             await instance.Core.PDFNet.initialize(); //To use pdftron in the non-demo mode supply a licence key here
-            /*Test to add metadata to document */
-          const docorig = await instance.Core.PDFNet.PDFDoc.createFromBuffer(arr);
-          const metadata = await docorig.getDocInfo();
-          console.log("METADATA: ");
-          console.log(await metadata.getKeywords());
-          await metadata.setKeywords("hash");
-          console.log(await metadata.getKeywords());
-          const doc = await docorig.getSDFDoc();
-          doc.initSecurityHandler();
-          doc.lock();
-          console.log('Modifying into dictionary, adding custom properties, embedding a stream...');
-
-          const trailer = await doc.getTrailer(); // Get the trailer
-
-          // Now we will change PDF document information properties using SDF API
-
-          // Get the Info dictionary.
-
-          let itr = await trailer.find('Info');
-          let info;
-          if (await itr.hasNext()) {
-            info = await itr.value();
-            // Modify 'Producer' entry.
-            info.putString('Producer', 'PDFTron PDFNet');
-
-            // read title entry if it is present
-            itr = await info.find('Author');
-            if (await itr.hasNext()) {
-              const itrval = await itr.value();
-              const oldstr = await itrval.getAsPDFText();
-              info.putText('Author', oldstr + ' - Modified');
-            } else {
-              info.putString('Author', 'Me, myself, and I');
-            }
-          } else {
-            // Info dict is missing.
-            info = await trailer.putDict('Info');
-            info.putString('Producer', 'PDFTron PDFNet');
-            info.putString('Title', 'My document');
-          }
-          const docbuf = await doc.saveMemory(0, '%PDF-1.4');
-          let blob2 = new Blob([new Uint8Array(docbuf)], {type: 'application/pdf'});
-            /*   */
             this.annotationManager = instance.Core.annotationManager;
             this.documentViewer = instance.Core.documentViewer;
+            const documentTest = await instance.Core.createDocument(blob2, {filename: this.docName});
+            console.log('Document Metadata----------------------------');
+            console.log(await documentTest.getMetadata());
 
             instance.UI.loadDocument(blob2, {filename: this.docName});
             instance.UI.disableElements(['ribbons']);
             instance.UI.setToolbarGroup('toolbarGroup-View',false);
+            if(this.workflowStatus !== 'Completed'){
             instance.UI.setHeaderItems(header =>{
               header.push({
                 type: 'actionButton',
@@ -138,7 +148,9 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
                 }
               });
          });
+        }
 
+         if(this.workflowStatus !== 'Completed'){
           instance.UI.setHeaderItems(header =>{
             header.push({
               type: 'actionButton',
@@ -149,14 +161,16 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
               }
             });
           });
+        }
 
             instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
               //For now, to work around not having full api functions with the free version of PDFTron
               //We disable the action areas from showing through a check of the workflow status
               //This is to ensure pringint of the document does not include action areas.
               console.log(this.workflowStatus);
-              if(this.workflowStatus !== 'Complete') //TODO: swap with enum
+              if(this.workflowStatus !== 'Completed'){ //TODO: swap with enum
                 instance.Core.annotationManager.importAnnotations(response.data.annotations);
+              }
             });
 
         });
@@ -200,6 +214,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   async acceptDocument(){
     await this.userApiService.displayPopOverWithButtons('Accept Phase','Do you accept this phase as complete?', async (response) =>{
       await this.updateDocumentAnnotations(await this.annotationManager.exportAnnotations());
+
 
       const data = await this.documentViewer.getDocument().getFileData({});
       const arr = new Uint8Array(data);

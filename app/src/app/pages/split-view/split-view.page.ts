@@ -8,7 +8,8 @@ import { UserAPIService } from 'src/app/Services/User/user-api.service';
   styleUrls: ['./split-view.page.scss'],
 })
 export class SplitViewPage implements OnInit {
-
+  user;
+  userEmail;
   constructor(
     private userServices: UserAPIService,
     private router: Router,
@@ -18,7 +19,8 @@ export class SplitViewPage implements OnInit {
   }
 
   logout(){
-    this.userServices.logout();
-    this.router.navigate(['login']);
+    this.userServices.logout(()=>{
+      this.router.navigate(['login']);
+    });
   }
 }

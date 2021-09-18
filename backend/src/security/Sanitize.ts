@@ -16,7 +16,6 @@ export default async function sanitizeRequest(req, res, next): Promise<void>{
     next();
 }
 
-//TODO: test this properly
 const local_sanitize = async (input: String) => {
     input.replace("\'", "");
     input.replace('\"', "");

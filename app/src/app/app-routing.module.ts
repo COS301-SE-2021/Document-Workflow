@@ -1,6 +1,5 @@
 import { Component, NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { AddSignatureComponent } from './components/add-signature/add-signature.component';
 
 const routes: Routes = [
@@ -34,7 +33,7 @@ const routes: Routes = [
   },{
     path: '**',
     redirectTo:'/login',
-  },
+  }
 ];
 @NgModule({
   imports: [
@@ -44,6 +43,5 @@ const routes: Routes = [
 })
 export class AppRoutingModule {}
 export const routingComponents = [
-  ResetPasswordComponent,
   AddSignatureComponent,
 ];
