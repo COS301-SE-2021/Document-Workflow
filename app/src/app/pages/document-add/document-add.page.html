@@ -79,6 +79,9 @@
       </ion-card>
 
       <ion-reorder *ngFor="let phase of workflowForm.controls.phases['controls']; let i = index">
+        <ion-fab>
+          <ion-fab-button (click)='debug("")'></ion-fab-button>
+        </ion-fab>
         <ion-card style="width: 98%">
           <ion-grid style="width: 100%;">
             <ion-row>
@@ -109,7 +112,7 @@
                           <ion-input type="email" [formControl]="user.controls.user"></ion-input>
                         </ion-item>
 
-                        <ion-select #selectFriend (ionChange)='friendChosen(user.controls.user)' style="display: none;">
+                        <ion-select #selectContact (ionChange)='friendChosen(user.controls.user, i , j)' style="display: none;">
                           <ion-select-option *ngFor="let contact of contacts" [value]="contact">
                             {{contact}}
                           </ion-select-option>
@@ -117,7 +120,7 @@
                       </ion-col>
                       <ion-col sizeXs='1'>
                         <ion-icon name="accessibility-outline" size="large"
-                          (click)="addFriend()">
+                          (click)="addFriend(i, j)">
                         </ion-icon>
                       </ion-col>
                       <ion-col sizeXs='2'>

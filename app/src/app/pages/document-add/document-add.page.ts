@@ -43,7 +43,7 @@ import { VerifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
   styleUrls: ['./document-add.page.scss'],
 })
 export class DocumentAddPage implements OnInit {
-  @ViewChild('selectFriend') selectFriend: IonSelect;
+  @ViewChildren('selectContact') selectContact: IonSelect;
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
   workflowForm: FormGroup;
@@ -520,13 +520,26 @@ export class DocumentAddPage implements OnInit {
     }
     }
 
+    figureOut(i :number, j){
+      let total =0;
+      i++;
+      j++;
+      console.log(i +" "+ j)
+      let b:number =0;
+      for( b <= i; b++;){
+        console.log(this.workflowForm.controls.phases['controls'][i].controls.users);
+      }
+    }
 
+    async addFriend(i: number, j: number) {
+      // console.log(j)
+      this.figureOut(i,j);
+      this.selectContact['_results'][j].open();
+    }
 
-  async addFriend(){
-    await this.selectFriend.open();
-  }
-
-  async friendChosen(form: FormControl){
-    form.setValue(this.selectFriend.value);
-  }
+    async friendChosen(form: FormControl, i: number, j: number) {
+      // console.log(form);
+      console.log(this.workflowForm.controls.phases['controls'][i].controls.users.controls[j].controls.user );
+      this.workflowForm.controls.phases['controls'][i].controls.users.controls[j].controls.user.setValue(this.selectContact['_results'][j].value);
+    }
 }
