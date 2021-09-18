@@ -201,7 +201,10 @@ export default class UserService {
 
     async loginUser(email, password): Promise<string> {
         const user = await this.userRepository.findUser({ email: email });
-        if(!user){ throw new RequestError("User does not exist.")}
+        if(!user){
+            //throw new RequestError("User does not exist."); //Throwing this error has security implications
+            throw new AuthenticationError("The entered email or password was incorrect");
+        }
 
         if(user.validated){
             try{

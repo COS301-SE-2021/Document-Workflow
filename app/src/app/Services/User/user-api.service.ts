@@ -102,6 +102,7 @@ export class UserAPIService {
         async (error) => {
           console.log(error);
           if (error.statusText === 'Unknown Error') {
+            await this.dismissLoading();
             await this.displayPopOver(
               'Login Error',
               'Could not connect to the Document Workflow Server at this time. Please try again later.'
