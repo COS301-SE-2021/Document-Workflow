@@ -1,4 +1,11 @@
-import { Component, ElementRef, Input, OnInit, ViewChild, ViewChildren } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnInit,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -144,9 +151,7 @@ export class WorkflowTemplatePage implements OnInit {
 
   fillPhases(phases: any) {
     for (let phase of phases) {
-      this.templateForm.controls.phases['controls'].push(
-        this.fillPhase(phase)
-      );
+      this.templateForm.controls.phases['controls'].push(this.fillPhase(phase));
     }
   }
 
@@ -180,7 +185,7 @@ export class WorkflowTemplatePage implements OnInit {
           Validators.required,
           Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
         ],
-        [verifierEmail.verifyEmail.bind(verifierEmail)],
+        // [verifierEmail.verifyEmail.bind(verifierEmail)],
       ],
       permission: [user.permission, [Validators.required]],
       accepted: [user.accepted, [Validators.required]],
@@ -198,12 +203,15 @@ export class WorkflowTemplatePage implements OnInit {
   createNewUser(): FormGroup {
     const verifierEmail = new VerifyEmail(this.userService);
     return this.fb.group({
-      user: new FormControl('',  [
-        Validators.email,
-        Validators.required,
-        Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
-      ],
-      [verifierEmail.verifyEmail.bind(verifierEmail)]),
+      user: new FormControl(
+        '',
+        [
+          Validators.email,
+          Validators.required,
+          Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
+        ],
+        // [verifierEmail.verifyEmail.bind(verifierEmail)]
+      ),
       permission: new FormControl('', [Validators.required]),
       accepted: new FormControl('false', [Validators.required]),
     });
@@ -243,7 +251,7 @@ export class WorkflowTemplatePage implements OnInit {
               Validators.required,
               Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
             ],
-            [verifierEmail.verifyEmail.bind(verifierEmail)]
+            // [verifierEmail.verifyEmail.bind(verifierEmail)]
           ),
           permission: new FormControl('', [Validators.required]),
           accepted: new FormControl('false', [Validators.required]),
@@ -259,13 +267,7 @@ export class WorkflowTemplatePage implements OnInit {
 
   removePhase(i: number, phas: phaseFormat) {
     let phase = this.templateForm.get('phases') as FormArray;
-    if (phase.at(i)['controls'].phaseStatus.value === 'Create') {
-      phase.removeAt(i);
-    } else {
-      phase.at(i)['controls'].phaseStatus.setValue('Delete');
-      phase.at(i)['controls'].showPhases = false;
-    }
-    console.warn(this.templateForm);
+    phase.removeAt(i);
   }
 
   async includeActionArea(i: number, form: FormControl) {
@@ -309,7 +311,7 @@ export class WorkflowTemplatePage implements OnInit {
       template = {
         templateName: this.templateForm.controls.templateName.value,
         templateDescription:
-        this.templateForm.controls.templateDescription.value,
+          this.templateForm.controls.templateDescription.value,
       };
     }
 
@@ -340,18 +342,18 @@ export class WorkflowTemplatePage implements OnInit {
   }
 
   async addFriend(i: number, j: number) {
-    let b:string = i + ' ' + j;
-    for(let comp of this.selectContact['_results']){
-      if(b === comp['name']){
+    let b: string = i + ' ' + j;
+    for (let comp of this.selectContact['_results']) {
+      if (b === comp['name']) {
         comp.open();
       }
     }
   }
 
   async friendChosen(form: FormControl, i: number, j: number) {
-    let b:string = i + ' ' + j;
-    for(let comp of this.selectContact['_results']){
-      if(b === comp['name']){
+    let b: string = i + ' ' + j;
+    for (let comp of this.selectContact['_results']) {
+      if (b === comp['name']) {
         console.log(comp.value);
         form.setValue(comp.value);
       }
@@ -363,7 +365,7 @@ export class WorkflowTemplatePage implements OnInit {
       if (response) {
         if (response.status === 'success') {
           this.contacts = response.data.contacts;
-          this.contacts.push(this.ownerEmail)
+          this.contacts.push(this.ownerEmail);
         } else {
           this.userService.displayPopOver('Error', 'Failed to get users');
         }
@@ -371,11 +373,9 @@ export class WorkflowTemplatePage implements OnInit {
     });
   }
 
-  debug(b){
-    console.log(b)
+  debug(b) {
+    console.log(this.templateForm);
   }
 
-  deleteTemplate(id: string){
-
-  }
+  deleteTemplate(id: string) {}
 }

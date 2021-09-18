@@ -83,6 +83,9 @@
 
     </ion-card>
     <ion-card *ngIf="!phase2">
+      <ion-fab>
+        <ion-fab-button (click)="debug('')"></ion-fab-button>
+      </ion-fab>
       <ion-card-header style="width: 100%;">
         <ion-grid>
           <ion-row>
