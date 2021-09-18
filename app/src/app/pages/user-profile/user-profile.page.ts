@@ -123,12 +123,19 @@ export class UserProfilePage implements OnInit {
     console.log(this.user);
   }
 
-  back() {
-    this.router.navigate(['home']);
-  }
-
   async getContactInformation() {
     this.userApiService.displayLoading();
+
+
+    await this.getContacts();
+    await this.getContactRequests();
+    await this.getBlockedUsers();
+
+  }
+
+  async getContacts(){
+    this.userApiService.displayLoading();
+    this.contacts = [];
     await this.userApiService.getContacts((response) => {
       if (response) {
         if (response.status === 'success') {
@@ -137,9 +144,15 @@ export class UserProfilePage implements OnInit {
           this.userApiService.displayPopOver('Error', 'Failed to get users');
         }
         this.ready1 = true;
+        this.userApiService.dismissLoading();
         this.dismissLoader();
       }
     });
+  }
+
+  async getContactRequests(){
+    this.userApiService.displayLoading();
+    this.pendingContacts = [];
     await this.userApiService.getContactRequests((response) => {
       console.log(response);
       if (response) {
@@ -153,15 +166,21 @@ export class UserProfilePage implements OnInit {
           );
         }
         this.ready2 = true;
+        this.userApiService.dismissLoading();
         this.dismissLoader();
       }
+
     });
+  }
+
+  async getBlockedUsers(){
+    this.userApiService.displayLoading();
+    this.blockedContacts=[];
     await this.userApiService.getBlockedContacts((response) => {
       console.log(response);
       if (response) {
         if (response.status === 'success') {
           this.blockedContacts = response.data.contacts;
-          console.log(this.blockedContacts);
         } else {
           this.userApiService.displayPopOver(
             'Error',
@@ -169,6 +188,7 @@ export class UserProfilePage implements OnInit {
           );
         }
         this.ready3 = true;
+        this.userApiService.dismissLoading();
         this.dismissLoader();
       }
     });
@@ -182,8 +202,9 @@ export class UserProfilePage implements OnInit {
   }
 
   async deleteContact(contact) {
-    await this.userApiService.deleteContact(contact, (response) => {
+    await this.userApiService.deleteContact(contact, async (response) => {
       if (response.status === 'success') {
+        await this.getContacts();
         this.userApiService.displayPopOver('Success', 'deleted the user');
       } else {
         this.userApiService.displayPopOver(
@@ -196,8 +217,9 @@ export class UserProfilePage implements OnInit {
 
   async rejectContactRequest(contact) {
     console.log(contact);
-    await this.userApiService.rejectContactRequest(contact, (response) => {
+    await this.userApiService.rejectContactRequest(contact, async (response) => {
       if (response.status === 'success') {
+        await this.getContactRequests();
         this.userApiService.displayPopOver('Success', 'rejected the user');
       } else {
         this.userApiService.displayPopOver(
@@ -210,8 +232,10 @@ export class UserProfilePage implements OnInit {
 
   async acceptContactRequest(contact) {
     console.log(contact);
-    await this.userApiService.acceptContactRequest(contact, (response) => {
+    await this.userApiService.acceptContactRequest(contact, async (response) => {
       if (response.status === 'success') {
+        await this.getContacts();
+        await this.getContactRequests();
         this.userApiService.displayPopOver('Success', 'Added the user');
       } else {
         this.userApiService.displayPopOver('Error', 'Failed to add users');
@@ -220,9 +244,11 @@ export class UserProfilePage implements OnInit {
   }
 
   async blockUser(contact) {
-    await this.userApiService.blockUser(contact, (response) => {
+    await this.userApiService.blockUser(contact, async (response) => {
       if (response) {
         if (response.status === 'success') {
+          await this.getContacts();
+          await this.getBlockedUsers();
           this.userApiService.displayPopOver('Success', 'Blocked the user');
         } else {
           this.userApiService.displayPopOver('Failed', 'To block the user');
@@ -232,8 +258,10 @@ export class UserProfilePage implements OnInit {
   }
 
   async unBlockUser(contact) {
-    await this.userApiService.unblockUser(contact, (response) => {
+    await this.userApiService.unblockUser(contact, async (response) => {
       if (response.status === 'success') {
+        await this.getBlockedUsers();
+        await this.getContacts();
         this.userApiService.displayPopOver('Success', 'unblocked the user');
       } else {
         this.userApiService.displayPopOver('Failed', 'To unblock the user');
@@ -262,6 +290,7 @@ export class UserProfilePage implements OnInit {
       }
     );
   }
+
 
   sendFriendRequest() {
     this.sendContactRequest(this.addContactForm.value);
