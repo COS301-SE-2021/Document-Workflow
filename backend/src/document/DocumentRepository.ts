@@ -52,12 +52,30 @@ export default class DocumentRepository {
         catch(err) {
             throw new DatabaseError("Could not save Document data");
         }
-        const uploadParams = {
+        let uploadParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
             Body: fileData,
             Key: 'workflows/' + doc.workflowId +"/phase0/"+ fileName
         }
 
+        try{
+            await s3.upload(uploadParams, (err, data) => {
+                console.log(err)
+                if(err) {
+                    throw new CloudError("The cloud server could not be reached at this time, please try again later.");
+                }
+                else console.log(data);
+            });
+        }
+        catch(e){
+            throw new ServerError("The cloud server could not be reached");
+        }
+
+        uploadParams = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Body: fileData,
+            Key: 'workflows/' + doc.workflowId +"/"+ fileName
+        }
         try{
             await s3.upload(uploadParams, (err, data) => {
                 console.log(err)

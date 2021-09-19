@@ -69,6 +69,7 @@ export default class DocumentService {
             return {status: "success", data: {filedata: filedata, metadata: documentMetadata}, message: ""};
         }
         catch(err){
+            console.log(err);
             throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
         }
     }

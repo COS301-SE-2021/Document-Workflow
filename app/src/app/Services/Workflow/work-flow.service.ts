@@ -412,7 +412,7 @@ export class WorkFlowService {
             callback({ status: 'error', message: 'Cannot connect to Server' });
         },
         (error) => {
-          alert('An unexpected error occurred');
+          this.displayPopOver('Error', 'Unexpected error occurred');
         }
       );
   }
@@ -438,7 +438,7 @@ export class WorkFlowService {
             callback({ status: 'error', message: 'Cannot connect to Server' });
         },
         (error) => {
-          alert('An unexpected error occurred');
+          this.displayPopOver('Error', 'Unexpected error occurred');
         }
       );
   }
@@ -487,7 +487,7 @@ export class WorkFlowService {
             callback({ status: 'error', message: 'Cannot connect to Server' });
         },
         (error) => {
-          alert('An unexpected error occurred');
+          this.displayPopOver('Error', 'Unexpected error occurred');
         }
       );
   }
@@ -513,7 +513,7 @@ export class WorkFlowService {
             callback({ status: 'error', message: 'Cannot connect to Server' });
         },
         (error) => {
-          alert('An unexpected error occurred');
+          this.displayPopOver('Error', 'Unexpected error occurred');
         }
       );
   }
@@ -539,7 +539,7 @@ export class WorkFlowService {
             callback({ status: 'error', message: 'Cannot connect to Server' });
         },
         (error) => {
-          alert('An unexpected error occurred');
+          this.displayPopOver('Error', 'Unexpected error occurred');
         }
       );
   }

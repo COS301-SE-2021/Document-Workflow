@@ -577,6 +577,7 @@ export default class WorkflowService{
     async getOriginalDocument(workflowId, email) {
 
         const workflow = await this.workflowRepository.getWorkflow(workflowId);
+        console.log(workflow);
         if(email !== workflow.ownerEmail)
             return {status: "error", data: {}, message: "Insufficient rights to retrieve this document"};
 
