@@ -47,6 +47,7 @@ export class UserProfilePage implements OnInit {
   ) {}
 
   async ngOnInit() {
+    this.ready = false;
     this.ready1 = false;
     this.ready2 = false;
     this.ready3 = false;
@@ -85,7 +86,7 @@ export class UserProfilePage implements OnInit {
     this.ready = false;
     await this.userApiService.getUserDetails(async (response) => {
       if (response) {
-        await (this.user = response.data);
+         (this.user = response.data);
         console.log(this.user);
         const formOptions: AbstractControlOptions = {
           validators: match('password', 'confirmPassword'),
@@ -198,7 +199,7 @@ export class UserProfilePage implements OnInit {
   dismissLoader() {
     if (this.ready1 && this.ready2 && this.ready3) {
       this.userApiService.dismissLoading();
-      this.ready = true;
+
     }
   }
 

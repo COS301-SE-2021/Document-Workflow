@@ -152,7 +152,6 @@ export class DocumentVerifyPage implements OnInit {
       return;
     }
     await this.workflowService.verifyDocument(hash, this.workflowId, (response) =>{
-      this.userApiService.displayLoading();
       if(response.status === 'success'){
         console.log('THis document originates from this workflow');
         let tmp:history =JSON.parse(response.data.entry);
@@ -161,7 +160,6 @@ export class DocumentVerifyPage implements OnInit {
         this.docHistory.push(tmp);
         this.ready = true;
         this.readyDoc = true;
-        this.userApiService.dismissLoading();
       }
       else{
         console.log('This document does not originate from this workflow or has had its associated hash modified');

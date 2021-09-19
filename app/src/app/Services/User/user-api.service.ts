@@ -32,7 +32,7 @@ export class UserAPIService {
     const loading = this.loadingCtrl
       .create({
         message: 'Please wait...',
-        duration: 8000,
+        duration: 5000,
       })
       .then((response) => {
         response.present();
