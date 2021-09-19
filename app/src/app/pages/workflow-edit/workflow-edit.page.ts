@@ -142,7 +142,6 @@ export class WorkflowEditPage implements OnInit {
 
   }
 
-  //todo add workflowId
   async getWorkflowData() {
     this.userApiService.displayLoading();
     await this.workflowServices.retrieveWorkflow(
@@ -184,7 +183,7 @@ export class WorkflowEditPage implements OnInit {
           phases.push(tmpPhase);
         }
         i++;
-        console.log(response.data._id);
+        console.log(response.data.documentId);
         this.document = {
           currentPercent: 0,
           currentPhase: response.data.currentPhase,
@@ -202,16 +201,15 @@ export class WorkflowEditPage implements OnInit {
       }
     );
   }
-  //  workflow id -> "611661feb394bb1d4cc91f3e"
 
   async setDocumentData() {
-    (this.workflowForm = this.fb.group({
+    this.workflowForm = this.fb.group({
       workflowName: [this.document.name, [Validators.required]],
       workflowDescription: [this.document.description, [Validators.required]],
       workflowFile: ['', [Validators.required]],
       phases: this.fb.array([]),
-    })),
-      this.fillPhases();
+    });
+    this.fillPhases();
   }
 
   fillPhases() {
