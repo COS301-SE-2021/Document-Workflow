@@ -119,7 +119,7 @@ export default class DocumentRepository {
             return await s3.getObject({Bucket: process.env.AWS_BUCKET_NAME, Key:path}).promise();
         }
         catch(err){
-            throw new CloudError("The cloud server could not be reached at this time, please try again later.");
+            throw new CloudError("Something went wrong when trying to download from s3, message: " + err.message);
         }
     }
 
@@ -130,7 +130,7 @@ export default class DocumentRepository {
                 await Document.deleteOne({_id: id});
         }
         catch(err){
-            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
+            throw new ServerError("Something went wrong when trying to delete meta data from mongo, message: " + err.message);
         }
     }
 
@@ -162,7 +162,7 @@ export default class DocumentRepository {
             let d = await s3.putObject(uploadParams).promise();
         }
         catch(e){
-            throw new CloudError("The cloud server could not be reached");
+            throw new CloudError("Could not update s3, message: " + e.message);
         }
     }
 
@@ -170,7 +170,7 @@ export default class DocumentRepository {
         try {
             const listParams = {
                 Bucket: process.env.AWS_BUCKET_NAME,
-                Prefix: folderName
+                Prefix: 'workflows/' + String(folderName)
             };
 
             const listedObjects = await s3.listObjectsV2(listParams).promise();
@@ -191,7 +191,7 @@ export default class DocumentRepository {
             if (listedObjects.IsTruncated) await this.deleteDocument(folderName);
         }
         catch(err){
-            throw new CloudError("The cloud server could not be reached at this time, please try again later.");
+            throw new CloudError("Something went wrong when trying to delete from s3 message: " + err.message);
         }
     }
 }
