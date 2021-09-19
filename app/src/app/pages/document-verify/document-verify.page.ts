@@ -146,22 +146,25 @@ export class DocumentVerifyPage implements OnInit {
   }
 
   async verifyHash(hash){
+    console.log('hash: ' + hash);
     if(hash.length == 0){
       this.userApiService.displayPopOver('Error','This document has no associated stored hash' +
         ', thus it does not originate from Document Workflow');
       return;
     }
-    await this.workflowService.verifyDocument(hash, this.workflowId, (response) =>{
+    await this.workflowService.verifyDocument(hash, this.workflowId, async (response) =>{
       this.userApiService.displayLoading();
       if(response.status === 'success'){
-        console.log('THis document originates from this workflow');
+
         let tmp:history =JSON.parse(response.data.entry);
         tmp.date = new Date(tmp.date);
         tmp.type = this.textConverter(tmp.type);
-        this.docHistory.push(tmp);
-        this.ready = true;
-        this.readyDoc = true;
         this.userApiService.dismissLoading();
+        await this.workflowService.displayPopOver('Success', 'This document corresponds to a workflow with details: '
+          + '\n Date: ' + tmp.date + ' Phase: ' + tmp.currentPhase + '\n'+
+          'Hash: ' + tmp.hash + ' \n ' + tmp.userEmail + ' ' + tmp.type);
+        this.docHistory.push(tmp);
+
       }
       else{
         console.log('This document does not originate from this workflow or has had its associated hash modified');
