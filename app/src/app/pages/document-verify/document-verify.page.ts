@@ -138,6 +138,7 @@ export class DocumentVerifyPage implements OnInit {
     this.workflowService.verifyDocument(hash, this.workflowId, (response) =>{
       if(response.status === 'success'){
         console.log('THis document originates from this workflow');
+        console.log(response);
       }
       else{
         console.log('This document does not originate from this workflow or has had its associated hash modified');

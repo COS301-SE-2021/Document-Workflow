@@ -43,6 +43,11 @@
             </ion-button>
           </ion-col>
         </ion-row>
+        <ion-row *ngIf="tempDesc.length === 0">
+          <ion-card-header style="text-align: center;margin: auto; justify-content: center; align-items: center;">
+            <ion-card-title >There are no Templates</ion-card-title>
+          </ion-card-header>
+        </ion-row>
       </ion-grid>
     </ion-card-content>
   </ion-card>

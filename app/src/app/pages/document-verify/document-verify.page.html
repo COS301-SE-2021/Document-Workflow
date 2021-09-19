@@ -19,20 +19,41 @@
 
 <ion-content>
   <ion-card>
-  <ion-card-header>
-    <ion-card-title style="text-align: center;margin:auto">Upload your saved document to verify it's origin</ion-card-title>
-  </ion-card-header>
-  <ion-card-content>
-  <ion-item>
-
-    <ion-button hidden="true">
-      <input FormControlName="fileUploader" type="file" #fileInput (change)="uploadFile($event)" hidden="false"
-        accept="application/pdf" required>
-    </ion-button>
-    <ion-button (click)="selectImageSource()" id="uploadFile" expand="block" color="primary" fill="outline"
-    style="width: 100%;">Add
-      Your document</ion-button>
+    <ion-card-header>
+      <ion-card-title style="text-align: center;margin:auto">Upload your saved document to verify it's origin
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-button hidden="true">
+          <input FormControlName="fileUploader" type="file" #fileInput (change)="uploadFile($event)" hidden="false"
+            accept="application/pdf" required>
+        </ion-button>
+        <ion-button (click)="selectImageSource()" id="uploadFile" expand="block" color="primary" fill="outline"
+          style="width: 100%;">Add
+          Your document</ion-button>
       </ion-item>
+
+      <!-- <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            Phase {{history.currentPhase}}
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-item lines='none'>
+            Date: {{history.date}}
+          </ion-item>
+          <ion-item lines='none'>
+            The User {{history.userEmail}} has {{history.type}}
+          </ion-item>
+          <ion-item lines='none'>
+            <ion-label class="ion-text-wrap">
+              Hash: {{history.hash}}
+            </ion-label>
+          </ion-item>
+        </ion-card-content>
+      </ion-card> -->
 
 
       <style>
@@ -46,6 +67,6 @@
         <div id="webViewer" #viewer class="webviewer"></div>
       </div>
 
-</ion-card-content>
+    </ion-card-content>
   </ion-card>
 </ion-content>
