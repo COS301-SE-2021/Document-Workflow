@@ -18,14 +18,14 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="ready" >
+<ion-content *ngIf="ready">
   <ion-slides [options]="{slidesPerView: '1'}">
     <ion-slide style="width: 100%; ">
-      <ion-card style="width: 95%; margin:auto; text-align: center;align-items: center;">
+      <ion-card style="width: 95%; margin:auto; text-align: center;align-items: center; margin-top: 25px;">
         <ion-card-header>
           <ion-card-title>
-          Your details
-        </ion-card-title>
+            Your details
+          </ion-card-title>
         </ion-card-header>
         <ion-card-content>
           <form [formGroup]="userForm" (ngSubmit)="submit()">
@@ -76,16 +76,16 @@
             </ion-row> -->
 
             <ion-button hide="true" expand="block" color="primary" fill="outline" [disabled]="!userForm.valid"
-              type="submit">Save your edits
+              type="submit">Save your Edits
             </ion-button>
           </form>
         </ion-card-content>
       </ion-card>
     </ion-slide>
     <ion-slide>
-      <ion-grid style="margin:auto">
+      <ion-grid >
         <ion-row>
-          <ion-card style="width: 95%; margin:auto; text-align: center;align-items: center;">
+          <ion-card style="width: 95%; margin:auto; text-align: center;align-items: center;margin-top: 20px;">
             <ion-card-header>
               <ion-card-title>
                 <span>
@@ -105,19 +105,18 @@
             </ion-card-content>
           </ion-card>
         </ion-row>
+        <br>
+        <div style="margin:auto; border: 5px solid #002060; border-radius: 25px; align-items: center; padding: 10px; width:95%;justify-content: center;  ">
+        <ion-card-title large>Your Contacts</ion-card-title>
         <ion-grid>
           <ion-row>
             <ion-col sizeMd="4" sizeXs="12" sizeSm="6" *ngFor="let contact of contacts">
               <ion-card>
                 <ion-card-content>
-                  <!-- <ion-item lines="none" style="text-align: center;margin:auto;justify-content: center;">
-              Maybe name and surname?
-            </ion-item> -->
                   <ion-item lines="none">
                     <ion-label position="stacked">Email address:</ion-label>
                     {{contact}}
                   </ion-item>
-
                   <ion-button (click)="deleteContact(contact)">Delete contact</ion-button>
                   <ion-button (click)="blockUser(contact)">Block contact</ion-button>
                 </ion-card-content>
@@ -125,13 +124,13 @@
             </ion-col>
           </ion-row>
         </ion-grid>
+      </div>
       </ion-grid>
-
     </ion-slide>
     <ion-slide>
       <ion-grid>
         <ion-row>
-          <ion-card style="width: 95%; margin:auto; text-align: center;align-items: center;">
+          <ion-card style="width: 95%; margin:auto; text-align: center;align-items: center;margin-top: 20px;">
             <ion-card-header>
               <ion-card-title>
                 Pending Requests
@@ -153,7 +152,7 @@
           </ion-card>
         </ion-row>
         <ion-row>
-          <ion-card style="width: 95%; margin:auto; text-align: center;align-items: center;">
+          <ion-card style="width: 95%; margin:auto; text-align: center;align-items: center; margin-top: 20px; margin-bottom: 20px;">
             <ion-card-header>
               <ion-card-title>
                 Blocked Requests
