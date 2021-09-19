@@ -54,7 +54,9 @@
           <div id="webViewer" #viewer class="webviewer"></div>
         </div>
       </ion-card-content>
-      <ion-button (click)="changeOver()" id="changeOver" >Next</ion-button>
+      <div style="align-items: center; justify-content: center;">
+      <ion-button (click)="changeOver()" id="changeOver" style="width:99%; align-items: center; justify-content: center; " >Next</ion-button>
+    </div>
     </ion-card>
     <!-- second card -->
     <ion-reorder-group *ngIf="next" [disabled]="reOrder" (ionItemReorder)="fixOrder($event)" style="width:95%">

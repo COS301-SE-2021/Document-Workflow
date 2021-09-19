@@ -1,4 +1,4 @@
 
 export const config={
-  url: 'https://docwbackend.herokuapp.com/api',
+  url: 'https://docwbackend-github.herokuapp.com/api',
 }

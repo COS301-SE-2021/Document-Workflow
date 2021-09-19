@@ -199,7 +199,6 @@ export class UserProfilePage implements OnInit {
   dismissLoader() {
     if (this.ready1 && this.ready2 && this.ready3) {
       this.userApiService.dismissLoading();
-
     }
   }
 
