@@ -160,7 +160,7 @@ export class WorkflowTemplateService {
           data['template']['phases'] = this.formatPhases(
             data['template']['phases']
           );
-          data['fileData'] = data['fileData'];
+
           this.dismissLoading();
           callback(data);
         } else {
