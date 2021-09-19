@@ -224,7 +224,7 @@ export class UserAPIService {
           else{
             await this.displayPopOver(
               'An Error Occurred',
-              error
+              error.error
             );
           }
 
