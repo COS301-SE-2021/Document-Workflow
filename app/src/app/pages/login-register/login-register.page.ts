@@ -147,7 +147,7 @@ export class LoginRegisterPage implements OnInit {
     await this.userAPIService.login(loginData, (response) => {
       if (response.status === 'success') {
         //localStorage.setItem('token', response.data.token);
-        Cookies.set('token', response.data.token, { expires: 1 });
+        Cookies.set('token', response.data.token);
         if(this.plat.is('android')  && this.plat.is('capacitor')){
           console.log("here")
           this.setCredentials();
@@ -202,14 +202,12 @@ export class LoginRegisterPage implements OnInit {
             userdata.confirmPassword,
             this.file,
             (response) => {
-              if (response.status === 'success') {
-                this.userAPIService.displayPopOver(
-                  'Successfully created new user account',
-                  'check your email for account verification'
-                );
+              this.userAPIService.displayPopOver(
+                'Successfully created new user account',
+                'check your email for account verification'
+              );
 
-                this.router.navigate(['login']);
-              }
+              this.router.navigate(['login']);
             }
           );
         }

@@ -18,13 +18,7 @@ export class UserNotificationsComponent implements OnInit {
   //Link this to the user services such that you can call one function for no buttons, and another for buttons
   ngOnInit() {
     if (this.title === 'termsOfService') {
-      this.message =
-        'Note that by making use of the Document Workflow system, you are ' +
-        'essentially giving your soul to our Lizard overlord JeffBezos. He will steal all of' +
-        'your personal data and rule over you like the absolute madlad he is. When the' +
-        'robot uprising begins, you must understand that you are complicit in Jeff Bezos'  +
-        'rise to power through your indirect support of him by using our services.' +
-        'All hail King Zuck.';
+      this.message = 'Note that by creating a new Document Workflow account you agree to our terms of service. ';
     }
   }
 

@@ -76,6 +76,7 @@ export class WorkflowPage implements OnInit {
         },
         async (error) => {
           console.log(error);
+          Cookies.set('token', '');
           await this.router.navigate(['/login']);
           return;
         }

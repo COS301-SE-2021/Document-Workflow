@@ -19,9 +19,10 @@ export default class Authenticator {
             const token = req.header("Authorization").replace("Bearer ", "");
 
             //check blacklist for token first:
+            /*
             if (await Blacklist.checkBlacklist(token)) {
                 return Promise.reject(" Token is present in blacklist");
-            }
+            }*/
 
             let decoded: any = jwt.verify(token, process.env.SECRET);
             if(decoded){

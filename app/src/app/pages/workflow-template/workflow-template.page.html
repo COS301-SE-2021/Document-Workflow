@@ -55,7 +55,7 @@
   <form *ngIf="readyForPhase2" [formGroup]="templateForm" (ngSubmit)="submit()">
     <ion-card *ngIf="phase2">
       <ion-card-header style="width: 100%;">
-        <ion-text>Workflow creation</ion-text>
+        <ion-card-title>Workflow creation</ion-card-title>
         <ion-fab vertical="top" horizontal="end">
           <ion-fab-button (click)="nextPhase()">Next</ion-fab-button>
         </ion-fab>
@@ -91,7 +91,7 @@
       <ion-card-header style="width: 100%;">
         <ion-grid>
           <ion-row>
-            <ion-col offset="3">
+            <ion-col offset="1">
               <ion-card-title>Workflow creation</ion-card-title>
             </ion-col>
           </ion-row>
