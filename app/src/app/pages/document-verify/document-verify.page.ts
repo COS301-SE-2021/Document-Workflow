@@ -6,6 +6,14 @@ import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 import * as Cookies from 'js-cookie';
 import WebViewer, { Core } from '@pdftron/webviewer';
 import { PDFDocument } from 'pdf-lib';
+
+export interface history{
+  currentPhase: number;
+  hash: string;
+  type: string;
+  userEmail: string;
+  date: Date;
+}
 @Component({
   selector: 'app-document-verify',
   templateUrl: './document-verify.page.html',
@@ -16,9 +24,14 @@ export class DocumentVerifyPage implements OnInit {
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
   @ViewChild('viewer') viewerRef: ElementRef;
 
+
+  docHistory: history[] =[];
   sizeMe: boolean;
   file: File;
   workflowId: string;
+  ready: boolean;
+  readyDoc: boolean;
+
   constructor(
     private route: ActivatedRoute,
     private workflowService: WorkFlowService,
@@ -29,6 +42,8 @@ export class DocumentVerifyPage implements OnInit {
   ) {}
 
   async ngOnInit() {
+    this.ready = false;
+    this.readyDoc = false;
     if (this.plat.width() > 572) {
       this.sizeMe = false;
     } else {
@@ -55,6 +70,8 @@ export class DocumentVerifyPage implements OnInit {
     await this.route.params.subscribe((data) => {
       this.workflowId = data['workflowId'];
     });
+
+
   }
 
   async selectImageSource() {
@@ -123,26 +140,54 @@ export class DocumentVerifyPage implements OnInit {
         const PDFNet = instance.Core.PDFNet;
         const doc = await PDFNet.PDFDoc.createFromBuffer(await this.file.arrayBuffer());
         const hash= await this.extractHash(doc);
-        this.verifyHash(hash);
+        await this.verifyHash(hash);
       });
     });
   }
 
-  verifyHash(hash){
-    console.log('Verifying the hash : ', hash);
+  async verifyHash(hash){
     if(hash.length == 0){
       this.userApiService.displayPopOver('Error','This document has no associated stored hash' +
         ', thus it does not originate from Document Workflow');
       return;
     }
-    this.workflowService.verifyDocument(hash, this.workflowId, (response) =>{
+    await this.workflowService.verifyDocument(hash, this.workflowId, (response) =>{
+      this.userApiService.displayLoading();
       if(response.status === 'success'){
         console.log('THis document originates from this workflow');
-        console.log(response);
+        let tmp:history =JSON.parse(response.data.entry);
+        tmp.date = new Date(tmp.date);
+        tmp.type = this.textConverter(tmp.type);
+        this.docHistory.push(tmp);
+        this.ready = true;
+        this.readyDoc = true;
+        this.userApiService.dismissLoading();
       }
       else{
         console.log('This document does not originate from this workflow or has had its associated hash modified');
       }
     });
+  }
+
+  textConverter(str: string): string {
+    let tmp: string;
+    switch (str) {
+      case 'Create':
+        tmp = 'created the workflow';
+        break;
+      case 'Sign':
+        tmp = 'signed the workflow';
+        break;
+      case 'View':
+        tmp = 'viewed';
+        break;
+      case 'Accept':
+        tmp = 'accepted the phase';
+        break;
+      case 'Revert':
+        tmp = 'reverted the changes made';
+        break;
+    }
+    return tmp;
   }
 }

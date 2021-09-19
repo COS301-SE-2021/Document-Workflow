@@ -24,7 +24,7 @@
       </ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <ion-item>
+      <ion-item *ngIf="!ready">
         <ion-button hidden="true">
           <input FormControlName="fileUploader" type="file" #fileInput (change)="uploadFile($event)" hidden="false"
             accept="application/pdf" required>
@@ -33,29 +33,6 @@
           style="width: 100%;">Add
           Your document</ion-button>
       </ion-item>
-
-      <!-- <ion-card>
-        <ion-card-header>
-          <ion-card-title>
-            Phase {{history.currentPhase}}
-          </ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <ion-item lines='none'>
-            Date: {{history.date}}
-          </ion-item>
-          <ion-item lines='none'>
-            The User {{history.userEmail}} has {{history.type}}
-          </ion-item>
-          <ion-item lines='none'>
-            <ion-label class="ion-text-wrap">
-              Hash: {{history.hash}}
-            </ion-label>
-          </ion-item>
-        </ion-card-content>
-      </ion-card> -->
-
-
       <style>
         .webviewer {
           width: 100%;
@@ -66,7 +43,27 @@
       <div id="webViewerContainer" class="content" role="main">
         <div id="webViewer" #viewer class="webviewer"></div>
       </div>
+    </ion-card-content>
+  </ion-card>
 
+  <ion-card *ngFor="let docu of docHistory">
+    <ion-card-header>
+      <ion-card-title>
+        Phase {{docu.currentPhase}}
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item lines='none'>
+        Date: {{docu.date}}
+      </ion-item>
+      <ion-item lines='none'>
+        The User {{docu.userEmail}} has {{docu.type}}
+      </ion-item>
+      <ion-item lines='none'>
+        <ion-label class="ion-text-wrap">
+          Hash: {{docu.hash}}
+        </ion-label>
+      </ion-item>
     </ion-card-content>
   </ion-card>
 </ion-content>
