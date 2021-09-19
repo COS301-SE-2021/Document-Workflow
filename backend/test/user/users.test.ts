@@ -8,7 +8,8 @@ import { AuthenticationError, RequestError } from "../../src/error/Error";
 import { IUser } from "../../src/user/IUser";
 import { Schema, Types } from "mongoose";
 // @ts-ignore
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { createRandomObjectId } from "../testing-functions";
 
 describe("user unit tests", () => {
   let userRepository;
@@ -75,11 +76,11 @@ describe("user unit tests", () => {
     );
   });
   it("Should encode user email and id as JWT", async () => {
-    const hashedPassword: string =
-        userService.getHashedPassword("AgR3aTP4SsW0rd");
+    const hashedPassword: string = await userService.getHashedPassword("AgR3aTP4SsW0rd");
 
+    const fakeId = createRandomObjectId();
     const response = {
-      _id: new Types.ObjectId("0x012345678911"),
+      _id: fakeId,
       password: hashedPassword,
       validated: true,
       email: "unittest@test.com",
@@ -89,7 +90,7 @@ describe("user unit tests", () => {
     try {
       const token = await userService.loginUser("unittest@test.com", "AgR3aTP4SsW0rd");
       let decoded: any = jwt.verify(token, process.env.SECRET);
-      expect(decoded.id).toBe("1234567890");
+      expect(decoded.id).toBe(String(fakeId));
       expect(decoded.email).toBe("unittest@test.com");
     } catch (err) {
       throw err;
@@ -102,7 +103,7 @@ describe("user unit tests", () => {
       password: "AgR3aTP4SsW0rd"
     }
 
-    const hashedPassword: string = userService.getHashedPassword(
+    const hashedPassword: string = await userService.getHashedPassword(
         "AgR3aTP4SsW0rd212311"
     );
 

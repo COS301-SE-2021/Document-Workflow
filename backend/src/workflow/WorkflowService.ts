@@ -580,7 +580,7 @@ export default class WorkflowService{
      * This function checks whether any of the phases to be edited occur in the array of phase ids that may
      * noot be edited.
      * @param phases
-     * @param preservePhases
+     * @param preservePhasesIds
      */
     allPhasesCanBeEdited(phases, preservePhasesIds){
 
@@ -657,7 +657,6 @@ export default class WorkflowService{
             throw err;
         }
     }
-
 
     async getOriginalDocument(workflowId, email) {
         console.log("Retrieving the original document for workflow id: ", workflowId);

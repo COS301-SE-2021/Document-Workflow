@@ -10,7 +10,7 @@ export const testWorkflow = {
     phases: [{
         users: '[{"user":"contactsuser1@email.com","permission":"sign","accepted":"false"}]',
         annotations: `<?xml version="1.0" encoding="UTF-8" ?><xfdf xmlns="http://ns.adobe.com/xfdf/" xml:space="preserve">
-        <fields /><annots><text page="0" rect="403.910,255.480,434.910,286.480" color="#FFCD45" flags="print,nozoom,norotat
+                        <fields /><annots><text page="0" rect="403.910,255.480,434.910,286.480" color="#FFCD45" flags="print,nozoom,norotat
                         e" name="85328653-6e78-ffb3-e3c5-65bc6d0939df" title="brenton.stroberg@yahoo.co.za" subject="Note" 
                         date="D:20210918060454+02'00'" creationdate="D:20210918060450+02'00'" icon="Comment" statemodel="Rev
                         iew"><trn-custom-data bytes="{&q

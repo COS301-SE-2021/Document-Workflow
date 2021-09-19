@@ -8,17 +8,15 @@ import UserService from "../../src/user/UserService";
 import DocumentRepository from "../../src/document/DocumentRepository";
 import DocumentService from "../../src/document/DocumentService";
 import { PhaseRepository } from "../../src/phase/PhaseRepository";
-import { PhaseService } from "../../src/phase/PhaseService";
+import PhaseService from "../../src/phase/PhaseService";
 import WorkflowTemplateService from "../../src/workflowTemplate/WorkflowTemplateService";
 import WorkflowHistoryService from "../../src/workflowHistory/WorkflowHistoryService";
 import WorkflowTemplateRepository from "../../src/workflowTemplate/WorkflowTemplateRepository";
 import WorkflowHistoryRepository from "../../src/workflowHistory/WorkflowHistoryRepository";
-import app from "../../src"
-import request from "supertest";
 import { testUsers, createTestUser, deleteTestUser, verifyTestUser, loginTestUser } from "../testData/test-users";
 import { IUser } from "../../src/user/IUser";
 import { testWorkflows } from "../testData/test-workflows";
-const workflow1 = testWorkflows.workflow1;
+
 
 describe("Workflow sub-system: integration tests", () => {
     let workflowService;
@@ -26,8 +24,11 @@ describe("Workflow sub-system: integration tests", () => {
     let userService;
     let documentService;
     let encrypt;
+
     const user1 = testUsers.user1;
     let realUser1: IUser;
+    const workflow1 = testWorkflows.workflow1;
+    let realWorkflow1;
 
     beforeAll(async () => {
         await Database.get();
@@ -53,20 +54,7 @@ describe("Workflow sub-system: integration tests", () => {
 
     it("Should delete, create, verify, login user1", async () => {
         const res = await userService.getUserByEmail(user1.email);
-        if(res){
-            const del = await deleteTestUser(res, userService);
-        }
-        /*const user = userService.registerUser({
-            body: {
-                name: user1.name,
-                surname: user1.surname,
-                initials: user1.initials,
-                email: user1.email,
-                password: user1.password,
-                confirmPassword: user1.password
-            },
-            files: { signature: user1.signature }
-        });*/
+        if(res){const del = await deleteTestUser(res, userService);}
         const user = await createTestUser(user1, userService);
         expect(user.email).toBe(user1.email);
         const verify = await verifyTestUser(user, userService);
