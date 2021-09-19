@@ -109,7 +109,6 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
               this.originalKeywords = oldstr;
               info.putText('Keywords', this.hash);
             } else {
-              console.log('No previous keywords present');
               info.putString('Keywords', this.hash);
             }
           } else {

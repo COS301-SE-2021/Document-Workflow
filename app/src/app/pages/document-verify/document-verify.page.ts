@@ -84,13 +84,13 @@ export class DocumentVerifyPage implements OnInit {
     const eventObj: MSInputMethodContext = event as MSInputMethodContext;
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
     this.file = target.files[0];
+    document.getElementById('uploadFile').style.display = 'none';
     this.verifyDocument();
 
   }
 
   verifyDocument(){
     const blob = new Blob([this.file], { type: 'application/pdf;base64' });
-    console.log(blob);
     this.displayWebViewer(blob);
   }
 
@@ -102,11 +102,7 @@ export class DocumentVerifyPage implements OnInit {
 
     const metadata = await doc.getDocInfo();
     const keywords = await metadata.getKeywords();
-    if(keywords.length > 5){
-      return keywords.slice(7);
-    }
-    console.log("FINALIZE HOW THE HASH IS STORED!!!!!");
-    return '';
+    return keywords;
   }
 
   displayWebViewer(blob: Blob){
@@ -127,23 +123,24 @@ export class DocumentVerifyPage implements OnInit {
         const PDFNet = instance.Core.PDFNet;
         const doc = await PDFNet.PDFDoc.createFromBuffer(await this.file.arrayBuffer());
         const hash= await this.extractHash(doc);
-        console.log(hash);
         this.verifyHash(hash);
       });
     });
   }
 
   verifyHash(hash){
+    console.log('Verifying the hash : ', hash);
     if(hash.length == 0){
-      this.userApiService.displayPopOver('Error','This document has no associated stored hash');
+      this.userApiService.displayPopOver('Error','This document has no associated stored hash' +
+        ', thus it does not originate from Document Workflow');
       return;
     }
     this.workflowService.verifyDocument(hash, this.workflowId, (response) =>{
       if(response.status === 'success'){
-        //extract history data and display
+        console.log('THis document originates from this workflow');
       }
       else{
-        //this document does not belong to this workflow.
+        console.log('This document does not originate from this workflow or has had its associated hash modified');
       }
     });
   }
