@@ -109,7 +109,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
                 const itrval = await itr.value();
                 const oldstr = await itrval.getAsPDFText();
                 this.originalKeywords = oldstr;
-                info.putText(this.hash);
+                info.putString('Keywords', this.hash);
               } else {
                 console.log('No previous keywords present');
                 info.putString('Keywords', this.hash);
