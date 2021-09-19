@@ -186,9 +186,9 @@ export default class UserController{
         }
     }
 
-    private async deleteUserRoute(request): Promise<IUser> {
+    private async deleteUserRoute(req): Promise<IUser> {
         try{
-            return await this.userService.deleteUser(request);
+            return await this.userService.deleteUser(req.params.id, req.user);
         }catch(err){
             throw new ServerError(err.toString());
         }

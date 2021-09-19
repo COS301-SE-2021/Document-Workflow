@@ -2,7 +2,7 @@ import { injectable } from "tsyringe";
 import UserRepository from "./UserRepository";
 import nodemailer from 'nodemailer';
 import jwt from "jsonwebtoken";
-import { AuthenticationError, RequestError, ServerError } from "../error/Error";
+import { AuthenticationError, AuthorizationError, RequestError, ServerError } from "../error/Error";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { isEmail, isStrongPassword } from "validator";
@@ -10,12 +10,14 @@ import { logger } from "../LoggingConfig";
 import { Types } from "mongoose";
 import { IUser, privilegeLevel } from "./IUser";
 import { Blacklist } from "../security/Blacklist";
+import WorkflowService from "../workflow/WorkflowService";
 
 type ObjectId = Types.ObjectId;
 
 @injectable()
 export default class UserService {
-    constructor(private userRepository: UserRepository) {
+
+    constructor(private userRepository: UserRepository, private workflowService: WorkflowService) {
 
     }
 
@@ -218,13 +220,23 @@ export default class UserService {
         }
     }
 
-    //TODO: Users can only delete their own accounts
-    async deleteUser(req): Promise<IUser> {
-        if(!await this.userRepository.findUser(req.params.id)){
+    async deleteUser(id: ObjectId, user): Promise<IUser> {
+        const toDelete = await this.userRepository.findUser(id)
+        if(!toDelete){
             throw new RequestError("User does not exist");
         }
+
+        if(id != user._id && user.privilege == privilegeLevel.USER){
+            throw new AuthorizationError("Users can only remove their own accounts");
+        }
+
         try{
-            return await this.userRepository.deleteUser(req.params.id);
+            //delete workflows owned by this user:
+            for (const workflowid of toDelete.ownedWorkflows) {
+                await this.workflowService.deleteWorkFlow(workflowid, toDelete.email);
+            }
+            return await this.userRepository.deleteUser(id);
+
         }
         catch(err){
             console.error(err);
