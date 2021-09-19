@@ -19,7 +19,8 @@ type ObjectId = Types.ObjectId;
 
 @injectable()
 export default class WorkflowService{
-
+//TODO: This service might be violating the "single responsibility principle",
+// with current implementation it is not possible to utilize it's functions effectively outside of this service
     constructor(
         private workflowRepository: WorkFlowRepository,
         private documentService: DocumentService,
@@ -131,8 +132,7 @@ export default class WorkflowService{
         return true;
     }
 
-    async addWorkFlowIdToUsersWorkflows(phases, workflowId: ObjectId, ownerEmail):Promise<void>
-    {
+    async addWorkFlowIdToUsersWorkflows(phases, workflowId: ObjectId, ownerEmail):Promise<void> {
         for(let i=0; i<phases.length; ++i) {
             let users = JSON.parse(phases[i].users);
             for(let k=0; k<users.length; ++k){
@@ -157,7 +157,7 @@ export default class WorkflowService{
 
     async getWorkFlowById(id: ObjectId) {
 
-        const workflow = await this.workflowRepository.getWorkflow(String(id));
+        const workflow: IWorkflow = await this.workflowRepository.getWorkflow(String(id));
         if(workflow === undefined || workflow === null)
             return {status:"error", data: {}, message:"workflow " + id + " not found"}
 
