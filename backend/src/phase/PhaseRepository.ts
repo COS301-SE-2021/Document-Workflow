@@ -29,12 +29,9 @@ export class PhaseRepository{
     }
 
     async updatePhaseAnnotations(phase: IPhase): Promise<boolean>{
-        console.log("Phase repository, updating phase annotations");
-        console.log(phase);
         try{
             const result = await Phase.updateOne({_id: phase._id},
                 {$set:{annotations: phase.annotations}});
-            console.log(result);
             return !!result;
         }
         catch(err){
@@ -43,8 +40,6 @@ export class PhaseRepository{
     }
 
     async updatePhase(phase: IPhase): Promise<any>{
-        console.log("Phase repository, updating phase");
-        console.log(phase);
         try{
             const response: IWorkflow = await Phase.updateOne({_id: phase._id}, phase).lean();
             return !!response;
@@ -59,7 +54,7 @@ export class PhaseRepository{
             const response = await Phase.findByIdAndDelete(id);
             return response._id;
         }catch(err){
-            throw new DatabaseError("Could not delete phase " + err.message);
+            throw new DatabaseError("Could not delete phase of workflow");
         }
     }
 }

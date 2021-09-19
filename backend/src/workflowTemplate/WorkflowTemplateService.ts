@@ -43,7 +43,6 @@ export default class WorkflowTemplateService{
             documentName: file.name
 
         });
-        console.log(newTemplate);
 
         const templateId = await this.workflowTemplateRepository.saveWorkflowTemplate(newTemplate);
         await this.documentService.uploadTemplateDocumentToCloud(file, templateId);
@@ -93,21 +92,12 @@ export default class WorkflowTemplateService{
 
         const index = usr.workflowTemplates.indexOf(templateId);
         if(index !== -1) {
-            console.log(usr.workflowTemplates);
             usr.workflowTemplates.splice(index, 1);
-            console.log(usr.workflowTemplates);
             await this.userService.updateUserTemplates(usr);
         }
-        try {
-            console.log('Deleting workflow template doc from cloud');
-            await this.documentService.deleteTemplateDocumentFromCloud(templateId);
-            console.log('Deleting the workflow template');
-            await this.workflowTemplateRepository.deleteWorkflowTemplate(templateId);
-        }
-        catch(err){
-            console.log(err);
-            throw err;
-        }
+
+        await this.documentService.deleteTemplateDocumentFromCloud(templateId);
+        await this.workflowTemplateRepository.deleteWorkflowTemplate(templateId);
 
         return {status: "success", data:{}, message:""};
     }

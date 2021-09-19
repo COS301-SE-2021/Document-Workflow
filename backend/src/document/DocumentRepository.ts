@@ -25,8 +25,6 @@ export default class DocumentRepository {
             Key: path
         }
         try {
-            //const response = await s3.upload(uploadParams).promise; //TODO: test this.
-            //console.log(response);
             await s3.upload(uploadParams, (err, data) => {
                 console.log(err)
                 if(err) {
@@ -37,7 +35,6 @@ export default class DocumentRepository {
             });
         }
         catch(e){
-            console.log(e);
             throw new CloudError("The cloud server could not be reached at this time, please try again later.");
         }
     }
@@ -47,7 +44,6 @@ export default class DocumentRepository {
        To update a document/create a new phase in the S3 bucket see the 'putDocument' function
      */
     async saveDocument(doc: IDocument, fileData: Buffer, fileName: String): Promise<ObjectId> {
-        //console.log(file);
         let response: IDocument = null;
         try{
             const newDoc = new Document(doc);
@@ -72,27 +68,21 @@ export default class DocumentRepository {
             });
         }
         catch(e){
-            console.log(e);
+            throw new ServerError("The cloud server could not be reached");
         }
         return response._id;
     }
 
     async updateDocumentS3(file, workflowId, phaseNumber){
-        console.log("Updating a document in S3, file looks as follows: ");
-        console.log(file);
         const uploadParams = {
             Bucket: process.env.AWS_BUCKET_NAME,
             Body: file.data,
             Key: 'workflows/' + workflowId + "/phase" +phaseNumber +"/" + file.name
         }
         try{
-            console.log(uploadParams);
             let d = await s3.putObject(uploadParams).promise();
-            console.log("Finished updating s3 file");
-            console.log(d);
         }
         catch(e){
-            console.log(e);
             throw new ServerError("The cloud server could not be reached");
         }
     }
@@ -141,7 +131,6 @@ export default class DocumentRepository {
      * takes in a file object, and extracts the data from it anyway (that is to say, it takes the array buffer of data
      * from the file and uses that in its request to aws). To save time when we have access to a filebuffer and not a file
      * object, we create this function that instead takes the buffer in directly.
-     * TODO: change the update files3 function to take in filedata instead of a file, then we can destroy this function.
      * @param path
      * @param fileData
      */
@@ -152,13 +141,9 @@ export default class DocumentRepository {
             Key: path
         }
         try{
-            console.log(uploadParams);
             let d = await s3.putObject(uploadParams).promise();
-            console.log("Finished updating s3 file");
-            console.log(d);
         }
         catch(e){
-            console.log(e);
             throw new CloudError("The cloud server could not be reached");
         }
     }

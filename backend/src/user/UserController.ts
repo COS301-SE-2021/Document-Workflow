@@ -235,7 +235,6 @@ export default class UserController{
         if(!req.body.email)
             throw new RequestError("Cannot verify existence of null email");
         try{
-            console.log(req.body.email);
             return await this.userService.verifyEmailExistence(req.body.email);
         }
         catch(err){
@@ -446,7 +445,7 @@ export default class UserController{
             try {
                 res.status(200).json( {status: "success", data: await this.getUserDetails(req), message: "Details successfully retrieved"});
             } catch(err){
-                console.log("Fetching user details had an error");
+                //console.log("Fetching user details had an error");
                 try{await handleErrors(err,res);}catch{}
             }
         });
@@ -563,7 +562,6 @@ export default class UserController{
             try{
                 const userBlockedContacts = await this.getBlockedContacts(req);
                 // if(userBlockedContacts) res.status(200).json({status: "success", data:{"contacts": userBlockedContacts }, message: "Contacts successfully retrieved"});
-                console.log(userBlockedContacts)
                 if(userBlockedContacts) {
                     if(userBlockedContacts.length === 0){
                         res.status(200).json({status: "success", data:{}, message: "This user does not have contacts yet"});

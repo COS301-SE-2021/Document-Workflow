@@ -23,7 +23,6 @@ export default class WorkflowController {
 
     //Check for correct input, check that it exists, send object through to service
     async createWorkflowRoute(req): Promise<any> {
-        //console.log(req);
         /*  request object looks like:
             body: {
             name: "Workflow Name",
@@ -52,7 +51,6 @@ export default class WorkflowController {
 
         //Check each phase for proper variables
         const phases = JSON.parse(req.body.phases);
-        //console.log(req.body.phases);
         phases.forEach(phase => {
             if(!phase.annotations || !phase.description || !phase.users){
                 throw new RequestError("There was something wrong with the request");
@@ -76,7 +74,6 @@ export default class WorkflowController {
                 annotations: phase.annotations
             }));
         })
-        console.log("CONVERTED PHASES:\n" + convertedPhases);
 
         if(!req.body.template){
             req.body.template = null;
@@ -99,20 +96,17 @@ export default class WorkflowController {
         try{
             return await this.workflowService.getUsersWorkflowData(req.user._id);
         } catch(err) {
-            console.log(err);
             throw new ServerError(err.toString());
         }
     }
 
     private async retrieveDocumentRoute(req) {
-        logger.info("Retrieving a document given a workflow id");
         if(!req.body.workflowId){
             throw new RequestError("There was something wrong with the request");
         }
         try{
             return await this.workflowService.retrieveDocument(req.body.workflowId, req.user.email);
         } catch(err) {
-            console.log(err);
             throw new ServerError(err.toString());
         }
     }
@@ -133,7 +127,6 @@ export default class WorkflowController {
         try{
             return await this.workflowService.updatePhase(req.user, req.body.workflowId, req.body.accept, req.files.document);
         } catch(err) {
-            console.log(err)
             throw new ServerError(err.toString());
         }
     }
@@ -145,7 +138,6 @@ export default class WorkflowController {
         try{
             return await this.workflowService.updatePhaseAnnotations(req.user.email, req.body.workflowId, req.body.annotations);
         } catch(err) {
-            console.log(err)
             throw new ServerError(err.toString());
         }
     }
@@ -157,7 +149,6 @@ export default class WorkflowController {
         try{
             return await this.workflowService.retrieveWorkflow(req.body.workflowId, req.user.email);
         } catch(err) {
-            console.log(err)
             throw new ServerError(err.toString());
         }
     }
@@ -204,7 +195,6 @@ export default class WorkflowController {
             return await this.workflowService.editWorkflow(req.body.description, req.body.name, convertedPhases, req.user.email, req.body.workflowId);
         }
         catch(err){
-            console.log(err);
             throw err;
         }
     }
@@ -216,7 +206,6 @@ export default class WorkflowController {
             return await this.workflowService.revertWorkflowPhase(req.body.workflowId, req.user.email);
         }
         catch(err){
-            console.log(err);
             throw err;
         }
     }
@@ -228,7 +217,6 @@ export default class WorkflowController {
             return await this.workflowService.getOriginalDocument(req.body.workflowId, req.user.email);
         }
         catch(err){
-            console.log(err);
             throw err;
         }
     }
@@ -240,7 +228,6 @@ export default class WorkflowController {
             return await this.workflowService.getWorkflowHistory(req.body.workflowId, req.user.email);
         }
         catch(err){
-            console.log(err);
             throw err;
         }
     }
@@ -279,7 +266,6 @@ export default class WorkflowController {
             try {
                 res.status(200).json(await this.getUsersWorkflowDataRoute(req));
             } catch(err){
-                console.log(err);
                 try{await handleErrors(err,res);}catch{}
             }
         });
@@ -288,39 +274,32 @@ export default class WorkflowController {
             try {
                 res.status(200).json(await this.retrieveWorkflowRoute(req));
             } catch(err){
-                console.log(err);
                 try{await handleErrors(err,res);}catch{}
             }
         });
 
         this.router.post('/updatePhase', this.auth, async (req,res) =>{
-            console.log('getting workflow data for a specific user');
             try {
                 res.status(200).json(await this.updatePhaseRoute(req));
             } catch(err){
-                console.log(err);
                 try{await handleErrors(err,res);}catch{}
             }
         });
 
         this.router.post('/retrieveDocument', this.auth, async (req,res) =>{
-            console.log('Retrieving the document for a specific workflow');
             try {
                 res.status(200).json(await this.retrieveDocumentRoute(req));
             } catch(err){
                 res.status(400).json('help')
-                console.log(err);
                 try{await handleErrors(err,res);}catch{}
             }
         });
 
         this.router.post('/updatePhaseAnnotations', this.auth, async (req,res) =>{
-            console.log('Retrieving the document for a specific workflow');
             try {
                 res.status(200).json(await this.updatePhaseAnnotationsRoute(req));
             } catch(err){
                 res.status(400).json({})
-                console.log(err);
                 try{await handleErrors(err,res);}catch{}
             }
         });

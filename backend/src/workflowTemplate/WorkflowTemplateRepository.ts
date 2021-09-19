@@ -14,7 +14,6 @@ export default class WorkflowTemplateRepository{
             else return null;
         }
         catch(err){
-            console.log(err);
             throw new DatabaseError("Could not save workflow information as template");
         }
     }

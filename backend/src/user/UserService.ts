@@ -80,7 +80,6 @@ export default class UserService {
         try {
             return await this.userRepository.findUser({email: email});
         } catch (err) {
-            console.error(err);
             throw err;
         }
     }
@@ -89,7 +88,6 @@ export default class UserService {
         try {
             return await this.userRepository.findUsers({});
         } catch (err) {
-            console.error(err);
             throw err;
         }
     }
@@ -125,14 +123,8 @@ export default class UserService {
         usr.workflows = [];
         usr.workflowTemplates = [];
         const tempValidateCode = usr.validateCode;
-        //const user: UserProps = await this.userRepository.postUser(usr);
-        //const token: Token = { token: await this.generateToken(usr.email, usr._id), __v: 0};
-        //usr.tokens = [token];
         const user: IUser = await this.userRepository.saveUser(usr);
-        //const response = await this.userRepository.putUser(usr);
         if (user) {
-            //logger.info(usr); It seems as though the usr object gets changed after it is saved to the database
-            logger.info(req.body.email + " " + tempValidateCode);
             await this.sendVerificationEmail(req.body.email, tempValidateCode);//,
             return user;
         }
@@ -156,7 +148,6 @@ export default class UserService {
     }
 
     async sendVerificationEmail(emailAddress, code ): Promise<void> {
-        logger.info("Sending an email to the new email address");
         let url = process.env.BASE_URL + '/users/verify?verificationCode=' + code + '&email=' + emailAddress;
         let transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -180,10 +171,8 @@ export default class UserService {
 
         transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
-                console.log(error);
                 return false;
             } else {
-                console.log('Email sent: ' + info.response);
                 return true;
             }
         });
@@ -214,7 +203,6 @@ export default class UserService {
             return await Blacklist.checkBlacklist(token);
         }
         catch(err){
-            console.error(err);
             throw new RequestError("Could not log out user");
         }
     }
@@ -238,7 +226,6 @@ export default class UserService {
 
         }
         catch(err){
-            console.error(err);
             throw new RequestError("Could not remove user");
         }
     }
@@ -269,7 +256,6 @@ export default class UserService {
             else return null;
         }
         catch(err){
-            console.log(err);
             throw "Could not fetch user details";
         }
     }
@@ -313,7 +299,6 @@ export default class UserService {
             return await this.userRepository.updateUser(req.body);
         }
         catch(err){
-            console.error(err);
             throw new RequestError("Could not update User");
         }
 
@@ -407,8 +392,6 @@ export default class UserService {
       }
 
     async acceptContactRequest(contactEmail: string, user): Promise<ObjectId> {
-        console.log(contactEmail);
-        console.log(user);
         //get User
         const usr: IUser = await this.userRepository.findUser({
           email: user.email,
@@ -438,7 +421,6 @@ export default class UserService {
             contact.contacts,
             user.email
           );
-          console.log(added + " " + addedToContact);
           if (added && addedToContact) {
             await this.userRepository.updateUser(usr);
             await this.userRepository.updateUser(contact);
@@ -517,7 +499,6 @@ export default class UserService {
                 currentUser.email
             );
 
-            console.log(removed);
             if(removed && removed1){
                 await this.userRepository.updateUser(currentUser);
                 await this.userRepository.updateUser(contact);
@@ -590,7 +571,6 @@ export default class UserService {
 
     async generatePasswordReset(userEmail) {
         const usr = await this.getUserByEmail(userEmail);
-        logger.info("Resetting email of userwith email address: " + userEmail);
 
         if (usr === null) {
             throw new RequestError("No user with that email address was found.");
@@ -599,8 +579,6 @@ export default class UserService {
         usr.csrfTokenTime = Date.now();
         await this.userRepository.updateUser(usr);
         const res = await this.sendResetRequestEmail(userEmail, usr.antiCSRFToken);
-        console.log(res);
-        console.log(res.errno);
         if(res.errno !== undefined) {
             throw new ServerError('Could not handle the password reset request at this time');
         }
@@ -609,7 +587,6 @@ export default class UserService {
     }
 
     async sendResetRequestEmail(emailAddress, antiCSRFCode) {
-        logger.info("Sending an email to the new email address");
         let transporter = nodemailer.createTransport({
             service: process.env.NODEMAILER_SERVICE,
             host: process.env.NODEMAILER_SMTP,

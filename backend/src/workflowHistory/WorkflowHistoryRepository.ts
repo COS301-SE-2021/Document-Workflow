@@ -16,7 +16,6 @@ export default class WorkflowHistoryRepository{
             return newWorkflowHistory._id;
         }
         catch(err){
-            console.log(err);
             throw new DatabaseError("The Document Workflow database could not be reached at this time, please try again later.");
         }
     }

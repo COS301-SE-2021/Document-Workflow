@@ -21,8 +21,6 @@ export default class WorkflowRepository{
     }
 
     async updateWorkflow(workflow: IWorkflow): Promise<Boolean>{
-        console.log("Updating a workflow to have new values: ");
-        console.log(workflow);
         try {
             const response: IWorkflow = await Workflow.updateOne({_id: workflow._id}, workflow).lean();
             return !!response;
@@ -57,7 +55,6 @@ export default class WorkflowRepository{
 
     //legacy
     async addDocumentId(workflowId, documentId) {
-        console.log("Adding documentID: ", documentId, " to workflow of id: ", workflowId);
         try {
             await Workflow.updateOne({_id: workflowId}, {$set: {documentId: documentId}}, {upsert: true});
         }
@@ -68,7 +65,6 @@ export default class WorkflowRepository{
 
     //legacy
     async addWorkflowHistoryId(workflowId, workflowHistoryId){
-        logger.info("Saving the historyId: " + workflowHistoryId + " to workflow " + workflowId);
         try {
             await Workflow.updateOne({_id: workflowId}, {$set: {historyId: workflowHistoryId}}, {upsert: true});
         }

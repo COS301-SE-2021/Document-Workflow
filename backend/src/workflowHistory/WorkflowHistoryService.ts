@@ -21,7 +21,7 @@ export default class WorkflowHistoryService {
      * @return historyData A json object containing the id of the workflowHistory and hash generated for the first entry.
      */
     async createWorkflowHistory(ownerEmail, workflowId):Promise<{ id: ObjectId; hash: string }>{
-        logger.info("Creating a new workflow history");
+
         const date = Date.now();
         const entry = new Entry();
         //The hash for the creation entry is unique since it does not have a previous entry to base its
@@ -48,11 +48,9 @@ export default class WorkflowHistoryService {
     }
 
     async updateWorkflowHistory(historyId, user, eventType, currentPhase): Promise<string>{
-        logger.info("Updating a workflow history, history id is: " + historyId);
+
         const workflowHistory = await this.workflowHistoryRepository.getWorkflowHistory(historyId);
-        // @ts-ignore
         const previousEntry = JSON.parse( workflowHistory.entries[workflowHistory.entries.length -1] );
-        logger.info(previousEntry);
         const entry = new Entry();
         entry.hash = await bcrypt.hash(previousEntry.userEmail + previousEntry.data + previousEntry.type + previousEntry.currentPhase, parseInt(process.env.SALT_ROUNDS)).then(function(hash){
             return hash;
