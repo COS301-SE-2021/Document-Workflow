@@ -17,13 +17,13 @@ export default async function sanitizeRequest(req, res, next): Promise<void>{
 }
 
 const local_sanitize = async (input: string) => {
-    input.replace("\'", "");
-    input.replace('\"', "");
-    input.replace("\\", "");
-    input.replace("\/", "");
-    input.replace("$", "\$");
-    input.replace("[", "\[");
-    input.replace("]", "\]");
-    input.replace(".", "\.");
-    input.replace(">", "\>");
+    input = input.replace("\'", "");
+    input = input.replace('\"', "");
+    input = input.replace("\\", "");
+    input = input.replace("\/", "");
+    input = input.replace("$", "\$");
+    input = input.replace("[", "\[");
+    input = input.replace("]", "\]");
+    input = input.replace(".", "\.");
+    input = input.replace(">", "\>");
 }
