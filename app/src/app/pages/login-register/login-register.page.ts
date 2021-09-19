@@ -202,14 +202,12 @@ export class LoginRegisterPage implements OnInit {
             userdata.confirmPassword,
             this.file,
             (response) => {
-              if (response.status === 'success') {
-                this.userAPIService.displayPopOver(
-                  'Successfully created new user account',
-                  'check your email for account verification'
-                );
+              this.userAPIService.displayPopOver(
+                'Successfully created new user account',
+                'check your email for account verification'
+              );
 
-                this.router.navigate(['login']);
-              }
+              this.router.navigate(['login']);
             }
           );
         }

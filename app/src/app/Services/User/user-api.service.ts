@@ -61,7 +61,7 @@ export class UserAPIService {
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   public register(user: User, confirmPassword: string, file: File, callback) {
-    //this.displayLoading();
+    this.displayLoading();
     const formData = new FormData();
     formData.append('name', user.Fname);
     formData.append('surname', user.Lname);
@@ -72,7 +72,8 @@ export class UserAPIService {
     formData.append('signature', file);
     this.http.post(config.url + '/users', formData).subscribe(
       (data) => {
-        //this.dismissLoading();
+        this.dismissLoading();
+        console.log(data);
         if (data) {
           callback(data);
         } else
@@ -80,7 +81,7 @@ export class UserAPIService {
       },
       (error) => {
         console.log(error);
-        //this.dismissLoading();
+        this.dismissLoading();
         this.displayPopOver('Error', error.error);
       }
     );
