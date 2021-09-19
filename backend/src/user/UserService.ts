@@ -10,14 +10,13 @@ import { logger } from "../LoggingConfig";
 import { Types } from "mongoose";
 import { IUser, privilegeLevel } from "./IUser";
 import { Blacklist } from "../security/Blacklist";
-import WorkflowService from "../workflow/WorkflowService";
 
 type ObjectId = Types.ObjectId;
 
 @injectable()
 export default class UserService {
 
-    constructor(private userRepository: UserRepository, private workflowService: WorkflowService) {
+    constructor(private userRepository: UserRepository) {
 
     }
 
@@ -232,9 +231,9 @@ export default class UserService {
 
         try{
             //delete workflows owned by this user:
-            for (const workflowid of toDelete.ownedWorkflows) {
+            /*for (const workflowid of toDelete.ownedWorkflows) {
                 await this.workflowService.deleteWorkFlow(workflowid, toDelete.email);
-            }
+            }*/
             return await this.userRepository.deleteUser(id);
 
         }
