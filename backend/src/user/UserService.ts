@@ -587,6 +587,7 @@ export default class UserService {
     }
 
     async sendResetRequestEmail(emailAddress, antiCSRFCode) {
+
         let transporter = nodemailer.createTransport({
             service: process.env.NODEMAILER_SERVICE,
             host: process.env.NODEMAILER_SMTP,

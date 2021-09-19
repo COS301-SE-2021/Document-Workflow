@@ -26,9 +26,9 @@
 
 **Team Members**                                                                |                                                                                  **Profiles**                                                                                  |                                     **Profile Description**                                     |
 | :-------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: |
-|<img src="Images/delarey.jpeg" width="100" height="150"><br/> Delaray Botha <br/> u14011639 |       [GitHub](https://github.com/delareytuks) <br/> [Profile Page](https://delareytuks.github.io) <br/> [LinkedIn](https://www.linkedin.com/in/delarey-botha-82886820b/) <br/> | Full-time Backend debugger, part-time regretter of early design decisions |
-|<img src="Images/Brent.jpg" width="150" height="150" style="border-radius:30%;"> <br/> Brenton Stroberg <br/> u17015741 | [GitHub](https://github.com/u17015741) <br/> [Profile Page](https://u17015741.github.io) <br/> [LinkedIn](https://www.linkedin.com/in/brenton-stroberg-a15219172/) <br/> | Web developer, who enjoys the challenges of developing new software. Has more dogs than he has bugs in his code.<br>|
-|<img src= "Images/Tim.jpg" width="150" height="150" style="border-radius:30%;"> <br/>Timothy Hill <br/> u17112592 <br/> | [GitHub](https://github.com/u17112592) <br/> [Profile Page](https://u17112592.github.io/) <br/> [LinkedIn](https://www.linkedin.com/in/timothy-hill-759a0b20b/) <br/> | Backend developer. Interested in theoretical computer sciences and math. Loves cats and endurance sports |
+|<img src="Images/delarey.jpeg" width="100" height="150"><br/> Delaray Botha <br/> u14011639 |       [GitHub](https://github.com/delareytuks) <br/> [LinkedIn](https://www.linkedin.com/in/delarey-botha-82886820b/) <br/> | Full-time Backend debugger, part-time regretter of early design decisions |
+|<img src="Images/Brent.jpg" width="150" height="150" style="border-radius:30%;"> <br/> Brenton Stroberg <br/> u17015741 | [GitHub](https://github.com/u17015741)  <br/> [LinkedIn](https://www.linkedin.com/in/brenton-stroberg-a15219172/) <br/> | Web developer, who enjoys the challenges of developing new software. Has more dogs than he has bugs in his code.<br>|
+|<img src= "Images/Tim.jpg" width="150" height="150" style="border-radius:30%;"> <br/>Timothy Hill <br/> u17112592 <br/> | [GitHub](https://github.com/u17112592)  <br/> [LinkedIn](https://www.linkedin.com/in/timothy-hill-759a0b20b/) <br/> | Backend developer. Interested in theoretical computer sciences and math. Loves cats and endurance sports |
 
 
 # GitHub-Management
@@ -47,17 +47,24 @@
 # Documentation
 ## Software Requirements Specification
 ### Software Requirement Specifications:
-[v1 and v2](https://www.overleaf.com/read/wdkdstnqdrbq)
+[v1+v2](https://www.overleaf.com/read/wdkdstnqdrbq)
 [v3](https://www.overleaf.com/read/ssnwjnpqqxjm)
+[v4](https://www.overleaf.com/read/bbvvhhvjghhv)
 ### Architectural Requirements Document:
-[v1 and v2](https://www.overleaf.com/read/ysxrgzkpvwwy)
+[v1+v2](https://www.overleaf.com/read/ysxrgzkpvwwy)
 [v3](https://www.overleaf.com/read/vkrwvnpydfhb)
+[v4](https://www.overleaf.com/read/fjsmpgwpkhpt)
 ### Installation Guide:
 [v1](https://www.overleaf.com/read/xqggmbwpgxjq)
+[v2](https://www.overleaf.com/read/qwtzvghhtpmk)
 ### User Manual verion:
 [v1](https://www.overleaf.com/read/zmcjkphgdhrv)
+[v2](https://www.overleaf.com/read/kqwyztjppxxf)
 ### Coding Standards version:
 [v1](https://www.overleaf.com/read/pqpbcypgydjh)
+[v2](https://www.overleaf.com/read/vxgzmprtqvdn)
+### Testing Policy version:
+[v1](https://www.overleaf.com/read/nqvdbjdctywj)
 <!--- ### Previous Versions --->
 
 ## Technology Frameworks
