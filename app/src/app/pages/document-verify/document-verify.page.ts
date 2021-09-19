@@ -153,13 +153,11 @@ export class DocumentVerifyPage implements OnInit {
       return;
     }
     await this.workflowService.verifyDocument(hash, this.workflowId, async (response) =>{
-      this.userApiService.displayLoading();
       if(response.status === 'success'){
 
         let tmp:history =JSON.parse(response.data.entry);
         tmp.date = new Date(tmp.date);
         tmp.type = this.textConverter(tmp.type);
-        this.userApiService.dismissLoading();
         await this.workflowService.displayPopOver('Success', 'This document corresponds to a workflow with details: '
           + '\n Date: ' + tmp.date + ' Phase: ' + tmp.currentPhase + '\n'+
           'Hash: ' + tmp.hash + ' \n ' + tmp.userEmail + ' ' + tmp.type);
