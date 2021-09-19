@@ -518,7 +518,7 @@ export class UserAPIService {
     console.log(userData);
     const formData = new FormData();
     formData.append('name', userData.firstName);
-    formData.append('surname', userData.LastName);
+    formData.append('surname', userData.lastName);
     formData.append('initials', userData.initials);
     const token = Cookies.get('token');
     const httpHeaders: HttpHeaders = new HttpHeaders({
