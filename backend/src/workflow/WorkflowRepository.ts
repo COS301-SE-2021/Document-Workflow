@@ -49,7 +49,7 @@ export default class WorkflowRepository{
             else return null;
         }
         catch(err){
-            throw new DatabaseError("The Document Workflow database could not be reached at this time, please try again later.");
+            throw new DatabaseError("Could not retrieve workflow, message: " + err.message);
         }
     }
 
