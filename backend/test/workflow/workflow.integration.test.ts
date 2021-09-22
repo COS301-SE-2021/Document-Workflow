@@ -16,6 +16,8 @@ import WorkflowHistoryRepository from "../../src/workflowHistory/WorkflowHistory
 import { testUsers, createTestUser, deleteTestUser, verifyTestUser, loginTestUser } from "../testData/test-users";
 import { IUser } from "../../src/user/IUser";
 import { testWorkflows } from "../testData/test-workflows";
+import { IWorkflow } from "../../src/workflow/IWorkflow";
+import { IPhase } from "../../src/phase/IPhase";
 
 
 describe("Workflow sub-system: integration tests", () => {
@@ -26,9 +28,11 @@ describe("Workflow sub-system: integration tests", () => {
     let encrypt;
 
     const user1 = testUsers.user1;
+    const user2 = testUsers.user2;
     let realUser1: IUser;
+    let realUser2: IUser;
     const workflow1 = testWorkflows.workflow1;
-    let realWorkflow1;
+    let realWorkflow1: IWorkflow;
 
     beforeAll(async () => {
         await Database.get();
@@ -63,23 +67,83 @@ describe("Workflow sub-system: integration tests", () => {
         realUser1 = user;
     });
 
+    it("Should delete, create, verify, login user2", async () => {
+        const res = await userService.getUserByEmail(user2.email);
+        if(res){const del = await deleteTestUser(res, userService);}
+        const user = await createTestUser(user2, userService);
+        expect(user.email).toBe(user2.email);
+        const verify = await verifyTestUser(user, userService);
+        const token = await loginTestUser(user2, userService);
+        if(token) user2.authToken = token;
+        realUser2 = user;
+    });
+
     it("Should create a new workflow, if it doesn't exist", async () => {
-        const wf = await workflowService.createWorkflow()
+        //workflow: IWorkflow, file, phases: IPhase[], template: any, user
+        const newWorkflow: IWorkflow = {
+            description: workflow1.description,
+            name: workflow1.name,
+            ownerEmail: realUser1.email,
+            ownerId: realUser1._id
+        }
+
+        const phases: IPhase[] = workflow1.phases;
+
+        /*const template: IWorkflowTemplate = {
+            documentName: "",
+            phases: [],
+            templateDescription: "",
+            templateName: "",
+            templateOwnerEmail: "",
+            templateOwnerId: undefined,
+            workflowDescription: "",
+            workflowName: ""
+        }*/
+
+        const userAuth = {
+            email: realUser1.email,
+            _id: realUser1._id
+        }
+        const wf = await workflowService.createWorkFlow(
+            newWorkflow,
+            workflow1.document,
+            phases,
+            null,
+            userAuth);
+        if(wf) {
+            const id = wf.data.id;
+            //check that it exists using getWorkFlowById:
+            const response = await workflowService.getWorkFlowById(id);
+            const check: IWorkflow = response.data;
+            check._id = id;
+            realWorkflow1 = check;
+            expect(check._id).toBe(realWorkflow1._id);
+        }
+        else throw "Shit went down"
     });
 
-    it("Should add a phase to the created Workflow", async () => {
-
+    it("Should check if workflow has been added to user2's workflows", async () => {
+        const data = await userService.getUserById(realUser2._id);
+        expect(data.workflows).toContain(String(realWorkflow1._id));
     });
+
+    /*it("Should add a phase to the created Workflow", async () => {
+
+    });*/
 
     it("should delete the workflow", async () => {
-
+        const res = await workflowService.deleteWorkFlow(realWorkflow1._id, realUser1.email);
+        expect(res).toStrictEqual({status: "success", data:{}, message:""});
     });
 
-    it("Should delete test user 1", async () => {
+    it("Should delete test user 1 and test user 2", async () => {
         if(realUser1){
             const del = await deleteTestUser(realUser1, userService);
             expect(del.email).toBe(user1.email);
         }
-
+        if(realUser2){
+            const del = await deleteTestUser(realUser2, userService);
+            expect(del.email).toBe(user2.email);
+        }
     });
 })
