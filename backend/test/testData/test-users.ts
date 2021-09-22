@@ -1,4 +1,5 @@
 import { IUser } from "../../src/user/IUser";
+import UserService from "../../src/user/UserService";
 
 export const createTestUser = async (user, userService): Promise<IUser> => {
     const res: IUser = await userService.registerUser({
@@ -18,10 +19,14 @@ export const createTestUser = async (user, userService): Promise<IUser> => {
     return null;
 }
 
-export const deleteTestUser = async (user: IUser, userService): Promise<IUser> => {
-    const res: IUser = await userService.deleteUser({
-        params: {id: user._id}
-    });
+export const deleteTestUser = async (user: IUser, userService: UserService): Promise<IUser> => {
+    const res: IUser = await userService.deleteUser(
+        user._id,
+        {
+            email: user.email,
+            _id: user._id
+        }
+    );
     if(res){
         return res;
     }
@@ -62,7 +67,39 @@ export const testUsers = {
         signature: {
             data: "textrepresentingabufferofthesignature"
         },
-        authToken: "",
-        validationCode: ""
+        authToken: ""
+    },
+    user2: {
+        name: "James",
+        surname: "McAvoy",
+        initials: "JM",
+        email: "jamesmcavoy@email.com",
+        password: "paSsW*or^d12354",
+        signature: {
+            data: "textrepresentingabufferofthesignatureAnotherone"
+        },
+        authToken: ""
+    },
+    user3: {
+        name: "Jomes",
+        surname: "MTuvoy",
+        initials: "JM",
+        email: "jamevoy@email.com",
+        password: "paSsW*or^d12354",
+        signature: {
+            data: "textrepresentingabufferofthesignatureAnotherone"
+        },
+        authToken: ""
+    },
+    user4: {
+        name: "Kat",
+        surname: "Stevens",
+        initials: "KS",
+        email: "katthekat@email.com",
+        password: "paSsW*or^d1254",
+        signature: {
+            data: "textrepresentingabufferofthesignatureAnotherone"
+        },
+        authToken: ""
     }
 }
