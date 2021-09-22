@@ -41,7 +41,7 @@ export default class WorkflowService{
      * @param template
      * @param user
      */
-    async createWorkFlow(workflow: IWorkflow, file, phases: IPhase[], template: any, user){
+    async createWorkFlow(workflow: IWorkflow, file, phases: IPhase[], template: any, user): Promise<Object>{
         try {
             //Before any creation of objects takes place, checks must be done on the inputs to ensure that they are valid.
             const areValid = await this.arePhasesValid(phases);
@@ -173,9 +173,9 @@ export default class WorkflowService{
         try {
             const workflow = await this.workflowRepository.getWorkflow(workflowId);
 
-            if(workflow === null)
+            if(!workflow)
                 return {status: "failed", data: {}, message: "Workflow does not exist"};
-            if(workflow.ownerEmail !== userEmail)
+            if(workflow.ownerEmail && workflow.ownerEmail !== userEmail)
                 return {status:"failed", data: {}, message: "Insufficient rights to delete"};
 
             for(let i=0; i<workflow.phases.length; ++i){
@@ -188,8 +188,11 @@ export default class WorkflowService{
                 }
                 await this.phaseService.deletePhaseById(phase._id);
             }
+
+            //how do we know these functions succeeded?
             await this.removeOwnedWorkFlowId(workflow.ownerEmail, workflowId);
 
+            //this is not deleting from s3
             await this.documentService.deleteDocument(workflowId, workflow.documentId);
 
             await this.workflowHistoryService.deleteWorkflowHistory(workflow.historyId);
