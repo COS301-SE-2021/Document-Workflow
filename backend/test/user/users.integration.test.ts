@@ -5,6 +5,9 @@ import Database from "../../src/Database";
 import Authenticator from "../../src/security/Authenticate";
 import request from "supertest";
 import app from "../../src";
+import { IUser } from "../../src/user/IUser";
+import { createTestUser, deleteTestUser, loginTestUser, testUsers, verifyTestUser } from "../testData/test-users";
+import { RequestError } from "../../src/error/Error";
 
 let userService;
 let userController;
@@ -22,14 +25,12 @@ describe("User sub-system integration tests:", () => {
     let testUserValidationToken;
     let testUserValidationCode;
 
-    const contactUserPassword = "An0tHeRgReAtpaSsW*or^d123";
-    const contactUserEmail = "jigglyjelly@test.test";
-    const contactUserName = "Jiggly";
-    const contactUserSurname = "Jelly";
-    const contactUserInitials = "JJ";
-    const contactUserSignature = {
-        data: "textrepresentingabufferofthesignature"
-    }
+    const user1 = testUsers.user3;
+    const user2 = testUsers.user4;
+    let realUser1: IUser;
+    let realUser2: IUser;
+    let user1Auth;
+    let user2Auth;
 
     beforeAll(async () => {
         await Database.get();
@@ -48,22 +49,13 @@ describe("User sub-system integration tests:", () => {
 
         it("Should create user1:", async () => {
 
-            //Create new user if it doesn't exist
-            //Check if user exists
-            //Delete User if it exists:
-
             const getResponse = await userService.getUserByEmail(testUserEmail);
 
-            if(getResponse){
-                const deleteRequest = {
-                    params: {
-                        id: getResponse._id
-                    }
-                } as unknown as Request;
-
-                const deletedUser = await userService.deleteUser(deleteRequest);
-                expect(deletedUser.email).toBe("testymctestface@testmail.test");
-            }
+            const deletedUser = await userService.deleteUser(getResponse._id, {
+                _id: getResponse._id,
+                email: getResponse.email
+            });
+            expect(deletedUser.email).toBe("testymctestface@testmail.test");
 
             //const currentDate = Date.now();
             const mockPostRequest = {
@@ -120,7 +112,20 @@ describe("User sub-system integration tests:", () => {
                 .set('Authorization', 'Bearer ' + testUserValidationToken)
                 .expect('Content-Type', /json/)
                 .expect(200);
-        })
+        });
+
+        it("Should update user profile", async () => {
+            request(app)
+                .post('/api/users/updateProfile')
+                .set('Authorization', 'Bearer ' + testUserValidationToken)
+                .send({
+                    name : "Popeye",
+                    surname : "Parker",
+                    initials : "PP"
+                })
+                .expect('Content-Type', /json/)
+                .expect(200);
+        });
 
         it("Should invalidate user1's access token", async () => {
             request(app)
@@ -142,13 +147,72 @@ describe("User sub-system integration tests:", () => {
 
     describe("User Contacts Lifecycle:", () => {
 
-        /*it("Should create a user2")
+        it("Should delete, create, verify, login user1", async () => {
+            const res = await userService.getUserByEmail(user1.email);
+            if(res){const del = await deleteTestUser(res, userService);}
+            const user = await createTestUser(user1, userService);
+            expect(user.email).toBe(user1.email);
+            const verify = await verifyTestUser(user, userService);
+            const token = await loginTestUser(user1, userService);
+            if(token) user1.authToken = token;
+            realUser1 = user;
+            user1Auth = {_id: realUser1._id, email: realUser1.email};
+        });
 
-        it("Should verify user2")
+        it("Should create,verify,login user2", async () => {
+            const res = await userService.getUserByEmail(user2.email);
+            if(res){const del = await deleteTestUser(res, userService);}
+            const user = await createTestUser(user2, userService);
+            expect(user.email).toBe(user2.email);
+            const verify = await verifyTestUser(user, userService);
+            const token = await loginTestUser(user2, userService);
+            if(token) user2.authToken = token;
+            realUser2 = user;
+            user2Auth = {_id: realUser2._id, email: realUser2.email};
+        });
 
-        it("Should login user1")
 
-        it("Should send a contact request to user2")*/
+
+
+        it("Should send a contact request from user1 to user2", async () => {
+            const res = await userService.sendContactRequest(user2.email, user1Auth);
+            expect(res).toStrictEqual(realUser2._id);
+        });
+
+        it("Should accept contact request from user1", async () => {
+            const res = await userService.acceptContactRequest(user1.email, user2Auth);
+            expect(res).toStrictEqual(realUser2._id);
+        });
+
+        it("Should delete user1 from user2's contacts", async () => {
+            const res = await userService.deleteContact(user1.email, user2Auth);
+            expect(res).toStrictEqual(realUser1._id);
+        });
+
+        it("Should add user1 to user2's blocked list", async () => {
+            const res = await userService.blockUser(user1.email, user2Auth);
+            expect(res).toStrictEqual(realUser1._id);
+        });
+
+        it("Should ignore a contact request from user1", async () => {
+            await expect(userService.sendContactRequest(user2.email, user1Auth)).rejects.toThrow(RequestError);
+        });
+
+        it("Should unblock user1 from user2", async () => {
+            const res = await userService.unblockUser(user1.email, user2Auth);
+            expect(res).toStrictEqual(realUser1._id);
+        });
+
+        it("Should delete user1 and user2", async () => {
+            if(realUser1){
+                const del = await deleteTestUser(realUser1, userService);
+                expect(del.email).toBe(user1.email);
+            }
+            if(realUser2){
+                const del = await deleteTestUser(realUser2, userService);
+                expect(del.email).toBe(user2.email);
+            }
+        });
 
 
     });
