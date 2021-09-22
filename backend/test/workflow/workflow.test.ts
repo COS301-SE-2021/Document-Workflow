@@ -11,6 +11,8 @@ import sinon from "sinon";
 import WorkflowTemplateService from "../../src/workflowTemplate/WorkflowTemplateService";
 // @ts-ignore
 import crypto from "crypto";
+import { Types } from "mongoose";
+type ObjectId = Types.ObjectId;
 import { PhaseError } from "../../src/error/Error";
 import WorkflowHistoryService from "../../src/workflowHistory/WorkflowHistoryService";
 import WorkflowTemplateRepository from "../../src/workflowTemplate/WorkflowTemplateRepository";
@@ -31,11 +33,11 @@ describe("unit tests for workflow", () => {
     let workflowTemplateService;
     let encrypt;
 
-    const randomObjectId = crypto.randomBytes(12);
+    const randomObjectId: ObjectId = new Types.ObjectId(crypto.randomBytes(12));
     const userEmail1 = "email1@user.com";
     const userEmail2 = "email2@user.com";
     const userEmail3 = "email3@user.com";
-    const randomDocument = crypto.randomBytes(20);
+    const randomDocument: ObjectId = new Types.ObjectId(crypto.randomBytes(20));
 
     beforeEach(() => {
         workflowRepository = new WorkflowRepository();
@@ -57,7 +59,7 @@ describe("unit tests for workflow", () => {
             workflowHistoryService);
 
         workflowController = new WorkflowController(workflowService, authenticationService);
-    })
+    });
 
     it("should fail to create a workflow with non-existent users", async () => {
         sinon.stub(userService, "getUserByEmail").returns(undefined);
@@ -86,21 +88,21 @@ describe("unit tests for workflow", () => {
                 }
             }
         }
-        await expect(workflowController.createWorkFlow(request)).rejects.toThrow(
-            PhaseError
-        );
-    })
+        expect(await workflowController.createWorkflowRoute(request)).
+        toStrictEqual(
+            {"data": {},
+                "message": "A phase contains a user that does not exist",
+                "status": "error"
+            })
+    });
 
     it("should fail to delete a workflow that doesn't exist", async() => {
         sinon.stub(workflowRepository, "getWorkflow").returns(undefined);
-        const response = await workflowController.deleteWorkFlow({
-            body: {
-                workflowId: randomObjectId
-            },
-            user: {
-                email: userEmail1
-            }
-        });
+        const response = await workflowService.deleteWorkFlow(randomObjectId, userEmail1);
         expect(response).toStrictEqual({status: "failed", data: {}, message: "Workflow does not exist"});
+    });
+
+    it("should fail to let a user delete another user's workflow", async() => {
+        sinon.stub(workflowRepository, "getWorkflow").returns(undefined);
     })
 })
