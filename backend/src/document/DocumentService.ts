@@ -44,7 +44,7 @@ export default class DocumentService {
             return await this.documentRepository.saveDocument(doc, fileData, file.name);
         }
         catch(err){
-            throw new ServerError("The Document Workflow database could not be reached at this time, please try again later.");
+            throw new ServerError("Could not save document, error message: " + err.message);
         }
     }
 
