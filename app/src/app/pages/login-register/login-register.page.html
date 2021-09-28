@@ -1,12 +1,14 @@
 <ion-header>
   <div style="background-color: #002060;">
-    <br/>
-    <ion-img *ngIf="!sizeMe" src="../../../assets/LogoWhiteBackground.png" style="width: 40%;justify-content: center; align-items: center;margin:auto"></ion-img>
-    <ion-img *ngIf="sizeMe" src="../../../assets/LogoWhiteBackground.png" style="width: 65%;justify-content: center; align-items: center;margin:auto"></ion-img>
+    <br />
+    <ion-img *ngIf="!sizeMe" src="../../../assets/LogoWhiteBackground.png"
+      style="width: 40%;justify-content: center; align-items: center;margin:auto"></ion-img>
+    <ion-img *ngIf="sizeMe" src="../../../assets/LogoWhiteBackground.png"
+      style="width: 65%;justify-content: center; align-items: center;margin:auto"></ion-img>
   </div>
 </ion-header>
 <ion-content>
-<br>
+  <br>
   <ion-card *ngIf="loginAndRegister" style="width: 90%; justify-content: center;margin:auto">
     <ion-card-header style="background-color: #002060;">
       <ion-grid>
@@ -31,6 +33,10 @@
           <ion-label position="floating">Password:</ion-label>
           <ion-input type="password" formControlName="loginPassword" id="loginPassword"></ion-input>
         </ion-item>
+        <ion-button padding expand="block" color="primary" fill="outline" [disabled]="!loginForm.valid" type="submit"
+          id="login">Login</ion-button>
+        <ion-button padding expand="block" color="primary" fill="outline" *ngIf="biometricAvaliable"
+          (click)="loginUsingBiometric()">Login using fingerprint</ion-button>
         <div style="text-align: center;">
           <span>
             Reset <a (click)="displayResetPassword()">
@@ -39,10 +45,6 @@
           <br>
           <span>Register a new Account <a (click)="changeOver()" id="changeover">here</a></span>
         </div>
-        <ion-button padding expand="block" color="primary" fill="outline" [disabled]="!loginForm.valid" type="submit"
-          id="login">Login</ion-button>
-        <ion-button padding expand="block" color="primary" fill="outline" *ngIf="biometricAvaliable"
-          (click)="loginUsingBiometric()">Login using fingerprint</ion-button>
       </form>
     </ion-card-content>
     <ion-card-content *ngIf="!loginRegisterScreen">

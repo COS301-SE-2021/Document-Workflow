@@ -59,9 +59,10 @@
     </div>
     </ion-card>
     <!-- second card -->
+    <ion-card style="width: 98%">
     <ion-reorder-group *ngIf="next" [disabled]="reOrder" (ionItemReorder)="fixOrder($event)" style="width:95%">
       <ion-reorder *ngFor="let phase of workflowForm.controls.phases['controls']; let i = index">
-        <ion-card style="width: 98%">
+        <div  style="border-radius: 25px; border:5px solid #002060; margin: 10px 10px 10px 10px">
           <ion-grid style="width: 100%;">
             <ion-row>
               <ion-col sizeXs='10'>
@@ -85,7 +86,7 @@
                     <ion-title>Add Users:</ion-title>
                     <ion-row *ngFor="let user of phase.controls['users'].controls; let j = index" style="border: 3
                     px solid #002060; margin-bottom:5px; border-radius: 15px;">
-                      <ion-col sizeXs='9'>
+                      <ion-col sizeXs='8'>
                         <ion-item>
                           <ion-label position="floating">User email</ion-label>
                           <ion-input type="email" [formControl]="user.controls.user"></ion-input>
@@ -97,12 +98,12 @@
                           </ion-select-option>
                         </ion-select>
                       </ion-col>
-                      <ion-col sizeXs='1'>
+                      <ion-col sizeXs='2' style="text-align: center; margin:auto;text-align: center;">
                         <ion-icon name="accessibility-outline" size="large"
-                          (click)="addFriend(i, j)">
+                          (click)="addFriend(i, j)" >
                         </ion-icon>
                       </ion-col>
-                      <ion-col sizeXs='2'>
+                      <ion-col sizeXs='2' style="text-align: center; margin:auto;text-align: center;">
                         <ion-icon name="close-circle-outline" size="large"
                           (click)="removeUser(phase.controls['users'],i, j)">
                         </ion-icon>
@@ -141,8 +142,9 @@
               </ion-col>
             </ion-row>
           </ion-grid>
-        </ion-card>
+        </div>
       </ion-reorder>
+
       <ion-row>
         <ion-col sizeXs='12'>
           <ion-card *ngIf='template'>
@@ -190,4 +192,5 @@
         </ion-col>
       </ion-row>
     </ion-reorder-group>
+  </ion-card>
   </form>
