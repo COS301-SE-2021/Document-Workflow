@@ -504,7 +504,7 @@ export default class WorkflowService{
         }
 
         workflowOriginal.phases = preservePhasesIds.concat(addPhaseIds);
-        const hash = await this.workflowHistoryService.updateWorkflowHistory(workflowOriginal.historyId, {user: requestingUser}, ENTRY_TYPE.EDIT, workflowOriginal.currentPhase);
+        const hash = await this.workflowHistoryService.updateWorkflowHistory(workflowOriginal.historyId, {email: requestingUser}, ENTRY_TYPE.EDIT, workflowOriginal.currentPhase);
         workflowOriginal.currentHash = hash;
         await this.workflowRepository.updateWorkflow(workflowOriginal);
 
