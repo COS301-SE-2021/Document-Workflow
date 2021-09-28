@@ -119,7 +119,8 @@
                       <p>{{phase.description}}</p>
                     </ion-col>
                     <ion-col sizeXs='3'>
-                      <ion-icon name="chevron-down-circle-outline" (click)='showPhase(phase)'></ion-icon>
+                      <ion-icon name="chevron-down-circle-outline" (click)='showPhase(phase)' *ngIf='!phase.showPhase'></ion-icon>
+                      <ion-icon name="chevron-up-circle-outline" (click)='showPhase(phase)' *ngIf='phase.showPhase'></ion-icon>
                     </ion-col>
                   </ion-row>
                 </ion-col>
