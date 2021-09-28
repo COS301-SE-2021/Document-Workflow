@@ -72,6 +72,7 @@ export class DocumentAddPage implements OnInit {
   showPhase: boolean[] = [];
   filter: string;
   contacts: string[] = [];
+  actionAreaClassifications = [];
 
   controller: boolean;
   @ViewChild('viewer') viewerRef: ElementRef;
@@ -200,7 +201,7 @@ export class DocumentAddPage implements OnInit {
     } else {
       this.userApiService.displayPopOver(
         'Error',
-        'Please fill in all boxes before contin'
+        'Please fill in all fields before continuing'
       );
     }
   }
@@ -384,6 +385,7 @@ export class DocumentAddPage implements OnInit {
                 extractedText,
                 docType
               );
+              this.actionAreaClassifications = actionAreas;
               await this.highlightActionAreas(
                 instance,
                 PDFNet,
@@ -393,8 +395,7 @@ export class DocumentAddPage implements OnInit {
               doc.unlock();
             }
           );
-        }
-      );
+        });
     });
   }
 
@@ -421,6 +422,7 @@ export class DocumentAddPage implements OnInit {
         file: this.blob,
         ownerEmail: this.ownerEmail,
         phaseNumber: i,
+        actionAreas: this.actionAreaClassifications
       },
     });
 
