@@ -418,6 +418,7 @@ export class WorkFlowService {
   }
 
   public async revertPhase(workflowId, callback) {
+    await this.displayLoading();
     const formData = new FormData();
     formData.append('workflowId', workflowId);
     //const token = localStorage.getItem('token');
@@ -432,12 +433,14 @@ export class WorkFlowService {
       })
       .subscribe(
         (data) => {
+          this.dismissLoading();
           if (data) {
             callback(data);
           } else
             callback({ status: 'error', message: 'Cannot connect to Server' });
         },
         (error) => {
+          this.dismissLoading();
           this.displayPopOver('Error', 'Unexpected error occurred');
         }
       );

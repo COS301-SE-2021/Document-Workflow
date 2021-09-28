@@ -185,6 +185,8 @@ export class WorkflowPage implements OnInit {
             console.log(response2);
             if(response2.status === "success") {
               await this.userApiService.displayPopOver("Success", "The workflow has been successfully reverted by a phase");
+              this.documents = [];
+              await this.retrieveWorkflows();
             }
           });
         }
