@@ -120,8 +120,4 @@ describe("user unit tests", () => {
         AuthenticationError
     );
   });
-
-  it("Should replace mongo special characters with escaped versions", async () => {
-
-  })
 });
