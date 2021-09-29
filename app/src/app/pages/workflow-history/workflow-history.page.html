@@ -6,7 +6,7 @@
     <ion-grid style="max-height: 194px;">
       <ion-row>
         <ion-col style="top:50%;" sizeXs='9' sizeMd='4' sizeLg='3' sizeXl='2'>
-          <ion-img src="../../../assets/LogoWhiteBackground.png" style="max-height: 100px; max-width: 320px; top:50%;">
+          <ion-img src="../../../assets/LogoWhiteBackground.png" style="max-height: 100px; max-width: 320px; top:50%;" [routerLink]="['/home']">
           </ion-img>
         </ion-col>
         <ion-col style="top:50%;" *ngIf='!sizeMe'>
@@ -28,7 +28,7 @@
         Date: {{history.date}}
       </ion-item>
       <ion-item lines='none'>
-        The User {{history.userEmail}} has {{history.type}}
+        The user {{history.userEmail}} has {{history.type}}
       </ion-item>
       <ion-item lines='none'>
         <ion-label class="ion-text-wrap">

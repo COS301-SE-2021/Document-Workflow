@@ -458,14 +458,15 @@ export default class WorkflowService{
      * @param requestingUser
      * @param workflowId
      */
-    async editWorkflow(workflowDescrip, workflowName, convertedPhases, requestingUser, workflowId) {
+    async editWorkflow(workflowDescrip, workflowName, convertedPhases, requestingUser: String, workflowId) {
 
         //1) Retrieve the workflow that we are going to be editing based on the input workflowId
         const workflowOriginal = await this.workflowRepository.getWorkflow(workflowId);
 
         //2) Check that the requesting user has the correct permissions to edit this workflow
-        if(! workflowOriginal.ownerEmail === requestingUser)
+        if(workflowOriginal.ownerEmail !== requestingUser) {
             return {status: "error", data: {}, message: "Only the workflow owner can edit the workflow"};
+        }
 
         //3) Only phases up to and including the current phase can be edited. We extract these ids from the workflow.phases
         const preservePhasesIds = workflowOriginal.phases.slice(0, workflowOriginal.currentPhase +1); //+1 since slice does not include the end index
@@ -503,7 +504,7 @@ export default class WorkflowService{
         }
 
         workflowOriginal.phases = preservePhasesIds.concat(addPhaseIds);
-        const hash = await this.workflowHistoryService.updateWorkflowHistory(workflowOriginal.historyId, {user: requestingUser}, ENTRY_TYPE.EDIT, workflowOriginal.currentPhase);
+        const hash = await this.workflowHistoryService.updateWorkflowHistory(workflowOriginal.historyId, {email: requestingUser}, ENTRY_TYPE.EDIT, workflowOriginal.currentPhase);
         workflowOriginal.currentHash = hash;
         await this.workflowRepository.updateWorkflow(workflowOriginal);
 

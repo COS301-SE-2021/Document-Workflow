@@ -103,6 +103,9 @@ export class WorkflowHistoryPage implements OnInit {
       case 'Accept':
         tmp = 'accepted the phase';
         break;
+      case 'Edit':
+        tmp = 'edited the structure of the workflow';
+        break;
       case 'Revert':
         tmp = 'reverted the changes made';
         break;
