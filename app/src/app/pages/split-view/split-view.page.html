@@ -9,84 +9,83 @@
         </ion-row>
       </ion-grid>
     </ion-header>
-    <ion-content>
-      <ion-grid>
+    <ion-content style="width: 100%;">
+
         <ion-menu-toggle autoHide="false">
           <ion-item routerLink="/home/" routerDirection="root" routerLinkActive="active-link">
             <ion-label>
+              <ion-grid style="width: 100%;">
               <ion-row>
                 <ion-col sizeXs="3">
                   <ion-icon name="home-outline"></ion-icon>
                 </ion-col>
                 <ion-col>Home</ion-col>
               </ion-row>
+              </ion-grid>
             </ion-label>
           </ion-item>
         </ion-menu-toggle>
         <ion-menu-toggle autoHide="false">
           <ion-item routerLink="/home/addWorkflow" routerDirection="root" routerLinkActive="active-link">
             <ion-label>
+              <ion-grid style="width: 100%;">
               <ion-row>
                 <ion-col sizeXs="3">
                   <ion-icon name="create-outline"></ion-icon>
                 </ion-col>
                 <ion-col> Add Workflow</ion-col>
               </ion-row>
+              </ion-grid>
             </ion-label>
           </ion-item>
         </ion-menu-toggle>
-        <ion-menu-toggle autoHide="false">
+        <ion-menu-toggle autoHide="false" >
           <ion-item routerLink="/home/workflowTemplate" routerDirection="root" routerLinkActive="active-link">
             <ion-label>
+              <ion-grid>
               <ion-row>
                 <ion-col sizeXs="3">
                   <ion-icon name="documents-outline"></ion-icon>
                 </ion-col>
                 <ion-col>Templates</ion-col>
               </ion-row>
+            </ion-grid>
             </ion-label>
           </ion-item>
         </ion-menu-toggle>
         <ion-menu-toggle autoHide="false">
           <ion-item routerLink="/home/userProfile" routerDirection="root" routerLinkActive="active-link">
             <ion-label>
+              <ion-grid>
               <ion-row>
                 <ion-col sizeXs="3">
                   <ion-icon name="person-outline"></ion-icon>
                 </ion-col>
                 <ion-col>Profile</ion-col>
               </ion-row>
+            </ion-grid>
             </ion-label>
           </ion-item>
         </ion-menu-toggle>
-        <!-- <ion-menu-toggle autoHide="false">
-          <ion-item routerLink="/home/contacts" routerDirection="root" routerLinkActive="active-link">
-
-            <ion-label>
-              <ion-row>
-                <ion-col sizeXs="3">
-                  <ion-icon name="people-outline"></ion-icon>
-                </ion-col>
-                <ion-col>Contacts</ion-col>
-              </ion-row>
-            </ion-label>
-          </ion-item>
-        </ion-menu-toggle> -->
         <ion-menu-toggle autoHide="false">
           <ion-item (click)="logout()" routerLink="/login" routerDirection="root" routerLinkActive="active-link">
             <ion-label>
+            <ion-grid>
               <ion-row>
                 <ion-col sizeXs="3">
                   <ion-icon name="log-out-outline"></ion-icon>
                 </ion-col>
                 <ion-col>Log out</ion-col>
               </ion-row>
+            </ion-grid>
             </ion-label>
           </ion-item>
         </ion-menu-toggle>
-      </ion-grid>
+
     </ion-content>
   </ion-menu>
   <ion-router-outlet id="main">
   </ion-router-outlet>
 </ion-split-pane>
+
+
