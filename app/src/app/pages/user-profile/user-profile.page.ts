@@ -35,6 +35,8 @@ export class UserProfilePage implements OnInit {
   ready2: boolean;
   ready3: boolean;
 
+  screenNum: number =1;
+
   contacts: contact[] = [];
   pendingContacts: contact[] = [];
   blockedContacts: contact[] = [];
@@ -292,8 +294,19 @@ export class UserProfilePage implements OnInit {
     );
   }
 
-
   sendFriendRequest() {
     this.sendContactRequest(this.addContactForm.value);
+  }
+
+  changeToProfile(){
+    this.screenNum = 1;
+  }
+
+  changeToFriends(){
+    this.screenNum = 2;
+  }
+
+  changeToRequest(){
+    this.screenNum = 3;
   }
 }
