@@ -115,12 +115,18 @@
                 <ion-col sizeXs='12'>
                   <ion-row>
                     <ion-col sizeXs='9'>
-                      <h1>Phase {{i + 1}}</h1>
+                      <h1 *ngIf="i !== document.currentPhase">Phase {{i + 1}} <ion-icon
+                          *ngIf="i < document.currentPhase" name="checkmark-circle-outline" style="color: #4C9A2A">
+                        </ion-icon>
+                      </h1>
+                      <h1 style="color:#4C9A2A" *ngIf="i === document.currentPhase">Phase {{i + 1}}</h1>
                       <p>{{phase.description}}</p>
                     </ion-col>
                     <ion-col sizeXs='3'>
-                      <ion-icon name="chevron-down-circle-outline" (click)='showPhase(phase)' *ngIf='!phase.showPhase'></ion-icon>
-                      <ion-icon name="chevron-up-circle-outline" (click)='showPhase(phase)' *ngIf='phase.showPhase'></ion-icon>
+                      <ion-icon name="chevron-down-circle-outline" (click)='showPhase(phase)' *ngIf='!phase.showPhase'>
+                      </ion-icon>
+                      <ion-icon name="chevron-up-circle-outline" (click)='showPhase(phase)' *ngIf='phase.showPhase'>
+                      </ion-icon>
                     </ion-col>
                   </ion-row>
                 </ion-col>
@@ -152,7 +158,7 @@
                 </ion-col>
               </ion-row>
             </ion-grid>
-            <ion-progress-bar  title="Progress Bar" [value]="document.currentPercent+0.01" buffer="0"></ion-progress-bar>
+            <ion-progress-bar title="Progress Bar" [value]="document.currentPercent+0.01" buffer="0"></ion-progress-bar>
           </ion-card-content>
         </ion-card>
       </ion-reorder>
