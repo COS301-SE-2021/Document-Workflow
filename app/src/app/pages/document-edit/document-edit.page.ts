@@ -342,6 +342,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   }
 
   async fill(instance, PDFNet, doc, keyword, value){
+    let i=0;
     const txtSearch = await PDFNet.TextSearch.create();
     let mode =
       PDFNet.TextSearch.Mode.e_whole_word +
@@ -353,6 +354,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     while (true) {
       let result = await txtSearch.run();
       if (result.code === PDFNet.TextSearch.ResultCode.e_found) {
+        console.log(++i);
         let hlts = result.highlights;
         await hlts.begin(doc);
 
@@ -374,12 +376,17 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
 
         const freeText = new instance.Core.Annotations.FreeTextAnnotation();
         freeText.PageNumber = result.page_num;
+        console.log("Page: ", result.page_num);
         freeText.StrokeColor = new instance.Core.Annotations.Color(
           255,
           255,
           0
         );
-        freeText.Quads = [textQuad];
+        freeText.X = hltQuad.p1x;
+        freeText.Y = ph - hltQuad.p1y;
+        freeText.Width = 150;
+        freeText.Height = 50;
+        //freeText.Quads = [textQuad];
         freeText.setContents('My Text');
         freeText.FillColor = new instance.Core.Annotations.Color(0, 255, 255);
         freeText.FontSize = '16pt';
