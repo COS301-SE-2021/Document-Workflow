@@ -40,7 +40,7 @@
             <input FormControlName="fileUploader" type="file" #fileInput (change)="uploadFile($event)" hidden="false"
               accept="application/pdf" required>
           </ion-button>
-          <ion-button (click)="selectImageSource()" id="uploadFile" expand="block" color="primary" fill="outline">Add
+          <ion-button (click)="selectImageSource()" id="uploadFile" expand="block" color="primary" style="width:100%;">Add
             Your document</ion-button>
         </ion-item>
         <style>
@@ -173,20 +173,20 @@
           </ion-card>
         </ion-col>
         <ion-col sizeXs='12' sizeSm='12'>
-          <ion-button style="width:100%" expand="block" color="primary" fill="outline" (click)="addPhase()">Add
+          <ion-button style="width:100%" expand="block" color="primary"  (click)="addPhase()">Add
             Phase
           </ion-button>
         </ion-col>
         <ion-col sizeXs='12' sizeSm='6'>
-          <ion-button style="width:100%" expand="block" color="primary" fill="outline" (click)="addTemplate()"
+          <ion-button style="width:100%" expand="block" color="primary"  (click)="addTemplate()"
             *ngIf='!template'>
             Save As template</ion-button>
-          <ion-button style="width:100%" expand="block" color="primary" fill="outline" (click)="addTemplate()"
+          <ion-button style="width:100%" expand="block" color="primary" (click)="addTemplate()"
             *ngIf='template'>
             Do not Save As template</ion-button>
         </ion-col>
         <ion-col sizeXs='12' sizeSm='6'>
-          <ion-button style="width:100%" expand="block" color="primary" fill="outline" [disabled]="!workflowForm.valid"
+          <ion-button style="width:100%" expand="block" color="primary" [disabled]="!workflowForm.valid"
             type="submit">
             Done</ion-button>
         </ion-col>

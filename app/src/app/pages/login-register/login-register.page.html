@@ -33,9 +33,9 @@
           <ion-label position="floating">Password:</ion-label>
           <ion-input type="password" formControlName="loginPassword" id="loginPassword"></ion-input>
         </ion-item>
-        <ion-button padding expand="block" color="primary" fill="outline" [disabled]="!loginForm.valid" type="submit"
+        <ion-button padding expand="block" color="primary"  [disabled]="!loginForm.valid" type="submit"
           id="login">Login</ion-button>
-        <ion-button padding expand="block" color="primary" fill="outline" *ngIf="biometricAvaliable"
+        <ion-button padding expand="block" color="primary" *ngIf="biometricAvaliable"
           (click)="loginUsingBiometric()">Login using fingerprint</ion-button>
         <div style="text-align: center;">
           <span>
@@ -81,7 +81,7 @@
           </ion-button>
           <ion-button (click)="selectImageSource()" id="addSignature">Add</ion-button>
         </ion-item>
-        <ion-button expand="block" color="primary" fill="outline" [disabled]="!registerForm.valid" type="submit"
+        <ion-button expand="block" color="primary"  [disabled]="!registerForm.valid" type="submit"
           id="register">Register</ion-button>
       </form>
     </ion-card-content>
