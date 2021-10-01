@@ -21,6 +21,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   srcFileBase64: any;
   pdfDoc: PDFDocument;
   showAnnotations = true;
+  showautofilled = false;
   annotationManager: any;
   annotationsString: string;
   documentViewer: any;
@@ -32,6 +33,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   hash: string;
   originalKeywords: string;
   actionAreas: [];
+  autoFilledAnnots = [];
   //This array is used to determine what annotations are and are not a part of action areas.
   //It is here in case the stakeholders of this project decide they want more action areas as part of the application
   annotationSubjects = ['Note' ]; //, 'Rectangle', 'Squiggly', 'Underline', 'Highlight', 'Strikeout'];
@@ -51,9 +53,18 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   async ngOnInit() {
     await this.route.params.subscribe((data) => {
       this.workflowId = data['workflowId'];
-      //this.docName = data['documentname'];
       this.userEmail = data['userEmail'];
     });
+    this.userApiService.checkIfAuthorized().subscribe(
+      (response) => {
+        console.log('Successfully authorized user');
+      },
+      async (error) => {
+        console.log(error);
+        await this.router.navigate(['/login']);
+        return;
+      }
+    );
   }
 
   toBase64 = file => new Promise((resolve, reject) => {
@@ -65,14 +76,11 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
 
   async ngAfterViewInit(): Promise<void>{
     await this.workflowService.retrieveDocument(this.workflowId, async (response) => {
-      console.log(response);
       if (response) {
-        console.log(response.data);
         this.documentMetadata = response.data.metadata;
         this.docName = this.documentMetadata.name;
         this.srcFileBase64 = response.data.filedata.Body.data;
         this.hash = response.data.hash;
-        console.log("Hash retrieved from server: ", this.hash);
         const arr = new Uint8Array(response.data.filedata.Body.data);
         const blob = new Blob([arr], {type: 'application/pdf'});
 
@@ -107,7 +115,6 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
             // read title entry if it is present
             itr = await info.find('Keywords');
             if (await itr.hasNext()) {
-              console.log('Keywords already present');
               const itrval = await itr.value();
               const oldstr = await itrval.getAsPDFText();
               this.originalKeywords = oldstr;
@@ -116,7 +123,6 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
               info.putString('Keywords', this.hash);
             }
           } else {
-            console.log('Info dict missing, adding it now');
             // Info dict is missing.
             info = await trailer.putDict('Info');
             info.putString('Producer', 'PDFTron PDFNet');
@@ -131,7 +137,15 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
           instance.UI.loadDocument(blob2, {filename: this.docName});
           instance.UI.disableElements(['toolbarGroup-Annotate']);
           instance.UI.setToolbarGroup('toolbarGroup-Insert', false);
-          instance.UI.setHeaderItems(header =>{
+          instance.UI.setHeaderItems(async header =>{
+
+            header.push({
+              type: 'actionButton',
+              // eslint-disable-next-line max-len
+              img: '<svg xmlns=\'http://www.w3.org/2000/svg\' class=\'ionicon\' viewBox=\'0 0 20 20\'><title>Eye</title><path d=\'M18.303,4.742l-1.454-1.455c-0.171-0.171-0.475-0.171-0.646,0l-3.061,3.064H2.019c-0.251,0-0.457,0.205-0.457,0.456v9.578c0,0.251,0.206,0.456,0.457,0.456h13.683c0.252,0,0.457-0.205,0.457-0.456V7.533l2.144-2.146C18.481,5.208,18.483,4.917,18.303,4.742 M15.258,15.929H2.476V7.263h9.754L9.695,9.792c-0.057,0.057-0.101,0.13-0.119,0.212L9.18,11.36h-3.98c-0.251,0-0.457,0.205-0.457,0.456c0,0.253,0.205,0.456,0.457,0.456h4.336c0.023,0,0.899,0.02,1.498-0.127c0.312-0.077,0.55-0.137,0.55-0.137c0.08-0.018,0.155-0.059,0.212-0.118l3.463-3.443V15.929z M11.241,11.156l-1.078,0.267l0.267-1.076l6.097-6.091l0.808,0.808L11.241,11.156z\' stroke=\'currentColor\'></path></svg>',
+              onClick: () =>  { this.toggleAutofilled(instance.Core.annotationManager) ;}
+            });
+
             header.push({
               type: 'actionButton',
               // eslint-disable-next-line max-len
@@ -139,15 +153,15 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
               onClick: () =>  { this.toggleAnnotations(instance.Core.annotationManager) ;
              }
             });
-
+            this.PDFNet = instance.Core.PDFNet;
+            this.doc = await this.PDFNet.PDFDoc.createFromBuffer(arr);
+            this.instance = instance;
           });
           instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
             this.annotationsString = response.data.annotations;
             await instance.Core.annotationManager.importAnnotations(response.data.annotations);
-            this.PDFNet = instance.Core.PDFNet;
-            this.doc = await this.PDFNet.PDFDoc.createFromBuffer(arr);
-            await this.fill(instance, instance.Core.PDFNet, this.doc, 'good', "REEE");
 
+            await this.fill(instance, instance.Core.PDFNet, this.doc, 'good', 'Test');
           });
 
           instance.UI.setHeaderItems(header =>{
@@ -185,6 +199,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
       txt.begin(page, rect); // Read the page.
       extractedText += await txt.getAsText();
     }
+    doc1.unlock();
     return extractedText;
   }
 
@@ -290,7 +305,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     });
    }
 
-   removeActionAreasFromAnnotations(){
+  removeActionAreasFromAnnotations(){
     console.log("Removing action areas from document before saving");
     const toDelete = [];
     this.annotationManager.getAnnotationsList().forEach(annot =>{
@@ -318,7 +333,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     return toDelete;
   }
 
-   removeAllAnnotations(){
+  removeAllAnnotations(){
     const toDelete = [];
      this.annotationManager.getAnnotationsList().forEach(annot =>{
        this.annotationSubjects.forEach(a =>{
@@ -336,13 +351,13 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
 
   async autofillKeywords(){
     //TODO: get keyword input and the value to fill with
+
     const keyword = "";
     const value = "";
     await this.fill(this.instance, this.PDFNet, this.doc, keyword, value);
   }
 
   async fill(instance, PDFNet, doc, keyword, value){
-    let i=0;
     const txtSearch = await PDFNet.TextSearch.create();
     let mode =
       PDFNet.TextSearch.Mode.e_whole_word +
@@ -354,7 +369,6 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     while (true) {
       let result = await txtSearch.run();
       if (result.code === PDFNet.TextSearch.ResultCode.e_found) {
-        console.log(++i);
         let hlts = result.highlights;
         await hlts.begin(doc);
 
@@ -363,34 +377,19 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
         const page = await doc.getPage(await hlts.getCurrentPageNumber());
         const ph = await page.getPageHeight();
 
-        const textQuad = new instance.Core.Math.Quad(
-          hltQuad.p1x,
-          ph - hltQuad.p1y,
-          hltQuad.p2x,
-          ph - hltQuad.p2y,
-          hltQuad.p3x,
-          ph - hltQuad.p3y,
-          hltQuad.p4x,
-          ph - hltQuad.p4y
-        );
-
         const freeText = new instance.Core.Annotations.FreeTextAnnotation();
         freeText.PageNumber = result.page_num;
-        console.log("Page: ", result.page_num);
-        freeText.StrokeColor = new instance.Core.Annotations.Color(
-          255,
-          255,
-          255
-        );
+        freeText.StrokeColor = new instance.Core.Annotations.Color(255, 255, 255, 0);
+
         freeText.X = hltQuad.p2x;
         freeText.Y = ph - hltQuad.p3y;
         freeText.Width = 100;
         freeText.Height = 30;
-        //freeText.Quads = [textQuad];
         freeText.setContents(value);
         freeText.FillColor = new instance.Core.Annotations.Color(255,255,255,0);
         freeText.FontSize = '14pt';
         freeText.TextColor = new instance.Core.Annotations.Color(0,0,0);
+        this.autoFilledAnnots.push(freeText);
 
         await instance.Core.annotationManager.addAnnotation(freeText);
         await instance.Core.annotationManager.drawAnnotations({
@@ -401,5 +400,9 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
         break;
       }
     }
+  }
+
+  async toggleAutofilled(annotationsManager){
+    this.annotationManager.deleteAnnotations(this.autoFilledAnnots);
   }
 }
