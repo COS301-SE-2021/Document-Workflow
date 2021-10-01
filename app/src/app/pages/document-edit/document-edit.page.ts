@@ -387,9 +387,10 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
         freeText.Width = 100;
         freeText.Height = 30;
         //freeText.Quads = [textQuad];
-        freeText.setContents('Value');
+        freeText.setContents(value);
         freeText.FillColor = new instance.Core.Annotations.Color(255,255,255,0);
         freeText.FontSize = '14pt';
+        freeText.TextColor = new instance.Core.Annotations.Color(0,0,0);
 
         await instance.Core.annotationManager.addAnnotation(freeText);
         await instance.Core.annotationManager.drawAnnotations({
