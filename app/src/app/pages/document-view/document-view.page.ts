@@ -86,6 +86,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
         }, this.viewerRef.nativeElement).then(async instance =>{
           this.instance = instance;
           await instance.Core.PDFNet.initialize(); //To use pdftron in the non-demo mode supply a licence key here
+          instance.UI.setCustomNoteFilter(annot => (annot instanceof instance.Core.Annotations.StickyAnnotation));
             /*Test to add metadata to document */
             const docorig = await instance.Core.PDFNet.PDFDoc.createFromBuffer(arr);
             const doc = await docorig.getSDFDoc();
@@ -166,7 +167,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
             instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
               //For now, to work around not having full api functions with the free version of PDFTron
               //We disable the action areas from showing through a check of the workflow status
-              //This is to ensure pringint of the document does not include action areas.
+              //This is to ensure printing of the document does not include action areas.
               console.log(this.workflowStatus);
               if(this.workflowStatus !== 'Completed'){ //TODO: swap with enum
                 instance.Core.annotationManager.importAnnotations(response.data.annotations);
@@ -177,16 +178,6 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
       }else {
 
         await this.userApiService.displayPopOver('Oops','An unexpected error occurred. Please try again later');
-        // const a = await this.modalCtrl.create({
-        //   component: ErrorOccurredComponent,
-        //   componentProps: {
-        //   },
-        //   cssClass: 'errorModalClass'
-        // });
-
-        // await (await a).present();
-        // (await a).onDidDismiss().then(async (data) => {
-        // });
       }
     });
   }

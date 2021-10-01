@@ -25,9 +25,13 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   annotationsString: string;
   documentViewer: any;
   PDFNet: any;
+  instance: any;
+  doc: any;
+  extractedLines;
   documentMetadata: any;
   hash: string;
   originalKeywords: string;
+  actionAreas: [];
   //This array is used to determine what annotations are and are not a part of action areas.
   //It is here in case the stakeholders of this project decide they want more action areas as part of the application
   annotationSubjects = ['Note' ]; //, 'Rectangle', 'Squiggly', 'Underline', 'Highlight', 'Strikeout'];
@@ -81,7 +85,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
           fullAPI: true
         }, this.viewerRef.nativeElement).then(async instance =>{
           await instance.Core.PDFNet.initialize(); //To use pdftron in the non-demo mode supply a licence key here
-
+          instance.UI.setCustomNoteFilter(annot => (annot instanceof instance.Core.Annotations.StickyAnnotation));
           this.annotationManager = instance.Core.annotationManager;
           this.PDFNet = instance.Core.PDFNet;
           this.documentViewer = instance.Core.documentViewer;
@@ -137,9 +141,13 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
             });
 
           });
-          instance.Core.documentViewer.addEventListener('documentLoaded', ()=>{
+          instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
             this.annotationsString = response.data.annotations;
-            instance.Core.annotationManager.importAnnotations(response.data.annotations);
+            await instance.Core.annotationManager.importAnnotations(response.data.annotations);
+            this.PDFNet = instance.Core.PDFNet;
+            this.doc = await this.PDFNet.PDFDoc.createFromBuffer(arr);
+            await this.fill(instance, instance.Core.PDFNet, this.doc, 'good', "REEE");
+
           });
 
           instance.UI.setHeaderItems(header =>{
@@ -160,6 +168,26 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     });
 
   }
+
+  async extractDocumentText(doc, PDFNet) {
+    let extractedText = '';
+    /*Testing if we can retrieve hash stored in a document*/
+    const doc1 = await doc.getSDFDoc();
+    doc1.initSecurityHandler();
+    doc1.lock();
+
+    /*    */
+    const txt = await PDFNet.TextExtractor.create();
+    const pageCount = await doc.getPageCount();
+    for (let i = 1; i <= pageCount; ++i) {
+      const page = await doc.getPage(i);
+      const rect = await page.getCropBox();
+      txt.begin(page, rect); // Read the page.
+      extractedText += await txt.getAsText();
+    }
+    return extractedText;
+  }
+
 
   download() {
     const blob = new Blob([this.srcFile], { type: 'application/pdf' });
@@ -306,4 +334,64 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     });
   }
 
+  async autofillKeywords(){
+    //TODO: get keyword input and the value to fill with
+    const keyword = "";
+    const value = "";
+    await this.fill(this.instance, this.PDFNet, this.doc, keyword, value);
+  }
+
+  async fill(instance, PDFNet, doc, keyword, value){
+    const txtSearch = await PDFNet.TextSearch.create();
+    let mode =
+      PDFNet.TextSearch.Mode.e_whole_word +
+      PDFNet.TextSearch.Mode.e_page_stop +
+      PDFNet.TextSearch.Mode.e_highlight;
+
+    txtSearch.begin(doc, keyword, mode);
+
+    while (true) {
+      let result = await txtSearch.run();
+      if (result.code === PDFNet.TextSearch.ResultCode.e_found) {
+        let hlts = result.highlights;
+        await hlts.begin(doc);
+
+        const quadArr = await hlts.getCurrentQuads();
+        const hltQuad = quadArr[0];
+        const page = await doc.getPage(await hlts.getCurrentPageNumber());
+        const ph = await page.getPageHeight();
+
+        const textQuad = new instance.Core.Math.Quad(
+          hltQuad.p1x,
+          ph - hltQuad.p1y,
+          hltQuad.p2x,
+          ph - hltQuad.p2y,
+          hltQuad.p3x,
+          ph - hltQuad.p3y,
+          hltQuad.p4x,
+          ph - hltQuad.p4y
+        );
+
+        const freeText = new instance.Core.Annotations.FreeTextAnnotation();
+        freeText.PageNumber = result.page_num;
+        freeText.StrokeColor = new instance.Core.Annotations.Color(
+          255,
+          255,
+          0
+        );
+        freeText.Quads = [textQuad];
+        freeText.setContents('My Text');
+        freeText.FillColor = new instance.Core.Annotations.Color(0, 255, 255);
+        freeText.FontSize = '16pt';
+
+        await instance.Core.annotationManager.addAnnotation(freeText);
+        await instance.Core.annotationManager.drawAnnotations({
+          pageNumber: result.page_num,
+        });
+      } else if (result.code === PDFNet.TextSearch.ResultCode.e_page) {
+      } else if (result.code === PDFNet.TextSearch.ResultCode.e_done) {
+        break;
+      }
+    }
+  }
 }

@@ -3,7 +3,6 @@ import {
   Component,
   ElementRef,
   OnInit,
-  Sanitizer,
   ViewChild,
   ViewChildren,
 } from '@angular/core';
@@ -31,7 +30,6 @@ import { User, UserAPIService } from 'src/app/Services/User/user-api.service';
 import * as Cookies from 'js-cookie';
 import { WorkFlowService } from 'src/app/Services/Workflow/work-flow.service';
 import { AIService, DOCUMENT_TYPES } from 'src/app/Services/AI/ai.service';
-// import { VerifyEmail } from 'src/app/Services/Validators/verifyEmail.validator';
 import WebViewer, { Core } from '@pdftron/webviewer';
 import { VerifyEmail } from '../../Services/Validators/verifyEmail.validator';
 

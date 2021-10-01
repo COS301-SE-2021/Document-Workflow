@@ -65,7 +65,7 @@ export class DocumentActionAreaComponent implements OnInit, AfterViewInit {
           header.getHeader('toolbarGroup-Annotate').delete('squigglyToolGroupButton');
           header.getHeader('toolbarGroup-Annotate').delete('shapeToolGroupButton');
         });
-
+        instance.UI.setCustomNoteFilter(annot => !(annot instanceof instance.Core.Annotations.TextHighlightAnnotation));
         instance.Core.documentViewer.addEventListener(
           'documentLoaded',
           async () => {
