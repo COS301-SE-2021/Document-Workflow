@@ -380,16 +380,16 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
         freeText.StrokeColor = new instance.Core.Annotations.Color(
           255,
           255,
-          0
+          255
         );
-        freeText.X = hltQuad.p1x;
-        freeText.Y = ph - hltQuad.p1y;
-        freeText.Width = 150;
-        freeText.Height = 50;
+        freeText.X = hltQuad.p2x;
+        freeText.Y = ph - hltQuad.p3y;
+        freeText.Width = 100;
+        freeText.Height = 30;
         //freeText.Quads = [textQuad];
-        freeText.setContents('My Text');
-        freeText.FillColor = new instance.Core.Annotations.Color(0, 255, 255);
-        freeText.FontSize = '16pt';
+        freeText.setContents('Value');
+        freeText.FillColor = new instance.Core.Annotations.Color(255,255,255,0);
+        freeText.FontSize = '14pt';
 
         await instance.Core.annotationManager.addAnnotation(freeText);
         await instance.Core.annotationManager.drawAnnotations({
