@@ -21,7 +21,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   srcFileBase64: any;
   pdfDoc: PDFDocument;
   showAnnotations = true;
-  showautofilled = false;
+  showautofilled = true;
   annotationManager: any;
   annotationsString: string;
   documentViewer: any;
@@ -223,6 +223,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
    console.log("TToggling annotations");
     this.showAnnotations = !this.showAnnotations;
     const annotations = annotationManager.getAnnotationsList();
+    console.log(annotations);
     if(this.showAnnotations){
       //annotManager.showAnnotations(annotations); //use if you wihs to hide the associated comments that go with an annotation as well as the annotation.
       annotations.forEach(annot =>{
@@ -402,7 +403,22 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     }
   }
 
-  async toggleAutofilled(annotationsManager){
-    this.annotationManager.deleteAnnotations(this.autoFilledAnnots);
+  async toggleAutofilled(annotationManager){
+    if(this.showautofilled) {
+      console.log("Deleting autofilled annotations");
+      for(const annot of this.autoFilledAnnots){
+        await annotationManager.deleteAnnotation(annot);
+      }
+      console.log(annotationManager.getAnnotationsList());
+      console.log(this.autoFilledAnnots);
+    }
+    else{
+      console.log("Adding autofilled fields");
+      for(const annot of this.autoFilledAnnots){
+        await annotationManager.addAnnotation(annot);
+      }
+      console.log(annotationManager.getAnnotationsList());
+    }
+    this.showautofilled = !this.showautofilled;
   }
 }
