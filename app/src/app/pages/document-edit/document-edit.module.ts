@@ -15,7 +15,6 @@ import { AutoFillComponent } from 'src/app/components/auto-fill/auto-fill.compon
     FormsModule,
     IonicModule,
     DocumentEditPageRoutingModule,
-    AutoFillComponent
   ],
   declarations: [DocumentEditPage]
 })
