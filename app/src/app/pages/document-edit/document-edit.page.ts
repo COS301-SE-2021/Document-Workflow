@@ -153,15 +153,15 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
               onClick: () =>  { this.toggleAnnotations(instance.Core.annotationManager) ;
              }
             });
-            this.PDFNet = instance.Core.PDFNet;
-            this.doc = await this.PDFNet.PDFDoc.createFromBuffer(arr);
-            this.instance = instance;
           });
+
+          this.doc = await this.PDFNet.PDFDoc.createFromBuffer(arr);
+          this.instance = instance;
           instance.Core.documentViewer.addEventListener('documentLoaded', async ()=>{
             this.annotationsString = response.data.annotations;
             await instance.Core.annotationManager.importAnnotations(response.data.annotations);
 
-            await this.fill(instance, instance.Core.PDFNet, this.doc, 'good', 'Test');
+            //await this.fill(instance, instance.Core.PDFNet, this.doc, 'good', 'Test');
           });
 
           instance.UI.setHeaderItems(header =>{
@@ -353,8 +353,8 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   async autofillKeywords(){
     //TODO: get keyword input and the value to fill with
 
-    const keyword = "";
-    const value = "";
+    const keyword = "Date:";
+    const value = 'Inserting Date here!!';
     await this.fill(this.instance, this.PDFNet, this.doc, keyword, value);
   }
 
