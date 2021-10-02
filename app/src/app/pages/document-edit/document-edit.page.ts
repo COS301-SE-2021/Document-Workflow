@@ -354,7 +354,8 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     //TODO: get keyword input and the value to fill with
 
     const keyword = "Date:";
-    const value = 'Inserting Date here!!';
+    const date = new Date();
+    const value = date.getDate() + '/' + (date.getMonth() + 1)+ '/' + date.getFullYear();
     await this.fill(this.instance, this.PDFNet, this.doc, keyword, value);
   }
 
