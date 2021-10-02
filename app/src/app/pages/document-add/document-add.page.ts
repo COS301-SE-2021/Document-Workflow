@@ -416,12 +416,13 @@ export class DocumentAddPage implements OnInit {
     console.log(i);
     const a = await this.modal.create({
       component: DocumentActionAreaComponent,
+      cssClass: "modal-fullscreen",
       componentProps: {
         file: this.blob,
         ownerEmail: this.ownerEmail,
         phaseNumber: i,
         actionAreas: this.actionAreaClassifications
-      },
+      }
     });
 
     await (await a).present();
