@@ -10,6 +10,7 @@ import {WorkFlowService} from 'src/app/Services/Workflow/work-flow.service';
 import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import WebViewer from '@pdftron/webviewer';
 import { UserAPIService } from 'src/app/Services/User/user-api.service';
+import { AutoFillComponent } from 'src/app/components/auto-fill/auto-fill.component';
 
 @Component({
   selector: 'app-document-edit',
@@ -48,6 +49,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     private workflowService: WorkFlowService,
     private router: Router,
     private userApiService: UserAPIService,
+    private modal: ModalController,
   ) {}
 
   async ngOnInit() {
@@ -422,4 +424,21 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     }
     this.showautofilled = !this.showautofilled;
   }
+
+  async showModal(){
+  const a = await this.modal.create({
+    component: AutoFillComponent
+  });
+
+  await (await a).present();
+  (await a).onDidDismiss().then(async (data) => {
+    // eslint-disable-next-line @typescript-eslint/dot-notation
+    const result = (await data).data['xfdfString'];
+    if (result) {
+
+    } else {
+      //not delete
+    }
+  });
+}
 }

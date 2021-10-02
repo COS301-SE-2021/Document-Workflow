@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { DocumentEditPageRoutingModule } from './document-edit-routing.module';
 
 import { DocumentEditPage } from './document-edit.page';
+import { AutoFillComponent } from 'src/app/components/auto-fill/auto-fill.component';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    DocumentEditPageRoutingModule
+    DocumentEditPageRoutingModule,
+    AutoFillComponent
   ],
   declarations: [DocumentEditPage]
 })

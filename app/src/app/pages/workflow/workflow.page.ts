@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { IonReorderGroup } from '@ionic/angular';
+import { IonReorderGroup, ModalController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 
@@ -13,6 +13,7 @@ import {
 import { ItemReorderEventDetail } from '@ionic/core';
 import * as Cookies from 'js-cookie';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { AutoFillComponent } from 'src/app/components/auto-fill/auto-fill.component';
 @Component({
   selector: 'app-workflow',
   templateUrl: './workflow.page.html',
@@ -37,7 +38,8 @@ export class WorkflowPage implements OnInit {
     private router: Router,
     private userApiService: UserAPIService,
     private workFlowService: WorkFlowService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private modal : ModalController
   ) {}
 
   ngOnDestroy(): void {
@@ -315,14 +317,6 @@ export class WorkflowPage implements OnInit {
 
   showPhase(phase: phaseFormat) {
     phase.showPhase = !phase.showPhase;
-  }
-
-  debug(num: number) {
-    if (num === 1) {
-      this.workFlowService.displayLoading();
-    } else {
-      this.workFlowService.dismissLoading();
-    }
   }
 
   showAll() {

@@ -1,3 +1,35 @@
-<p>
-  auto-fill works!
-</p>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-grid style="max-height: 194px;">
+      <ion-row>
+        <ion-col style="top:50%;" sizeXs='9' sizeMd='4' sizeLg='3' sizeXl='2'>
+          <ion-img src="../../../assets/LogoWhiteBackground.png" style="max-height: 100px; max-width: 320px; top:75%;"
+           >
+          </ion-img>
+        </ion-col>
+        <ion-col style="top:50%;">
+          <h1 style="top:50%; font-size:xx-large;">Auto fill</h1>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <form [formGroup]="formOptions" (ngSubmit)="dismiss()">
+    <ion-item>
+      <ion-label position="floating">Flag</ion-label>
+      <ion-input type="text" formControlName="flag"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Text to add</ion-label>
+      <ion-input type="text" formControlName="inputText"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Size</ion-label>
+      <ion-input type="number" formControlName="fontSize"></ion-input>
+    </ion-item>
+
+    <ion-button expand="block" color="primary"  [disabled]="!formOptions.valid" type="submit"
+    id="register">Done</ion-button>
+  </form>
+</ion-content>

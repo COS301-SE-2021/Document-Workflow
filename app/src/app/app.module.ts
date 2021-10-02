@@ -22,12 +22,14 @@ import { AddSignatureComponent } from './components/add-signature/add-signature.
 import { UserNotificationsComponent } from './components/user-notifications/user-notifications.component';
 import { DocumentActionAreaComponent } from './components/document-action-area/document-action-area.component';
 import { Logger } from './Services/Logger';
+import { AutoFillComponent } from './components/auto-fill/auto-fill.component';
 @NgModule({
   declarations: [
     AppComponent,
     AddSignatureComponent,
     UserNotificationsComponent,
     DocumentActionAreaComponent,
+    AutoFillComponent
   ],
   entryComponents: [],
   imports: [
