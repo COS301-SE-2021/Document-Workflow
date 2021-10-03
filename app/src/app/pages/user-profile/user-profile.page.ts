@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { AbstractControlOptions, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { User, UserAPIService } from '../../Services/User/user-api.service';
 import { match } from '../../Services/Validators/match.validator';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -41,14 +41,23 @@ export class UserProfilePage implements OnInit {
   pendingContacts: contact[] = [];
   blockedContacts: contact[] = [];
 
+  @Input("Contact") contact : boolean;
+
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private userApiService: UserAPIService,
-    private plat: Platform
+    private plat: Platform,
+    private route: ActivatedRoute
   ) {}
 
   async ngOnInit() {
+    this.route.queryParams.subscribe((params:any)=>{
+      console.log(params['Contact']);
+      if(params['Contact'] === 'true'){
+        this.screenNum = 2;
+      }
+    })
     this.ready = false;
     this.ready1 = false;
     this.ready2 = false;
