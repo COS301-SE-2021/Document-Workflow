@@ -17,7 +17,7 @@ export class AutoFillComponent implements OnInit {
     this.formOptions = this.fb.group({
       flag: ['', Validators.required],
       inputText: ['', Validators.required],
-      fontSize: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+      fontSize: ['14', [Validators.required, Validators.pattern('^[0-9]*$')]],
     });
   }
 

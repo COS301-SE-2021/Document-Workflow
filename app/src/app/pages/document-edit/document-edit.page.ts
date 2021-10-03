@@ -23,6 +23,7 @@ import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import WebViewer from '@pdftron/webviewer';
 import { UserAPIService } from 'src/app/Services/User/user-api.service';
 import { AutoFillComponent } from 'src/app/components/auto-fill/auto-fill.component';
+import {input} from "@tensorflow/tfjs";
 
 @Component({
   selector: 'app-document-edit',
@@ -408,7 +409,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     await this.fill(this.instance, this.PDFNet, this.doc, keyword, value);
   }
 
-  async fill(instance, PDFNet, doc, keyword, value) {
+  async fill(instance, PDFNet, doc, keyword, value, fontSize='14') {
     const txtSearch = await PDFNet.TextSearch.create();
     let mode =
       PDFNet.TextSearch.Mode.e_whole_word +
@@ -448,7 +449,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
           255,
           0
         );
-        freeText.FontSize = '14pt';
+        freeText.FontSize = fontSize + 'pt';
         freeText.TextColor = new instance.Core.Annotations.Color(0, 0, 0);
         this.autoFilledAnnots.push(freeText);
 
@@ -494,7 +495,7 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
         const inputText = (await data).data['inputText'];
         const fontSize = (await data).data['fontSize'];
 
-        console.log(flag + ' ' + inputText + ' ' + fontSize);
+        await this.fill(this.instance, this.PDFNet, this.doc, flag, inputText, fontSize);
       } else {
         //not delete
       }
