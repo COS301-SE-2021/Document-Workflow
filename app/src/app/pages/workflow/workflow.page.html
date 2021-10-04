@@ -35,7 +35,16 @@
       <ion-button (click)="reOrderWorkflows()" style="width: 99%;">Done with reorder?</ion-button>
     </ion-item>
   </form>
-
+<ion-card *ngIf="documents.length === 0" style="min-height: 0px;">
+  <ion-card-header>
+    <ion-card-title>
+      You do not have any workflows yet
+    </ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    To create your own workflow please click the menu button on the top right side of the screen and then select the add workflow button.
+  </ion-card-content>
+</ion-card>
   <ion-reorder-group [disabled]="reOrder" (ionItemReorder)="fixOrder($event)" style="width:100%">
     <div *ngFor="let document of documents; let p = index">
       <ion-reorder *ngIf="document.showWorkflow">
