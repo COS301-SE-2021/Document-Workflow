@@ -57,7 +57,7 @@ export class AIService {
    */
    loadBayesClassifier(response){
     this.classifier = new natural.BayesClassifier();
-    const classifierData = JSON.parse(response.data.classifierData);
+    const classifierData = JSON.parse(response.data.bayesData);
     this.classifier.docs = classifierData.docs;
     this.classifier.features = classifierData.features;
     this.classifier.events = classifierData.events;
@@ -90,6 +90,7 @@ export class AIService {
   }
 
   categorizeDocument(extractedText: string){
+
     const type = this.classifier.classify(extractedText);
     console.log('Document of type: ', type);
     return type;
@@ -98,7 +99,7 @@ export class AIService {
   identifyActionAreas(text, documentType){
     console.log("Instantiating tree of type: ", documentType);
     this.decisionTree = new DecisionTree(this.decisionTreesStrategies[documentType], documentType);
-    console.log("Extracting features for documnt of type: ", documentType)
+    console.log("Extracting features for documnt of type: ", documentType);
     const lines = text.toLowerCase().split('\n');
     let actionAreas = [];
     for(const line of lines){

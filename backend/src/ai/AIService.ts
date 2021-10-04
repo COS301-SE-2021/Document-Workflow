@@ -12,7 +12,7 @@ export class AIService{
     decisionTreesPath = 'src/ai/decisionTreesData';
     retrieveClassifierData(){
         const classifierData = fs.readFileSync(this.classifierFilePath).toString();
-        const bayesData = fs.readFileSync(this.bayesFilePath).toString()
+        const bayesData = fs.readFileSync(this.bayesFilePath).toString();
         return {status:"success", data: {classifierData: classifierData, bayesData: bayesData}, message:""};
     }
 
