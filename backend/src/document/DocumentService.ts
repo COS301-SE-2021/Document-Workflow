@@ -107,5 +107,9 @@ export default class DocumentService {
         await this.documentRepository.updateDocumentS3WithBuffer('workflows/' + workflowId +'/phase0/' + metadata.name, originalDocument.Body);
 
     }
+
+    async addDocumentToTrainingSet(document){
+        await this.documentRepository.saveDocumentToS3(document, "trainingData/" + document.name);
+    }
 }
 

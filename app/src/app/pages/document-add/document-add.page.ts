@@ -195,7 +195,15 @@ export class DocumentAddPage implements OnInit {
       this.workflowForm.controls.workflowFile.valid &&
       this.workflowForm.controls.workflowDescription.valid
     ) {
-      this.next = !this.next;
+      this.userApiService.displayPopOverWithButtons("Notice", "Do you grant Document Workflow permission to use this document" +
+                                                  " to assist in the training of our AI?", (response) => {
+        if(response.data.confirm){
+          this.aiService.addDocumentToTrainingDocs(this.file);
+        }
+
+        this.next = !this.next;
+      });
+
     } else {
       this.userApiService.displayPopOver(
         'Error',

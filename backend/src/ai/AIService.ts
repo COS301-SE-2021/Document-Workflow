@@ -1,11 +1,12 @@
 import { injectable } from "tsyringe";
 import * as fs from 'fs';
+import DocumentService from "../document/DocumentService";
 
 
 
 @injectable()
 export class AIService{
-    constructor() {
+    constructor(private documentService: DocumentService) {
     }
     classifierFilePath = 'src/ai/ClassifierData/DocumentClassifier.json';
     bayesFilePath = 'src/ai/ClassifierData/BayesClassifier.json';
@@ -39,5 +40,10 @@ export class AIService{
         };
 
         return {status:"success", data: data, message:""};
+    }
+
+    async addToTrainingData(file) {
+        await this.documentService.addDocumentToTrainingSet(file);
+        return {status:"success", data:{}, message:""};
     }
 }

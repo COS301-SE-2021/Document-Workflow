@@ -108,6 +108,23 @@ export class AIService {
     return actionAreas;
   }
 
+  async addDocumentToTrainingDocs(file){
+    const formData = new FormData();
+
+    formData.append('file', file);
+
+    this.http
+      .post(config.url + '/ai/addToTrainingData', formData, {
+      })
+      .subscribe(
+        (data) => {
+          console.log("successfully saved to training data");
+          (error) => {
+            console.log(error);
+          }
+        });
+  }
+
   extractFeatures(text, documentType){
     let features = {};
     switch(documentType){

@@ -23,6 +23,10 @@ export default class AIController{
         return this.aiService.getDecisionTreesData();
     }
 
+    private async addToTrainingData(req){
+        return this.aiService.addToTrainingData(req.files.file);
+    }
+
     routes() {
         this.router.get("/getClassifier", async(req,res)=>{
             try {
@@ -35,6 +39,14 @@ export default class AIController{
         this.router.get("/getDecisionTrees", async(req,res)=>{
             try {
                 res.status(200).json(await this.getDecisionTrees(req));
+            } catch(err){
+                await handleErrors(err,res);
+            }
+        });
+
+        this.router.post("/addToTrainingData", async(req,res)=>{
+            try {
+                res.status(200).json(await this.addToTrainingData(req));
             } catch(err){
                 await handleErrors(err,res);
             }
