@@ -8,10 +8,12 @@ export class AIService{
     constructor() {
     }
     classifierFilePath = 'src/ai/ClassifierData/DocumentClassifier.json';
-    decisionTreesPath = 'src/ai/decisionTreesData'; //TODO: perhaps move these paths
+    bayesFilePath = 'src/ai/ClassifierData/BayesClassifier.json';
+    decisionTreesPath = 'src/ai/decisionTreesData';
     retrieveClassifierData(){
         const classifierData = fs.readFileSync(this.classifierFilePath).toString();
-        return {status:"success", data: {classifierData: classifierData}, message:""};
+        const bayesData = fs.readFileSync(this.bayesFilePath).toString()
+        return {status:"success", data: {classifierData: classifierData, bayesData: bayesData}, message:""};
     }
 
     getDecisionTreesData() {
