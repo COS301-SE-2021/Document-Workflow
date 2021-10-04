@@ -20,6 +20,8 @@
 ![GitHub Pull Requests](https://img.shields.io/github/issues-pr/COS301-SE-2021/Document-Workflow)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=COS301-SE-2021_Document-Workflow&metric=alert_status)](https://sonarcloud.io/dashboard?id=COS301-SE-2021_Document-Workflow)
 
+## Application Link
+[Document Workflow](https://documentworkflowapplication.web.app/)
 
 # Team Jar-gon
 ## Team Members
@@ -86,7 +88,7 @@
 * <a href="https://www.youtube.com/watch?v=bo8cdDzqsPg&feature=youtu.be"> Demo 1 </a>
 * <a href="https://youtu.be/DXzyT5xn2RM"> Demo 2 </a>
 * <a href="https://youtu.be/KkhxXOuitl0"> Demo 3 </a>
-* <a href=""> Demo 4 - Coming Soon! </a>
+* <a href="https://www.youtube.com/watch?v=PJz-qckOnZY&ab_channel=TeamJargon"> Demo 4 </a>
 </div>
 
 ---
