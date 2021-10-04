@@ -210,7 +210,6 @@ export class WorkFlowService {
         headers: httpHeaders,
       })
       .subscribe(async(data) => {
-        console.log(data);
         await this.dismissLoading();
         if (data != null) {
           callback(data);
@@ -311,7 +310,6 @@ export class WorkFlowService {
       .subscribe( async (data) => {
           await this.dismissLoading();
           if (data) {
-            console.log(data['data'].ownedWorkflows)
             data['data'].ownedWorkflows = this.formatWorkflows(data['data'].ownedWorkflows);
             data['data'].workflows = this.formatWorkflows(data['data'].workflows);
             callback(data);
@@ -388,7 +386,6 @@ export class WorkFlowService {
     workflowId,
     callback
   ) {
-    console.log(phases);
     const formData = new FormData();
     formData.append('name', workflowName);
     formData.append('description', workflowDescription);

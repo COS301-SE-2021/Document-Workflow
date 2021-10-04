@@ -93,10 +93,9 @@ export class DocumentAddPage implements OnInit {
     } else {
       this.userApiService.checkIfAuthorized().subscribe(
         (response) => {
-          console.log('Successfully authorized user');
+
         },
         async (error) => {
-          console.log(error);
           await this.router.navigate(['/login']);
           return;
         }
@@ -163,7 +162,6 @@ export class DocumentAddPage implements OnInit {
       if (response) {
         this.user = response.data;
         this.ownerEmail = this.user.email;
-        console.log(this.ownerEmail);
         await this.getContacts();
       } else {
         this.userApiService.displayPopOver('Error', 'Cannot find user');
@@ -189,7 +187,6 @@ export class DocumentAddPage implements OnInit {
   }
 
   changeOver() {
-    console.log(this.workflowForm.controls.workflowName.valid);
     if (
       this.workflowForm.controls.workflowName.valid &&
       this.workflowForm.controls.workflowFile.valid &&
@@ -323,17 +320,12 @@ export class DocumentAddPage implements OnInit {
     const eventObj: MSInputMethodContext = event as MSInputMethodContext;
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
     this.file = target.files[0];
-    console.log(typeof this.file);
-    console.log('file', await this.file.arrayBuffer());
-    // const buff = response.data.filedata.Body.data; //wut
 
     this.srcFile = new Uint8Array(await this.file.arrayBuffer());
 
     this.workflowForm.get('workflowFile').setValue(this.file);
     this.blob = new Blob([this.file], { type: 'application/pdf;base64' });
-    console.log(this.blob.arrayBuffer());
     const obj = URL.createObjectURL(this.blob);
-    console.log(obj);
     this.srcFile = obj;
     this.addFile = true;
 
@@ -375,7 +367,6 @@ export class DocumentAddPage implements OnInit {
           const extractedText = await this.extractDocumentText(doc, PDFNet);
 
           let docType = this.aiService.categorizeDocument(extractedText);
-          console.log('DOCUMENT OF TYPE: ', docType);
           await this.workflowService.dismissLoading();
           await this.userApiService.displayPopOverWithButtons(
             'Document Type',
@@ -421,7 +412,6 @@ export class DocumentAddPage implements OnInit {
   }
 
   async includeActionArea(i: number, form: FormControl) {
-    console.log(i);
     const a = await this.modal.create({
       component: DocumentActionAreaComponent,
       cssClass: "modal-fullscreen",
@@ -493,7 +483,6 @@ export class DocumentAddPage implements OnInit {
   }
 
   printForm() {
-    console.log(this.workflowForm);
   }
 
   toggleVisibility(i: number) {
@@ -627,7 +616,6 @@ export class DocumentAddPage implements OnInit {
     let b: string = i + ' ' + j;
     for (let comp of this.selectContact['_results']) {
       if (b === comp['name']) {
-        console.log(comp.value);
         form.setValue(comp.value);
       }
     }

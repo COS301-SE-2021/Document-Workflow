@@ -57,10 +57,9 @@ export class DocumentVerifyPage implements OnInit {
     } else {
       this.userApiService.checkIfAuthorized().subscribe(
         (response) => {
-          console.log('Successfully authorized user');
+
         },
         async (error) => {
-          console.log(error);
           await this.router.navigate(['/login']);
           this.workflowService.dismissLoading();
           return;
@@ -146,7 +145,6 @@ export class DocumentVerifyPage implements OnInit {
   }
 
   async verifyHash(hash){
-    console.log('hash: ' + hash);
     if(hash.length == 0){
       this.userApiService.displayPopOver('Error','This document has no associated stored hash' +
         ', thus it does not originate from Document Workflow');

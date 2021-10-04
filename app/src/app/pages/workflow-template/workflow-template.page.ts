@@ -99,7 +99,7 @@ export class WorkflowTemplatePage implements OnInit {
       let template = response.template;
       this.ownerEmail = template.templateOwnerEmail;
       this.originalFile = response.fileData;
-      console.log(template);
+
       this.templateForm = this.fb.group({
         workflowName: [template.workflowName, [Validators.required]],
         workflowDescription: [
@@ -119,7 +119,7 @@ export class WorkflowTemplatePage implements OnInit {
   }
 
   displayWebViewer() {
-    console.log(this.viewerRef);
+
     WebViewer(
       {
         path: './../../../assets/lib',
@@ -262,7 +262,7 @@ export class WorkflowTemplatePage implements OnInit {
   }
 
   async includeActionArea(i: number, form: FormControl) {
-    console.log(this.ownerEmail);
+
     const a = await this.modal.create({
       component: DocumentActionAreaComponent,
       componentProps: {
@@ -284,19 +284,12 @@ export class WorkflowTemplatePage implements OnInit {
   }
 
   async submit() {
-    console.log('here');
-    console.log(this.templateForm);
+
     await this.createWorkflow();
   }
 
   async createWorkflow() {
-    console.log('Extracting form data ------------------------------');
-    console.log('Name: ', this.templateForm.controls.workflowName.value);
-    console.log(
-      'Description: ',
-      this.templateForm.controls.workflowDescription.value
-    );
-    console.log(this.templateForm);
+
     let template = null;
     if (this.templateForm.controls.templateName !== undefined) {
       template = {
@@ -345,7 +338,6 @@ export class WorkflowTemplatePage implements OnInit {
     let b: string = i + ' ' + j;
     for (let comp of this.selectContact['_results']) {
       if (b === comp['name']) {
-        console.log(comp.value);
         form.setValue(comp.value);
       }
     }
@@ -365,7 +357,6 @@ export class WorkflowTemplatePage implements OnInit {
   }
 
   debug(b) {
-    console.log(this.templateForm);
   }
 
   deleteTemplate(id: string){

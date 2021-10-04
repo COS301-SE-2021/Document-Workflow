@@ -104,10 +104,10 @@ export class WorkflowEditPage implements OnInit {
     } else {
       this.userApiService.checkIfAuthorized().subscribe(
         (response) => {
-          console.log('Successfully authorized user');
+
         },
         async (error) => {
-          console.log(error);
+
           await this.router.navigate(['/login']);
           return;
         }
@@ -132,11 +132,9 @@ export class WorkflowEditPage implements OnInit {
     await this.workflowServices.getOriginalDocument(
       this.workflowId,
       (response) => {
-        console.log('Got the original document');
         const arr = new Uint8Array(response.data.filedata.Body.data);
         const blob = new Blob([arr], { type: 'application/pdf' });
         this.originalFile = new File([blob], response.data.metadata.name);
-        console.log(response);
       }
     );
 
@@ -147,7 +145,6 @@ export class WorkflowEditPage implements OnInit {
     await this.workflowServices.retrieveWorkflow(
       this.workflowId,
       async (response) => {
-        console.log(response.data);
         let i: number = 0;
         let phases: phaseFormat[] = [];
         for (let phase of response.data.phases) {
@@ -170,7 +167,6 @@ export class WorkflowEditPage implements OnInit {
             };
             tempUser.push(tmpUser);
           }
-          console.log(phase._id);
           tmpPhase = {
             showPhase: tmpShow,
             phaseNumber: i,
@@ -183,7 +179,6 @@ export class WorkflowEditPage implements OnInit {
           phases.push(tmpPhase);
         }
         i++;
-        console.log(response.data.documentId);
         this.document = {
           currentPercent: 0,
           currentPhase: response.data.currentPhase,
@@ -351,7 +346,6 @@ export class WorkflowEditPage implements OnInit {
       phase.at(i)['controls'].phaseStatus.setValue('Delete');
       phase.at(i)['controls'].showPhases = false;
     }
-    console.warn(this.workflowForm);
   }
 
   async selectImageSource() {
@@ -379,17 +373,15 @@ export class WorkflowEditPage implements OnInit {
     if (this.plat.is('desktop')) {
     }
     this.file = target.files[0];
-    console.log(typeof this.file);
-    console.log('file', this.file.arrayBuffer());
     // const buff = response.data.filedata.Body.data; //wut
     const a = new Uint8Array(await this.file.arrayBuffer());
     this.srcFile = a;
     //todo
     this.workflowForm.get('workflowFile').setValue(this.file);
     this.blob = new Blob([this.file], { type: 'application/pdf;base64' });
-    console.log(this.blob.arrayBuffer());
+
     const obj = URL.createObjectURL(this.blob);
-    console.log(obj);
+
     this.srcFile = obj;
     this.addFile = true;
   }
@@ -406,7 +398,6 @@ export class WorkflowEditPage implements OnInit {
   }
 
   debug(str: any) {
-    console.log(this.workflowForm);
   }
 
   async includeActionArea(i: number, form: FormControl) {
@@ -423,7 +414,7 @@ export class WorkflowEditPage implements OnInit {
     (await a).onDidDismiss().then(async (data) => {
       const result = (await data).data['xfdfString'];
       if (result) {
-        console.log(result);
+
         form.setValue(result);
       } else {
         //not delete
@@ -465,14 +456,14 @@ export class WorkflowEditPage implements OnInit {
 
   async saveChangesToWorkflow() {
     let phases: phaseFormat[] = [];
-    // console.warn(tmp);
+
     let i: number = 0;
-    console.log(this.document.currentPhase);
+
     for (let phase of this.workflowForm.controls.phases['controls']) {
       if (this.document.currentPhase < i) {
         let tmpPhase: phaseFormat;
         let tmpUsr: phaseUserFormat[] = [];
-        console.log(phase.controls.users['controls']);
+
         for (let user of phase.controls.users['controls']) {
           let tempUser: phaseUserFormat;
           tempUser = {
@@ -494,7 +485,6 @@ export class WorkflowEditPage implements OnInit {
       i++;
     }
 
-    console.log(phases)
     const name = this.workflowForm.controls.workflowName.value;
     const description = this.workflowForm.controls.workflowDescription.value;
 
@@ -505,7 +495,7 @@ export class WorkflowEditPage implements OnInit {
       this.workflowId,
       (response) => {
         this.workflowServices.dismissLoading();
-        console.log(response);
+
         if (response.status === 'success') {
           this.userApiService.displayPopOver('Success', 'Workflow edited');
           this.router.navigate(['/home']);
@@ -552,7 +542,7 @@ export class WorkflowEditPage implements OnInit {
     let b:string = i + ' ' + j;
     for(let comp of this.selectContact['_results']){
       if(b === comp['name']){
-        console.log(comp.value);
+
         form.setValue(comp.value);
       }
     }

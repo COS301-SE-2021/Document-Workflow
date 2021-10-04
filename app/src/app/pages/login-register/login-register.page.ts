@@ -123,7 +123,7 @@ export class LoginRegisterPage implements OnInit {
     }, formOptions);
 
     if (this.plat.is('android') && this.plat.is('capacitor')) {
-      console.log('jere');
+
       NativeBiometric.isAvailable().then((result: AvailableResult) => {
         const isAvailable = result.isAvailable;
         this.biometricAvaliable = result.isAvailable;
@@ -149,13 +149,13 @@ export class LoginRegisterPage implements OnInit {
         //localStorage.setItem('token', response.data.token);
         Cookies.set('token', response.data.token);
         if(this.plat.is('android')  && this.plat.is('capacitor')){
-          console.log("here")
+
           this.setCredentials();
         }
         // this.userAPIService.displayPopOver('Success', 'login was successful');
         this.router.navigate(['home']);
       } else {
-        console.log(response);
+
         this.userAPIService.displayPopOver(
           'Failure in logging in',
           'Email or password is incorrect'
@@ -176,11 +176,9 @@ export class LoginRegisterPage implements OnInit {
       'termsOfService',
       '',
       (response) => {
-        console.log(response);
+
         if (response.data.confirm === true) {
           const userdata = this.registerForm.value;
-          console.log('Printing file:');
-          console.log(this.file);
 
           if (this.file === undefined) {
             //We don't allow users to register if they dont specify a signature.
@@ -188,7 +186,6 @@ export class LoginRegisterPage implements OnInit {
             return;
           }
 
-          console.log(userdata);
           const user: User = {
             Fname: userdata.Fname,
             Lname: userdata.Lname,
@@ -253,7 +250,6 @@ export class LoginRegisterPage implements OnInit {
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
     this.file = target.files[0];
 
-    console.log('file', this.file);
   }
 
   async addSignatureDraw() {
@@ -266,8 +262,6 @@ export class LoginRegisterPage implements OnInit {
     (await mod).onDidDismiss().then(async (data) => {
       (this.registerButton = data.data.registerButton),
         (this.file = data.data.signature);
-      console.log(typeof this.file);
-      //console.log(this.file);
     });
   }
 
@@ -286,7 +280,7 @@ export class LoginRegisterPage implements OnInit {
           email: credentials.username,
           password: credentials.password
         };
-        console.log(loginData);
+
         this.userAPIService.login(loginData, (response) => {
           if (response.status === 'success') {
             //localStorage.setItem('token', response.data.token);
@@ -294,7 +288,6 @@ export class LoginRegisterPage implements OnInit {
             // this.userAPIService.displayPopOver('Success', 'login was successful');
             this.router.navigate(['home']);
           } else {
-            console.log(response);
             this.userAPIService.displayPopOver(
               'Failure in logging in',
               'Email or password is incorrect'
@@ -329,7 +322,6 @@ export class LoginRegisterPage implements OnInit {
   async resetPassword1() {
     this.userEmailForReset = this.resetFormPhase1.value.email;
     this.userAPIService.sendResetPasswordEmail(this.resetFormPhase1.value.email, async (response) => {
-      console.log(response);
       if (response) {
         if (response.status === 'success') {
           this.userAPIService.displayPopOver('Success', 'Email has been sent');
@@ -343,7 +335,6 @@ export class LoginRegisterPage implements OnInit {
 
   //add token and confirm passwords
   resetPassword2(){
-    console.log(this.resetFormPhase2.value);
     this.userAPIService.resetPassword( this.resetFormPhase2.value, this.userEmailForReset, (response)=>{
       if(response.status === 'success'){
         this.userAPIService.displayPopOver('Success', 'Password has been changed');

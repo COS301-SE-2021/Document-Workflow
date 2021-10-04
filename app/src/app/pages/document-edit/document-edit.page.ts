@@ -72,10 +72,8 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
     });
     this.userApiService.checkIfAuthorized().subscribe(
       (response) => {
-        console.log('Successfully authorized user');
       },
       async (error) => {
-        console.log(error);
         await this.router.navigate(['/login']);
         return;
       }
@@ -127,10 +125,6 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
             const doc = await docorig.getSDFDoc();
             doc.initSecurityHandler();
             doc.lock();
-            console.log(
-              'Modifying into dictionary, adding custom properties, embedding a stream...'
-            );
-
             const trailer = await doc.getTrailer(); // Get the trailer
 
             let itr = await trailer.find('Info');
@@ -252,10 +246,8 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   }
 
   toggleAnnotations(annotationManager) {
-    console.log('TToggling annotations');
     this.showAnnotations = !this.showAnnotations;
     const annotations = annotationManager.getAnnotationsList();
-    console.log(annotations);
     if (this.showAnnotations) {
       //annotManager.showAnnotations(annotations); //use if you wihs to hide the associated comments that go with an annotation as well as the annotation.
       annotations.forEach((annot) => {
@@ -317,7 +309,6 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
           this.workflowId,
           commentedActionAreas,
           async (response1) => {
-            console.log(response1);
 
             if (response1.status === 'success') {
               const options = { xfdfString: xfdfString, flatten: true };
@@ -334,7 +325,6 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
                 response.data.confirm,
                 file,
                 (response2) => {
-                  console.log(response2);
 
                   if (response2.status === 'success') {
                     this.userApiService.displayPopOver(
@@ -353,7 +343,6 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   }
 
   removeActionAreasFromAnnotations() {
-    console.log('Removing action areas from document before saving');
     const toDelete = [];
     this.annotationManager.getAnnotationsList().forEach((annot) => {
       this.annotationSubjects.forEach((a) => {
@@ -367,7 +356,6 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
   }
 
   removeNonActionAreasFromAnnotations() {
-    console.log('Removing action areas from document before saving');
     const toDelete = [];
     this.annotationManager.getAnnotationsList().forEach((annot) => {
       this.annotationSubjects.forEach((a) => {
@@ -395,7 +383,6 @@ export class DocumentEditPage implements OnInit, AfterViewInit {
       this.workflowId,
       annotationsString,
       (response) => {
-        console.log(response);
       }
     );
   }

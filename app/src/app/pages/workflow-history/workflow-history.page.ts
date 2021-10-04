@@ -54,10 +54,10 @@ export class WorkflowHistoryPage implements OnInit {
     } else {
       this.userApiService.checkIfAuthorized().subscribe(
         (response) => {
-          console.log('Successfully authorized user');
+
         },
         async (error) => {
-          console.log(error);
+
           await this.router.navigate(['/login']);
           return;
         }
@@ -69,7 +69,7 @@ export class WorkflowHistoryPage implements OnInit {
 
   async getWorkflowHistory() {
     this.workflowHistory.getHistory(this.workflowId, (response) => {
-      console.log(response);
+
       if (response.status === 'success') {
         for (let entry of response.data.history.entries) {
           let tmp: History = JSON.parse(entry);
@@ -78,7 +78,7 @@ export class WorkflowHistoryPage implements OnInit {
           tmp.currentPhase += 1;
           this.histories.push(tmp);
         }
-        console.log(this.histories);
+
       } else {
         this.userApiService.displayPopOver(
           'Error: GetHistory',

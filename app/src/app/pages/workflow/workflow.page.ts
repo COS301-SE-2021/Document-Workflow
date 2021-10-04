@@ -74,10 +74,10 @@ export class WorkflowPage implements OnInit {
     } else {
       this.userApiService.checkIfAuthorized().subscribe(
         (response) => {
-          console.log('Successfully authorized user');
+
         },
         async (error) => {
-          console.log(error);
+
           Cookies.set('token', '');
           await this.router.navigate(['/login']);
           return;
@@ -117,7 +117,7 @@ export class WorkflowPage implements OnInit {
             this.documents.push(tmpDoc);
           }
         }
-        console.log(this.documents);
+
         //for the searching and sorting so we wont waste users data.
         this.sortPermission();
       } else {
@@ -162,7 +162,7 @@ export class WorkflowPage implements OnInit {
       'Confirmation of deletion',
       'Are you sure you want to permanently delete this?',
       (response) => {
-        console.log(response);
+
         if (response.data.confirm === true) {
           this.workFlowService.deleteWorkFlow(id, async (response2) => {
             if(response2.status === 'success'){
@@ -184,7 +184,7 @@ export class WorkflowPage implements OnInit {
       (response) => {
         if (response.data.confirm === true) {
           this.workFlowService.revertPhase(id, async (response2) => {
-            console.log(response2);
+
             if(response2.status === "success") {
               await this.userApiService.displayPopOver("Success", "The workflow has been successfully reverted by a phase");
               this.documents = [];
@@ -242,7 +242,6 @@ export class WorkflowPage implements OnInit {
   }
 
   sortBy() {
-    console.log(typeof this.sortForm.controls.sortBy.value);
     switch (parseInt(this.sortForm.controls.sortBy.value)) {
       case 1:
         this.showOnlyWorkflowOwned();
@@ -300,7 +299,7 @@ export class WorkflowPage implements OnInit {
             document.showWorkflow = true;
           }
         }
-        console.log(document.showWorkflow);
+
       }
     }
   }

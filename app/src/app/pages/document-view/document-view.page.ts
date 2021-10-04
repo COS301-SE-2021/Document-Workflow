@@ -64,7 +64,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
 
   async ngAfterViewInit(): Promise<void>{
     await this.workflowService.retrieveDocument(this.workflowId, async (response) => {
-      console.log(response);
+
       if (response) {
 
         this.documentMetadata = response.data.metadata;
@@ -92,7 +92,6 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
             const doc = await docorig.getSDFDoc();
             doc.initSecurityHandler();
             doc.lock();
-            console.log('Modifying into dictionary, adding custom properties, embedding a stream...');
 
             const trailer = await doc.getTrailer(); // Get the trailer
 
@@ -106,17 +105,14 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
               // read title entry if it is present
               itr = await info.find('Keywords');
               if (await itr.hasNext()) {
-                console.log('Keywords already present');
                 const itrval = await itr.value();
                 const oldstr = await itrval.getAsPDFText();
                 this.originalKeywords = oldstr;
                 info.putString('Keywords', this.hash);
               } else {
-                console.log('No previous keywords present');
                 info.putString('Keywords', this.hash);
               }
             } else {
-              console.log('Info dict missing, adding it now');
               // Info dict is missing.
               info = await trailer.putDict('Info');
               info.putString('Producer', 'PDFTron PDFNet');
@@ -133,8 +129,6 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
             this.annotationManager = instance.Core.annotationManager;
             this.documentViewer = instance.Core.documentViewer;
             const documentTest = await instance.Core.createDocument(blob2, {filename: this.docName});
-            console.log('Document Metadata----------------------------');
-            console.log(await documentTest.getMetadata());
 
             instance.UI.loadDocument(blob2, {filename: this.docName});
             instance.UI.disableElements(['ribbons']);
@@ -168,7 +162,6 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
               //For now, to work around not having full api functions with the free version of PDFTron
               //We disable the action areas from showing through a check of the workflow status
               //This is to ensure printing of the document does not include action areas.
-              console.log(this.workflowStatus);
               if(this.workflowStatus !== 'Completed'){ //TODO: swap with enum
                 instance.Core.annotationManager.importAnnotations(response.data.annotations);
               }
@@ -204,10 +197,7 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   async acceptDocument(){
     await this.userApiService.displayPopOverWithButtons('Accept Phase','Do you accept this phase as complete?', async (res) =>{
       const annotationsString = await this.annotationManager.exportAnnotations();
-      console.log("Updating the annotations of this document");
-      console.log(annotationsString);
       await this.workflowService.updateCurrentPhaseAnnotations(this.workflowId, annotationsString, async (response)=>{
-        console.log(response);
 
         if(response.status === "success") {
           const data = await this.documentViewer.getDocument().getFileData({});
@@ -216,7 +206,6 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
           const file = new File([blob], this.documentMetadata.name);
 
           await this.workflowService.updatePhase(this.workflowId, res.data.confirm, file, async (response2) => {
-            console.log(response2);
             await this.workflowService.dismissLoading();
             this.userApiService.displayPopOver("Success", "Your response has been saved");
             this.router.navigate(['home']);
@@ -229,7 +218,6 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
    }
 
   toggleAnnotations(annotationManager){
-    console.log("TToggling annotations");
     this.showAnnotations = !this.showAnnotations;
     const annotations = annotationManager.getAnnotationsList();
     if(this.showAnnotations){
@@ -283,11 +271,9 @@ export class DocumentViewPage implements OnInit, AfterViewInit {
   }
 
   async updateDocumentAnnotations(annotationsString){
-    console.log("Updating the annotations of this document");
-    console.log(annotationsString);
+
     this.workflowService.displayLoading();
     await this.workflowService.updateCurrentPhaseAnnotations(this.workflowId, annotationsString, (response)=>{
-      console.log(response);
 
       if(response.status === "success"){
         this.userApiService.displayPopOver("Success", "Your response has been saved");

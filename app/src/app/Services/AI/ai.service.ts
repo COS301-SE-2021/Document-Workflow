@@ -42,10 +42,8 @@ export class AIService {
   }
 
   loadClassifier(response){
-    console.log(response);
     this.classifier = new DocumentClassifier();
     this.classifier.load(response.data.classifierData);
-    console.log(this.classifier);
   }
 
   /**
@@ -65,7 +63,6 @@ export class AIService {
     this.classifier.classifier.classFeatures = classifierData.classifier.classFeatures;
     this.classifier.classifier.classTotals = classifierData.classifier.classTotals;
     this.classifier.classifier.totalExamples = classifierData.classifier.totalExamples;
-    console.log('Document classifier successfully loaded');
   }
   /*
   loadDecisionTrees(response){
@@ -86,20 +83,16 @@ export class AIService {
     this.decisionTreesStrategies[DOCUMENT_TYPES.NDA] = new NDAStrategy();
     this.decisionTreesStrategies[DOCUMENT_TYPES.TIMESHEET] = new TimesheetStrategy();
     this.decisionTreesStrategies[DOCUMENT_TYPES.GENERIC] = new GenericStrategy();
-    console.log(this.decisionTreesStrategies);
   }
 
   categorizeDocument(extractedText: string){
 
     const type = this.classifier.classify(extractedText);
-    console.log('Document of type: ', type);
     return type;
   }
 
   identifyActionAreas(text, documentType){
-    console.log("Instantiating tree of type: ", documentType);
     this.decisionTree = new DecisionTree(this.decisionTreesStrategies[documentType], documentType);
-    console.log("Extracting features for documnt of type: ", documentType);
     const lines = text.toLowerCase().split('\n');
     let actionAreas = [];
     for(const line of lines){
@@ -118,9 +111,9 @@ export class AIService {
       })
       .subscribe(
         (data) => {
-          console.log("successfully saved to training data");
+          //console.log("successfully saved to training data");
           (error) => {
-            console.log(error);
+            //console.log(error);
           }
         });
   }
