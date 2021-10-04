@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-//import * as natural from 'natural';
+import * as natural from 'natural';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {config} from '../configuration';
 //import * as DecisionTree from 'decision-tree';
@@ -31,7 +31,7 @@ export class AIService {
   constructor( private http: HttpClient) {
     this.loadDecisionTrees();
     this.http.get(config.url +'/ai/getClassifier').subscribe((response)=>{
-      this.loadClassifier(response);
+      this.loadBayesClassifier(response);
     });
     /*
     this.http.get(config.url +'/ai/getDecisionTrees').subscribe((response)=>{
@@ -54,8 +54,8 @@ export class AIService {
    * data features to a newly constructed bayesclassifier to bypass this issue. Trust me this was
    * harder than it looks.
    * @param response
-   *
-   loadClassifier(response){
+   */
+   loadBayesClassifier(response){
     this.classifier = new natural.BayesClassifier();
     const classifierData = JSON.parse(response.data.classifierData);
     this.classifier.docs = classifierData.docs;
@@ -66,7 +66,7 @@ export class AIService {
     this.classifier.classifier.classTotals = classifierData.classifier.classTotals;
     this.classifier.classifier.totalExamples = classifierData.classifier.totalExamples;
     console.log('Document classifier successfully loaded');
-  } */
+  }
   /*
   loadDecisionTrees(response){
     console.log(response);
