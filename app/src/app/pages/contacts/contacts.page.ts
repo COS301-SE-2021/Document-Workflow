@@ -45,10 +45,10 @@ export class ContactsPage implements OnInit {
     } else {
       this.userApiService.checkIfAuthorized().subscribe(
         (response) => {
-          console.log('Successfully authorized user');
+
         },
         async (error) => {
-          console.log(error);
+
           await this.route.navigate(['/login']);
           return;
         }
@@ -71,7 +71,7 @@ export class ContactsPage implements OnInit {
 
   async getContactInformation() {
     await this.userApiService.getContacts((response) => {
-      console.log(response);
+
       if (response.status === 'success') {
         this.contacts = response.data.contacts;
       } else {
@@ -79,19 +79,19 @@ export class ContactsPage implements OnInit {
       }
     });
     await this.userApiService.getContactRequests((response) => {
-      console.log(response);
+
       if (response.status === 'success') {
         this.pendingContacts = response.data.requests;
-        console.log(this.pendingContacts);
+
       }else {
         this.userApiService.displayPopOver('Error', 'Failed to get pending users');
       }
     });
     await this.userApiService.getBlockedContacts((response) => {
-      console.log(response);
+
       if (response.status === 'success') {
         this.blockedContacts = response.data.contacts;
-        console.log(this.blockedContacts)
+
       }else {
         this.userApiService.displayPopOver('Error', 'Failed to get blocked users');
       }
@@ -122,7 +122,7 @@ export class ContactsPage implements OnInit {
   }
 
   async rejectContactRequest(contact){
-    console.log(contact);
+
     await this.userApiService.rejectContactRequest(contact, (response)=>{
       if(response.status === 'success'){
         this.userApiService.displayPopOver('Success','rejected the user');
@@ -133,7 +133,7 @@ export class ContactsPage implements OnInit {
   }
 
   async acceptContactRequest(contact) {
-    console.log(contact);
+
     await this.userApiService.acceptContactRequest(contact, (response) => {
       if(response.status === 'success'){
         this.userApiService.displayPopOver('Success','Added the user');
@@ -166,7 +166,7 @@ export class ContactsPage implements OnInit {
   }
 
   async sendContactRequest(contact){
-    console.log(contact);
+
     await this.userApiService.sendContactRequest(contact.contact, (response)=>{
         if(response){
           if(response.status === 'success'){
