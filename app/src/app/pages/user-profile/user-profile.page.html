@@ -20,154 +20,175 @@
 </ion-header>
 
 <ion-content *ngIf="ready">
-  <ion-slides [options]="{slidesPerView: '1'}">
-    <ion-slide style="width: 100%; ">
+  <div style="width: 100%; " *ngIf="screenNum === 1">
+    <ion-card style="width: 95%; margin:auto; text-align: center;align-items: center; margin-top: 25px;">
+      <ion-card-header>
+        <ion-card-title>
+          Your Details
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content *ngIf='ready'>
+        <form [formGroup]="userForm" (ngSubmit)="submit()">
 
-      <ion-card style="width: 95%; margin:auto; text-align: center;align-items: center; margin-top: 25px;">
-        <ion-card-header>
-          <ion-card-title>
-            Your details
-          </ion-card-title>
-        </ion-card-header>
-        <ion-card-content *ngIf='ready'>
-          <form [formGroup]="userForm" (ngSubmit)="submit()">
+          <ion-row>
+            <ion-col sizeXs="12" sizeSm='6'>
+              <ion-item>
+                <ion-label position="floating">First name:</ion-label>
+                <ion-input inputmode="text" formControlName="firstName"></ion-input>
+              </ion-item>
+            </ion-col>
+            <ion-col sizeXs="12" sizeSm='6'>
+              <ion-item>
+                <ion-label position="floating">Last name:</ion-label>
+                <ion-input inputmode="text" formControlName="lastName"></ion-input>
+              </ion-item>
+            </ion-col>
+          </ion-row>
 
+          <ion-row>
+            <ion-col sizeXs="12" sizeSm='6'>
+              <ion-item>
+                <ion-label position="floating">Initials:</ion-label>
+                <ion-input inputmode="text" formControlName="initials"></ion-input>
+              </ion-item>
+            </ion-col>
+            <ion-col sizeXs="12" sizeSm='6'>
+              <ion-item>
+                <ion-label position="floating">Email:</ion-label>
+                <ion-input [disabled]='true' inputmode="text" formControlName="email"></ion-input>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+          <ion-button hide="true" expand="block" color="primary" fill="outline" [disabled]="!userForm.valid"
+            type="submit">Save your Edits
+          </ion-button>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+
+  <div style="width: 100%;" *ngIf="screenNum === 2">
+    <ion-grid>
+      <ion-row>
+        <ion-card style="width: 95%; margin:auto; text-align: center;align-items: center;margin-top: 20px;">
+          <ion-card-header>
+            <ion-card-title>
+              <span>
+                <ion-icon name="person-add-outline"></ion-icon>
+                Add Contacts
+              </span>
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <form [formGroup]="addContactForm" (ngSubmit)="sendFriendRequest()">
+              <ion-item style="border-radius: 10px;">
+                <ion-label style="color: grey" position='floating'>Add contact by email</ion-label>
+                <ion-input formControlName='contact' type='email'></ion-input>
+              </ion-item>
+              <ion-button type='submit'>Add a friend</ion-button>
+            </form>
+          </ion-card-content>
+        </ion-card>
+      </ion-row>
+      <br>
+      <div
+        style="margin:auto; border: 5px solid #002060; border-radius: 25px; align-items: center; padding: 10px; width:95%;justify-content: center;  ">
+        <ion-card-title large>Your Contacts</ion-card-title>
+        <ion-grid>
+          <ion-row>
+            <ion-col sizeMd="4" sizeXs="12" sizeSm="6" *ngFor="let contact of contacts">
+              <ion-card>
+                <ion-card-content>
+                  <ion-item lines="none">
+                    <ion-label position="stacked">Email address:</ion-label>
+                    {{contact}}
+                  </ion-item>
+                  <ion-button (click)="deleteContact(contact)"  expand="full">Delete contact</ion-button>
+                  <ion-button (click)="blockUser(contact)"  expand="full">Block contact</ion-button>
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </ion-grid>
+  </div>
+
+
+  <div style="width: 100%;" *ngIf="screenNum === 3">
+    <ion-grid>
+      <ion-row>
+        <ion-card style="width: 95%; margin:auto; text-align: center;align-items: center;margin-top: 20px;">
+          <ion-card-header>
+            <ion-card-title>
+              Pending Requests
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
             <ion-row>
-              <ion-col sizeXs="12" sizeSm='6'>
-                <ion-item>
-                  <ion-label position="floating">First name:</ion-label>
-                  <ion-input inputmode="text" formControlName="firstName"></ion-input>
-                </ion-item>
-              </ion-col>
-              <ion-col sizeXs="12" sizeSm='6'>
-                <ion-item>
-                  <ion-label position="floating">Last name:</ion-label>
-                  <ion-input inputmode="text" formControlName="lastName"></ion-input>
-                </ion-item>
-              </ion-col>
-            </ion-row>
-
-            <ion-row>
-              <ion-col sizeXs="12" sizeSm='6'>
-                <ion-item>
-                  <ion-label position="floating">Initials:</ion-label>
-                  <ion-input inputmode="text" formControlName="initials"></ion-input>
-                </ion-item>
-              </ion-col>
-              <ion-col sizeXs="12" sizeSm='6'>
-                <ion-item>
-                  <ion-label position="floating">Email:</ion-label>
-                  <ion-input [disabled]='true' inputmode="text" formControlName="email"></ion-input>
-                </ion-item>
-              </ion-col>
-            </ion-row>
-            <ion-button hide="true" expand="block" color="primary" fill="outline" [disabled]="!userForm.valid"
-              type="submit">Save your Edits
-            </ion-button>
-          </form>
-        </ion-card-content>
-      </ion-card>
-    </ion-slide>
-
-
-    <ion-slide style="width: 100%; ">
-      <ion-grid>
-        <ion-row>
-          <ion-card style="width: 95%; margin:auto; text-align: center;align-items: center;margin-top: 20px;">
-            <ion-card-header>
-              <ion-card-title>
-                <span>
-                  <ion-icon name="person-add-outline"></ion-icon>
-                  Add Contacts
-                </span>
-              </ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
-              <form [formGroup]="addContactForm" (ngSubmit)="sendFriendRequest()">
-                <ion-item style="border-radius: 10px;">
-                  <ion-label style="color: grey" position='floating'>Add contact by email</ion-label>
-                  <ion-input formControlName='contact' type='email'></ion-input>
-                </ion-item>
-                <ion-button type='submit'>Add a friend</ion-button>
-              </form>
-            </ion-card-content>
-          </ion-card>
-        </ion-row>
-        <br>
-        <div
-          style="margin:auto; border: 5px solid #002060; border-radius: 25px; align-items: center; padding: 10px; width:95%;justify-content: center;  ">
-          <ion-card-title large>Your Contacts</ion-card-title>
-          <ion-grid>
-            <ion-row>
-              <ion-col sizeMd="4" sizeXs="12" sizeSm="6" *ngFor="let contact of contacts">
+              <ion-col sizeXs='12' sizeSm='6' sizeMd='4' *ngFor="let pending of pendingContacts;">
                 <ion-card>
-                  <ion-card-content>
-                    <ion-item lines="none">
-                      <ion-label position="stacked">Email address:</ion-label>
-                      {{contact}}
-                    </ion-item>
-                    <ion-button (click)="deleteContact(contact)">Delete contact</ion-button>
-                    <ion-button (click)="blockUser(contact)">Block contact</ion-button>
-                  </ion-card-content>
+                  <ion-item lines="none">
+                    {{pending}}
+                  </ion-item>
+                  <ion-button (click)="acceptContactRequest(pending)" expand="full">Accept</ion-button>
+                  <ion-button (click)="rejectContactRequest(pending)"  expand="full">Reject</ion-button>
                 </ion-card>
               </ion-col>
             </ion-row>
-          </ion-grid>
-        </div>
-      </ion-grid>
-    </ion-slide>
+          </ion-card-content>
+        </ion-card>
+      </ion-row>
+      <ion-row>
+        <ion-card
+          style="width: 95%; margin:auto; text-align: center;align-items: center; margin-top: 20px; margin-bottom: 20px;">
+          <ion-card-header>
+            <ion-card-title>
+              Blocked Requests
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-row>
+              <ion-col sizeXs='12' sizeSm='6' sizeMd='4' *ngFor="let pending of blockedContacts;">
+                <ion-card>
+                  <ion-item lines="none">
+                    {{pending}}
+                  </ion-item>
+                  <ion-button (click)="unBlockUser(pending)">unblock user</ion-button>
+                </ion-card>
+              </ion-col>
+            </ion-row>
 
-
-    <ion-slide style="width: 100%; ">
-      <ion-grid>
-        <ion-row>
-          <ion-card style="width: 95%; margin:auto; text-align: center;align-items: center;margin-top: 20px;">
-            <ion-card-header>
-              <ion-card-title>
-                Pending Requests
-              </ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
-              <ion-row>
-                <ion-col sizeXs='12' sizeSm='6' sizeMd='4' *ngFor="let pending of pendingContacts;">
-                  <ion-card>
-                    <ion-item lines="none">
-                      {{pending}}
-                    </ion-item>
-                    <ion-button (click)="acceptContactRequest(pending)">Accept</ion-button>
-                    <ion-button (click)="rejectContactRequest(pending)">Reject</ion-button>
-                  </ion-card>
-                </ion-col>
-              </ion-row>
-            </ion-card-content>
-          </ion-card>
-        </ion-row>
-        <ion-row>
-          <ion-card
-            style="width: 95%; margin:auto; text-align: center;align-items: center; margin-top: 20px; margin-bottom: 20px;">
-            <ion-card-header>
-              <ion-card-title>
-                Blocked Requests
-              </ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
-              <ion-row>
-                <ion-col sizeXs='12' sizeSm='6' sizeMd='4' *ngFor="let pending of blockedContacts;">
-                  <ion-card>
-                    <ion-item lines="none">
-                      {{pending}}
-                    </ion-item>
-                    <ion-button (click)="unBlockUser(pending)">unblock user</ion-button>
-                  </ion-card>
-                </ion-col>
-              </ion-row>
-
-              <!-- </ion-slides> -->
-            </ion-card-content>
-          </ion-card>
-        </ion-row>
-      </ion-grid>
-    </ion-slide>
-  </ion-slides>
+            <!-- </ion-slides> -->
+          </ion-card-content>
+        </ion-card>
+      </ion-row>
+    </ion-grid>
+  </div>
 
 </ion-content>
+<ion-footer slot="bottom" style="color:black">
+<ion-grid>
+  <ion-row>
+    <ion-col sizeXs="4">
+      <ion-button (click)="changeToProfile()" expand="full" fill="clear">
+        <ion-icon name="person-circle-outline"></ion-icon>
+        <ion-label>Your Profile</ion-label>
+      </ion-button>
+    </ion-col>
+    <ion-col sizeXs="4">
+      <ion-button (click)="changeToFriends()" expand="full" fill="clear">
+        <ion-icon name="people-outline"></ion-icon>
+        <ion-label>Friends</ion-label>
+      </ion-button>
+    </ion-col>
+    <ion-col sizeXs="4">
+      <ion-button (click)="changeToRequest()" expand="full" fill="clear">
+        <ion-icon name="person-add-outline"></ion-icon>
+        <ion-label>Friend Requests</ion-label>
+      </ion-button>
+    </ion-col>
+  </ion-row>
+</ion-grid>
+</ion-footer>

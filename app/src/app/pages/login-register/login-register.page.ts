@@ -70,11 +70,11 @@ export class LoginRegisterPage implements OnInit {
       // loginEmail: ['', [Validators.required, Validators.email]],
       // loginPassword: ['', [Validators.required, Validators.minLength(8)]],
       loginEmail: [
-        'brenton.stroberg@yahoo.co.za',
+        '',
         [Validators.required, Validators.email],
       ],
       loginPassword: [
-        'Password#1',
+        '',
         [Validators.required, Validators.minLength(8)],
       ],
     });

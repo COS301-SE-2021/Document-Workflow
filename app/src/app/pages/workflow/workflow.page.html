@@ -112,16 +112,11 @@
             </ion-grid>
           </ion-header>
           <ion-card-content style="width:100%">
-            <ion-item lines="none" name="workflowDescription">
               <ion-label position="stacked">Document description</ion-label>
-              <p>{{document.description}}</p>
-            </ion-item>
-            <ion-item lines="none">
-              <p>Current Phase {{document.currentPhase+1}}</p>
-            </ion-item>
+              <ion-card-title>{{document.description}}</ion-card-title>
             <ion-grid style="width: 100%;">
               <ion-row *ngFor="let phase of document.phases; let i = index">
-                <ion-col sizeXs='12'>
+                <ion-col sizeXs='12'>            <ion-item lines="none" name="workflowDescription" ></ion-item>
                   <ion-row>
                     <ion-col sizeXs='9'>
                       <h1 *ngIf="i !== document.currentPhase">Phase {{i + 1}} <ion-icon
