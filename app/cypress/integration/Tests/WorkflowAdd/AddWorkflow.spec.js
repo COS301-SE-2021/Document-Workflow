@@ -72,9 +72,10 @@ describe("testing the delete workflow functionality", () => {
     cy.get(
       ":nth-child(4) > ion-reorder.md > ion-card.md > .header-md > ion-grid.md > ion-row.md > .fab-horizontal-end > :nth-child(1)"
     ).click();
-    cy.get(
-      ":nth-child(4) > ion-reorder.md > ion-card.md > .header-md > ion-grid.md > ion-row.md > .fab-horizontal-end > .fab-list-side-down > :nth-child(3) > .md"
-    ).click();
+    cy.get(':nth-child(4) > ion-reorder.md > ion-card.md > .header-md > ion-grid.md > ion-row.md > .fab-horizontal-end > .fab-list-side-down > :nth-child(3) > span').click();
+    // cy.get(
+    //   ":nth-child(4) > ion-reorder.md > ion-card.md > .header-md > ion-grid.md > ion-row.md > .fab-horizontal-end > .fab-list-side-down > :nth-child(3) > .md"
+    // ).click();
     cy.wait(250);
     cy.get("div > ion-grid.md > ion-row.md > :nth-child(1)").click();
     cy.get("div > ion-grid.md > ion-row.md > :nth-child(1) > .md").click();

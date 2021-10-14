@@ -16,7 +16,7 @@ describe("testing the edit workflow functionality", () => {
       "eq",
       "http://localhost:8100/home/workflowTemplate"
     );
-    cy.get(':nth-child(1) > [sizemd="4"] > :nth-child(2)').click();
+    cy.get(':nth-child(1) > [sizemd="4"] > :nth-child(2)').click({force: true});
     cy.wait(8000);
     cy.get('.native-input').type(" 2.0");
     cy.get('.fab-horizontal-end > .md').click();

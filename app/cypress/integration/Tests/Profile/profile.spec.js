@@ -16,69 +16,73 @@ describe("Navigation when user is logged in", () => {
     cy.visit("http://localhost:8100/home/userProfile");
   });
 
-  it("Change the users name", () => {
-    cy.wait(2000);
-    cy.get(
-      ":nth-child(1) > :nth-child(1) > .item-interactive > .ng-untouched > .native-input"
-    )
-      .clear({ force: true })
-      .type("Brent", { force: true })
-      .should("have.value", "Brent");
-    cy.get(
-      ":nth-child(1) > :nth-child(2) > .item-interactive > .ng-untouched > .native-input"
-    )
-      .clear({ force: true })
-      .type("Strobe", { force: true })
-      .should("have.value", "Strobe");
-    cy.get("form.ng-dirty > .ion-color").click({force:true});
-    cy.wait(3000);
-  });
+  // it("Change the users name", () => {
+  //   cy.wait(2000);
+  //   cy.get(
+  //     ":nth-child(1) > :nth-child(1) > .item-interactive > .ng-untouched > .native-input"
+  //   )
+  //     .clear({ force: true })
+  //     .type("Brent", { force: true })
+  //     .should("have.value", "Brent");
+  //   cy.get(
+  //     ":nth-child(1) > :nth-child(2) > .item-interactive > .ng-untouched > .native-input"
+  //   )
+  //     .clear({ force: true })
+  //     .type("Strobe", { force: true })
+  //     .should("have.value", "Strobe");
+  //   cy.get("form.ng-dirty > .ion-color").click({force:true});
+  //   cy.wait(3000);
+  // });
 
-  it("Will check if the changes have been made", ()=>{
-    cy.get(":nth-child(1) > :nth-child(1) > .item-interactive > .ng-untouched > .native-input").should("have.value", "Brent");
-    cy.get(":nth-child(1) > :nth-child(2) > .item-interactive > .ng-untouched > .native-input").should("have.value", "Strobe");
-  });
+  // it("Will check if the changes have been made", ()=>{
+  //   cy.get(":nth-child(1) > :nth-child(1) > .item-interactive > .ng-untouched > .native-input").should("have.value", "Brent");
+  //   cy.get(":nth-child(1) > :nth-child(2) > .item-interactive > .ng-untouched > .native-input").should("have.value", "Strobe");
+  // });
 
-  it("will change back", ()=>{
-    cy.wait (2000);
-    cy.get(
-      ":nth-child(1) > :nth-child(1) > .item-interactive > .ng-untouched > .native-input"
-    )
-      .clear({ force: true })
-      .type("Brenton", { force: true })
-      .should("have.value", "Brenton");
-    cy.get(
-      ":nth-child(1) > :nth-child(2) > .item-interactive > .ng-untouched > .native-input"
-    )
-      .clear({ force: true })
-      .type("Stroberg", { force: true })
-      .should("have.value", "Stroberg");
-    cy.get("form.ng-dirty > .ion-color").click({force:true});
-    cy.wait(3000);
-  });
+  // it("will change back", ()=>{
+  //   cy.wait (2000);
+  //   cy.get(
+  //     ":nth-child(1) > :nth-child(1) > .item-interactive > .ng-untouched > .native-input"
+  //   )
+  //     .clear({ force: true })
+  //     .type("Brenton", { force: true })
+  //     .should("have.value", "Brenton");
+  //   cy.get(
+  //     ":nth-child(1) > :nth-child(2) > .item-interactive > .ng-untouched > .native-input"
+  //   )
+  //     .clear({ force: true })
+  //     .type("Stroberg", { force: true })
+  //     .should("have.value", "Stroberg");
+  //   cy.get("form.ng-dirty > .ion-color").click({force:true});
+  //   cy.wait(3000);
+  // });
 
-  it("Will check if the changes have been made", ()=>{
-    cy.get(":nth-child(1) > :nth-child(1) > .item-interactive > .ng-untouched > .native-input").should("have.value", "Brenton");
-    cy.get(":nth-child(1) > :nth-child(2) > .item-interactive > .ng-untouched > .native-input").should("have.value", "Stroberg");
-    cy.wait(2000);
-  });
+  // it("Will check if the changes have been made", ()=>{
+  //   cy.get(":nth-child(1) > :nth-child(1) > .item-interactive > .ng-untouched > .native-input").should("have.value", "Brenton");
+  //   cy.get(":nth-child(1) > :nth-child(2) > .item-interactive > .ng-untouched > .native-input").should("have.value", "Stroberg");
+  //   cy.wait(2000);
+  // });
 
   it("Block a user",()=>{
+    cy.get(':nth-child(2) > .button > .sc-ion-label-md-h').click({force:true});
     cy.get(':nth-child(1) > ion-card.md > .card-content-md > :nth-child(3)').click({force:true});
     cy.wait(2000);
   });
 
   it("Unblock a user",()=>{
-    cy.get('[style="width: 95%; margin: auto; text-align: center; align-items: center; margin-top: 20px; margin-bottom: 20px;"] > .card-content-md > ion-row.md > ion-col.md > ion-card.md > .button').click({force:true})
+    cy.get(':nth-child(3) > .button').click({force:true});
+    cy.get('ion-card.md > .button').click({force:true})
     cy.wait(2000);
   })
 
   it("will delete timothy", ()=>{
+    cy.get(':nth-child(2) > .button > .sc-ion-label-md-h').click({force:true});
     cy.get(':nth-child(3) > ion-card.md > .card-content-md > :nth-child(2)').click({force:true})
     cy.wait(2000);
   });
 
   it('will add timothy', ()=>{
+    cy.get(':nth-child(3) > .button').click({force:true});
     cy.get('form.ng-untouched > .item-interactive > .ng-untouched > .native-input').type('timothyhill202@gmail.com',{force:true, multiple: true });
     cy.get('form.ng-untouched > .button').click({force:true, multiple: true });
     cy.wait(3000);
@@ -98,6 +102,7 @@ describe("Navigation when user is logged in", () => {
 
   it("accept a user",()=>{
     cy.wait (4000);
+    cy.get(':nth-child(3) > .button').click({force:true});
     cy.get('[style="width: 95%; margin: auto; text-align: center; align-items: center; margin-top: 20px;"] > .card-content-md > ion-row.md > ion-col.md > ion-card.md > :nth-child(2)').click({force:true})
     cy.wait(4000);
   });
